@@ -1,0 +1,27 @@
+.label, .button, .text-field, .password-field, .check-box, .hyperlink {
+    -fx-font-family: "Inter 18pt";
+}
+.root {
+    -fx-bg: #F5F7F8;
+    -fx-surface: #FFFFFF;
+    -fx-border-color-default: #E1E6E8;
+    -fx-primary: #0E6E5C;
+    -fx-primary-dark: #0A5548;
+    -fx-primary-tint: #E4F3EF;
+    -fx-amber: #B4690E;
+    -fx-red: #B3261E;
+    -fx-text: #12201D;
+    -fx-text-muted: #5C6E6A;
+
+    -fx-font-family: "Inter 18pt";
+    -fx-background-color: -fx-bg;
+}
+
+/* Chữ đậm */
+.font-semibold {
+    -fx-font-family: "Inter 18pt SemiBold";
+}
+
+
+
+
