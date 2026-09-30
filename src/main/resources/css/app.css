@@ -22,6 +22,44 @@
     -fx-font-family: "Inter 18pt SemiBold";
 }
 
+/* Định nghĩa chung cỡ chữ và kiểu dáng cho toàn bộ nút menu */
+.nav-button {
+    -fx-font-size: 17px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-background-color: transparent;
+    -fx-text-fill: #94A3B8;
+    -fx-graphic-text-gap: 1px;
+    -fx-padding: 0 10px;
+}
+
+/* Icon ở trạng thái mặc định: dùng SVGPath hoặc .shape */
+.nav-button SVGPath,
+.nav-button .shape {
+    -fx-fill: #94A3B8;
+}
+
+/* Khi hover chuột */
+.nav-button:hover {
+    -fx-background-color: #1E293B;
+    -fx-text-fill: #E2E8F0;
+}
+.nav-button:hover SVGPath,
+.nav-button:hover .shape {
+    -fx-fill: #E2E8F0;
+}
+
+/* Kiểu dáng khi nút được chọn */
+.nav-button.active {
+    -fx-background-color: #1E293B;
+    -fx-text-fill: #38BDF8;
+    -fx-font-weight: 600;
+}
+.nav-button.active SVGPath,
+.nav-button.active .shape {
+    -fx-fill: #38BDF8;
+}
+
 
 
 

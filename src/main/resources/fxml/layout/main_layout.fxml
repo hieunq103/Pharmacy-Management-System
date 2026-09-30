@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<BorderPane fx:id="rootPane" prefHeight="800.0" prefWidth="1280.0"
+            style="-fx-background-color: #F8FAFC;"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.pharmacy.layout.MainLayoutController">
+
+    <!-- ==================== SIDEBAR TRÁI (MODERN NAVY BLUE) ==================== -->
+    <left>
+        <VBox prefWidth="290.0" spacing="12.0" style="-fx-background-color: #0F172A;" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="16.0" left="16.0" right="16.0" top="20.0" />
+            </padding>
+
+            <!-- Brand Logo & App Name -->
+            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                <padding>
+                    <Insets bottom="16.0" left="4.0" />
+                </padding>
+
+                <!-- Ảnh Logo tự chèn -->
+                <ImageView fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../../images/logo.png" />
+                    </image>
+                </ImageView>
+
+                <!-- Tên thương hiệu: Pharma (Trắng) + OS (Xanh Cyan #38BDF8) -->
+                <TextFlow>
+                    <Text text="Pharma"
+                          style="-fx-fill: #FFFFFF; -fx-font-size: 20px; -fx-font-weight: 700;" />
+                    <Text text="OS"
+                          style="-fx-fill: #38BDF8; -fx-font-size: 20px; -fx-font-weight: 700;" />
+                </TextFlow>
+            </HBox>
+
+            <!-- Nhóm: CHÍNH -->
+            <Label style="-fx-font-size: 12px; -fx-font-weight: 700; -fx-text-fill: #64748B; -fx-padding: 8 0 4 6;" text="CHÍNH" />
+
+            <VBox spacing="6.0">
+                <!-- Tổng quan -->
+                <Button fx:id="btnDashboard" alignment="BASELINE_LEFT" maxWidth="Infinity" onAction="#handleNavDashboard"
+                        prefHeight="48.0" styleClass="nav-button, active" text="   Tổng quan">
+                    <graphic>
+                        <StackPane alignment="CENTER" prefWidth="26.0">
+                            <SVGPath content="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                        </StackPane>
+                    </graphic>
+                </Button>
+
+                <!-- Bán hàng -->
+                <Button fx:id="btnSales" alignment="BASELINE_LEFT" maxWidth="Infinity" onAction="#handleNavSales"
+                        prefHeight="48.0" styleClass="nav-button" text="   Bán hàng">
+                    <graphic>
+                        <StackPane alignment="CENTER" prefWidth="26.0">
+                            <SVGPath content="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                        </StackPane>
+                    </graphic>
+                </Button>
+
+                <!-- Kho thuốc (kèm nhãn thông báo tồn kho) -->
+                <HBox alignment="CENTER_LEFT" maxWidth="Infinity">
+                    <Button fx:id="btnInventory" alignment="BASELINE_LEFT" maxWidth="Infinity" onAction="#handleNavInventory"
+                            prefHeight="48.0" styleClass="nav-button" text="   Kho thuốc" HBox.hgrow="ALWAYS">
+                        <graphic>
+                            <StackPane alignment="CENTER" prefWidth="26.0">
+                                <SVGPath content="M20 13V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7m16 0v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-5m16 0h-4a2 2 0 0 0-2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-1a2 2 0 0 0-2-2H4"/>
+                            </StackPane>
+                        </graphic>
+                    </Button>
+                </HBox>
+
+                <!-- Nhân viên (Chỉ Admin) -->
+                <Button fx:id="btnEmployee" alignment="BASELINE_LEFT" maxWidth="Infinity" onAction="#handleNavEmployee"
+                        prefHeight="48.0" styleClass="nav-button" text="   Nhân viên">
+                    <graphic>
+                        <StackPane alignment="CENTER" prefWidth="26.0">
+                            <SVGPath content="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 3s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                        </StackPane>
+                    </graphic>
+                </Button>
+
+                <!-- Báo cáo -->
+                <Button fx:id="btnReport" alignment="BASELINE_LEFT" maxWidth="Infinity" onAction="#handleNavReport"
+                        prefHeight="48.0" styleClass="nav-button" text="   Báo cáo">
+                    <graphic>
+                        <StackPane alignment="CENTER" prefWidth="26.0">
+                            <SVGPath content="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                        </StackPane>
+                    </graphic>
+                </Button>
+            </VBox>
+
+            <!-- Spacer đẩy thông tin tài khoản xuống đáy -->
+            <Region VBox.vgrow="ALWAYS" />
+
+            <!-- Profile Info & Logout ở đáy Sidebar -->
+            <HBox alignment="CENTER_LEFT" prefHeight="56.0" spacing="10.0"
+                  style="-fx-background-color: #1E293B; -fx-background-radius: 10; -fx-padding: 8;">
+
+                <!-- Vùng có thể click để mở thông tin cá nhân (Avatar + Tên) -->
+                <HBox alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS"
+                      onMouseClicked="#handleNavProfile"
+                      style="-fx-cursor: hand;">
+
+                    <StackPane prefHeight="38.0" prefWidth="38.0" style="-fx-background-color: #2563EB; -fx-background-radius: 19;">
+                        <Label fx:id="lblUserAvatar" style="-fx-font-size: 14px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+                    </StackPane>
+
+                    <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                        <Label fx:id="lblUserName" style="-fx-font-size: 14px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+                        <Label fx:id="lblUserRole" style="-fx-font-size: 12px; -fx-text-fill: #94A3B8;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Nút Đăng xuất giữ nguyên bên phải, không bị ảnh hưởng khi click vào tên -->
+                <Button fx:id="btnLogout" contentDisplay="GRAPHIC_ONLY" onAction="#handleLogout"
+                        style="-fx-background-color: transparent; -fx-cursor: hand;" text="Đăng xuất">
+                    <graphic>
+                        <StackPane alignment="CENTER" prefWidth="20.0">
+                            <SVGPath content="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
+                                     fill="#94A3B8"/>
+                        </StackPane>
+                    </graphic>
+                </Button>
+            </HBox>
+        </VBox>
+    </left>
+
+    <!-- ==================== KHU VỰC NỘI DUNG CHÍNH (CENTER) ==================== -->
+    <center>
+        <VBox style="-fx-background-color: #F8FAFC;" BorderPane.alignment="CENTER">
+
+            <!-- HEADER TRÊN CÙNG -->
+            <HBox alignment="CENTER_LEFT" prefHeight="68.0" spacing="16.0" minHeight="68.0" maxHeight="68.0"
+                  style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 0 0 1 0;">
+                <padding>
+                    <Insets left="24.0" right="24.0" />
+                </padding>
+
+                <!-- Tiêu đề trang & Thời gian -->
+                <VBox alignment="CENTER_LEFT">
+                    <Label fx:id="lblHeaderTitle" style="-fx-font-size: 20px; -fx-font-weight: 700; -fx-text-fill: #0F172A;" text="Tổng quan" />
+                    <Label fx:id="lblHeaderSubtitle" style="-fx-font-size: 13px; -fx-text-fill: #64748B;" />
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS" />
+            </HBox>
+
+            <!-- VÙNG NẠP MÀN HÌNH CON -->
+            <StackPane fx:id="contentArea" style="-fx-background-color: #F8FAFC;" VBox.vgrow="ALWAYS">
+                <padding>
+                    <Insets bottom="20.0" left="24.0" right="24.0" top="20.0" />
+                </padding>
+            </StackPane>
+        </VBox>
+    </center>
+</BorderPane>

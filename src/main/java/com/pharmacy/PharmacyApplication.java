@@ -1,5 +1,13 @@
 package com.pharmacy;
 
+// >>>>>>>>>>>>>>>>> [BẮT ĐẦU CODE MỚI THÊM: IMPORT AUTHENTICATION & SESSION] >>>>>>>>>>>>>>>>>
+import com.pharmacy.account.Account;
+import com.pharmacy.auth.AuthService;
+import com.pharmacy.auth.AuthServiceImpl;
+import com.pharmacy.auth.LoginRequest;
+import com.pharmacy.common.UserSession;
+// <<<<<<<<<<<<<<<<< [KẾT THÚC CODE MỚI THÊM: IMPORT AUTHENTICATION & SESSION] <<<<<<<<<<<<<<<<<
+
 import com.pharmacy.infra.db.DatabaseHealthChecker;
 import com.pharmacy.infra.db.HibernateUtil;
 import com.pharmacy.infra.db.MigrationRunner;
@@ -20,13 +28,6 @@ import java.net.URL;
 
 /**
  * Điểm khởi động ứng dụng desktop PharmaOS.
- *
- * Trách nhiệm:
- *  1. Cấu hình uncaught-exception handler toàn cục (mục 13.1, R2)
- *  2. Chạy Flyway migration + khởi tạo Hibernate SessionFactory (mục 13.8, R72)
- *  3. Kích hoạt giám sát kết nối cơ sở dữ liệu ngầm (DatabaseHealthChecker)
- *  4. Mở màn hình đăng nhập (fxml/auth/login.fxml)
- *  5. Thực hiện đóng an toàn tài nguyên (Graceful Shutdown - R71)
  */
 public class PharmacyApplication extends Application {
 
@@ -73,6 +74,11 @@ public class PharmacyApplication extends Application {
         });
 
         try {
+
+            // =========================================================================================
+            // >>>>>>>>>>>>>>>>> [BẮT ĐẦU CODE CŨ BỊ ẨN ĐI: MỞ MÀN HÌNH ĐĂNG NHẬP] >>>>>>>>>>>>>>>>>
+            // =========================================================================================
+            /*
             URL loginFxml = getClass().getResource("/fxml/auth/login.fxml");
             if (loginFxml == null) {
                 throw new IOException("Không tìm thấy file giao diện /fxml/auth/login.fxml");
@@ -101,6 +107,49 @@ public class PharmacyApplication extends Application {
             primaryStage.setWidth(1160);
             primaryStage.setHeight(720);
             primaryStage.centerOnScreen();
+            */
+            // =========================================================================================
+            // <<<<<<<<<<<<<<<<< [KẾT THÚC CODE CŨ BỊ ẨN ĐI: MỞ MÀN HÌNH ĐĂNG NHẬP] <<<<<<<<<<<<<<<<<
+            // =========================================================================================
+
+
+
+            // =========================================================================================
+            // >>>>>>>>>>>>>>>>> [BẮT ĐẦU CODE MỚI THÊM: LOGIN ADMIN & VÀO MAIN LAYOUT] >>>>>>>>>>>>>>>>>
+            // =========================================================================================
+            // 1. Tự động xác thực tài khoản Admin vào UserSession
+            AuthService authService = new AuthServiceImpl();
+            Account adminAccount = authService.login(new LoginRequest("0989261809", "12345678"));
+            log.info("Đăng nhập Admin tự động thành công: {}", UserSession.getInstance().getEmployeeName());
+
+            // 2. Tải thẳng FXML màn hình chính (Main Layout)
+            URL mainLayoutFxml = getClass().getResource("/fxml/layout/main_layout.fxml");
+            if (mainLayoutFxml == null) {
+                throw new IOException("Không tìm thấy file giao diện /fxml/layout/main_layout.fxml");
+            }
+
+            Parent root = FXMLLoader.load(mainLayoutFxml);
+            primaryStage.setTitle("PharmaOS — Quản lý cửa hàng thuốc (Admin Mode)");
+
+            // Thiết lập kích thước cửa sổ rộng cho Dashboard/Main Layout
+            primaryStage.setMinWidth(1160);
+            primaryStage.setMinHeight(720);
+
+            Scene scene = new Scene(root, 1280, 800);
+
+            // Nạp CSS giao diện chung
+            URL cssResource = getClass().getResource("/css/app.css");
+            if (cssResource != null) {
+                scene.getStylesheets().add(cssResource.toExternalForm());
+            }
+
+            primaryStage.setScene(scene);
+            primaryStage.setWidth(1280);
+            primaryStage.setHeight(800);
+            primaryStage.centerOnScreen();
+            // =========================================================================================
+            // <<<<<<<<<<<<<<<<< [KẾT THÚC CODE MỚI THÊM: LOGIN ADMIN & VÀO MAIN LAYOUT] <<<<<<<<<<<<<<<
+            // =========================================================================================
 
             // Graceful shutdown khi người dùng bấm nút đóng cửa sổ (R71)
             primaryStage.setOnCloseRequest(event -> {
@@ -109,20 +158,18 @@ public class PharmacyApplication extends Application {
 
             primaryStage.show();
         } catch (Exception e) {
-            log.error("Không thể mở màn hình đăng nhập: ", e);
+            log.error("Không thể mở màn hình ứng dụng: ", e);
             showStartupErrorAlert(e.getMessage());
         }
     }
 
     @Override
     public void stop() {
-        // Đóng toàn bộ Connection Pool và Hibernate khi ứng dụng kết thúc
         log.info("Bắt đầu giải phóng tài nguyên hệ thống...");
         HibernateUtil.shutdown();
         log.info("PharmaOS đã tắt an toàn.");
     }
 
-    /** Nạp font từ classpath, trả về null (và log cảnh báo) nếu không tìm thấy. */
     private Font loadFont(String path) {
         try (InputStream in = getClass().getResourceAsStream(path)) {
             if (in == null) {
@@ -139,7 +186,7 @@ public class PharmacyApplication extends Application {
     private void showStartupErrorAlert(String detail) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Lỗi khởi động");
-        alert.setHeaderText("Không thể nạp giao diện đăng nhập");
+        alert.setHeaderText("Không thể đăng nhập Admin tự động");
         alert.setContentText("Chi tiết: " + detail);
         alert.showAndWait();
     }

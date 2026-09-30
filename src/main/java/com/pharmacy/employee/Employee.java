@@ -1,16 +1,19 @@
 package com.pharmacy.employee;
 
+import com.pharmacy.account.Account;
 import jakarta.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "employees")
-public class Employee {
+public class Employee implements Serializable {
 
-    public enum Gender {
-        MALE, FEMALE, OTHER
-    }
+    // Các hằng số định nghĩa sẵn để sử dụng trong code tránh gõ sai chính tả
+    public static final String GENDER_MALE = "Nam";
+    public static final String GENDER_FEMALE = "Nữ";
+    public static final String GENDER_OTHER = "Giới tính khác";
 
     public enum Status {
         ACTIVE, INACTIVE
@@ -27,17 +30,16 @@ public class Employee {
     @Column(name = "dob", nullable = false)
     private LocalDate dob;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "gender", nullable = false)
-    private Gender gender;
+    @Column(name = "gender", nullable = false, length = 20)
+    private String gender;
 
-    @Column(name = "national_id", nullable = false, unique = true, length = 20)
+    @Column(name = "national_id", nullable = false, unique = true, length = 12)
     private String nationalId;
 
     @Column(name = "address", length = 255)
     private String address;
 
-    @Column(name = "phone", nullable = false, length = 15)
+    @Column(name = "phone", nullable = false, unique = true, length = 15)
     private String phone;
 
     @Column(name = "hired_date")
@@ -47,6 +49,9 @@ public class Employee {
     @Column(name = "status", nullable = false)
     private Status status = Status.ACTIVE;
 
+    @OneToOne(mappedBy = "employee", fetch = FetchType.LAZY)
+    private Account account;
+
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -55,25 +60,93 @@ public class Employee {
 
     public Employee() {}
 
-    // Getters & Setters
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
-    public LocalDate getDob() { return dob; }
-    public void setDob(LocalDate dob) { this.dob = dob; }
-    public Gender getGender() { return gender; }
-    public void setGender(Gender gender) { this.gender = gender; }
-    public String getNationalId() { return nationalId; }
-    public void setNationalId(String nationalId) { this.nationalId = nationalId; }
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
-    public LocalDate getHiredDate() { return hiredDate; }
-    public void setHiredDate(LocalDate hiredDate) { this.hiredDate = hiredDate; }
-    public Status getStatus() { return status; }
-    public void setStatus(Status status) { this.status = status; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    // ==================== GETTERS & SETTERS ====================
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public LocalDate getDob() {
+        return dob;
+    }
+
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getNationalId() {
+        return nationalId;
+    }
+
+    public void setNationalId(String nationalId) {
+        this.nationalId = nationalId;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public LocalDate getHiredDate() {
+        return hiredDate;
+    }
+
+    public void setHiredDate(LocalDate hiredDate) {
+        this.hiredDate = hiredDate;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 }

@@ -1,0 +1,86 @@
+/* Áp dụng font Inter cho toàn bộ các phần tử bên trong ScrollPane của Profile */
+.scroll-pane,
+.scroll-pane .text,
+.scroll-pane .text-field,
+.scroll-pane .button {
+    -fx-font-family: 'Inter 18pt', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Áp dụng chung cho cả ô nhập (form-input) và toàn bộ các nhãn chữ (label) trong form */
+.form-input,
+.scroll-pane .label,
+.form-label {
+    -fx-font-family: 'Inter 18pt', 'Inter', sans-serif;
+    -fx-font-size: 14px;
+}
+/* Trạng thái CHỈ XEM (Read-only) */
+.form-input.readonly {
+    -fx-background-color: #F1F5F9;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-border-width: 1;
+    -fx-pref-height: 38px;
+    -fx-min-height: 38px;
+    -fx-max-height: 38px;
+    -fx-text-fill: #1E293B;
+}
+
+/* Trạng thái CHỈNH SỬA (Editable) */
+.form-input.editable {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #2563EB;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-border-width: 1;
+    -fx-pref-height: 38px;
+    -fx-min-height: 38px;
+    -fx-max-height: 38px;
+    -fx-text-fill: #0F172A;
+}
+
+/* ==================== CỤM NÚT THAO TÁC PROFILE ==================== */
+
+/* Cấu hình chung cho tất cả các nút: Font Inter 14px, chiều cao 38px, bo góc 6px */
+.btn-action {
+    -fx-font-family: 'Inter 18pt', 'Inter', -apple-system, sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-pref-height: 38px;
+    -fx-min-height: 38px;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+/* 1. Nút "Chỉnh sửa thông tin liên hệ" (Xanh dương) */
+.btn-primary {
+    -fx-background-color: #2563EB;
+    -fx-text-fill: white;
+    -fx-padding: 0 20;
+}
+.btn-primary:hover {
+    -fx-background-color: #1D4ED8;
+}
+
+/* 2. Nút "Hoàn tác" (Xám nhạt) */
+.btn-secondary {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #475569;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6;
+    -fx-padding: 0 16;
+}
+.btn-secondary:hover {
+    -fx-background-color: #E2E8F0;
+    -fx-text-fill: #1E293B;
+}
+
+/* 3. Nút "Lưu thay đổi" (Xanh lá) */
+.btn-success {
+    -fx-background-color: #16A34A;
+    -fx-text-fill: white;
+    -fx-padding: 0 20;
+}
+.btn-success:hover {
+    -fx-background-color: #15803D;
+}

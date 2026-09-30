@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.layout.Region?>
+<ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: #F8FAFC;"
+            stylesheets="@../../css/profile.css" xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pharmacy.profile.ProfileController">
+    <content>
+        <VBox spacing="20.0" style="-fx-padding: 24;">
+
+            <VBox spacing="16.0"
+                  style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 10, 0, 0, 2);">
+
+                <Label style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #0F172A;" text="Hồ sơ cá nhân" />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #64748B;" text="Nhân viên chỉ có thể cập nhật thông tin liên hệ. Các thông tin định danh do Quản trị viên quản lý." />
+
+                <!-- Thông báo trạng thái -->
+                <Label fx:id="lblStatusMessage" managed="false" visible="false"
+                       style="-fx-font-size: 13px; -fx-padding: 8 12; -fx-background-radius: 6;" />
+
+                <GridPane hgap="20.0" vgap="16.0">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="50.0" />
+                        <ColumnConstraints percentWidth="50.0" />
+                    </columnConstraints>
+
+                    <!-- Hàng 0: Họ tên & CCCD (Luôn khóa) -->
+                    <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label style="-fx-font-weight: 600; -fx-text-fill: #475569;" text="Họ và tên" />
+                        <TextField fx:id="txtFullName" editable="false" styleClass="form-input, readonly" />
+                    </VBox>
+
+                    <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label style="-fx-font-weight: 600; -fx-text-fill: #475569;" text="Số CCCD / Định danh (12 số)" />
+                        <TextField fx:id="txtNationalId" editable="false" styleClass="form-input, readonly" />
+                    </VBox>
+
+                    <!-- Hàng 1: Ngày sinh & Giới tính (Luôn khóa) -->
+                    <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <Label style="-fx-font-weight: 600; -fx-text-fill: #475569;" text="Ngày sinh" />
+                        <TextField fx:id="txtDob" editable="false" styleClass="form-input, readonly" />
+                    </VBox>
+
+                    <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <Label style="-fx-font-weight: 600; -fx-text-fill: #475569;" text="Giới tính" />
+                        <TextField fx:id="txtGender" editable="false" styleClass="form-input, readonly" />
+                    </VBox>
+
+                    <!-- Hàng 2: Số điện thoại (CHO PHÉP SỬA) & Vai trò (Khóa) -->
+                    <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                        <Label style="-fx-font-weight: 600; -fx-text-fill: #1E293B;" text="Số điện thoại" />
+                        <TextField fx:id="txtPhone" editable="false" promptText="09xxxxxxxx"
+                                   styleClass="form-input, readonly" />
+                    </VBox>
+
+                    <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <Label style="-fx-font-weight: 600; -fx-text-fill: #475569;" text="Vai trò hệ thống" />
+                        <TextField fx:id="txtRole" editable="false" styleClass="form-input, readonly" />
+                    </VBox>
+
+                    <!-- Hàng 3: Địa chỉ (CHO PHÉP SỬA) -->
+                    <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="3">
+                        <Label style="-fx-font-weight: 600; -fx-text-fill: #1E293B;" text="Địa chỉ thường trú" />
+                        <TextField fx:id="txtAddress" editable="false" promptText="Nhập địa chỉ cư trú..."
+                                   styleClass="form-input, readonly" />
+                    </VBox>
+                </GridPane>
+
+                <!-- KHU VỰC NÚT ĐIỀU KHIỂN -->
+                <HBox alignment="CENTER_RIGHT" spacing="12.0" style="-fx-padding: 16 0 0 0;">
+                    <Button fx:id="btnChangePassword" onAction="#handleChangePassword"
+                            styleClass="btn-action, btn-primary"
+                            text="Đổi mật khẩu" />
+
+                    <Region HBox.hgrow="ALWAYS" />
+
+                    <Button fx:id="btnEdit" onAction="#handleStartEditing"
+                            styleClass="btn-action, btn-primary"
+                            text="Chỉnh sửa thông tin liên hệ" />
+
+                    <HBox fx:id="boxEditActions" alignment="CENTER_RIGHT" managed="false" spacing="12.0" visible="false">
+                        <Button fx:id="btnCancel" onAction="#handleCancelEditing"
+                                styleClass="btn-action, btn-secondary"
+                                text="Hoàn tác" />
+                        <Button fx:id="btnSave" onAction="#handleSaveProfile"
+                                styleClass="btn-action, btn-success"
+                                text="Lưu thay đổi" />
+                    </HBox>
+                </HBox>
+            </VBox>
+        </VBox>
+    </content>
+</ScrollPane>

@@ -1,6 +1,7 @@
 package com.pharmacy.infra.db;
 
 import com.pharmacy.account.Account;
+import com.pharmacy.account.Role;
 import com.pharmacy.employee.Employee;
 import com.pharmacy.infra.config.AppConfig;
 import com.zaxxer.hikari.HikariConfig;
@@ -69,6 +70,7 @@ public final class HibernateUtil {
 
             // 3. Đăng ký các Entity ORM
             MetadataSources metadataSources = new MetadataSources(registry);
+            metadataSources.addAnnotatedClass(Role.class);
             metadataSources.addAnnotatedClass(Employee.class);
             metadataSources.addAnnotatedClass(Account.class);
 
