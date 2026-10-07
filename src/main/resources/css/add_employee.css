@@ -1,0 +1,180 @@
+/* ==========================================================================
+   DRAWER CONTAINER & SCROLL
+   ========================================================================== */
+.drawer-panel {
+    -fx-background-color: #FFFFFF !important;
+    -fx-font-family: "Inter 18pt", "Inter", sans-serif;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 0 1px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 25, 0, -6, 0);
+}
+
+.drawer-panel .scroll-pane,
+.drawer-panel .scroll-pane > .viewport {
+    -fx-background-color: #FFFFFF !important;
+    -fx-background: #FFFFFF !important;
+}
+
+/* Nút X đóng Drawer */
+.btn-close-drawer {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748B;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 4 8;
+}
+
+.btn-close-drawer:hover {
+    -fx-text-fill: #0F172A;
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 6px;
+}
+
+/* ==========================================================================
+   FORM LABELS & ERROR MESSAGES
+   ========================================================================== */
+.form-label {
+    -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #334155;
+}
+
+.form-error-msg {
+    -fx-text-fill: #EF4444;
+    -fx-font-size: 12px;
+}
+
+/* ==========================================================================
+   INPUT FIELDS (TextField, ComboBox, DatePicker)
+   ========================================================================== */
+.form-input, .form-combobox {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 7 12;
+    -fx-font-size: 14px;
+    -fx-text-fill: #0F172A;
+}
+
+.form-input:focused, .form-combobox:focused {
+    -fx-border-color: #0066FF;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.2), 4, 0, 0, 0);
+}
+
+/* Trạng thái lỗi viền đỏ kích hoạt bởi AddEmployeeController */
+.form-input-error {
+    -fx-border-color: #EF4444 !important;
+    -fx-effect: dropshadow(three-pass-box, rgba(239, 68, 68, 0.2), 4, 0, 0, 0) !important;
+}
+
+/* ==========================================================================
+   DATE PICKER FIX (Liền mạch 1 viền duy nhất, bo góc 8px)
+   ========================================================================== */
+
+.date-picker {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 0; /* Bỏ padding container ngoài để tránh hiệu ứng 2 viền */
+}
+
+/* Hover & Focus cho DatePicker */
+.date-picker:hover {
+    -fx-border-color: #94A3B8;
+}
+
+.date-picker:focused,
+.date-picker:focus-within {
+    -fx-border-color: #0066FF;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.2), 4, 0, 0, 0);
+}
+
+/* Phần ô gõ chữ bên trong: Xóa hoàn toàn viền và nền riêng */
+.date-picker > .text-field {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+    -fx-background-radius: 8px 0 0 8px;
+    -fx-padding: 9 12;
+    -fx-font-size: 14px;
+    -fx-text-fill: #0F172A;
+    -fx-prompt-text-fill: #94A3B8;
+}
+
+.date-picker > .text-field:focused {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+/* Phần nút icon lịch bên phải */
+.date-picker > .arrow-button {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+    -fx-background-radius: 0 8px 8px 0;
+    -fx-padding: 0 12;
+    -fx-cursor: hand;
+}
+
+.date-picker > .arrow-button:hover {
+    -fx-background-color: #F1F5F9;
+}
+
+.date-picker > .arrow-button > .arrow {
+    -fx-background-color: #64748B;
+}
+
+/* Trạng thái báo lỗi đỏ khi validate */
+.date-picker.form-input-error {
+    -fx-border-color: #EF4444 !important;
+    -fx-effect: dropshadow(three-pass-box, rgba(239, 68, 68, 0.2), 4, 0, 0, 0) !important;
+}
+
+/* ==========================================================================
+   BUTTONS (Nút Huỷ & Nút Lưu)
+   ========================================================================== */
+/* Nút Huỷ */
+.btn-secondary {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+    -fx-padding: 9 18;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #94A3B8;
+    -fx-text-fill: #0F172A;
+}
+
+/* Nút Lưu thông tin */
+.btn-primary-add {
+    -fx-background-color: #0066FF;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-border-width: 0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 9 20;
+    -fx-font-size: 13.5px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.25), 6, 0, 0, 2);
+}
+
+.btn-primary-add:hover {
+    -fx-background-color: #0052CC;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 82, 204, 0.35), 8, 0, 0, 3);
+}
+
+.btn-primary-add:pressed {
+    -fx-background-color: #003D99;
+    -fx-effect: none;
+}

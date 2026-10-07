@@ -2,31 +2,68 @@ package com.pharmacy.profile;
 
 import com.pharmacy.account.Account;
 import com.pharmacy.account.AccountRepository;
+import com.pharmacy.common.UserSession;
 import com.pharmacy.employee.EmployeeRepository;
+import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProfileServiceImpl implements ProfileService {
 
     private static final Logger log = LoggerFactory.getLogger(ProfileServiceImpl.class);
+    private static final String PHONE_REGEX = "^0[35789]\\d{8}$";
+
     private final EmployeeRepository employeeRepository;
-    private final AccountRepository accountRepository = new AccountRepository();
+    private final AccountRepository accountRepository;
 
     public ProfileServiceImpl() {
-        this.employeeRepository = new EmployeeRepository();
+        this(new EmployeeRepository(), new AccountRepository());
     }
 
-    public ProfileServiceImpl(EmployeeRepository employeeRepository) {
+    public ProfileServiceImpl(EmployeeRepository employeeRepository, AccountRepository accountRepository) {
         this.employeeRepository = employeeRepository;
+        this.accountRepository = accountRepository;
     }
 
     @Override
     public void updateProfile(ProfileUpdateRequest request) {
-        if (request == null) {
-            throw new IllegalArgumentException("Yêu cầu cập nhật không được để trống.");
+        if (request == null || request.employeeId() == null) {
+            throw new IllegalArgumentException("Dữ liệu yêu cầu cập nhật không hợp lệ.");
         }
 
-        log.info("Bắt đầu cập nhật hồ sơ cho nhân viên ID: {}", request.employeeId());
+        boolean isManager = UserSession.isLoggedIn() && UserSession.getInstance().isManager();
+
+        if (request.phone() == null || request.phone().isBlank()) {
+            throw new IllegalArgumentException("Số điện thoại không được để trống.");
+        }
+        if (!request.phone().matches("^0[35789]\\d{8}$")) {
+            throw new IllegalArgumentException("Số điện thoại không hợp lệ (gồm 10 chữ số, bắt đầu bằng 03, 05, 07, 08 hoặc 09).");
+        }
+
+        if (request.address() == null || request.address().isBlank()) {
+            throw new IllegalArgumentException("Địa chỉ không được để trống.");
+        }
+        if (request.address().length() > 255) {
+            throw new IllegalArgumentException("Địa chỉ không được vượt quá 255 ký tự.");
+        }
+
+        if (isManager) {
+            if (request.fullName() == null || request.fullName().isBlank()) {
+                throw new IllegalArgumentException("Họ và tên không được để trống.");
+            }
+            if (request.nationalId() == null || !request.nationalId().matches("^\\d{12}$")) {
+                throw new IllegalArgumentException("Căn cước công dân phải đúng 12 chữ số.");
+            }
+            if (request.dob() == null) {
+                throw new IllegalArgumentException("Ngày sinh không được để trống.");
+            }
+            if (request.dob().isAfter(java.time.LocalDate.now().minusYears(18))) {
+                throw new IllegalArgumentException("Nhân viên phải từ đủ 18 tuổi trở lên.");
+            }
+        }
+
+        log.info("Bắt đầu cập nhật hồ sơ cho nhân viên ID: {} (Vai trò: {})",
+                request.employeeId(), isManager ? "Manager" : "Staff");
 
         boolean isPhoneTakenByOthers = employeeRepository.existsByPhoneAndNotId(request.phone(), request.employeeId());
         if (isPhoneTakenByOthers) {
@@ -34,7 +71,20 @@ public class ProfileServiceImpl implements ProfileService {
             throw new IllegalArgumentException("Số điện thoại này đã được sử dụng bởi nhân viên khác.");
         }
 
-        boolean success = employeeRepository.updateProfile(request);
+        boolean success;
+
+        if (isManager) {
+            boolean isNationalIdTaken = employeeRepository.existsByNationalIdAndNotId(request.nationalId(), request.employeeId());
+            if (isNationalIdTaken) {
+                log.warn("Cập nhật thất bại: CCCD {} đã thuộc về nhân viên khác.", request.nationalId());
+                throw new IllegalArgumentException("Căn cước công dân này đã thuộc về nhân viên khác.");
+            }
+
+            success = employeeRepository.updateManagerProfile(request);
+        } else {
+            success = employeeRepository.updateStaffProfile(request.employeeId(), request.phone(), request.address());
+        }
+
         if (!success) {
             log.error("Không tìm thấy nhân viên hoặc không thể cập nhật dữ liệu với ID: {}", request.employeeId());
             throw new IllegalStateException("Không tìm thấy nhân viên hoặc không thể cập nhật dữ liệu.");
@@ -64,12 +114,11 @@ public class ProfileServiceImpl implements ProfileService {
         Account account = accountRepository.findByIdentifier(identifier)
                 .orElseThrow(() -> new IllegalStateException("Không tìm thấy tài khoản trong hệ thống."));
 
-        if (!org.mindrot.jbcrypt.BCrypt.checkpw(currentPassword, account.getPasswordHash())) {
+        if (!BCrypt.checkpw(currentPassword, account.getPasswordHash())) {
             throw new IllegalArgumentException("Mật khẩu hiện tại không chính xác.");
         }
 
-        String newPasswordHash = org.mindrot.jbcrypt.BCrypt.hashpw(newPassword, org.mindrot.jbcrypt.BCrypt.gensalt(10));
-
+        String newPasswordHash = BCrypt.hashpw(newPassword, BCrypt.gensalt(10));
         boolean updated = accountRepository.updatePassword(account.getId(), newPasswordHash);
         if (!updated) {
             throw new IllegalStateException("Đổi mật khẩu thất bại. Vui lòng thử lại.");

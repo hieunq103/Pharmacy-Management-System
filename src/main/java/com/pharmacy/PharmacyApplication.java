@@ -119,7 +119,7 @@ public class PharmacyApplication extends Application {
             // =========================================================================================
             // 1. Tự động xác thực tài khoản Admin vào UserSession
             AuthService authService = new AuthServiceImpl();
-            Account adminAccount = authService.login(new LoginRequest("0989261809", "12345678"));
+            Account adminAccount = authService.login(new LoginRequest("0985549854", "12345678"));
             log.info("Đăng nhập Admin tự động thành công: {}", UserSession.getInstance().getEmployeeName());
 
             // 2. Tải thẳng FXML màn hình chính (Main Layout)

@@ -10,10 +10,9 @@ import java.time.LocalDateTime;
 @Table(name = "employees")
 public class Employee implements Serializable {
 
-    // Các hằng số định nghĩa sẵn để sử dụng trong code tránh gõ sai chính tả
     public static final String GENDER_MALE = "Nam";
     public static final String GENDER_FEMALE = "Nữ";
-    public static final String GENDER_OTHER = "Giới tính khác";
+    public static final String GENDER_OTHER = "Khác";
 
     public enum Status {
         ACTIVE, INACTIVE

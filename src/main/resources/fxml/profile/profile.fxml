@@ -11,6 +11,8 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.StackPane?>
 <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: #F8FAFC;"
             stylesheets="@../../css/profile.css" xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pharmacy.profile.ProfileController">
@@ -40,11 +42,11 @@
                     </VBox>
 
                     <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                        <Label style="-fx-font-weight: 600; -fx-text-fill: #475569;" text="Số CCCD / Định danh (12 số)" />
+                        <Label style="-fx-font-weight: 600; -fx-text-fill: #475569;" text="Số CCCD" />
                         <TextField fx:id="txtNationalId" editable="false" styleClass="form-input, readonly" />
                     </VBox>
 
-                    <!-- Hàng 1: Ngày sinh & Giới tính (Luôn khóa) -->
+
                     <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
                         <Label style="-fx-font-weight: 600; -fx-text-fill: #475569;" text="Ngày sinh" />
                         <TextField fx:id="txtDob" editable="false" styleClass="form-input, readonly" />
@@ -52,7 +54,11 @@
 
                     <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                         <Label style="-fx-font-weight: 600; -fx-text-fill: #475569;" text="Giới tính" />
-                        <TextField fx:id="txtGender" editable="false" styleClass="form-input, readonly" />
+                        <StackPane alignment="CENTER_LEFT">
+                            <TextField fx:id="txtGender" editable="false" maxWidth="Infinity" styleClass="form-input, readonly" />
+                            <ComboBox fx:id="cbGender" maxWidth="Infinity" visible="false" managed="false"
+                                      promptText="Chọn giới tính" styleClass="form-input" />
+                        </StackPane>
                     </VBox>
 
                     <!-- Hàng 2: Số điện thoại (CHO PHÉP SỬA) & Vai trò (Khóa) -->

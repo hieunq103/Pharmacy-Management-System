@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `employees` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `full_name` VARCHAR(100) NOT NULL,
     `dob` DATE NOT NULL,
-    `gender` ENUM('Nam', 'Nữ', 'Giới tính khác') NOT NULL,
+    `gender` ENUM('Nam', 'Nữ', 'Khác') NOT NULL,
     `national_id` VARCHAR(12) NOT NULL UNIQUE,
     `phone` VARCHAR(15) NOT NULL UNIQUE,
     `address` VARCHAR(255) NULL,
@@ -91,12 +91,14 @@ CREATE TABLE IF NOT EXISTS `suppliers` (
 
 CREATE TABLE IF NOT EXISTS `inventory_transactions` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-    `type` ENUM('IMPORT', 'EXPORT_SALE', 'EXPORT_DISPOSAL', 'EXPORT_TRANSFER', 'RETURN_RESTOCK', 'RETURN_DESTROY') NOT NULL,
+    `type` ENUM('IMPORT', 'EXPORT_SALE', 'EXPORT_DISPOSAL', 'RETURN_RESTOCK', 'RETURN_DESTROY') NOT NULL,
     `supplier_id` INT NULL,
+    `sales_order_id` BIGINT NULL,
     `employee_id` INT NOT NULL,
     `transaction_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `note` VARCHAR(255) NULL,
     CONSTRAINT `fk_transactions_suppliers` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT `fk_transactions_sales_orders` FOREIGN KEY (`sales_order_id`) REFERENCES `sales_orders` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT `fk_transactions_employees` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -119,7 +121,21 @@ CREATE TABLE IF NOT EXISTS `inventory_lots` (
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------------------------------
--- 8. HÓA ĐƠN BÁN LẺ (SALES ORDERS & ITEMS)
+-- 8. LÔ THUỐC ĐEM ĐI HUỶ
+-- -----------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `inventory_disposal_items` (
+    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+    `transaction_id` BIGINT NOT NULL,
+    `inventory_lot_id` BIGINT NOT NULL,
+    `quantity` INT NOT NULL,
+    `reason` VARCHAR(255) NULL,
+    CONSTRAINT `fk_disposal_items_transactions` FOREIGN KEY (`transaction_id`) REFERENCES `inventory_transactions` (`id`),
+    CONSTRAINT `fk_disposal_items_lots` FOREIGN KEY (`inventory_lot_id`) REFERENCES `inventory_lots` (`id`)
+    ) ENGINE=InnoDB;
+
+-- -----------------------------------------------------------------------------
+-- 9. HÓA ĐƠN BÁN LẺ (SALES ORDERS & ITEMS)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `sales_orders` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -148,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `sales_order_items` (
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------------------------------
--- 9. PHIẾU TRẢ HÀNG & CHI TIẾT TRẢ (SALES RETURNS & ITEMS)
+-- 10. PHIẾU TRẢ HÀNG & CHI TIẾT TRẢ (SALES RETURNS & ITEMS)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `sales_returns` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,

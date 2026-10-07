@@ -1,0 +1,414 @@
+/* ==========================================================================
+   TYPOGRAPHY & GLOBAL STYLES
+   ========================================================================== */
+
+.root {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 14px;
+}
+
+.stat-label-primary,
+.stat-label-secondary {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 18px;
+}
+
+/* ==========================================================================
+   CONTAINER & DUAL-TABLE LAYOUT
+   ========================================================================== */
+
+/* Khung bao viền ngoài cùng bo tròn góc chứa cả 2 bảng */
+.table-float-container {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
+.custom-employee-table {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+.custom-employee-table .virtual-flow,
+.custom-employee-table .placeholder {
+    -fx-background-color: transparent;
+}
+
+/* Bảng dữ liệu chính */
+.table-scrollable-data {
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+}
+
+/* Cột Thao tác ghim cố định bên phải */
+.sticky-action-col {
+    -fx-border-width: 0 0 0 1px;
+    -fx-border-color: #E2E8F0;
+    -fx-background-insets: 0;
+}
+
+/* ==========================================================================
+   TABLE HEADER
+   ========================================================================== */
+
+.custom-employee-table .column-header-background {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 0 0 1.5px 0;
+    -fx-background-radius: 9px 9px 0 0;
+}
+
+.custom-employee-table .column-header {
+    -fx-background-color: transparent;
+    -fx-size: 40px;
+    -fx-padding: 0 14px;
+}
+
+.custom-employee-table .column-header .column-drag-header {
+    -fx-cursor: h-resize;
+}
+
+.custom-employee-table .column-header .label {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+    -fx-alignment: CENTER_LEFT;
+    -fx-text-overrun: clip;
+}
+
+/* Căn giữa tiêu đề cột Thao tác */
+.sticky-action-col .column-header .label,
+.custom-employee-table .column-header:last-visible .label {
+    -fx-alignment: CENTER;
+}
+
+/* ==========================================================================
+   ROWS & CELLS
+   ========================================================================== */
+
+.custom-employee-table .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+    -fx-cell-size: 58px;
+}
+
+.custom-employee-table .table-row-cell:hover {
+    -fx-background-color: #F8FAFC;
+}
+
+.custom-employee-table .table-row-cell:selected {
+    -fx-background-color: #F1F5F9;
+}
+
+/* Ẩn hoàn toàn viền và nền của các hàng trống */
+.custom-employee-table .table-row-cell:empty {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.custom-employee-table .table-cell {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 14px;
+    -fx-text-overrun: clip;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}
+
+/* ==========================================================================
+   BUTTONS & BADGES
+   ========================================================================== */
+
+/* Nút 3 chấm cột thao tác */
+.btn-action-more {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 4 10;
+    -fx-cursor: hand;
+    -fx-text-fill: #475569;
+    -fx-font-family: 'Segoe UI Bold', sans-serif;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.btn-action-more:hover {
+    -fx-background-color: #F1F5F9;
+    -fx-border-color: #94A3B8;
+}
+
+/* Nút Thêm nhân viên */
+.btn-primary-add {
+    -fx-background-color: #0066FF;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Inter 18pt", "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-width: 0;
+    -fx-padding: 9 18;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER;
+}
+
+.btn-primary-add:hover {
+    -fx-background-color: #0052CC;
+}
+
+.btn-primary-add:pressed {
+    -fx-background-color: #0040A8;
+}
+
+/* Ô nhập liệu tìm kiếm */
+.search-input {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 8 14;
+    -fx-font-size: 13px;
+    -fx-text-fill: #1E293B;
+    -fx-prompt-text-fill: #94A3B8;
+}
+
+.search-input:hover {
+    -fx-border-color: #94A3B8;
+}
+
+.search-input:focused {
+    -fx-border-color: #2563EB;
+    -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.15), 4, 0, 0, 0);
+}
+
+/* Badge trạng thái tài khoản */
+.status-badge {
+    -fx-background-radius: 16px;
+    -fx-padding: 2 8;
+    -fx-alignment: CENTER;
+    -fx-spacing: 4px;
+    -fx-pref-width: 90px;
+    -fx-min-width: 90px;
+    -fx-max-width: 90px;
+    -fx-pref-height: 30px;
+    -fx-min-height: 30px;
+    -fx-max-height: 30px;
+}
+
+.status-badge-active {
+    -fx-background-color: #DCFCE7;
+}
+
+.status-badge-active .pill-text {
+    -fx-text-fill: #16A34A;
+    -fx-font-size: 13.5px;
+}
+
+.status-badge-inactive {
+    -fx-background-color: #FEECEB;
+}
+
+.status-badge-inactive .pill-text {
+    -fx-text-fill: #D9483B;
+    -fx-font-size: 13.5px;
+}
+
+.status-badge-none {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 13px;
+    -fx-font-style: italic;
+}
+
+/* ==========================================================================
+   PAGINATION
+   ========================================================================== */
+
+.pagination-combobox {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-font-family: 'Segoe UI Bold', 'Arial Bold', sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+    -fx-padding: 0 4;
+    -fx-cursor: hand;
+}
+
+.pagination-combobox .list-cell {
+    -fx-text-fill: #334155;
+}
+
+.page-btn {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-min-width: 38px;
+    -fx-pref-width: 38px;
+    -fx-max-width: 38px;
+    -fx-min-height: 38px;
+    -fx-pref-height: 38px;
+    -fx-max-height: 38px;
+    -fx-border-width: 1.5px;
+    -fx-font-family: 'Segoe UI', 'Arial', sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #475569;
+    -fx-alignment: CENTER;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.page-btn:hover {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #CBD5E1;
+}
+
+.page-btn-active {
+    -fx-background-color: #E0F2FE;
+    -fx-border-color: #94A3B8;
+    -fx-border-width: 1.5px;
+    -fx-text-fill: #0F172A;
+}
+
+.page-dots {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748B;
+    -fx-min-width: 28px;
+    -fx-alignment: CENTER;
+}
+
+.pagination-record-badge {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 0 16;
+    -fx-font-family: 'Segoe UI Bold', 'Arial Bold', sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #475569;
+}
+
+/* ==========================================================================
+   SCROLLBAR (ẨN HOÀN TOÀN CẢ NGANG LẪN DỌC)
+   ========================================================================== */
+
+.custom-employee-table .scroll-bar {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+    -fx-padding: 0;
+}
+
+.custom-employee-table .scroll-bar .thumb,
+.custom-employee-table .scroll-bar .track,
+.custom-employee-table .scroll-bar .increment-button,
+.custom-employee-table .scroll-bar .decrement-button {
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-padding: 0;
+}
+
+.custom-employee-table .corner {
+    -fx-background-color: transparent;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+}
+
+/* ==========================================================================
+   HEADER FILTER POPUP & ICONS
+   ========================================================================== */
+
+.custom-employee-table .column-header .btn-header-filter,
+.btn-header-filter {
+    -fx-cursor: hand;
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 23px;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-alignment: CENTER;
+}
+
+.custom-employee-table .column-header .btn-header-filter:hover,
+.btn-header-filter:hover {
+    -fx-text-fill: #0066FF;
+}
+
+.custom-employee-table .column-header .btn-header-filter.filter-active,
+.btn-header-filter.filter-active {
+    -fx-text-fill: #0066FF;
+}
+
+.filter-context-menu {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 8px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-padding: 4px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
+}
+
+.filter-context-menu .custom-filter-menu-item {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+.filter-context-menu .custom-filter-menu-item:focused,
+.filter-context-menu .custom-filter-menu-item:hover {
+    -fx-background-color: transparent;
+}
+
+.filter-item-label {
+    -fx-font-family: "Inter 18pt", "Inter", sans-serif;
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #334155;
+    -fx-padding: 7 14;
+    -fx-background-radius: 6px;
+    -fx-background-color: transparent;
+    -fx-min-width: 100px;
+    -fx-pref-width: 100px;
+    -fx-max-width: 100px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.filter-context-menu .custom-filter-menu-item:hover .filter-item-label {
+    -fx-background-color: #F8FAFC;
+}
+
+.filter-item-label.filter-item-active {
+    -fx-background-color: #EFF6FF;
+    -fx-text-fill: #0066FF;
+    -fx-font-weight: bold;
+}
+
+/* ==========================================================================
+   DRAWER OVERLAY
+   ========================================================================== */
+
+.drawer-overlay {
+    -fx-background-color: rgba(15, 23, 42, 0.45);
+    -fx-cursor: hand;
+}
+
+/* 1. Đổi màu nền của toàn bộ vùng trống trong bảng Thao tác */
+.sticky-action-col,
+.sticky-action-col .virtual-flow,
+.sticky-action-col .placeholder {
+    -fx-background-color: #F1F5F9;
+}

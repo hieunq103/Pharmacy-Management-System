@@ -54,11 +54,6 @@ public final class UserSession {
         return loginTime;
     }
 
-    // ==================== CÁC HÀM TIỆN ÍCH HIỂN THỊ GIAO DIỆN ====================
-
-    /**
-     * Lấy họ tên nhân viên hiển thị lên thanh tiêu đề / Topbar.
-     */
     public String getEmployeeName() {
         if (account != null && account.getEmployee() != null) {
             return account.getEmployee().getFullName();
@@ -66,16 +61,10 @@ public final class UserSession {
         return "Nhân viên";
     }
 
-    /**
-     * Lấy ID tài khoản (Integer)
-     */
     public Integer getAccountId() {
         return account != null ? account.getId() : null;
     }
 
-    /**
-     * Lấy ID nhân viên phục vụ ghi nhận hóa đơn / chứng từ kho
-     */
     public Integer getEmployeeId() {
         if (account != null && account.getEmployee() != null) {
             return account.getEmployee().getId();
@@ -83,21 +72,12 @@ public final class UserSession {
         return null;
     }
 
-    /**
-     * Lấy thông tin Employee đầy đủ
-     */
     public Employee getEmployee() {
         return account != null ? account.getEmployee() : null;
     }
 
-    // ==================== HÀM TIỆN ÍCH PHÂN QUYỀN & TRẠNG THÁI ====================
-
     public boolean isManager() {
         return account != null && account.isManager();
-    }
-
-    public boolean isStaff() {
-        return account != null && account.isStaff();
     }
 
     public boolean mustChangePassword() {

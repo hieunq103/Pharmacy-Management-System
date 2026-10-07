@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pharmacy.employee.AddEmployeeController"
+      prefWidth="460.0"
+      maxWidth="460.0"
+      style="-fx-background-color: #FFFFFF; -fx-background: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 0 0 0 1px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 25, 0, -6, 0);"
+      stylesheets="@../../css/add_employee.css"
+      styleClass="drawer-panel">
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 20 24; -fx-border-color: #E2E8F0; -fx-border-width: 0 0 1 0; -fx-background-color: #FFFFFF;">
+        <VBox spacing="2">
+            <Label text="Thêm nhân viên mới" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 18px; -fx-text-fill: #1E293B;"/>
+            <Label text="Điền thông tin chi tiết để tạo hồ sơ nhân viên" style="-fx-font-size: 13px; -fx-text-fill: #64748B;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="✕" onAction="#handleCancel" styleClass="btn-close-drawer"/>
+    </HBox>
+
+    <!-- Form Body -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: #FFFFFF; -fx-background: #FFFFFF; -fx-border-width: 0;">
+        <VBox spacing="16" style="-fx-padding: 24; -fx-background-color: #FFFFFF;">
+
+            <!-- Họ và tên -->
+            <VBox spacing="6">
+                <Label text="Họ và tên *" styleClass="form-label"/>
+                <TextField fx:id="txtFullName" promptText="Ví dụ: Nguyễn Văn A" styleClass="form-input"/>
+                <Label fx:id="lblErrorName" text="" styleClass="form-error-msg" visible="false" managed="false"/>
+            </VBox>
+
+            <!-- Ngày sinh -->
+            <VBox spacing="6">
+                <Label text="Ngày sinh *" styleClass="form-label"/>
+                <DatePicker fx:id="dpBirthDate" promptText="dd/MM/yyyy" maxWidth="Infinity" styleClass="form-input"/>
+                <Label fx:id="lblErrorBirthDate" text="" styleClass="form-error-msg" visible="false" managed="false"/>
+            </VBox>
+
+            <!-- Giới tính -->
+            <VBox spacing="6">
+                <Label text="Giới tính *" styleClass="form-label"/>
+                <ComboBox fx:id="cbGender" maxWidth="Infinity" styleClass="form-combobox"/>
+            </VBox>
+
+            <!-- Vai trò -->
+            <VBox spacing="6">
+                <Label text="Vai trò *" styleClass="form-label"/>
+                <ComboBox fx:id="cbRole" maxWidth="Infinity" styleClass="form-combobox"/>
+            </VBox>
+
+            <!-- Căn cước công dân -->
+            <VBox spacing="6">
+                <Label text="Căn cước công dân (12 số) *" styleClass="form-label"/>
+                <TextField fx:id="txtCitizenId" promptText="Ví dụ: 001202001234" styleClass="form-input"/>
+                <Label fx:id="lblErrorCitizenId" text="" styleClass="form-error-msg" visible="false" managed="false"/>
+            </VBox>
+
+            <!-- Số điện thoại -->
+            <VBox spacing="6">
+                <Label text="Số điện thoại *" styleClass="form-label"/>
+                <TextField fx:id="txtPhone" promptText="Ví dụ: 0912345678" styleClass="form-input"/>
+                <Label fx:id="lblErrorPhone" text="" styleClass="form-error-msg" visible="false" managed="false"/>
+            </VBox>
+
+            <!-- Địa chỉ -->
+            <VBox spacing="6">
+                <Label text="Địa chỉ *" styleClass="form-label"/>
+                <TextField fx:id="txtAddress" promptText="Số nhà, đường, phường/xã, quận/huyện..." styleClass="form-input"/>
+                <Label fx:id="lblErrorAddress" text="" styleClass="form-error-msg" visible="false" managed="false"/>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+    <!-- Footer -->
+    <HBox alignment="CENTER_RIGHT" spacing="12" style="-fx-padding: 16 24; -fx-border-color: #E2E8F0; -fx-border-width: 1 0 0 0; -fx-background-color: #F8FAFC;">
+        <Button text="Hủy" onAction="#handleCancel" styleClass="btn-secondary"/>
+        <Button fx:id="btnSave" text="Lưu thông tin" onAction="#handleSave" styleClass="btn-primary-add"/>
+    </HBox>
+
+</VBox>
