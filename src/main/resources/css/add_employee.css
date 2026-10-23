@@ -3,7 +3,7 @@
    ========================================================================== */
 .drawer-panel {
     -fx-background-color: #FFFFFF !important;
-    -fx-font-family: "Inter 18pt", "Inter", sans-serif;
+    -fx-font-family: "Inter 18pt";
     -fx-border-color: #E2E8F0;
     -fx-border-width: 0 0 0 1px;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 25, 0, -6, 0);
@@ -19,8 +19,8 @@
 .btn-close-drawer {
     -fx-background-color: transparent;
     -fx-text-fill: #64748B;
+    -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 15px;
-    -fx-font-weight: bold;
     -fx-cursor: hand;
     -fx-padding: 4 8;
 }
@@ -35,7 +35,7 @@
    FORM LABELS & ERROR MESSAGES
    ========================================================================== */
 .form-label {
-    -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
+    -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13.5px;
     -fx-text-fill: #334155;
 }
@@ -63,10 +63,44 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.2), 4, 0, 0, 0);
 }
 
-/* Trạng thái lỗi viền đỏ kích hoạt bởi AddEmployeeController */
+/* Trạng thái lỗi viền đỏ kích hoạt bởi Controller */
 .form-input-error {
     -fx-border-color: #EF4444 !important;
     -fx-effect: dropshadow(three-pass-box, rgba(239, 68, 68, 0.2), 4, 0, 0, 0) !important;
+}
+
+.medicine-picker-box, .string-picker-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.medicine-picker-box:hover, .string-picker-box:hover {
+    -fx-border-color: #94A3B8;
+}
+
+.medicine-picker-box:focus-within, .string-picker-box:focus-within {
+    -fx-border-color: #0066FF;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.2), 4, 0, 0, 0);
+}
+
+.medicine-picker-box.form-input-error, .string-picker-box.form-input-error {
+    -fx-border-color: #EF4444 !important;
+    -fx-effect: dropshadow(three-pass-box, rgba(239, 68, 68, 0.2), 4, 0, 0, 0) !important;
+}
+
+.medicine-picker-list, .string-picker-list {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent;
+}
+
+.medicine-picker-list .list-cell:filled:hover, .string-picker-list .list-cell:filled:hover {
+    -fx-background-color: #F1F5F9;
+}
+
+.medicine-picker-list .list-cell:filled:selected, .string-picker-list .list-cell:filled:selected {
+    -fx-background-color: #EFF6FF;
 }
 
 /* ==========================================================================
@@ -144,7 +178,7 @@
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-text-fill: #475569;
-    -fx-font-weight: bold;
+    -fx-font-family: "Inter 18pt SemiBold";
     -fx-padding: 9 18;
     -fx-cursor: hand;
 }
@@ -159,7 +193,7 @@
 .btn-primary-add {
     -fx-background-color: #0066FF;
     -fx-text-fill: #FFFFFF;
-    -fx-font-weight: bold;
+    -fx-font-family: "Inter 18pt SemiBold";
     -fx-border-width: 0;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
@@ -177,4 +211,76 @@
 .btn-primary-add:pressed {
     -fx-background-color: #003D99;
     -fx-effect: none;
+}
+
+/* Nút Đỏ Xuất kho */
+.btn-primary-danger {
+    -fx-background-color: #DC2626;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-border-width: 0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 9 20;
+    -fx-font-size: 13.5px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(220, 38, 38, 0.25), 6, 0, 0, 2);
+}
+
+.btn-primary-danger:hover {
+    -fx-background-color: #B91C1C;
+    -fx-effect: dropshadow(three-pass-box, rgba(185, 28, 28, 0.35), 8, 0, 0, 3);
+}
+
+.btn-primary-danger:pressed {
+    -fx-background-color: #991B1B;
+    -fx-effect: none;
+}
+
+/* Hỗ trợ ComboBox Editable */
+.form-combobox > .text-field {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 14px;
+    -fx-text-fill: #0F172A;
+}
+
+.form-combobox > .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 4;
+}
+
+.form-combobox > .arrow-button > .arrow {
+    -fx-background-color: #64748B;
+}
+
+/* Thẻ phụ trợ trong Drawer */
+.drawer-radio-button {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-text-fill: #1E293B;
+    -fx-cursor: hand;
+}
+
+.drawer-radio-button:selected {
+    -fx-text-fill: #0066FF;
+}
+
+.drawer-card-box {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10 14;
+}
+
+.drawer-calc-box {
+    -fx-background-color: #EFF6FF;
+    -fx-border-color: #BFDBFE;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10 14;
 }

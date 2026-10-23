@@ -80,7 +80,7 @@ public final class UserSession {
         return account != null && account.isManager();
     }
 
-    public boolean mustChangePassword() {
-        return account != null && account.isMustChangePassword();
+    public boolean isStaff() {
+        return account != null && account.isStaff();
     }
 }

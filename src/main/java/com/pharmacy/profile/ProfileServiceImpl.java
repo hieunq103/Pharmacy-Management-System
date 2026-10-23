@@ -2,6 +2,7 @@ package com.pharmacy.profile;
 
 import com.pharmacy.account.Account;
 import com.pharmacy.account.AccountRepository;
+import com.pharmacy.common.FormValidator;
 import com.pharmacy.common.UserSession;
 import com.pharmacy.employee.EmployeeRepository;
 import org.mindrot.jbcrypt.BCrypt;
@@ -11,7 +12,6 @@ import org.slf4j.LoggerFactory;
 public class ProfileServiceImpl implements ProfileService {
 
     private static final Logger log = LoggerFactory.getLogger(ProfileServiceImpl.class);
-    private static final String PHONE_REGEX = "^0[35789]\\d{8}$";
 
     private final EmployeeRepository employeeRepository;
     private final AccountRepository accountRepository;
@@ -36,7 +36,7 @@ public class ProfileServiceImpl implements ProfileService {
         if (request.phone() == null || request.phone().isBlank()) {
             throw new IllegalArgumentException("Số điện thoại không được để trống.");
         }
-        if (!request.phone().matches("^0[35789]\\d{8}$")) {
+        if (!FormValidator.isValidPhone(request.phone())) {
             throw new IllegalArgumentException("Số điện thoại không hợp lệ (gồm 10 chữ số, bắt đầu bằng 03, 05, 07, 08 hoặc 09).");
         }
 
@@ -51,7 +51,7 @@ public class ProfileServiceImpl implements ProfileService {
             if (request.fullName() == null || request.fullName().isBlank()) {
                 throw new IllegalArgumentException("Họ và tên không được để trống.");
             }
-            if (request.nationalId() == null || !request.nationalId().matches("^\\d{12}$")) {
+            if (request.nationalId() == null || !FormValidator.isValidNationalId(request.nationalId())) {
                 throw new IllegalArgumentException("Căn cước công dân phải đúng 12 chữ số.");
             }
             if (request.dob() == null) {

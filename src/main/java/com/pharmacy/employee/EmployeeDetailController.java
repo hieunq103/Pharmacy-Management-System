@@ -4,23 +4,22 @@ import com.pharmacy.account.Account;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.stage.Modality;
+import com.pharmacy.common.DialogUtils;
+import com.pharmacy.common.FormatUtils;
+import com.pharmacy.common.FormValidator;
+import javafx.stage.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class EmployeeDetailController {
 
     private static final Logger log = LoggerFactory.getLogger(EmployeeDetailController.class);
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private static final String PHONE_REGEX = "^0[35789]\\d{8}$";
 
     @FXML private Button btnBack;
     @FXML private Button btnViewHistory;
@@ -60,7 +59,7 @@ public class EmployeeDetailController {
     @FXML
     public void initialize() {
         if (cbGender != null) {
-            cbGender.getItems().setAll("Nam", "Nữ", "Khác");
+            cbGender.getItems().setAll(Employee.GENDER_MALE, Employee.GENDER_FEMALE, Employee.GENDER_OTHER);
         }
         if (cbEmpStatus != null) {
             cbEmpStatus.getItems().setAll("Đang làm việc", "Đã nghỉ việc");
@@ -95,7 +94,7 @@ public class EmployeeDetailController {
 
         setTextSafe(txtEmpId, employee.getId() != null ? String.valueOf(employee.getId()) : "");
         setTextSafe(txtFullName, employee.getFullName());
-        setTextSafe(txtDob, employee.getDob() != null ? employee.getDob().format(DATE_FORMATTER) : "");
+        setTextSafe(txtDob, employee.getDob() != null ? FormatUtils.formatDate(employee.getDob()) : "");
         setTextSafe(txtGender, employee.getGender());
         if (cbGender != null) {
             cbGender.setValue(employee.getGender() != null ? employee.getGender() : "Nam");
@@ -103,7 +102,7 @@ public class EmployeeDetailController {
 
         setTextSafe(txtNationalId, employee.getNationalId());
         setTextSafe(txtPhone, employee.getPhone());
-        setTextSafe(txtHiredDate, employee.getHiredDate() != null ? employee.getHiredDate().format(DATE_FORMATTER) : "Chưa cập nhật");
+        setTextSafe(txtHiredDate, employee.getHiredDate() != null ? FormatUtils.formatDate(employee.getHiredDate()) : "Chưa cập nhật");
         setTextSafe(txtAddress, employee.getAddress());
 
         String empStatusStr = isInactive ? "Đã nghỉ việc" : "Đang làm việc";
@@ -218,7 +217,7 @@ public class EmployeeDetailController {
     }
 
     @FXML
-    private void handleUpdateProfile(ActionEvent event) {
+    private void handleUpdateProfile() {
         setEditMode(true);
         if (txtFullName != null) {
             txtFullName.requestFocus();
@@ -226,14 +225,14 @@ public class EmployeeDetailController {
     }
 
     @FXML
-    private void handleCancelEditing(ActionEvent event) {
+    private void handleCancelEditing() {
         populateData();
         clearAllErrors();
         setEditMode(false);
     }
 
     @FXML
-    private void handleSaveProfile(ActionEvent event) {
+    private void handleSaveProfile() {
         if (employee == null) return;
 
         clearAllErrors();
@@ -277,7 +276,7 @@ public class EmployeeDetailController {
             hasError = true;
         } else {
             try {
-                parsedDob = LocalDate.parse(dobStr, DATE_FORMATTER);
+                parsedDob = LocalDate.parse(dobStr, FormatUtils.DATE_FORMATTER);
                 if (parsedDob.isAfter(LocalDate.now().minusYears(18))) {
                     showFieldError(txtDob, lblErrDob, "Nhân viên phải từ đủ 18 tuổi trở lên.");
                     hasError = true;
@@ -288,18 +287,27 @@ public class EmployeeDetailController {
             }
         }
 
-        if (!nationalId.matches("^\\d{12}$")) {
+        if (nationalId.isEmpty()) {
+            showFieldError(txtNationalId, lblErrNationalId, "Căn cước công dân không được để trống.");
+            hasError = true;
+        } else if (!FormValidator.isValidNationalId(nationalId)) {
             showFieldError(txtNationalId, lblErrNationalId, "Căn cước công dân phải đúng 12 chữ số.");
             hasError = true;
         }
 
-        if (phone.isEmpty() || !phone.matches(PHONE_REGEX)) {
+        if (phone.isEmpty()) {
+            showFieldError(txtPhone, lblErrPhone, "Số điện thoại không được để trống.");
+            hasError = true;
+        } else if (!FormValidator.isValidPhone(phone)) {
             showFieldError(txtPhone, lblErrPhone, "Số điện thoại không hợp lệ (10 số, đầu 03, 05, 07, 08, 09).");
             hasError = true;
         }
 
-        if (address.isEmpty() || address.length() > 255) {
-            showFieldError(txtAddress, lblErrAddress, "Địa chỉ không được để trống và không quá 255 ký tự.");
+        if (address.isEmpty()) {
+            showFieldError(txtAddress, lblErrAddress, "Địa chỉ không được để trống.");
+            hasError = true;
+        } else if (address.length() > 255) {
+            showFieldError(txtAddress, lblErrAddress, "Địa chỉ không được quá 255 ký tự.");
             hasError = true;
         }
 
@@ -372,21 +380,21 @@ public class EmployeeDetailController {
             Throwable ex = saveTask.getException();
             log.error("Lỗi cập nhật hồ sơ nhân viên: ", ex);
 
-            String msg = ex.getMessage();
-            if (msg != null && (msg.contains("Duplicate entry") || msg.contains("ConstraintViolationException"))) {
-                if (msg.toLowerCase().contains("phone")) {
-                    showFieldError(txtPhone, lblErrPhone, "Số điện thoại này đã thuộc về nhân viên khác.");
-                } else if (msg.toLowerCase().contains("national_id")) {
-                    showFieldError(txtNationalId, lblErrNationalId, "Số CCCD này đã thuộc về nhân viên khác.");
-                } else {
-                    showFieldError(txtPhone, lblErrPhone, "Số điện thoại hoặc CCCD đã bị trùng lặp trong hệ thống.");
-                }
+            String msg = ex != null ? ex.getMessage() : "";
+            if (msg != null && (msg.contains("Số điện thoại") || msg.toLowerCase().contains("phone"))) {
+                showFieldError(txtPhone, lblErrPhone, "Số điện thoại này đã thuộc về nhân viên khác.");
+            } else if (msg != null && (msg.contains("Căn cước") || msg.contains("CCCD") || msg.toLowerCase().contains("national"))) {
+                showFieldError(txtNationalId, lblErrNationalId, "Số CCCD này đã thuộc về nhân viên khác.");
+            } else if (msg != null && (msg.contains("Duplicate entry") || msg.contains("ConstraintViolationException"))) {
+                showFieldError(txtPhone, lblErrPhone, "Số điện thoại hoặc CCCD đã bị trùng lặp trong hệ thống.");
             } else {
-                showAlert(Alert.AlertType.ERROR, msg != null ? msg : "Có lỗi xảy ra khi lưu dữ liệu.");
+                showAlert(Alert.AlertType.ERROR, msg != null && !msg.isBlank() ? msg : "Có lỗi xảy ra khi lưu dữ liệu.");
             }
         });
 
-        new Thread(saveTask).start();
+        Thread th = new Thread(saveTask);
+        th.setDaemon(true);
+        th.start();
     }
 
     private void setupAutoClearError(TextField field, Label errLabel) {
@@ -429,38 +437,48 @@ public class EmployeeDetailController {
             errLabel.setManaged(false);
         }
         if (field != null) {
-            field.getStyleClass().remove("form-input-error");
+            field.getStyleClass().removeAll("form-input-error");
         }
     }
 
     private void showAlert(Alert.AlertType type, String message) {
-        Alert alert = new Alert(type, message, ButtonType.OK);
-        alert.setTitle("Thông báo");
-        alert.setHeaderText(null);
-        alert.showAndWait();
+        Window owner = getWindow();
+        if (type == Alert.AlertType.ERROR) {
+            DialogUtils.showError(owner, "Lỗi", message);
+        } else if (type == Alert.AlertType.WARNING) {
+            DialogUtils.showWarning(owner, "Cảnh báo", message);
+        } else {
+            DialogUtils.showSuccess(owner, "Thông báo", message);
+        }
+    }
+
+    private Window getWindow() {
+        if (btnSave != null && btnSave.getScene() != null) {
+            return btnSave.getScene().getWindow();
+        }
+        if (btnBack != null && btnBack.getScene() != null) {
+            return btnBack.getScene().getWindow();
+        }
+        return DialogUtils.getActiveWindow();
     }
 
     @FXML
-    private void handleBack(ActionEvent event) {
+    private void handleBack() {
         if (onBackCallback != null) {
             onBackCallback.run();
         }
     }
 
     @FXML
-    private void handleViewLoginHistory(ActionEvent event) {
+    private void handleViewLoginHistory() {
         if (employee == null || employee.getAccount() == null) return;
 
         Integer accountId = employee.getAccount().getId();
         String empName = employee.getFullName();
 
         Dialog<Void> dialog = new Dialog<>();
-        dialog.setTitle("Lịch sử đăng nhập");
-        dialog.initModality(Modality.APPLICATION_MODAL);
-
-        if (btnViewHistory != null && btnViewHistory.getScene() != null) {
-            dialog.initOwner(btnViewHistory.getScene().getWindow());
-        }
+        dialog.setTitle("Lịch sử đăng nhập - " + (empName != null ? empName : ""));
+        DialogUtils.configure(dialog, getWindow());
 
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
 
@@ -472,6 +490,12 @@ public class EmployeeDetailController {
         TableColumn<Object[], String> colTime = new TableColumn<>("Thời gian");
         colTime.setCellValueFactory(cell -> {
             Object val = cell.getValue()[0];
+            if (val instanceof java.sql.Timestamp ts) {
+                return new SimpleStringProperty(ts.toLocalDateTime().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")));
+            }
+            if (val instanceof java.time.LocalDateTime ldt) {
+                return new SimpleStringProperty(ldt.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")));
+            }
             return new SimpleStringProperty(val != null ? val.toString().replace(".0", "") : "");
         });
 
@@ -482,7 +506,8 @@ public class EmployeeDetailController {
             return new SimpleStringProperty("SUCCESS".equalsIgnoreCase(res) ? "Thành công" : "Thất bại");
         });
 
-        table.getColumns().addAll(colTime, colResult);
+        table.getColumns().add(colTime);
+        table.getColumns().add(colResult);
         table.setPlaceholder(new Label("Chưa có lịch sử đăng nhập nào."));
 
         List<Object[]> historyList = employeeService.getLoginHistory(accountId);

@@ -1,41 +1,45 @@
 package com.pharmacy.employee;
 
 import com.pharmacy.account.Account;
-import javafx.animation.FadeTransition;
-import javafx.animation.ParallelTransition;
-import javafx.animation.TranslateTransition;
+import com.pharmacy.common.PageResult;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Task;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.stage.Window;
-import javafx.util.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.pharmacy.common.UserSession;
+import com.pharmacy.common.AppConstants;
+import com.pharmacy.common.DialogUtils;
+import com.pharmacy.common.DrawerHelper;
+import com.pharmacy.common.TableFilterHelper;
+import com.pharmacy.common.TableSyncHelper;
 
 public class EmployeeController implements Initializable {
+
+    private static final Logger log = LoggerFactory.getLogger(EmployeeController.class);
 
     @FXML private Label lblTotalEmployees;
     @FXML private Label lblActiveEmployees;
@@ -52,384 +56,167 @@ public class EmployeeController implements Initializable {
     @FXML private TableColumn<Employee, String> colCccd;
     @FXML private TableView<Employee> tableActionSticky;
 
-    private Region overlayRegion;
+    private final DrawerHelper drawerHelper = new DrawerHelper();
     private Parent drawerRoot;
     private AddEmployeeController addController;
-    private StackPane appRootPane;
 
-    @FXML private ComboBox<String> cbPageSize;
     @FXML private HBox paginationBox;
     @FXML private Label lblRecordRange;
 
-    private final ObservableList<Employee> masterData = FXCollections.observableArrayList();
     private final ObservableList<Employee> pageData = FXCollections.observableArrayList();
 
-    private int pageSize = 7;
+    private int pageSize = AppConstants.DEFAULT_PAGE_SIZE;
     private int currentPage = 1;
     private int totalPages = 1;
+    private long totalRecords = 0;
+    private Task<PageResult<Employee>> currentLoadTask;
+
+    private final ExecutorService loadExecutor = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "emp-load-worker");
+        t.setDaemon(true);
+        return t;
+    });
 
     private final EmployeeService employeeService = new EmployeeServiceImpl();
-    private FilteredList<Employee> filteredData;
-    private SortedList<Employee> sortedData;
     private final Map<String, String> activeFilters = new HashMap<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTableColumns();
 
-        if (tableActionSticky != null) {
-            tableActionSticky.addEventFilter(ScrollEvent.SCROLL, Event::consume);
-            tableActionSticky.setFocusTraversable(false);
-            tableActionSticky.setSelectionModel(null);
+        // Tự động điều chỉnh chiều cao 7 dòng lấp đầy 100% bảng khi phóng to màn hình (không còn khoảng trắng)
+        TableSyncHelper.enableAutoRowHeight(tableEmployee, tableActionSticky, AppConstants.DEFAULT_PAGE_SIZE);
 
-            tableActionSticky.itemsProperty().bind(tableEmployee.itemsProperty());
-        }
-
-// 2. Khóa giá trị của thanh cuộn dọc không cho trượt lệch (giữ nguyên)
-        tableEmployee.skinProperty().addListener((obs, oldSkin, newSkin) -> {
-            if (newSkin != null) {
-                Platform.runLater(() -> {
-                    ScrollBar vBarLeft = (ScrollBar) tableEmployee.lookup(".scroll-bar:vertical");
-                    ScrollBar vBarRight = tableActionSticky != null ? (ScrollBar) tableActionSticky.lookup(".scroll-bar:vertical") : null;
-
-                    if (vBarLeft != null) {
-                        vBarLeft.valueProperty().addListener((o, oldVal, newVal) -> {
-                            if (newVal.doubleValue() != 0.0) vBarLeft.setValue(0.0);
-                        });
-                    }
-                    if (vBarRight != null) {
-                        vBarRight.valueProperty().addListener((o, oldVal, newVal) -> {
-                            if (newVal.doubleValue() != 0.0) vBarRight.setValue(0.0);
-                        });
-                    }
-                });
-            }
-        });
+        // Thiết lập đồng bộ cuộn 2 chiều tuyệt đối: cuộn dọc mượt mà, không bao giờ xê dịch lệch hàng
+        TableSyncHelper.setupDualTableSync(tableEmployee, tableActionSticky);
 
         Platform.runLater(() -> {
             Node nestedHeader = tableEmployee.lookup(".nested-column-header");
-
             if (nestedHeader != null) {
-                tableEmployee.addEventFilter(ScrollEvent.SCROLL, event -> {
-                    // Kích hoạt trượt ngang khi bảng RỖNG và có lực vuốt ngang
-                    if (tableEmployee.getItems().isEmpty() && Math.abs(event.getDeltaX()) > 0) {
-
-                        double totalColsWidth = 0;
-                        for (TableColumn<?, ?> col : tableEmployee.getVisibleLeafColumns()) {
-                            totalColsWidth += col.getWidth();
-                        }
-
-                        double viewWidth = tableEmployee.getWidth();
-
-                        if (totalColsWidth > viewWidth) {
-                            double minTranslateX = viewWidth - totalColsWidth; // Giới hạn mép trái
-                            double maxTranslateX = 0.0;                       // Giới hạn mép phải (gốc)
-
-                            double currentTranslateX = nestedHeader.getTranslateX();
-                            double newTranslateX = currentTranslateX + event.getDeltaX(); // deltaX trên Mac chạy rất chuẩn
-
-                            // Ép tọa độ không bao giờ vượt quá 2 mép
-                            newTranslateX = Math.max(minTranslateX, Math.min(maxTranslateX, newTranslateX));
-
-                            nestedHeader.setTranslateX(newTranslateX);
-                        }
-                        event.consume(); // Bắt buộc tiêu thụ sự kiện để trượt mượt tuyệt đối
-                    }
-                });
-
                 tableEmployee.getItems().addListener((javafx.collections.ListChangeListener<Employee>) c -> {
                     nestedHeader.setTranslateX(0.0);
                 });
             }
         });
 
-        // 1. Pipeline: masterData -> filteredData -> sortedData
-        filteredData = new FilteredList<>(masterData, p -> true);
-        sortedData = new SortedList<>(filteredData);
-        sortedData.comparatorProperty().bind(tableEmployee.comparatorProperty());
-
-        colName.setSortable(true);
-
-        tableEmployee.comparatorProperty().addListener((obs, oldVal, newVal) -> {
-            currentPage = 1;
-            renderPagination();
-        });
-
         if (txtSearch != null) {
-            txtSearch.textProperty().addListener((obs, oldVal, newVal) -> {
-                reapplyFilters();
+            com.pharmacy.common.DebounceUtil.debounce(txtSearch, AppConstants.SEARCH_DEBOUNCE, text -> {
+                currentPage = 1;
+                loadEmployeeData();
             });
         }
 
-        setupColumnFilter(colGender, "Giới tính", new String[]{"Tất cả", "Nam", "Nữ", "Khác"}, "gender");
-        setupColumnFilter(colRole, "Vai trò", new String[]{"Tất cả", "Nhân viên", "Quản lý"}, "role");
-        setupColumnFilter(colStatus, "Nhân sự", new String[]{"Tất cả", "Đang làm", "Đã nghỉ"}, "status");
-        setupColumnFilter(colAccountStatus, "Tài khoản", new String[]{"Tất cả", "Active", "Disabled"}, "statusAcount");
+        TableFilterHelper.setupColumnFilter(colGender, "Giới tính", new String[]{"Tất cả", "Nam", "Nữ", "Khác"}, "gender", activeFilters, () -> {
+            currentPage = 1;
+            loadEmployeeData();
+        });
+        TableFilterHelper.setupColumnFilter(colRole, "Vai trò", new String[]{"Tất cả", "Nhân viên", "Quản lý"}, "role", activeFilters, () -> {
+            currentPage = 1;
+            loadEmployeeData();
+        });
+        TableFilterHelper.setupColumnFilter(colStatus, "Nhân sự", new String[]{"Tất cả", "Đang làm", "Đã nghỉ"}, "status", activeFilters, () -> {
+            currentPage = 1;
+            loadEmployeeData();
+        });
+        TableFilterHelper.setupColumnFilter(colAccountStatus, "Tài khoản", new String[]{"Tất cả", "Active", "Disabled"}, "statusAcount", activeFilters, () -> {
+            currentPage = 1;
+            loadEmployeeData();
+        });
 
         tableEmployee.setItems(pageData);
+
+        // Nhấp đúp chuột (double-click) vào hàng để mở nhanh trang Thông tin chi tiết
+        tableEmployee.setRowFactory(tv -> {
+            TableRow<Employee> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    showEmployeeDetail(row.getItem());
+                }
+            });
+            return row;
+        });
+
+        if (tableActionSticky != null) {
+            tableActionSticky.setRowFactory(tv -> {
+                TableRow<Employee> row = new TableRow<>();
+                row.setOnMouseClicked(event -> {
+                    if (event.getClickCount() == 2 && !row.isEmpty()) {
+                        showEmployeeDetail(row.getItem());
+                    }
+                });
+                return row;
+            });
+        }
+
         updateSummaryCounts();
         loadEmployeeData();
     }
 
-    private void reapplyFilters() {
+    public void loadEmployeeData() {
         String keyword = (txtSearch != null && txtSearch.getText() != null)
-                ? txtSearch.getText().trim().toLowerCase()
+                ? txtSearch.getText().trim()
                 : "";
+        String gender = activeFilters.get("gender");
+        String role = activeFilters.get("role");
+        String status = activeFilters.get("status");
+        String accountStatus = activeFilters.get("statusAcount");
 
-        filteredData.setPredicate(emp -> {
-            if (emp == null) return false;
-
-            // 1. Điều kiện ô tìm kiếm
-            boolean matchSearch = true;
-            if (!keyword.isEmpty()) {
-                boolean matchName = emp.getFullName() != null && emp.getFullName().toLowerCase().contains(keyword);
-                boolean matchPhone = emp.getPhone() != null && emp.getPhone().contains(keyword);
-                boolean matchCccd = emp.getNationalId() != null && emp.getNationalId().contains(keyword);
-                matchSearch = matchName || matchPhone || matchCccd;
-            }
-
-            if (!matchSearch) return false;
-
-            // 2. Bộ lọc cột Giới tính
-            boolean matchGender = true;
-            if (activeFilters.containsKey("gender")) {
-                String filterVal = activeFilters.get("gender");
-                matchGender = emp.getGender() != null && emp.getGender().equalsIgnoreCase(filterVal);
-            }
-
-            // 3. Bộ lọc cột Vai trò
-            boolean matchRole = true;
-            if (activeFilters.containsKey("role")) {
-                String filterVal = activeFilters.get("role");
-                Account acc = emp.getAccount();
-                boolean isManager = (acc != null && acc.isManager());
-                String roleStr = isManager ? "Quản lý" : "Nhân viên";
-                matchRole = roleStr.equalsIgnoreCase(filterVal);
-            }
-
-            // 4. Bộ lọc cột Trạng thái nhân sự
-            boolean matchStatus = true;
-            if (activeFilters.containsKey("status")) {
-                String filterVal = activeFilters.get("status");
-                if ("Đang làm".equals(filterVal)) {
-                    matchStatus = (emp.getStatus() == Employee.Status.ACTIVE);
-                } else if ("Đã nghỉ".equals(filterVal)) {
-                    matchStatus = (emp.getStatus() == Employee.Status.INACTIVE);
-                }
-            }
-
-            // 5. Bộ lọc cột Trạng thái tài khoản
-            boolean matchAccount = true;
-            if (activeFilters.containsKey("statusAcount")) {
-                String filterVal = activeFilters.get("statusAcount");
-                Account acc = emp.getAccount();
-                if (acc == null || acc.getStatus() == null) {
-                    matchAccount = false;
-                } else {
-                    String accStatusStr = acc.getStatus().name();
-                    matchAccount = accStatusStr.equalsIgnoreCase(filterVal);
-                }
-            }
-
-            return matchGender && matchRole && matchStatus && matchAccount;
-        });
-
-        updatePaginationAfterFilter();
-    }
-
-    private void setupColumnFilter(TableColumn<Employee, ?> column, String title, String[] options, String filterKey) {
-        Label lblTitle = new Label(title);
-        lblTitle.getStyleClass().add("label");
-
-        Label iconFilter = new Label("▾");
-        iconFilter.getStyleClass().add("btn-header-filter");
-
-        ContextMenu menu = new ContextMenu();
-        menu.getStyleClass().add("filter-context-menu");
-
-        for (String opt : options) {
-            Label lblOpt = new Label(opt);
-            lblOpt.setMaxWidth(Double.MAX_VALUE);
-            lblOpt.getStyleClass().add("filter-item-label");
-
-            CustomMenuItem item = new CustomMenuItem(lblOpt, true);
-            item.getStyleClass().add("custom-filter-menu-item");
-
-            item.setOnAction(e -> {
-                if ("Tất cả".equals(opt)) {
-                    activeFilters.remove(filterKey);
-                } else {
-                    activeFilters.put(filterKey, opt);
-                }
-
-                if (activeFilters.containsKey(filterKey)) {
-                    if (!iconFilter.getStyleClass().contains("filter-active")) {
-                        iconFilter.getStyleClass().add("filter-active");
-                    }
-                } else {
-                    iconFilter.getStyleClass().remove("filter-active");
-                }
-
-                reapplyFilters();
-            });
-
-            menu.getItems().add(item);
+        if (currentLoadTask != null && currentLoadTask.isRunning()) {
+            currentLoadTask.cancel();
         }
 
-        menu.setOnShowing(e -> {
-            String currentSelected = activeFilters.getOrDefault(filterKey, "Tất cả");
-            for (MenuItem mi : menu.getItems()) {
-                if (mi instanceof CustomMenuItem cmi && cmi.getContent() instanceof Label lbl) {
-                    lbl.getStyleClass().remove("filter-item-active");
-                    if (lbl.getText().equalsIgnoreCase(currentSelected)) {
-                        lbl.getStyleClass().add("filter-item-active");
-                    }
-                }
-            }
-        });
-
-        iconFilter.setOnMouseClicked(e -> {
-            if (!menu.isShowing()) {
-                menu.show(iconFilter, Side.BOTTOM, 0, 0);
-            } else {
-                menu.hide();
-            }
-        });
-
-        HBox headerBox = new HBox(8, lblTitle, iconFilter);
-        headerBox.setAlignment(Pos.CENTER_LEFT);
-        column.setText("");
-        column.setGraphic(headerBox);
-        column.setSortable(false);
-    }
-
-    private void updatePaginationAfterFilter() {
-        currentPage = 1;
-        renderPagination();
-    }
-
-    public void loadEmployeeData() {
-        Task<List<Employee>> task = new Task<>() {
+        currentLoadTask = new Task<>() {
             @Override
-            protected List<Employee> call() {
-                return employeeService.getAllEmployees();
+            protected PageResult<Employee> call() {
+                return employeeService.getEmployeesPage(currentPage, pageSize, keyword, gender, role, status, accountStatus);
             }
         };
 
-        task.setOnSucceeded(e -> {
-            List<Employee> list = task.getValue();
-            setEmployeeData(list);
+        currentLoadTask.setOnSucceeded(e -> {
+            PageResult<Employee> result = currentLoadTask.getValue();
+            if (result != null) {
+                totalRecords = result.totalElements();
+                totalPages = result.totalPages();
+                currentPage = result.currentPage();
+                pageData.setAll(result.content());
+
+                // Cập nhật thông tin phạm vi bản ghi
+                if (lblRecordRange != null) {
+                    if (totalRecords == 0) {
+                        lblRecordRange.setText("0 - 0");
+                    } else {
+                        int fromIndex = (currentPage - 1) * pageSize + 1;
+                        int toIndex = (int) Math.min(fromIndex + pageSize - 1, totalRecords);
+                        lblRecordRange.setText(String.format("%d - %d", fromIndex, toIndex));
+                    }
+                }
+
+                renderPagination();
+            }
         });
 
-        task.setOnFailed(e -> {
-            Throwable ex = task.getException();
-            System.err.println("Lỗi nạp dữ liệu: " + ex.getMessage());
+        currentLoadTask.setOnFailed(e -> {
+            Throwable ex = currentLoadTask.getException();
+            log.error("Lỗi nạp dữ liệu nhân viên: ", ex);
         });
 
-        Thread th = new Thread(task);
-        th.setDaemon(true);
-        th.start();
-    }
-
-    public void setEmployeeData(List<Employee> list) {
-        if (list == null) return;
-        masterData.setAll(list);
-        updateSummaryCounts();
-        currentPage = 1;
-        renderPagination();
-    }
-
-    private void updateTablePage() {
-        int total = sortedData.size();
-        if (total == 0) {
-            pageData.clear();
-            if (lblRecordRange != null) lblRecordRange.setText("0 - 0");
-            return;
-        }
-
-        int fromIndex = (currentPage - 1) * pageSize;
-        int toIndex = Math.min(fromIndex + pageSize, total);
-
-        pageData.setAll(sortedData.subList(fromIndex, toIndex));
-
-        if (lblRecordRange != null) {
-            lblRecordRange.setText(String.format("%d - %d", (fromIndex + 1), toIndex));
-        }
+        loadExecutor.submit(currentLoadTask);
     }
 
     private void renderPagination() {
-        if (paginationBox == null) return;
-        paginationBox.getChildren().clear();
-
-        int totalRecords = sortedData != null ? sortedData.size() : masterData.size();
-        totalPages = (int) Math.ceil((double) totalRecords / pageSize);
-        if (totalPages == 0) totalPages = 1;
-        if (currentPage > totalPages) currentPage = totalPages;
-
-        updateTablePage();
-
-        Button btnPrev = new Button("<");
-        btnPrev.getStyleClass().add("page-btn");
-        btnPrev.setDisable(currentPage == 1);
-        btnPrev.setOnAction(e -> {
-            if (currentPage > 1) {
-                currentPage--;
-                renderPagination();
-            }
-        });
-        paginationBox.getChildren().add(btnPrev);
-
-        if (totalPages <= 7) {
-            for (int i = 1; i <= totalPages; i++) addPageButton(i);
-        } else {
-            if (currentPage <= 4) {
-                for (int i = 1; i <= 5; i++) addPageButton(i);
-                addEllipsis();
-                addPageButton(totalPages);
-            } else if (currentPage >= totalPages - 3) {
-                addPageButton(1);
-                addEllipsis();
-                for (int i = totalPages - 4; i <= totalPages; i++) addPageButton(i);
-            } else {
-                addPageButton(1);
-                addEllipsis();
-                addPageButton(currentPage - 1);
-                addPageButton(currentPage);
-                addPageButton(currentPage + 1);
-                addEllipsis();
-                addPageButton(totalPages);
-            }
-        }
-
-        Button btnNext = new Button(">");
-        btnNext.getStyleClass().add("page-btn");
-        btnNext.setDisable(currentPage == totalPages);
-        btnNext.setOnAction(e -> {
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderPagination();
-            }
-        });
-        paginationBox.getChildren().add(btnNext);
-    }
-
-    private void addPageButton(int pageIndex) {
-        Button btn = new Button(String.valueOf(pageIndex));
-        btn.getStyleClass().add("page-btn");
-        if (pageIndex == currentPage) {
-            btn.getStyleClass().add("page-btn-active");
-        }
-        btn.setOnAction(e -> {
-            currentPage = pageIndex;
-            renderPagination();
-        });
-        paginationBox.getChildren().add(btn);
-    }
-
-    private void addEllipsis() {
-        Label lbl = new Label("...");
-        lbl.getStyleClass().add("page-dots");
-        paginationBox.getChildren().add(lbl);
+        com.pharmacy.common.PaginationHelper.render(
+                paginationBox,
+                null,
+                currentPage,
+                totalPages,
+                totalRecords,
+                pageSize,
+                page -> {
+                    currentPage = page;
+                    TableSyncHelper.resetScrollToTop(tableEmployee, tableActionSticky);
+                    loadEmployeeData();
+                }
+        );
     }
 
     private void setupTableColumns() {
@@ -458,6 +245,7 @@ public class EmployeeController implements Initializable {
                 HBox badge = new HBox(8);
                 badge.setAlignment(Pos.CENTER_LEFT);
                 badge.getStyleClass().add("pill-badge");
+                badge.setMouseTransparent(true);
 
                 StackPane haloDot;
                 Label lbl = new Label(isManager ? "Quản lý" : "Nhân viên");
@@ -517,6 +305,7 @@ public class EmployeeController implements Initializable {
                 if (acc == null || acc.getStatus() == null) {
                     Label lblNoAccount = new Label("Chưa có TK");
                     lblNoAccount.getStyleClass().add("status-badge-none");
+                    lblNoAccount.setMouseTransparent(true);
                     setText(null);
                     setGraphic(lblNoAccount);
                     return;
@@ -527,6 +316,7 @@ public class EmployeeController implements Initializable {
                 HBox badge = new HBox(6);
                 badge.setAlignment(Pos.CENTER_LEFT);
                 badge.getStyleClass().add("status-badge");
+                badge.setMouseTransparent(true);
 
                 Circle dot = new Circle(4);
                 Label lbl = new Label(isActive ? "Active" : "Disabled");
@@ -582,10 +372,29 @@ public class EmployeeController implements Initializable {
     }
 
     public void updateSummaryCounts() {
-        long total = masterData.size();
-        long active = masterData.stream().filter(e -> e.getStatus() == Employee.Status.ACTIVE).count();
-        if (lblTotalEmployees != null) lblTotalEmployees.setText(String.valueOf(total));
-        if (lblActiveEmployees != null) lblActiveEmployees.setText(String.valueOf(active));
+        Task<EmployeeRepository.EmployeeSummary> task = new Task<>() {
+            @Override
+            protected EmployeeRepository.EmployeeSummary call() {
+                return employeeService.getEmployeeSummary();
+            }
+        };
+
+        task.setOnSucceeded(e -> {
+            EmployeeRepository.EmployeeSummary summary = task.getValue();
+            if (summary != null) {
+                if (lblTotalEmployees != null) lblTotalEmployees.setText(String.valueOf(summary.total()));
+                if (lblActiveEmployees != null) lblActiveEmployees.setText(String.valueOf(summary.active()));
+            }
+        });
+
+        task.setOnFailed(e -> {
+            Throwable ex = task.getException();
+            log.error("Lỗi nạp thống kê nhân viên: ", ex);
+        });
+
+        Thread th = new Thread(task);
+        th.setDaemon(true);
+        th.start();
     }
 
     private StackPane createStatusDot(Color centerColor, Color haloColor) {
@@ -607,6 +416,21 @@ public class EmployeeController implements Initializable {
     private void handleOpenAddDialog() {
         showGlobalDrawer();
     }
+
+    private ScrollBar cachedEmployeeHBar = null;
+
+    private ScrollBar getEmployeeHorizontalScrollBar() {
+        if (cachedEmployeeHBar == null || cachedEmployeeHBar.getScene() == null) {
+            for (Node n : tableEmployee.lookupAll(".scroll-bar")) {
+                if (n instanceof ScrollBar sb && sb.getOrientation() == Orientation.HORIZONTAL) {
+                    cachedEmployeeHBar = sb;
+                    break;
+                }
+            }
+        }
+        return cachedEmployeeHBar;
+    }
+
 
     private void handleActionClick(Employee emp, Button btnTarget) {
         if (emp == null) return;
@@ -633,6 +457,7 @@ public class EmployeeController implements Initializable {
             }
 
             Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+            DialogUtils.configure(confirmAlert, tableEmployee != null && tableEmployee.getScene() != null ? tableEmployee.getScene().getWindow() : null);
             confirmAlert.setTitle("Xác nhận");
             confirmAlert.setHeaderText("Bạn có chắc chắn muốn " + toggleLabel.toLowerCase() + "?");
             confirmAlert.setContentText(isAccountDisabled
@@ -700,6 +525,7 @@ public class EmployeeController implements Initializable {
                     ButtonType.YES,
                     ButtonType.NO
             );
+            DialogUtils.configure(confirm, tableEmployee != null && tableEmployee.getScene() != null ? tableEmployee.getScene().getWindow() : null);
             confirm.setTitle("Xác nhận đánh dấu nghỉ");
             confirm.setHeaderText(null);
             confirm.showAndWait().ifPresent(res -> {
@@ -731,49 +557,7 @@ public class EmployeeController implements Initializable {
         // 3. CHỨC NĂNG XEM CHI TIẾT
         // =========================================================================
         MenuItem itemEditDetail = new MenuItem("Thông tin chi tiết");
-        itemEditDetail.setOnAction(e -> {
-            if (emp == null || emp.getId() == null) {
-                showSimpleAlert(Alert.AlertType.WARNING, "Cảnh báo", "Vui lòng chọn nhân viên cần xem chi tiết.");
-                return;
-            }
-
-            Optional<Employee> empDetailOpt = employeeService.findByIdWithDetails(emp.getId());
-            if (empDetailOpt.isEmpty()) {
-                showSimpleAlert(Alert.AlertType.ERROR, "Lỗi", "Không tìm thấy dữ liệu nhân viên.");
-                return;
-            }
-            Employee fullEmployee = empDetailOpt.get();
-
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/employee/detail_employee.fxml"));
-                Parent detailView = loader.load();
-
-                EmployeeDetailController detailController = loader.getController();
-
-                Window window = ((MenuItem) e.getSource()).getParentPopup().getOwnerWindow();
-                if (window == null && window.getScene() == null) return;
-
-                StackPane contentArea = (StackPane) window.getScene().lookup("#contentArea");
-
-                if (contentArea != null) {
-                    Node currentListView = contentArea.getChildren().getFirst();
-
-                    detailController.setEmployeeData(fullEmployee, () -> {
-                        contentArea.getChildren().setAll(currentListView);
-                        // Ở màn hình chi tiết quay lại thì có thể gọi loadEmployeeData()
-                        // hoặc lưu trữ context để không bị mất trang.
-                        loadEmployeeData();
-                    });
-
-                    contentArea.getChildren().setAll(detailView);
-                }
-
-            } catch (Exception ex) {
-                System.err.println("Lỗi khi mở màn hình chi tiết nhân viên: " + ex.getMessage());
-                ex.printStackTrace();
-                showSimpleAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể mở trang chi tiết: " + ex.getMessage());
-            }
-        });
+        itemEditDetail.setOnAction(e -> showEmployeeDetail(emp));
 
         contextMenu.getItems().addAll(
                 itemToggleAcc,
@@ -785,109 +569,89 @@ public class EmployeeController implements Initializable {
         contextMenu.show(btnTarget, Side.BOTTOM, 0, 0);
     }
 
+    private void showEmployeeDetail(Employee emp) {
+        if (emp == null || emp.getId() == null) {
+            showSimpleAlert(Alert.AlertType.WARNING, "Cảnh báo", "Vui lòng chọn nhân viên cần xem chi tiết.");
+            return;
+        }
+
+        Optional<Employee> empDetailOpt = employeeService.findByIdWithDetails(emp.getId());
+        if (empDetailOpt.isEmpty()) {
+            showSimpleAlert(Alert.AlertType.ERROR, "Lỗi", "Không tìm thấy dữ liệu nhân viên.");
+            return;
+        }
+        Employee fullEmployee = empDetailOpt.get();
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/employee/detail_employee.fxml"));
+            Parent detailView = loader.load();
+
+            EmployeeDetailController detailController = loader.getController();
+
+            Scene scene = tableEmployee != null ? tableEmployee.getScene() : null;
+            if (scene == null) return;
+
+            StackPane contentArea = (StackPane) scene.lookup("#contentArea");
+
+            if (contentArea != null) {
+                Node currentListView = contentArea.getChildren().getFirst();
+
+                detailController.setEmployeeData(fullEmployee, () -> {
+                    contentArea.getChildren().setAll(currentListView);
+                    updateSummaryCounts();
+                    loadEmployeeData();
+                });
+
+                contentArea.getChildren().setAll(detailView);
+            }
+
+        } catch (Exception ex) {
+            log.error("Lỗi khi mở màn hình chi tiết nhân viên: ", ex);
+            showSimpleAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể mở trang chi tiết: " + ex.getMessage());
+        }
+    }
+
     private void showSimpleAlert(Alert.AlertType type, String title, String content) {
-        Alert alert = new Alert(type, content);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.showAndWait();
+        javafx.stage.Window owner = tableEmployee != null && tableEmployee.getScene() != null
+                ? tableEmployee.getScene().getWindow()
+                : com.pharmacy.common.DialogUtils.getActiveWindow();
+        if (type == Alert.AlertType.ERROR) {
+            com.pharmacy.common.DialogUtils.showError(owner, title, content);
+        } else if (type == Alert.AlertType.WARNING) {
+            com.pharmacy.common.DialogUtils.showWarning(owner, title, content);
+        } else {
+            com.pharmacy.common.DialogUtils.showInfo(owner, title, content);
+        }
     }
 
     private void showGlobalDrawer() {
         if (tableEmployee.getScene() == null) return;
+        drawerHelper.init(tableEmployee.getScene(), null);
 
-        javafx.scene.Scene scene = tableEmployee.getScene();
-
-        if (appRootPane == null) {
-            Parent currentRoot = scene.getRoot();
-
-            if (currentRoot instanceof StackPane) {
-                appRootPane = (StackPane) currentRoot;
-            } else {
-                appRootPane = new StackPane();
-                scene.setRoot(appRootPane);
-                appRootPane.getChildren().add(currentRoot);
-            }
-
-            overlayRegion = new Region();
-            overlayRegion.setStyle("-fx-background-color: rgba(15, 23, 42, 0.45); -fx-cursor: hand;");
-            overlayRegion.prefWidthProperty().bind(scene.widthProperty());
-            overlayRegion.prefHeightProperty().bind(scene.heightProperty());
-            overlayRegion.setVisible(false);
-            overlayRegion.setOpacity(0.0);
-            overlayRegion.setOnMouseClicked(e -> closeGlobalDrawer());
-
+        if (drawerRoot == null) {
             try {
                 URL fxmlUrl = getClass().getResource("/fxml/employee/add_employee.fxml");
-                if (fxmlUrl == null) {
-                    fxmlUrl = getClass().getResource("add_employee.fxml");
-                }
-                if (fxmlUrl == null) {
-                    System.err.println("Không tìm thấy file add_employee.fxml");
-                    return;
-                }
-
                 FXMLLoader loader = new FXMLLoader(fxmlUrl);
                 drawerRoot = loader.load();
                 addController = loader.getController();
 
-                addController.setOnCloseCallback(this::closeGlobalDrawer);
+                addController.setOnCloseCallback(drawerHelper::close);
                 addController.setOnSaveSuccessCallback(newEmp -> {
-                    closeGlobalDrawer();
+                    drawerHelper.close();
+                    updateSummaryCounts();
                     loadEmployeeData();
                 });
 
-                drawerRoot.setVisible(false);
-                StackPane.setAlignment(drawerRoot, Pos.CENTER_RIGHT);
-
-                appRootPane.getChildren().addAll(overlayRegion, drawerRoot);
-
+                drawerHelper.registerDrawer(drawerRoot);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("Lỗi khi mở drawer thêm nhân viên: ", e);
                 return;
             }
         }
 
-        if (drawerRoot == null) return;
-
         if (addController != null) {
             addController.clearForm();
         }
-
-        overlayRegion.setVisible(true);
-        drawerRoot.setVisible(true);
-
-        double drawerWidth = 460;
-        drawerRoot.setTranslateX(drawerWidth);
-
-        FadeTransition fadeIn = new FadeTransition(Duration.millis(250), overlayRegion);
-        fadeIn.setFromValue(0.0);
-        fadeIn.setToValue(1.0);
-
-        TranslateTransition slideIn = new TranslateTransition(Duration.millis(250), drawerRoot);
-        slideIn.setFromX(drawerWidth);
-        slideIn.setToX(0);
-
-        new ParallelTransition(fadeIn, slideIn).play();
-    }
-
-    private void closeGlobalDrawer() {
-        if (overlayRegion == null || !overlayRegion.isVisible()) return;
-
-        double drawerWidth = 460;
-
-        FadeTransition fadeOut = new FadeTransition(Duration.millis(200), overlayRegion);
-        fadeOut.setFromValue(1.0);
-        fadeOut.setToValue(0.0);
-
-        TranslateTransition slideOut = new TranslateTransition(Duration.millis(200), drawerRoot);
-        slideOut.setFromX(0);
-        slideOut.setToX(drawerWidth);
-
-        ParallelTransition anim = new ParallelTransition(fadeOut, slideOut);
-        anim.setOnFinished(e -> {
-            overlayRegion.setVisible(false);
-            drawerRoot.setVisible(false);
-        });
-        anim.play();
+        drawerHelper.open(drawerRoot);
     }
 }

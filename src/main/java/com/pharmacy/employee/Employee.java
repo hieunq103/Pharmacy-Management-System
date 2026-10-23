@@ -57,9 +57,8 @@ public class Employee implements Serializable {
     @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
 
-    public Employee() {}
-
-    // ==================== GETTERS & SETTERS ====================
+    public Employee() {
+    }
 
     public Integer getId() {
         return id;

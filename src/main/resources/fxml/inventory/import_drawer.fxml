@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pharmacy.inventory.ui.ImportDialogController"
+      prefWidth="1040.0"
+      maxWidth="1080.0"
+      style="-fx-background-color: #FFFFFF; -fx-background: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 0 0 0 1px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 25, 0, -6, 0);"
+      stylesheets="@../../css/add_employee.css, @../../css/inventory.css"
+      styleClass="drawer-panel">
+
+    <!-- ==================== HEADER ==================== -->
+    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 16 24; -fx-border-color: #E2E8F0; -fx-border-width: 0 0 1 0; -fx-background-color: #FFFFFF;">
+        <VBox spacing="2">
+            <Label text="Lập Phiếu Nhập Kho Dược Phẩm" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 18px; -fx-text-fill: #1E293B;"/>
+            <Label text="Nhập danh sách nhiều mặt hàng thuốc từ nhà cung cấp và ghi nhận vào kho" style="-fx-font-size: 13px; -fx-text-fill: #64748B;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <!-- ==================== BODY (SCROLLABLE) ==================== -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: #FFFFFF; -fx-background: #FFFFFF; -fx-border-width: 0;">
+        <VBox spacing="16" style="-fx-padding: 18 24; -fx-background-color: #FFFFFF;">
+
+            <!-- 1. THÔNG TIN CHUNG PHIẾU NHẬP -->
+            <VBox spacing="8" style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 12 16;">
+                <Label text="1. Thông tin chung phiếu nhập" styleClass="form-label" style="-fx-font-size: 14px; -fx-text-fill: #0F172A;"/>
+
+                <GridPane hgap="16" vgap="8">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="50.0"/>
+                        <ColumnConstraints percentWidth="50.0"/>
+                    </columnConstraints>
+
+                    <!-- Nhà cung cấp -->
+                    <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Nhà cung cấp *" styleClass="form-label"/>
+                        <StackPane fx:id="supplierPickerContainer"/>
+                        <Label fx:id="lblErrorSupplier" text="" styleClass="form-error-msg" visible="false" managed="false"/>
+                    </VBox>
+
+                    <!-- Ghi chú -->
+                    <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Ghi chú" styleClass="form-label"/>
+                        <TextField fx:id="txtNote" promptText="Ghi chú đợt nhập (nếu có)..." styleClass="form-input"/>
+                    </VBox>
+                </GridPane>
+            </VBox>
+
+            <!-- 2. KHU VỰC THÊM MẶT HÀNG VÀO PHIẾU -->
+            <VBox spacing="12" style="-fx-background-color: #FFFFFF; -fx-border-color: #0066FF; -fx-border-width: 1.5px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 14 16;">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label text="2. Thêm thuốc vào phiếu nhập" styleClass="form-label" style="-fx-font-size: 14px; -fx-text-fill: #0066FF;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <!-- CHỌN 2 CHẾ ĐỘ: THUỐC ĐÃ CÓ / THUỐC MỚI -->
+                    <HBox spacing="16" alignment="CENTER_LEFT" style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 4 12;">
+                        <RadioButton fx:id="rbExistingMedicine" selected="true" text="Thuốc đã có trong kho" styleClass="drawer-radio-button">
+                            <toggleGroup>
+                                <ToggleGroup fx:id="itemModeGroup"/>
+                            </toggleGroup>
+                        </RadioButton>
+                        <RadioButton fx:id="rbNewMedicine" text="+ Thêm loại thuốc mới" toggleGroup="$itemModeGroup" styleClass="drawer-radio-button"/>
+                    </HBox>
+                </HBox>
+
+                <!-- Chế độ 1: Tìm kiếm thuốc đã có -->
+                <VBox fx:id="boxExistingMedicine" spacing="6">
+                    <Label text="Nhập mã thuốc hoặc tên thuốc *" styleClass="form-label"/>
+                    <StackPane fx:id="medicinePickerContainer"/>
+
+                    <!-- Card thông tin cơ bản khi chọn thuốc -->
+                    <HBox fx:id="boxSelectedMedInfo" alignment="CENTER_LEFT" spacing="16"
+                          style="-fx-background-color: #EFF6FF; -fx-border-color: #BFDBFE; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 8 12;"
+                          visible="false" managed="false">
+                        <HBox alignment="CENTER_LEFT" spacing="6">
+                            <Label text="Thuốc:" style="-fx-text-fill: #64748B; -fx-font-size: 12.5px;"/>
+                            <Label fx:id="lblSelectedMedName" text="—" style="-fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px;"/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="6">
+                            <Label text="Nhóm:" style="-fx-text-fill: #64748B; -fx-font-size: 12.5px;"/>
+                            <Label fx:id="lblSelectedCategory" text="—" style="-fx-text-fill: #0F172A; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 12.5px;"/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="6">
+                            <Label text="Tồn hiện tại:" style="-fx-text-fill: #64748B; -fx-font-size: 12.5px;"/>
+                            <Label fx:id="lblSelectedStock" text="0" style="-fx-text-fill: #059669; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px;"/>
+                        </HBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Chế độ 2: Form điền thông tin Thuốc Mới -->
+                <VBox fx:id="boxNewMedicine" spacing="10"
+                      style="-fx-background-color: #FEFCE8; -fx-border-color: #FEF08A; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 12 14;"
+                      visible="false" managed="false">
+                    <Label text="★ KHAI BÁO THÔNG TIN THUỐC MỚI VÀO DANH MỤC" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 12.5px; -fx-text-fill: #854D0E;"/>
+
+                    <GridPane hgap="14" vgap="8">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="50.0"/>
+                            <ColumnConstraints percentWidth="50.0"/>
+                        </columnConstraints>
+
+                        <!-- Tên biệt dược -->
+                        <VBox spacing="3" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <Label text="Tên thuốc / Biệt dược *" styleClass="form-label" style="-fx-font-size: 12px;"/>
+                            <TextField fx:id="txtNewName" promptText="Ví dụ: Panadol Extra 500mg..." styleClass="form-input"/>
+                        </VBox>
+
+                        <!-- Nhóm thuốc -->
+                        <VBox spacing="3" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <Label text="Nhóm thuốc *" styleClass="form-label" style="-fx-font-size: 12px;"/>
+                            <StackPane fx:id="categoryPickerContainer"/>
+                        </VBox>
+
+                        <!-- Hoạt chất chính -->
+                        <VBox spacing="3" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <Label text="Hoạt chất chính" styleClass="form-label" style="-fx-font-size: 12px;"/>
+                            <TextField fx:id="txtNewActiveIngredient" promptText="Paracetamol 500mg, Cafein 65mg..." styleClass="form-input"/>
+                        </VBox>
+
+                        <!-- Nhà sản xuất -->
+                        <VBox spacing="3" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <Label text="Hãng / Nhà sản xuất" styleClass="form-label" style="-fx-font-size: 12px;"/>
+                            <TextField fx:id="txtNewManufacturer" promptText="Ví dụ: Sanofi, Dược Hậu Giang..." styleClass="form-input"/>
+                        </VBox>
+
+                        <!-- Giá bán lẻ đề xuất & Kê đơn -->
+                        <HBox alignment="CENTER_LEFT" spacing="12" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2">
+                            <VBox spacing="3" HBox.hgrow="ALWAYS">
+                                <Label text="Giá bán lẻ dự kiến (VNĐ) *" styleClass="form-label" style="-fx-font-size: 12px;"/>
+                                <TextField fx:id="txtNewSellPrice" promptText="Ví dụ: 120.000" styleClass="form-input"/>
+                            </VBox>
+                            <CheckBox fx:id="chkRequiresPrescription" text="Thuốc kê đơn (Rx)" style="-fx-font-size: 12px; -fx-padding: 18 0 0 0;"/>
+                        </HBox>
+                    </GridPane>
+                </VBox>
+
+                <!-- Hàng thông tin Lô: Số lô, Hạn dùng, Đơn vị, Số lượng, Đơn giá nhập -->
+                <GridPane hgap="12" vgap="8">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="22.0"/>
+                        <ColumnConstraints percentWidth="22.0"/>
+                        <ColumnConstraints percentWidth="18.0"/>
+                        <ColumnConstraints percentWidth="18.0"/>
+                        <ColumnConstraints percentWidth="20.0"/>
+                    </columnConstraints>
+
+                    <!-- Số lô -->
+                    <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Số lô (Lot) *" styleClass="form-label"/>
+                        <TextField fx:id="txtLotNumber" promptText="LOT-2026-01" styleClass="form-input"/>
+                    </VBox>
+
+                    <!-- Hạn dùng -->
+                    <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Hạn dùng *" styleClass="form-label"/>
+                        <DatePicker fx:id="dpExpiryDate" maxWidth="Infinity" promptText="dd/MM/yyyy" styleClass="form-input"/>
+                    </VBox>
+
+                    <!-- Đơn vị nhập -->
+                    <VBox spacing="4" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                        <Label text="Đơn vị *" styleClass="form-label"/>
+                        <ComboBox fx:id="cbUnit" editable="true" maxWidth="Infinity" promptText="Hộp" styleClass="form-combobox"/>
+                    </VBox>
+
+                    <!-- Số lượng -->
+                    <VBox spacing="4" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                        <Label text="Số lượng *" styleClass="form-label"/>
+                        <TextField fx:id="txtQuantityIn" promptText="50" styleClass="form-input"/>
+                    </VBox>
+
+                    <!-- Đơn giá nhập -->
+                    <VBox spacing="4" GridPane.columnIndex="4" GridPane.rowIndex="0">
+                        <Label text="Giá nhập (đ) *" styleClass="form-label"/>
+                        <TextField fx:id="txtImportPrice" promptText="150.000" styleClass="form-input"/>
+                    </VBox>
+                </GridPane>
+
+                <!-- Hàng nút Thêm vào phiếu & Thông báo lỗi -->
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label fx:id="lblItemError" text="" styleClass="form-error-msg" visible="false" managed="false"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="btnAddItem" text="+ Thêm vào phiếu nhập" onAction="#handleAddItemToList"
+                            style="-fx-background-color: #0066FF; -fx-text-fill: #FFFFFF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px; -fx-background-radius: 6px; -fx-padding: 8 20; -fx-cursor: hand;"/>
+                </HBox>
+            </VBox>
+
+            <!-- 3. BẢNG DANH SÁCH CÁC MẶT HÀNG TRONG PHIẾU -->
+            <VBox spacing="6">
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="3. Danh sách mặt hàng đã thêm vào phiếu" styleClass="form-label" style="-fx-font-size: 14px; -fx-text-fill: #0F172A;"/>
+                    <Label fx:id="lblItemCountBadge" text="0 mặt hàng"
+                           style="-fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 11.5px; -fx-padding: 2 8; -fx-background-radius: 10px;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="btnClearAllItems" text="Xóa tất cả" onAction="#handleClearAllItems"
+                            style="-fx-background-color: transparent; -fx-text-fill: #EF4444; -fx-cursor: hand; -fx-font-size: 12px;"/>
+                </HBox>
+
+                <!-- Khung bao viền ngoài bo góc chuẩn như bảng Kho thuốc (table-float-container) -->
+                <HBox minHeight="240.0" prefHeight="280.0" spacing="0.0" styleClass="table-float-container">
+                    <TableView fx:id="tableItems" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, table-scrollable-data, import-items-table">
+                        <columns>
+                            <TableColumn fx:id="colIndex" minWidth="70.0" prefWidth="75.0" resizable="false" sortable="false" text="STT" />
+                            <TableColumn fx:id="colCode" minWidth="105.0" prefWidth="115.0" resizable="true" sortable="false" text="Mã thuốc" />
+                            <TableColumn fx:id="colName" minWidth="230.0" prefWidth="260.0" resizable="true" sortable="false" text="Tên thuốc" />
+                            <TableColumn fx:id="colCategory" minWidth="280.0" prefWidth="320.0" resizable="true" sortable="false" text="Nhóm thuốc" />
+                            <TableColumn fx:id="colManufacturer" minWidth="220.0" prefWidth="260.0" resizable="true" sortable="false" text="Nhà sản xuất" />
+                            <TableColumn fx:id="colLot" minWidth="130.0" prefWidth="145.0" resizable="true" sortable="false" text="Số lô" />
+                            <TableColumn fx:id="colExpiry" minWidth="135.0" prefWidth="150.0" resizable="true" sortable="false" text="Hạn sử dụng" />
+                            <TableColumn fx:id="colUnit" minWidth="85.0" prefWidth="95.0" resizable="true" sortable="false" text="Đơn vị" />
+                            <TableColumn fx:id="colQuantity" minWidth="95.0" prefWidth="105.0" resizable="true" sortable="false" text="Số lượng" />
+                            <TableColumn fx:id="colPrice" minWidth="130.0" prefWidth="145.0" resizable="true" sortable="false" text="Đơn giá nhập" />
+                            <TableColumn fx:id="colTotal" minWidth="145.0" prefWidth="165.0" resizable="true" sortable="false" text="Thành tiền" />
+                            <TableColumn fx:id="colAction" styleClass="lot-col-center" minWidth="105.0" prefWidth="115.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="Thao tác" />
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY"/>
+                        </columnResizePolicy>
+                    </TableView>
+                </HBox>
+            </VBox>
+
+            <!-- Error message tổng -->
+            <Label fx:id="lblGeneralError" text="" styleClass="form-error-msg" visible="false" managed="false"/>
+
+        </VBox>
+    </ScrollPane>
+
+    <!-- ==================== FOOTER ==================== -->
+    <HBox alignment="CENTER_LEFT" spacing="16" style="-fx-padding: 14 24; -fx-border-color: #E2E8F0; -fx-border-width: 1 0 0 0; -fx-background-color: #F8FAFC;">
+        <!-- Thống kê tổng tiền và tổng lượng -->
+        <VBox spacing="2">
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="Tổng số lượng:" style="-fx-font-size: 13px; -fx-text-fill: #64748B;"/>
+                <Label fx:id="lblSummaryTotalQuantity" text="0 sản phẩm" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px; -fx-text-fill: #0F172A;"/>
+            </HBox>
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="Tổng tiền thanh toán:" style="-fx-font-size: 14px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #1E293B;"/>
+                <Label fx:id="lblGrandTotal" text="0 đ" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 18px; -fx-text-fill: #0066FF;"/>
+            </HBox>
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button fx:id="btnCancel" text="Hủy" onAction="#handleCancel" styleClass="btn-secondary"/>
+        <Button fx:id="btnConfirmImport" text="Xác nhận Nhập Kho" onAction="#handleConfirmImport" styleClass="btn-primary-add"
+                style="-fx-background-color: #0066FF; -fx-text-fill: white; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 8px; -fx-cursor: hand;"/>
+    </HBox>
+
+</VBox>

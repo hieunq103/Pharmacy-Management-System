@@ -10,4 +10,9 @@
       </profile>
     </annotationProcessing>
   </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="pharmacy-desktop" options="-Xlint:all -Xlint:-path" />
+    </option>
+  </component>
 </project>

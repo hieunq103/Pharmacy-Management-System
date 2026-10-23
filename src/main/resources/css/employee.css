@@ -64,7 +64,7 @@
 .custom-employee-table .column-header {
     -fx-background-color: transparent;
     -fx-size: 40px;
-    -fx-padding: 0 14px;
+    -fx-padding: 0 16px;
 }
 
 .custom-employee-table .column-header .column-drag-header {
@@ -74,7 +74,6 @@
 .custom-employee-table .column-header .label {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 15px;
-    -fx-font-weight: bold;
     -fx-text-fill: #334155;
     -fx-alignment: CENTER_LEFT;
     -fx-text-overrun: clip;
@@ -94,15 +93,41 @@
     -fx-background-color: transparent;
     -fx-border-color: #E2E8F0;
     -fx-border-width: 0 0 1px 0;
-    -fx-cell-size: 58px;
+    -fx-cell-size: 54px;
 }
 
 .custom-employee-table .table-row-cell:hover {
     -fx-background-color: #F8FAFC;
 }
 
-.custom-employee-table .table-row-cell:selected {
+.custom-employee-table {
+    -fx-selection-bar: #F1F5F9;
+    -fx-selection-bar-text: #1E293B;
+    -fx-selection-bar-non-focused: #F1F5F9;
+}
+
+.custom-employee-table .table-row-cell:selected,
+.custom-employee-table .table-row-cell:filled:selected,
+.custom-employee-table .table-row-cell:filled:focused:selected,
+.custom-employee-table:focused .table-row-cell:filled:focused:selected {
     -fx-background-color: #F1F5F9;
+    -fx-table-cell-border-color: transparent;
+    -fx-text-fill: #1E293B;
+}
+
+.custom-employee-table .table-row-cell:selected .table-cell,
+.custom-employee-table .table-row-cell:filled:selected .table-cell,
+.custom-employee-table .table-row-cell:filled:focused:selected .table-cell,
+.custom-employee-table:focused .table-row-cell:filled:focused:selected .table-cell {
+    -fx-text-fill: #1E293B;
+}
+
+/* Chỉ đổi màu cho text trực tiếp của table-cell, không can thiệp label con hay badge */
+.custom-employee-table .table-row-cell:selected > .table-cell > .text,
+.custom-employee-table .table-row-cell:filled:selected > .table-cell > .text,
+.custom-employee-table .table-row-cell:filled:focused:selected > .table-cell > .text,
+.custom-employee-table:focused .table-row-cell:filled:focused:selected > .table-cell > .text {
+    -fx-fill: #1E293B;
 }
 
 /* Ẩn hoàn toàn viền và nền của các hàng trống */
@@ -114,10 +139,9 @@
 .custom-employee-table .table-cell {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 15px;
-    -fx-font-weight: bold;
     -fx-text-fill: #1E293B;
     -fx-alignment: CENTER_LEFT;
-    -fx-padding: 0 14px;
+    -fx-padding: 0 16px;
     -fx-text-overrun: clip;
     -fx-border-width: 0;
     -fx-border-color: transparent;
@@ -136,9 +160,8 @@
     -fx-padding: 4 10;
     -fx-cursor: hand;
     -fx-text-fill: #475569;
-    -fx-font-family: 'Segoe UI Bold', sans-serif;
+    -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 15px;
-    -fx-font-weight: bold;
 }
 
 .btn-action-more:hover {
@@ -150,9 +173,8 @@
 .btn-primary-add {
     -fx-background-color: #0066FF;
     -fx-text-fill: #FFFFFF;
-    -fx-font-family: "Inter 18pt", "Inter", "Segoe UI", sans-serif;
+    -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
-    -fx-font-weight: 500;
     -fx-background-radius: 10px;
     -fx-border-radius: 10px;
     -fx-border-width: 0;
@@ -205,28 +227,64 @@
     -fx-max-height: 30px;
 }
 
-.status-badge-active {
+.status-badge-active,
+.custom-employee-table .table-row-cell:selected .status-badge-active,
+.custom-employee-table .table-row-cell:filled:selected .status-badge-active,
+.custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-active {
     -fx-background-color: #DCFCE7;
 }
 
-.status-badge-active .pill-text {
+.status-badge-active .pill-text,
+.custom-employee-table .table-row-cell:selected .status-badge-active .pill-text,
+.custom-employee-table .table-row-cell:filled:selected .status-badge-active .pill-text,
+.custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-active .pill-text {
     -fx-text-fill: #16A34A;
     -fx-font-size: 13.5px;
 }
 
-.status-badge-inactive {
+.status-badge-active .pill-text .text,
+.custom-employee-table .table-row-cell:selected .status-badge-active .pill-text .text,
+.custom-employee-table .table-row-cell:filled:selected .status-badge-active .pill-text .text,
+.custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-active .pill-text .text {
+    -fx-fill: #16A34A;
+}
+
+.status-badge-inactive,
+.custom-employee-table .table-row-cell:selected .status-badge-inactive,
+.custom-employee-table .table-row-cell:filled:selected .status-badge-inactive,
+.custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-inactive {
     -fx-background-color: #FEECEB;
 }
 
-.status-badge-inactive .pill-text {
+.status-badge-inactive .pill-text,
+.custom-employee-table .table-row-cell:selected .status-badge-inactive .pill-text,
+.custom-employee-table .table-row-cell:filled:selected .status-badge-inactive .pill-text,
+.custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-inactive .pill-text {
     -fx-text-fill: #D9483B;
     -fx-font-size: 13.5px;
 }
 
-.status-badge-none {
+.status-badge-inactive .pill-text .text,
+.custom-employee-table .table-row-cell:selected .status-badge-inactive .pill-text .text,
+.custom-employee-table .table-row-cell:filled:selected .status-badge-inactive .pill-text .text,
+.custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-inactive .pill-text .text {
+    -fx-fill: #D9483B;
+}
+
+.status-badge-none,
+.custom-employee-table .table-row-cell:selected .status-badge-none,
+.custom-employee-table .table-row-cell:filled:selected .status-badge-none,
+.custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-none {
     -fx-text-fill: #94A3B8;
     -fx-font-size: 13px;
     -fx-font-style: italic;
+}
+
+.status-badge-none .text,
+.custom-employee-table .table-row-cell:selected .status-badge-none .text,
+.custom-employee-table .table-row-cell:filled:selected .status-badge-none .text,
+.custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-none .text {
+    -fx-fill: #94A3B8;
 }
 
 /* ==========================================================================
@@ -238,9 +296,8 @@
     -fx-border-color: #E2E8F0;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
-    -fx-font-family: 'Segoe UI Bold', 'Arial Bold', sans-serif;
+    -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13px;
-    -fx-font-weight: bold;
     -fx-text-fill: #334155;
     -fx-padding: 0 4;
     -fx-cursor: hand;
@@ -262,9 +319,8 @@
     -fx-pref-height: 38px;
     -fx-max-height: 38px;
     -fx-border-width: 1.5px;
-    -fx-font-family: 'Segoe UI', 'Arial', sans-serif;
+    -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13px;
-    -fx-font-weight: bold;
     -fx-text-fill: #475569;
     -fx-alignment: CENTER;
     -fx-cursor: hand;
@@ -286,7 +342,6 @@
 .page-dots {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
-    -fx-font-weight: bold;
     -fx-text-fill: #64748B;
     -fx-min-width: 28px;
     -fx-alignment: CENTER;
@@ -298,35 +353,85 @@
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-padding: 0 16;
-    -fx-font-family: 'Segoe UI Bold', 'Arial Bold', sans-serif;
+    -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13px;
-    -fx-font-weight: bold;
     -fx-text-fill: #475569;
 }
 
 /* ==========================================================================
-   SCROLLBAR (ẨN HOÀN TOÀN CẢ NGANG LẪN DỌC)
+   SCROLLBAR (ẨN THANH CUỘN DỌC BẢNG CHÍNH ĐỂ TRÁNH TRÙNG LẶP,
+   HIỂN THỊ THANH CUỘN DỌC MỎNG TINH TẾ Ở CỘT THAO TÁC NGOÀI CÙNG BÊN PHẢI)
    ========================================================================== */
 
-.custom-employee-table .scroll-bar {
+/* Ẩn thanh cuộn dọc bảng chính để không bị hiện thanh cuộn ở giữa bảng */
+.custom-employee-table .scroll-bar:vertical {
     -fx-opacity: 0;
     -fx-pref-width: 0;
     -fx-max-width: 0;
+    -fx-padding: 0;
+}
+
+/* Thanh cuộn dọc ở cột Thao tác (ngoài cùng bên phải) mỏng, thanh lịch */
+.sticky-action-col .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 7px;
+    -fx-max-width: 7px;
+    -fx-padding: 0;
+    -fx-opacity: 1;
+}
+
+.sticky-action-col .scroll-bar:vertical .thumb {
+    -fx-background-color: #CBD5E1;
+    -fx-background-radius: 4px;
+}
+
+.sticky-action-col .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #94A3B8;
+}
+
+.sticky-action-col .scroll-bar:vertical .track,
+.sticky-action-col .scroll-bar:vertical .increment-button,
+.sticky-action-col .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+}
+
+/* Ẩn hoàn toàn thanh cuộn ngang ở cột thao tác */
+.sticky-action-col .scroll-bar:horizontal {
+    -fx-opacity: 0;
     -fx-pref-height: 0;
     -fx-max-height: 0;
     -fx-padding: 0;
 }
 
-.custom-employee-table .scroll-bar .thumb,
-.custom-employee-table .scroll-bar .track,
-.custom-employee-table .scroll-bar .increment-button,
-.custom-employee-table .scroll-bar .decrement-button {
-    -fx-pref-width: 0;
-    -fx-pref-height: 0;
-    -fx-padding: 0;
+.custom-employee-table .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-pref-height: 8px;
+    -fx-max-height: 8px;
 }
 
-.custom-employee-table .corner {
+.custom-employee-table .scroll-bar:horizontal .thumb {
+    -fx-background-color: #CBD5E1;
+    -fx-background-radius: 4px;
+}
+
+.custom-employee-table .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #94A3B8;
+}
+
+.custom-employee-table .scroll-bar:horizontal .track,
+.custom-employee-table .scroll-bar:horizontal .increment-button,
+.custom-employee-table .scroll-bar:horizontal .decrement-button {
+    -fx-background-color: transparent;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+}
+
+.custom-employee-table .corner,
+.sticky-action-col .corner {
     -fx-background-color: transparent;
     -fx-pref-width: 0;
     -fx-pref-height: 0;
@@ -375,7 +480,7 @@
 }
 
 .filter-item-label {
-    -fx-font-family: "Inter 18pt", "Inter", sans-serif;
+    -fx-font-family: "Inter 18pt";
     -fx-font-size: 13.5px;
     -fx-text-fill: #334155;
     -fx-padding: 7 14;
@@ -394,7 +499,7 @@
 .filter-item-label.filter-item-active {
     -fx-background-color: #EFF6FF;
     -fx-text-fill: #0066FF;
-    -fx-font-weight: bold;
+    -fx-font-family: "Inter 18pt SemiBold";
 }
 
 /* ==========================================================================

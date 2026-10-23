@@ -18,35 +18,48 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.format.DateTimeFormatter;
+import com.pharmacy.common.FormatUtils;
+import com.pharmacy.common.FormValidator;
 
 public class ProfileController {
 
     private static final Logger log = LoggerFactory.getLogger(ProfileController.class);
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private static final String PHONE_REGEX = "^0[35789]\\d{8}$";
 
     public enum StatusType {
         SUCCESS, ERROR, INFO
     }
 
-    @FXML private Label lblStatusMessage;
+    @FXML
+    private Label lblStatusMessage;
 
-    @FXML private TextField txtFullName;
-    @FXML private TextField txtNationalId;
-    @FXML private TextField txtDob;
-    @FXML private TextField txtGender;
-    @FXML private ComboBox<String> cbGender;
-    @FXML private TextField txtRole;
+    @FXML
+    private TextField txtFullName;
+    @FXML
+    private TextField txtNationalId;
+    @FXML
+    private TextField txtDob;
+    @FXML
+    private TextField txtGender;
+    @FXML
+    private ComboBox<String> cbGender;
+    @FXML
+    private TextField txtRole;
 
-    @FXML private TextField txtPhone;
-    @FXML private TextField txtAddress;
+    @FXML
+    private TextField txtPhone;
+    @FXML
+    private TextField txtAddress;
 
-    @FXML private Button btnEdit;
-    @FXML private HBox boxEditActions;
-    @FXML private Button btnCancel;
-    @FXML private Button btnSave;
-    @FXML private Button btnChangePassword;
+    @FXML
+    private Button btnEdit;
+    @FXML
+    private HBox boxEditActions;
+    @FXML
+    private Button btnCancel;
+    @FXML
+    private Button btnSave;
+    @FXML
+    private Button btnChangePassword;
 
     private final ProfileService profileService = new ProfileServiceImpl();
     private PauseTransition statusTimer;
@@ -76,7 +89,8 @@ public class ProfileController {
         }
 
         Account account = UserSession.getInstance().getAccount();
-        if (account == null) return;
+        if (account == null)
+            return;
 
         Employee emp = account.getEmployee();
         if (emp != null) {
@@ -84,7 +98,7 @@ public class ProfileController {
             txtNationalId.setText(emp.getNationalId() != null ? emp.getNationalId() : "");
 
             if (emp.getDob() != null) {
-                txtDob.setText(emp.getDob().format(DATE_FORMATTER));
+                txtDob.setText(FormatUtils.formatDate(emp.getDob()));
             } else {
                 txtDob.setText("");
             }
@@ -180,8 +194,9 @@ public class ProfileController {
             return;
         }
 
-        if (!phone.matches(PHONE_REGEX)) {
-            showStatus("Số điện thoại không hợp lệ (phải gồm 10 chữ số, bắt đầu bằng 03, 05, 07, 08 hoặc 09).", StatusType.ERROR);
+        if (!FormValidator.isValidPhone(phone)) {
+            showStatus("Số điện thoại không hợp lệ (phải gồm 10 chữ số, bắt đầu bằng 03, 05, 07, 08 hoặc 09).",
+                    StatusType.ERROR);
             txtPhone.requestFocus();
             return;
         }
@@ -212,7 +227,7 @@ public class ProfileController {
                 return;
             }
 
-            if (!nationalId.matches("^\\d{12}$")) {
+            if (!FormValidator.isValidNationalId(nationalId)) {
                 showStatus("Căn cước công dân phải đúng 12 chữ số.", StatusType.ERROR);
                 txtNationalId.requestFocus();
                 return;
@@ -220,7 +235,7 @@ public class ProfileController {
 
             String dobStr = txtDob.getText() != null ? txtDob.getText().trim() : "";
             try {
-                parsedDob = java.time.LocalDate.parse(dobStr, DATE_FORMATTER);
+                parsedDob = java.time.LocalDate.parse(dobStr, FormatUtils.DATE_FORMATTER);
                 if (parsedDob.isAfter(java.time.LocalDate.now().minusYears(18))) {
                     showStatus("Nhân viên phải từ đủ 18 tuổi trở lên.", StatusType.ERROR);
                     txtDob.requestFocus();
@@ -309,11 +324,13 @@ public class ProfileController {
             if (ex instanceof IllegalArgumentException) {
                 showStatus(errorMsg, StatusType.ERROR);
                 txtPhone.requestFocus();
-            } else if (errorMsg != null && (errorMsg.contains("Duplicate entry") || errorMsg.contains("ConstraintViolationException"))) {
+            } else if (errorMsg != null
+                    && (errorMsg.contains("Duplicate entry") || errorMsg.contains("ConstraintViolationException"))) {
                 showStatus("Số điện thoại hoặc CCCD này đã được sử dụng bởi một nhân viên khác.", StatusType.ERROR);
                 txtPhone.requestFocus();
             } else {
-                showStatus("Lỗi khi lưu dữ liệu: " + (errorMsg != null ? errorMsg : "Không xác định"), StatusType.ERROR);
+                showStatus("Lỗi khi lưu dữ liệu: " + (errorMsg != null ? errorMsg : "Không xác định"),
+                        StatusType.ERROR);
             }
         });
 
@@ -335,8 +352,7 @@ public class ProfileController {
                 owner,
                 profileService,
                 emp.getPhone(),
-                successMsg -> showStatus(successMsg, StatusType.SUCCESS)
-        );
+                successMsg -> showStatus(successMsg, StatusType.SUCCESS));
 
         dialog.showAndWait();
     }
@@ -356,18 +372,16 @@ public class ProfileController {
                             "-fx-text-fill: #DC2626; " +
                             "-fx-padding: 8 12; " +
                             "-fx-background-radius: 6; " +
-                            "-fx-font-family: 'Inter 18pt', 'Inter', sans-serif; " +
-                            "-fx-font-size: 13.5px;"
-            );
+                            "-fx-font-family: 'Inter 18pt SemiBold'; " +
+                            "-fx-font-size: 13.5px;");
             case SUCCESS -> {
                 lblStatusMessage.setStyle(
                         "-fx-background-color: #DCFCE7; " +
                                 "-fx-text-fill: #16A34A; " +
                                 "-fx-padding: 8 12; " +
                                 "-fx-background-radius: 6; " +
-                                "-fx-font-family: 'Inter 18pt', 'Inter', sans-serif; " +
-                                "-fx-font-size: 13.5px;"
-                );
+                                "-fx-font-family: 'Inter 18pt SemiBold'; " +
+                                "-fx-font-size: 13.5px;");
                 statusTimer = new PauseTransition(Duration.seconds(3));
                 statusTimer.setOnFinished(event -> clearStatus());
                 statusTimer.play();
@@ -378,9 +392,8 @@ public class ProfileController {
                                 "-fx-text-fill: #2563EB; " +
                                 "-fx-padding: 8 12; " +
                                 "-fx-background-radius: 6; " +
-                                "-fx-font-family: 'Inter 18pt', 'Inter', sans-serif; " +
-                                "-fx-font-size: 13.5px;"
-                );
+                                "-fx-font-family: 'Inter 18pt SemiBold'; " +
+                                "-fx-font-size: 13.5px;");
                 statusTimer = new PauseTransition(Duration.seconds(3));
                 statusTimer.setOnFinished(event -> clearStatus());
                 statusTimer.play();

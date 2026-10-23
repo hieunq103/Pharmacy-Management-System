@@ -16,7 +16,7 @@ public class Account implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer id; // Đổi sang Integer để khớp chuẩn với INT trong MySQL
+    private Integer id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false, unique = true)
@@ -33,18 +33,14 @@ public class Account implements Serializable {
     @Column(name = "status", nullable = false)
     private Status status = Status.ACTIVE;
 
-    @Column(name = "must_change_password", nullable = false)
-    private boolean mustChangePassword = true;
-
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
 
-    public Account() {}
-
-    // ==================== GETTERS & SETTERS ====================
+    public Account() {
+    }
 
     public Integer getId() {
         return id;
@@ -86,14 +82,6 @@ public class Account implements Serializable {
         this.status = status;
     }
 
-    public boolean isMustChangePassword() {
-        return mustChangePassword;
-    }
-
-    public void setMustChangePassword(boolean mustChangePassword) {
-        this.mustChangePassword = mustChangePassword;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -101,8 +89,6 @@ public class Account implements Serializable {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-
-    // ==================== HÀM TIỆN ÍCH PHÂN QUYỀN ====================
 
     public boolean isManager() {
         return role != null && "MANAGER".equalsIgnoreCase(role.getCode());

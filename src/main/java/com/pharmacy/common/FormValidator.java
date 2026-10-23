@@ -5,13 +5,12 @@ import java.util.regex.Pattern;
 
 public final class FormValidator {
 
-    // Regex SĐT Việt Nam: 10 chữ số, bắt đầu bằng đầu số 03, 05, 07, 08, 09
     private static final Pattern PHONE_PATTERN = Pattern.compile("^(03|05|07|08|09)\\d{8}$");
 
-    // Regex CCCD Việt Nam: đúng 12 chữ số
     private static final Pattern NATIONAL_ID_PATTERN = Pattern.compile("^\\d{12}$");
 
-    private FormValidator() {}
+    private FormValidator() {
+    }
 
     /**
      * Xác thực form đăng nhập với định danh là SĐT hoặc CCCD
@@ -48,7 +47,21 @@ public final class FormValidator {
             return false;
         }
         String trimmed = identifier.trim();
-        return PHONE_PATTERN.matcher(trimmed).matches() || NATIONAL_ID_PATTERN.matcher(trimmed).matches();
+        return isValidPhone(trimmed) || isValidNationalId(trimmed);
+    }
+
+    /**
+     * Kiểm tra số điện thoại Việt Nam hợp lệ (10 số, đầu 03, 05, 07, 08, 09)
+     */
+    public static boolean isValidPhone(String phone) {
+        return phone != null && PHONE_PATTERN.matcher(phone.trim()).matches();
+    }
+
+    /**
+     * Kiểm tra căn cước công dân Việt Nam hợp lệ (đúng 12 số)
+     */
+    public static boolean isValidNationalId(String nationalId) {
+        return nationalId != null && NATIONAL_ID_PATTERN.matcher(nationalId.trim()).matches();
     }
 
     public enum TargetField {

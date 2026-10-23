@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="650.0" prefWidth="1120.0" spacing="14.0"
+      styleClass="lot-dialog-root"
+      stylesheets="@../../css/inventory.css, @../../css/inventory_history.css, @../../css/sales.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pharmacy.sales.SalesOrderDetailDialogController">
+
+    <padding>
+        <Insets bottom="16.0" left="24.0" right="24.0" top="18.0" />
+    </padding>
+
+    <!-- Header: Tiêu đề + Mã hóa đơn + Ngày giờ + Nút đóng ✕ -->
+    <HBox alignment="CENTER_LEFT" spacing="12.0">
+        <VBox spacing="4.0">
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <Label styleClass="lot-dialog-title" text="Chi tiết đơn hàng bán lẻ" />
+                <Label fx:id="lblOrderCode" styleClass="code-pill" text="HDB-000000-0000" style="-fx-font-size: 14px; -fx-padding: 3 10;" />
+            </HBox>
+            <Label fx:id="lblOrderTime" styleClass="history-sub-title" text="Thời gian: 00:00 - 01/01/2026" />
+        </VBox>
+        <Region HBox.hgrow="ALWAYS" />
+        <Button onAction="#handleClose" styleClass="btn-close-history" text="✕" />
+    </HBox>
+
+    <!-- Card thông tin tổng quan của đơn hàng -->
+    <VBox spacing="10.0" styleClass="lot-info-card">
+        <!-- Hàng 1: Thu ngân, Khách hàng, Phương thức thanh toán -->
+        <HBox spacing="28.0" alignment="CENTER_LEFT">
+            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                <Label styleClass="lot-info-label" text="Thu ngân bán hàng:" />
+                <Label fx:id="lblEmployee" styleClass="lot-info-value" text="—" />
+            </HBox>
+            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                <Label styleClass="lot-info-label" text="SĐT khách hàng:" />
+                <Label fx:id="lblCustomerPhone" styleClass="lot-info-value" text="Khách lẻ" />
+            </HBox>
+            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                <Label styleClass="lot-info-label" text="Phương thức:" />
+                <Label fx:id="lblPaymentMethod" styleClass="lot-info-value-highlight" text="Tiền mặt" />
+            </HBox>
+        </HBox>
+
+        <!-- Hàng 2: Biểu thức tài chính (Tổng tiền hàng - Giảm giá = Tổng thanh toán) -->
+        <HBox spacing="28.0" alignment="CENTER_LEFT">
+            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                <Label styleClass="lot-info-label" text="Số loại thuốc:" />
+                <Label fx:id="lblItemCount" styleClass="lot-info-value" text="0 loại (Tổng SL: 0)" />
+            </HBox>
+            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                <Label styleClass="lot-info-label" text="Tổng tiền hàng:" />
+                <Label fx:id="lblSubtotal" styleClass="lot-info-value" text="0đ" />
+            </HBox>
+            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                <Label styleClass="lot-info-label" text="Giảm giá:" />
+                <Label fx:id="lblDiscount" styleClass="lot-info-value" style="-fx-text-fill: #DC2626;" text="0đ" />
+            </HBox>
+            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                <Label styleClass="lot-info-label" text="Tổng thanh toán:" />
+                <Label fx:id="lblTotalAmount" styleClass="lot-info-value-highlight" style="-fx-text-fill: #0066FF; -fx-font-size: 15px;" text="0đ" />
+            </HBox>
+        </HBox>
+    </VBox>
+
+    <!-- Thanh tìm kiếm thuốc trong đơn -->
+    <HBox alignment="CENTER_LEFT" spacing="12.0">
+        <TextField fx:id="txtSearchDetail" prefWidth="320.0"
+                   promptText="Tìm kiếm thuốc trong đơn (mã, tên, số lô)..."
+                   styleClass="search-input" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Label fx:id="lblRowCount" styleClass="hint-select-label" text="Danh sách các mặt hàng đã bán:" />
+    </HBox>
+
+    <!-- Bảng danh sách mặt hàng thuốc trong đơn -->
+    <HBox minHeight="280.0" spacing="0.0" styleClass="table-float-container" VBox.vgrow="ALWAYS">
+        <TableView fx:id="tableDetails" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, history-detail-table, table-scrollable-data">
+            <columns>
+                <TableColumn fx:id="colIndex" minWidth="60.0" prefWidth="65.0" text="STT" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colMedCode" minWidth="110.0" prefWidth="120.0" text="Mã thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colMedName" minWidth="240.0" prefWidth="300.0" text="Tên thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colCategory" minWidth="140.0" prefWidth="180.0" text="Nhóm thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colLotNumber" minWidth="120.0" prefWidth="140.0" text="Số lô xuất" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colExpiryDate" minWidth="110.0" prefWidth="125.0" text="Hạn dùng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colUnit" minWidth="75.0" prefWidth="85.0" text="Đơn vị" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colQuantity" minWidth="80.0" prefWidth="95.0" text="Số lượng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colUnitPrice" minWidth="120.0" prefWidth="140.0" text="Đơn giá" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colTotalPrice" minWidth="130.0" prefWidth="160.0" text="Thành tiền" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+    </HBox>
+
+    <!-- Footer: Nút Đóng -->
+    <HBox alignment="CENTER_RIGHT" spacing="12.0">
+        <Button onAction="#handleClose" prefHeight="40.0" prefWidth="110.0" styleClass="btn-modal-cancel" text="Đóng" />
+    </HBox>
+
+</VBox>

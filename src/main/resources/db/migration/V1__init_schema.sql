@@ -23,7 +23,9 @@ CREATE TABLE IF NOT EXISTS `employees` (
     `hired_date` DATE NULL,
     `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+    `updated_at` DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_employees_full_name` (`full_name`),
+    INDEX `idx_employees_status` (`status`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------------------------------
@@ -35,7 +37,6 @@ CREATE TABLE IF NOT EXISTS `accounts` (
     `password_hash` VARCHAR(255) NOT NULL,
     `role_id` INT NOT NULL,
     `status` ENUM('ACTIVE', 'DISABLED') NOT NULL DEFAULT 'ACTIVE',
-    `must_change_password` BOOLEAN NOT NULL DEFAULT TRUE,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT `fk_accounts_employees` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -74,7 +75,11 @@ CREATE TABLE IF NOT EXISTS `medicines` (
     `requires_prescription` BOOLEAN NOT NULL DEFAULT FALSE,
     `min_stock_threshold` INT NOT NULL DEFAULT 0,
     `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
-    CONSTRAINT `fk_medicines_categories` FOREIGN KEY (`category_id`) REFERENCES `medicine_categories` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT `fk_medicines_categories` FOREIGN KEY (`category_id`) REFERENCES `medicine_categories` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+    INDEX `idx_medicines_name` (`name`),
+    INDEX `idx_medicines_active_ingredient` (`active_ingredient`),
+    INDEX `idx_medicines_status_category` (`status`, `category_id`),
+    FULLTEXT INDEX `ft_medicines_search` (`name`, `active_ingredient`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------------------------------
@@ -91,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `suppliers` (
 
 CREATE TABLE IF NOT EXISTS `inventory_transactions` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-    `type` ENUM('IMPORT', 'EXPORT_SALE', 'EXPORT_DISPOSAL', 'RETURN_RESTOCK', 'RETURN_DESTROY') NOT NULL,
+    `type` ENUM('IMPORT', 'EXPORT_SALE', 'EXPORT_DISPOSAL') NOT NULL,
     `supplier_id` INT NULL,
     `sales_order_id` BIGINT NULL,
     `employee_id` INT NOT NULL,
@@ -99,7 +104,9 @@ CREATE TABLE IF NOT EXISTS `inventory_transactions` (
     `note` VARCHAR(255) NULL,
     CONSTRAINT `fk_transactions_suppliers` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT `fk_transactions_sales_orders` FOREIGN KEY (`sales_order_id`) REFERENCES `sales_orders` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT `fk_transactions_employees` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT `fk_transactions_employees` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+    INDEX `idx_transactions_at` (`transaction_at`),
+    INDEX `idx_transactions_type` (`type`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------------------------------
@@ -117,7 +124,8 @@ CREATE TABLE IF NOT EXISTS `inventory_lots` (
     CONSTRAINT `fk_inventory_lots_medicines` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT `fk_inventory_lots_transactions` FOREIGN KEY (`transaction_id`) REFERENCES `inventory_transactions` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT `uq_lot_medicine_transaction` UNIQUE (`transaction_id`, `medicine_id`, `lot_number`),
-    INDEX `idx_inventory_lots_fefo` (`medicine_id`, `expiry_date`)
+    INDEX `idx_inventory_lots_fefo` (`medicine_id`, `expiry_date`),
+    INDEX `idx_inventory_lots_stock_fefo` (`medicine_id`, `quantity_remaining`, `expiry_date`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------------------------------
@@ -146,7 +154,9 @@ CREATE TABLE IF NOT EXISTS `sales_orders` (
     `discount` DECIMAL(12, 2) NOT NULL DEFAULT 0.00,
     `payment_method` ENUM('CASH', 'TRANSFER', 'CARD') NOT NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT `fk_sales_orders_employees` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT `fk_sales_orders_employees` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+    INDEX `idx_sales_orders_phone` (`customer_phone`),
+    INDEX `idx_sales_orders_created_at` (`created_at`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `sales_order_items` (
@@ -163,38 +173,6 @@ CREATE TABLE IF NOT EXISTS `sales_order_items` (
     CONSTRAINT `uq_order_item_lot` UNIQUE (`sales_order_id`, `inventory_lot_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 10. PHIẾU TRẢ HÀNG & CHI TIẾT TRẢ (SALES RETURNS & ITEMS)
--- -----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `sales_returns` (
-    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-    `code` VARCHAR(30) NOT NULL UNIQUE,
-    `sales_order_id` BIGINT NOT NULL,
-    `employee_id` INT NOT NULL,
-    `refund_amount` DECIMAL(14, 2) NOT NULL,
-    `refund_method` ENUM('CASH', 'TRANSFER') NOT NULL DEFAULT 'CASH',
-    `reason` VARCHAR(255) NULL,
-    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT `fk_sales_returns_sales_orders` FOREIGN KEY (`sales_order_id`) REFERENCES `sales_orders` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT `fk_sales_returns_employees` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-    INDEX `idx_sales_returns_order` (`sales_order_id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS `sales_return_items` (
-    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-    `sales_return_id` BIGINT NOT NULL,
-    `medicine_id` INT NOT NULL,
-    `inventory_lot_id` BIGINT NOT NULL,
-    `quantity` INT NOT NULL,
-    `refund_price` DECIMAL(12, 2) NOT NULL,
-    `line_total` DECIMAL(14, 2) NOT NULL,
-    `disposition` ENUM('RESTOCK', 'QUARANTINE_DESTROY') NOT NULL DEFAULT 'QUARANTINE_DESTROY',
-    CONSTRAINT `fk_sri_returns` FOREIGN KEY (`sales_return_id`) REFERENCES `sales_returns` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT `fk_sri_medicines` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT `fk_sri_lots` FOREIGN KEY (`inventory_lot_id`) REFERENCES `inventory_lots` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT `uq_return_item_lot` UNIQUE (`sales_return_id`, `inventory_lot_id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO `roles` (`code`, `name`) VALUES ('MANAGER', 'Quản lý cửa hàng'), ('STAFF', 'Nhân viên bán thuốc');
@@ -202,19 +180,19 @@ INSERT INTO `roles` (`code`, `name`) VALUES ('MANAGER', 'Quản lý cửa hàng'
 INSERT INTO `employees` (`full_name`, `dob`, `gender`, `national_id`, `address`, `phone`, `hired_date`, `status`) VALUES
     ('Quản lý cửa hàng', '1990-01-01', 'Nam', '001090000001', 'Hà Nội', '0985549854', '2026-01-01', 'ACTIVE');
 
-INSERT INTO `accounts` (`employee_id`, `password_hash`, `role_id`, `status`, `must_change_password`) VALUES (
+INSERT INTO `accounts` (`employee_id`, `password_hash`, `role_id`, `status`) VALUES (
   (SELECT `id` FROM `employees` WHERE `national_id` = '001090000001'),
   '$2a$12$1/E8j01kLrkJvjJ4.R91x.5A7B8nzOtVk1mZSonKBWP/Ecm3Abtce',
   (SELECT `id` FROM `roles` WHERE `code` = 'MANAGER'),
-  'ACTIVE',FALSE
+  'ACTIVE'
 );
 
 INSERT INTO `employees` (`full_name`, `dob`, `gender`, `national_id`, `address`, `phone`, `hired_date`, `status`) VALUES
     ('Nguyễn Quang Hiếu', '2005-03-10', 'Nam', '001095000002', 'Hà Nội', '0989261809', '2026-02-01', 'ACTIVE');
 
-INSERT INTO `accounts` (`employee_id`, `password_hash`, `role_id`, `status`, `must_change_password`) VALUES (
+INSERT INTO `accounts` (`employee_id`, `password_hash`, `role_id`, `status`) VALUES (
   (SELECT `id` FROM `employees` WHERE `national_id` = '001095000002'),
   '$2a$12$1/E8j01kLrkJvjJ4.R91x.5A7B8nzOtVk1mZSonKBWP/Ecm3Abtce',
   (SELECT `id` FROM `roles` WHERE `code` = 'STAFF'),
-  'ACTIVE', TRUE
+  'ACTIVE'
 );

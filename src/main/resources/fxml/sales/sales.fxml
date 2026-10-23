@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+
+<StackPane style="-fx-background-color: #F8FAFC;"
+           stylesheets="@../../css/inventory.css, @../../css/inventory_history.css, @../../css/sales.css"
+           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.pharmacy.sales.SalesController">
+
+    <!-- 1. MÀN HÌNH BÁN HÀNG CHÍNH -->
+    <HBox fx:id="viewSalesMain" spacing="16.0" style="-fx-background-color: #F8FAFC;">
+        <padding>
+            <Insets bottom="16.0" left="16.0" right="16.0" top="12.0" />
+        </padding>
+
+        <!-- ==================== CỘT TRÁI: DANH SÁCH THUỐC VÀ TÌM KIẾM ==================== -->
+        <VBox spacing="12.0" HBox.hgrow="ALWAYS">
+            <!-- TIÊU ĐỀ BÁN HÀNG & NÚT LỊCH SỬ BÁN HÀNG -->
+            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                <VBox spacing="2.0">
+                    <Label styleClass="sales-main-title" text="Bán hàng" />
+                    <Label styleClass="sales-sub-title" text="Tạo hóa đơn bán lẻ thuốc tại quầy" />
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="btnSalesHistory" onAction="#handleOpenSalesHistory"
+                        styleClass="btn-secondary-history" text="Lịch sử bán hàng" />
+            </HBox>
+
+        <!-- BỘ LỌC: TÌM KIẾM THEO TÊN/MÃ VÀ CHỌN NHÓM THUỐC (ĐÃ BỎ NÚT F2 VÀ THANH CUỘN PILL) -->
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <!-- Ô tìm kiếm theo tên hoặc mã thuốc -->
+            <HBox alignment="CENTER_LEFT" spacing="8.0" styleClass="search-box-container" HBox.hgrow="ALWAYS">
+                <SVGPath content="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                         styleClass="search-icon" />
+                <TextField fx:id="txtSearch" promptText="Tìm thuốc theo tên, mã hoặc hoạt chất..." styleClass="search-input-field" HBox.hgrow="ALWAYS" />
+            </HBox>
+
+            <!-- Dropdown chọn Nhóm thuốc -->
+            <ComboBox fx:id="cboCategory" minWidth="210.0" prefWidth="230.0" promptText="Tất cả nhóm thuốc" styleClass="sales-category-combo" />
+        </HBox>
+
+        <!-- VÙNG HIỂN THỊ 6 THUỐC (2 CỘT x 3 HÀNG - LOẠI BỎ CUỘN HOÀN TOÀN) -->
+        <StackPane VBox.vgrow="ALWAYS">
+            <GridPane fx:id="gridMedicineCards" hgap="12.0" vgap="12.0">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="50.0" hgrow="ALWAYS" />
+                    <ColumnConstraints percentWidth="50.0" hgrow="ALWAYS" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints percentHeight="33.33" vgrow="ALWAYS" />
+                    <RowConstraints percentHeight="33.33" vgrow="ALWAYS" />
+                    <RowConstraints percentHeight="33.33" vgrow="ALWAYS" />
+                </rowConstraints>
+            </GridPane>
+
+            <!-- Trạng thái trống khi không tìm thấy thuốc -->
+            <VBox fx:id="paneEmptyMedicines" alignment="CENTER" spacing="8.0" visible="false" managed="false">
+                <Label style="-fx-font-size: 15px; -fx-text-fill: #94A3B8; -fx-font-family: 'Inter 18pt Medium';"
+                       text="Không tìm thấy thuốc nào phù hợp với bộ lọc" />
+            </VBox>
+        </StackPane>
+
+        <!-- THANH ĐIỀU HƯỚNG PHÂN TRANG (MỖI TRANG 6 THUỐC) -->
+        <HBox alignment="CENTER" prefHeight="38.0" spacing="12.0">
+            <Region HBox.hgrow="ALWAYS" />
+            <HBox fx:id="paginationBox" alignment="CENTER" spacing="6.0" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="lblRecordRange" alignment="CENTER" minWidth="90.0" prefHeight="34.0" styleClass="pagination-record-badge" text="0 - 0" />
+        </HBox>
+    </VBox>
+
+    <!-- ==================== CỘT PHẢI: GIỎ HÀNG VÀ THANH TOÁN (TERMINAL PANEL) ==================== -->
+    <VBox prefWidth="410.0" minWidth="380.0" maxWidth="430.0" spacing="12.0" styleClass="pos-cart-panel">
+        <padding>
+            <Insets bottom="16.0" left="16.0" right="16.0" top="14.0" />
+        </padding>
+
+        <!-- HEADER GIỎ HÀNG: DUY NHẤT 1 TAB HÓA ĐƠN + NÚT XÓA HẾT -->
+        <HBox alignment="CENTER_LEFT" spacing="8.0">
+            <Label styleClass="btn-order-tab, active" text="Hóa đơn" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#handleClearCurrentCart" styleClass="btn-clear-cart" text="Xóa hết" />
+        </HBox>
+
+        <!-- VÙNG DANH SÁCH SẢN PHẨM TRONG GIỎ HOẶC EMPTY STATE -->
+        <StackPane VBox.vgrow="ALWAYS">
+            <!-- 1. EMPTY STATE KHI CHƯA CÓ THUỐC NÀO -->
+            <VBox fx:id="paneEmptyCart" alignment="CENTER" spacing="12.0">
+                <StackPane prefHeight="64.0" prefWidth="64.0" styleClass="cart-empty-circle">
+                    <SVGPath content="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"
+                             styleClass="cart-empty-icon" />
+                </StackPane>
+                <Label styleClass="cart-empty-title" text="Chưa có thuốc nào" />
+                <Label styleClass="cart-empty-desc" text="Chọn thẻ thuốc bên trái hoặc gõ mã thuốc rồi nhấn Enter" textAlignment="CENTER" wrapText="true" />
+            </VBox>
+
+            <!-- 2. DANH SÁCH CÁC MẶT HÀNG TRONG ĐƠN -->
+            <ScrollPane fx:id="scrollCartItems" fitToWidth="true" hbarPolicy="NEVER" styleClass="cart-items-scrollpane" vbarPolicy="AS_NEEDED" visible="false">
+                <VBox fx:id="boxCartItems" spacing="8.0">
+                    <!-- Render động từng dòng item trong giỏ -->
+                </VBox>
+            </ScrollPane>
+        </StackPane>
+
+        <!-- CẢNH BÁO THUỐC KÊ TOA (NỔI BẬT NẾU ĐƠN CÓ THUỐC KÊ TOA) -->
+        <HBox fx:id="bannerPrescriptionNotice" alignment="CENTER_LEFT" spacing="8.0" styleClass="cart-prescription-banner" visible="false" managed="false">
+            <Label styleClass="banner-warning-icon" text="⚠" />
+            <Label styleClass="banner-warning-text" text="Có thuốc kê toa — sẽ cần xác nhận khi thanh toán" wrapText="true" HBox.hgrow="ALWAYS" />
+        </HBox>
+
+        <!-- PHẦN MỞ RỘNG: GIẢM GIÁ & SĐT KHÁCH HÀNG -->
+        <VBox spacing="8.0" styleClass="cart-extra-box">
+            <HBox alignment="CENTER_LEFT" spacing="6.0" onMouseClicked="#toggleCustomerDiscountExpand" styleClass="expand-trigger-row">
+                <Label fx:id="lblExpandIcon" styleClass="expand-icon" text="+" />
+                <Label fx:id="lblExpandTitle" styleClass="expand-label" text="Giảm giá · SĐT khách" />
+            </HBox>
+
+            <VBox fx:id="paneExtraFields" spacing="10.0" visible="false" managed="false">
+                <!-- Giảm giá: Hỗ trợ giảm bằng tiền (đ) hoặc phần trăm (%) -->
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                    <Label minWidth="75.0" prefWidth="75.0" styleClass="extra-field-name" text="Giảm giá" />
+                    <TextField fx:id="txtDiscount" alignment="CENTER_RIGHT" promptText="0" styleClass="extra-input" HBox.hgrow="ALWAYS" />
+                    <HBox alignment="CENTER" styleClass="discount-toggle-group">
+                        <Button fx:id="btnDiscountVnd" onAction="#handleDiscountVndMode" styleClass="btn-discount-mode, active" text="đ" />
+                        <Button fx:id="btnDiscountPercent" onAction="#handleDiscountPercentMode" styleClass="btn-discount-mode" />
+                    </HBox>
+                </HBox>
+
+                <!-- SĐT khách: Không bắt buộc -->
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                    <Label minWidth="75.0" prefWidth="75.0" styleClass="extra-field-name" text="SĐT khách" />
+                    <TextField fx:id="txtCustomerPhone" promptText="Không bắt buộc" styleClass="extra-input" HBox.hgrow="ALWAYS" />
+                </HBox>
+            </VBox>
+        </VBox>
+
+        <!-- BIỂU THỨC TÍNH TIỀN: TỔNG TIỀN HÀNG - GIẢM GIÁ = TỔNG THANH TOÁN -->
+        <VBox spacing="6.0" styleClass="cart-calc-box">
+            <!-- 1. Tổng tiền hàng -->
+            <HBox alignment="CENTER_LEFT" styleClass="cart-summary-line">
+                <Label styleClass="cart-summary-title" text="Tổng tiền hàng" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="lblCartSubtotal" styleClass="cart-summary-val" text="0đ" />
+            </HBox>
+
+            <!-- 2. Giảm giá -->
+            <HBox alignment="CENTER_LEFT" styleClass="cart-summary-line">
+                <Label styleClass="cart-summary-title" text="Giảm giá" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="lblCartDiscount" styleClass="cart-summary-val, text-danger" text="-0đ" />
+            </HBox>
+
+            <!-- Đường kẻ ngăn cách -->
+            <Region styleClass="cart-summary-sep" />
+
+            <!-- 3. Tổng thanh toán -->
+            <HBox alignment="CENTER_LEFT" styleClass="cart-total-row">
+                <VBox spacing="1.0">
+                    <Label styleClass="cart-total-label" text="Tổng thanh toán" />
+                    <Label styleClass="cart-formula-hint" text="(Tổng tiền hàng - Giảm giá)" />
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="lblCartTotal" styleClass="cart-total-value" text="0đ" />
+            </HBox>
+        </VBox>
+
+        <!-- NÚT THANH TOÁN CHÍNH (ĐÃ BỎ F9) -->
+        <Button fx:id="btnCheckout" maxWidth="Infinity" onAction="#handleOpenPaymentDialog" prefHeight="48.0" styleClass="btn-sales-checkout" text="Thanh toán" />
+    </VBox>
+    </HBox>
+
+    <!-- 2. MÀN HÌNH LỊCH SỬ BÁN HÀNG -->
+    <StackPane fx:id="viewSalesHistory" visible="false" managed="false" />
+
+</StackPane>

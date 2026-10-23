@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+
+<VBox spacing="10.0"
+      style="-fx-background-color: #F8FAFC;"
+      stylesheets="@../../css/inventory.css, @../../css/inventory_history.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pharmacy.inventory.ui.InventoryHistoryController">
+
+    <padding>
+        <Insets bottom="10.0" left="20.0" right="20.0" top="8.0" />
+    </padding>
+
+    <!-- HEADER: Tiêu đề + Bộ lọc theo ngày & Nút đóng ✕ ở góc phải -->
+    <HBox alignment="CENTER_LEFT" spacing="14.0">
+        <Label styleClass="history-main-title" text="Lịch sử Xuất - Nhập kho" />
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- Cụm lọc theo ngày + Nút ✕ đóng -->
+        <HBox alignment="CENTER_RIGHT" spacing="16.0">
+            <!-- Lọc theo ngày (Nhập ngày và bấm phễu lọc để xem lịch sử của ngày đó) -->
+            <HBox alignment="CENTER_LEFT" spacing="6.0">
+                <Label styleClass="filter-label" text="Ngày:" />
+                <DatePicker fx:id="dpFilterDate" prefWidth="150.0" promptText="dd/MM/yyyy" styleClass="history-datepicker" />
+                <Button fx:id="btnFilterDate" onAction="#handleFilterDate" styleClass="btn-funnel-filter">
+                    <graphic>
+                        <SVGPath content="M2 3h20l-8 9.5v6.5l-4 2v-8.5L2 3z" styleClass="funnel-icon" />
+                    </graphic>
+                    <tooltip>
+                        <Tooltip fx:id="tooltipFilter" text="Nhấn để lọc theo ngày" />
+                    </tooltip>
+                </Button>
+            </HBox>
+
+            <!-- Nút X ở góc phải trên cao thay thế nút quay lại -->
+            <Button fx:id="btnClose" text="✕" onAction="#handleClose" styleClass="btn-close-history" />
+        </HBox>
+    </HBox>
+
+    <!-- KHU VỰC BẢNG: TABPANE 2 TABS (NHẬP KHO & XUẤT KHO) -->
+    <TabPane fx:id="historyTabPane" styleClass="custom-history-tabpane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+        <tabs>
+            <!-- ==================== TAB 1: LỊCH SỬ NHẬP KHO ==================== -->
+            <Tab fx:id="tabImport" text="Lịch sử Nhập kho">
+                <VBox spacing="8.0" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets top="8.0" />
+                    </padding>
+
+                    <!-- Bảng danh sách phiếu nhập kho (cho phép cuộn ngang và dọc, căn trái các cột, không có cột thao tác) -->
+                    <HBox minHeight="300.0" spacing="0.0" styleClass="table-float-container" VBox.vgrow="ALWAYS">
+                        <TableView fx:id="tableImport" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, history-master-table, table-scrollable-data">
+                            <columns>
+                                <TableColumn fx:id="colImportIndex" prefWidth="80.0" minWidth="70.0" maxWidth="100.0" text="STT" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                                <TableColumn fx:id="colImportDateTime" prefWidth="190.0" minWidth="180.0" text="Thời gian nhập" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                                <TableColumn fx:id="colImportEmployee" prefWidth="250.0" minWidth="220.0" text="Người nhập kho" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                                <TableColumn fx:id="colImportSupplier" prefWidth="380.0" minWidth="320.0" text="Nhà cung cấp" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                                <TableColumn fx:id="colImportItemCount" prefWidth="130.0" minWidth="120.0" text="Số mặt hàng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                                <TableColumn fx:id="colImportTotalQty" prefWidth="130.0" minWidth="120.0" text="Tổng SL" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                                <TableColumn fx:id="colImportTotalAmount" prefWidth="200.0" minWidth="180.0" text="Tổng tiền nhập" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                                <TableColumn fx:id="colImportNote" prefWidth="380.0" minWidth="300.0" text="Ghi chú" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                        </TableView>
+                    </HBox>
+
+                    <!-- THANH ĐIỀU HƯỚNG PHÂN TRANG NHẬP KHO -->
+                    <HBox alignment="CENTER" prefHeight="36.0" spacing="12.0">
+                        <VBox.margin>
+                            <Insets top="20.0" />
+                        </VBox.margin>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <HBox fx:id="importPaginationBox" alignment="CENTER" spacing="6.0" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblImportRecordRange"
+                               alignment="CENTER"
+                               prefHeight="34.0"
+                               minWidth="100.0"
+                               prefWidth="100.0"
+                               maxWidth="100.0"
+                               styleClass="pagination-record-badge"
+                               text="0 - 0" />
+                    </HBox>
+                </VBox>
+            </Tab>
+
+            <!-- ==================== TAB 2: LỊCH SỬ XUẤT KHO ==================== -->
+            <Tab fx:id="tabExport" text="Lịch sử Xuất kho">
+                <VBox spacing="8.0" VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets top="8.0" />
+                    </padding>
+
+                    <!-- Bảng danh sách phiếu xuất kho (cho phép cuộn ngang và dọc, căn trái các cột, không có cột thao tác) -->
+                    <HBox minHeight="300.0" spacing="0.0" styleClass="table-float-container" VBox.vgrow="ALWAYS">
+                        <TableView fx:id="tableExport" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, history-master-table, table-scrollable-data">
+                            <columns>
+                                <TableColumn fx:id="colExportIndex" prefWidth="80.0" minWidth="70.0" maxWidth="100.0" text="STT" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                                <TableColumn fx:id="colExportDateTime" prefWidth="190.0" minWidth="180.0" text="Thời gian xuất" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                                <TableColumn fx:id="colExportEmployee" prefWidth="250.0" minWidth="220.0" text="Người xuất kho" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                                <TableColumn fx:id="colExportType" prefWidth="280.0" minWidth="240.0" text="Hình thức xuất" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                                <TableColumn fx:id="colExportItemCount" prefWidth="130.0" minWidth="120.0" text="Số mặt hàng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                                <TableColumn fx:id="colExportTotalQty" prefWidth="130.0" minWidth="120.0" text="Tổng SL xuất" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                                <TableColumn fx:id="colExportNote" prefWidth="420.0" minWidth="350.0" text="Lý do / Ghi chú" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                        </TableView>
+                    </HBox>
+
+                    <!-- THANH ĐIỀU HƯỚNG PHÂN TRANG XUẤT KHO -->
+                    <HBox alignment="CENTER" prefHeight="36.0" spacing="12.0">
+                        <VBox.margin>
+                            <Insets top="20.0" />
+                        </VBox.margin>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <HBox fx:id="exportPaginationBox" alignment="CENTER" spacing="6.0" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblExportRecordRange"
+                               alignment="CENTER"
+                               prefHeight="34.0"
+                               minWidth="100.0"
+                               prefWidth="100.0"
+                               maxWidth="100.0"
+                               styleClass="pagination-record-badge"
+                               text="0 - 0" />
+                    </HBox>
+                </VBox>
+            </Tab>
+        </tabs>
+    </TabPane>
+</VBox>

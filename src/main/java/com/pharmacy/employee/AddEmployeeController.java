@@ -4,11 +4,8 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.util.StringConverter;
-
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
@@ -31,7 +28,6 @@ public class AddEmployeeController implements Initializable {
     private Runnable onCloseCallback;
     private Consumer<Employee> onSaveSuccessCallback;
     private final EmployeeService employeeService = new EmployeeServiceImpl();
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -46,19 +42,7 @@ public class AddEmployeeController implements Initializable {
         cbRole.setValue("Nhân viên");
 
         // Format DatePicker hiển thị định dạng ngày dd/MM/yyyy
-        dpBirthDate.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(LocalDate date) {
-                return (date != null) ? dateFormatter.format(date) : "";
-            }
-
-            @Override
-            public LocalDate fromString(String string) {
-                return (string != null && !string.trim().isEmpty())
-                        ? LocalDate.parse(string, dateFormatter)
-                        : null;
-            }
-        });
+        com.pharmacy.common.FormatUtils.setupDatePicker(dpBirthDate);
 
         // Xóa viền đỏ và text báo lỗi ngay khi người dùng gõ hoặc chọn lại
         txtFullName.textProperty().addListener((obs, o, n) -> clearError(txtFullName, lblErrorName));
@@ -117,7 +101,7 @@ public class AddEmployeeController implements Initializable {
         if (citizenId.isEmpty()) {
             showError(txtCitizenId, lblErrorCitizenId, "Vui lòng nhập căn cước công dân");
             isValid = false;
-        } else if (!citizenId.matches("^\\d{12}$")) {
+        } else if (!com.pharmacy.common.FormValidator.isValidNationalId(citizenId)) {
             showError(txtCitizenId, lblErrorCitizenId, "CCCD phải đúng 12 chữ số");
             isValid = false;
         }
@@ -126,7 +110,7 @@ public class AddEmployeeController implements Initializable {
         if (phone.isEmpty()) {
             showError(txtPhone, lblErrorPhone, "Số điện thoại không được để trống");
             isValid = false;
-        } else if (!phone.matches("^0[35789]\\d{8}$")) {
+        } else if (!com.pharmacy.common.FormValidator.isValidPhone(phone)) {
             showError(txtPhone, lblErrorPhone, "SĐT không hợp lệ (10 số, ví dụ: 0912345678)");
             isValid = false;
         }
@@ -160,8 +144,6 @@ public class AddEmployeeController implements Initializable {
                 if (onSaveSuccessCallback != null) {
                     onSaveSuccessCallback.accept(newEmp);
                 }
-                // Đóng drawer sau khi thêm thành công (nếu có hàm close)
-                // handleClose();
             } else {
                 // Trường hợp repository commit thất bại do lỗi hệ thống/kết nối DB
                 showError(txtPhone, lblErrorPhone, "Lưu thất bại! Đã có lỗi xảy ra từ hệ thống.");

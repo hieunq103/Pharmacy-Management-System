@@ -109,7 +109,7 @@ public class ChangePasswordDialog extends Dialog<ButtonType> {
         btnOk.setText("Xác nhận đổi");
         btnCancel.setText("Hủy");
 
-        String btnBase = "-fx-font-family: 'Inter 18pt', 'Inter', sans-serif; -fx-font-size: 14px; -fx-font-weight: 600; -fx-pref-height: 38px; -fx-min-height: 38px; -fx-background-radius: 6; -fx-cursor: hand; ";
+        String btnBase = "-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 14px; -fx-pref-height: 38px; -fx-min-height: 38px; -fx-background-radius: 6; -fx-cursor: hand; ";
 
         // Nút xác nhận (.btn-success)
         String btnSuccessStyle = btnBase + "-fx-background-color: #16A34A !important; -fx-text-fill: white !important; -fx-padding: 0 20;";

@@ -1,6 +1,7 @@
 .detail-container {
     -fx-padding: 0 0 16 0;
     -fx-background-color: #F8FAFC;
+    -fx-font-family: "Inter 18pt";
 }
 
 .detail-card {
@@ -11,14 +12,14 @@
 }
 
 .detail-title {
+    -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 18px;
-    -fx-font-weight: 700;
     -fx-text-fill: #1E293B;
 }
 
 .form-label {
+    -fx-font-family: "Inter 18pt SemiBold";
     -fx-text-fill: #475569;
-    -fx-font-weight: 600;
     -fx-font-size: 13px;
 }
 
@@ -28,8 +29,8 @@
     -fx-border-radius: 6;
     -fx-background-radius: 6;
     -fx-padding: 7 12;
+    -fx-font-family: "Inter 18pt";
     -fx-font-size: 13px;
-    -fx-font-weight: 500;
     -fx-text-fill: #0F172A;
 }
 
@@ -39,12 +40,13 @@
     -fx-border-radius: 6;
     -fx-background-radius: 6;
     -fx-padding: 7 12;
+    -fx-font-family: "Inter 18pt";
     -fx-font-size: 13px;
-    -fx-font-weight: 500;
     -fx-text-fill: #0F172A;
 }
 
 .text-field .text {
+    -fx-font-family: "Inter 18pt";
     -fx-font-size: 13px;
 }
 
@@ -54,10 +56,12 @@
     -fx-border-radius: 6;
     -fx-background-radius: 6;
     -fx-padding: 4 12;
+    -fx-font-family: "Inter 18pt";
     -fx-font-size: 13px;
 }
 
 .form-combo-box .list-cell {
+    -fx-font-family: "Inter 18pt";
     -fx-font-size: 13px;
 }
 
@@ -65,7 +69,7 @@
     -fx-background-color: #F1F5F9;
     -fx-text-fill: #475569;
     -fx-border-color: #CBD5E1;
-    -fx-font-weight: 600;
+    -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
     -fx-padding: 7 16;
     -fx-background-radius: 6;
@@ -81,7 +85,7 @@
 .btn-back {
     -fx-background-color: #0F172A;
     -fx-text-fill: #FFFFFF;
-    -fx-font-weight: 600;
+    -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
     -fx-padding: 7 16;
     -fx-background-radius: 6;
@@ -95,7 +99,7 @@
 .btn-primary {
     -fx-background-color: #2563EB;
     -fx-text-fill: #FFFFFF;
-    -fx-font-weight: 600;
+    -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
     -fx-padding: 8 20;
     -fx-background-radius: 6;
@@ -109,7 +113,7 @@
 .btn-success {
     -fx-background-color: #16A34A;
     -fx-text-fill: #FFFFFF;
-    -fx-font-weight: 600;
+    -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13px;
     -fx-padding: 8 20;
     -fx-background-radius: 6;
@@ -128,5 +132,4 @@
 .form-error-label {
     -fx-text-fill: #DC2626;
     -fx-font-size: 11px;
-    -fx-font-weight: 500;
 }

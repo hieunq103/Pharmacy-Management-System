@@ -1,0 +1,1004 @@
+/* ==========================================================================
+   SALES & POS MODULE CSS — PharmaOS Medical White & Blue Theme
+   ========================================================================== */
+
+/* TIÊU ĐỀ TRANG */
+.sales-main-title {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 20px;
+    -fx-text-fill: #0F172A;
+}
+
+.sales-sub-title {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748B;
+}
+
+/* Ô TÌM KIẾM NHANH */
+.search-box-container {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 8px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 6 12;
+}
+
+.search-box-container:focused-within {
+    -fx-border-color: #0066FF;
+    -fx-effect: dropshadow(gaussian, rgba(0, 102, 255, 0.15), 6, 0, 0, 0);
+}
+
+.search-icon {
+    -fx-fill: #64748B;
+    -fx-scale-x: 0.85;
+    -fx-scale-y: 0.85;
+}
+
+.search-input-field {
+    -fx-background-color: transparent;
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 14px;
+    -fx-text-fill: #0F172A;
+    -fx-prompt-text-fill: #94A3B8;
+}
+
+.shortcut-badge {
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 4px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 4px;
+    -fx-border-width: 1px;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 11px;
+    -fx-text-fill: #475569;
+    -fx-padding: 2 6;
+}
+
+/* HÀNG PILL DANH MỤC */
+/* COMBOBOX CHỌN NHÓM THUỐC */
+.sales-category-combo {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-border-width: 1.5px;
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 13px;
+    -fx-pref-height: 42px;
+    -fx-min-height: 42px;
+    -fx-cursor: hand;
+}
+
+.sales-category-combo:focused {
+    -fx-border-color: #0066FF;
+    -fx-effect: dropshadow(gaussian, rgba(0, 102, 255, 0.15), 6, 0, 0, 0);
+}
+
+.sales-category-combo .list-cell {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13px;
+    -fx-text-fill: #0F172A;
+    -fx-padding: 4 8;
+}
+
+/* THẺ THUỐC (MEDICINE CARD - TỰ ĐỘNG GIÃN TRONG GRID 2 CỘT) */
+.medicine-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 12px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 12 16;
+    -fx-cursor: hand;
+    -fx-min-height: 110px;
+    -fx-pref-height: 125px;
+    -fx-max-width: 10000px;
+}
+
+.medicine-card:hover {
+    -fx-border-color: #93C5FD;
+    -fx-effect: dropshadow(gaussian, rgba(0, 102, 255, 0.12), 10, 0, 0, 4);
+    -fx-translate-y: -2px;
+}
+
+.medicine-card.in-cart {
+    -fx-border-color: #0066FF;
+    -fx-background-color: #F8FAFF;
+}
+
+.medicine-card.out-of-stock {
+    -fx-opacity: 0.65;
+    -fx-background-color: #F8FAFC;
+}
+
+.card-title {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-text-fill: #0F172A;
+}
+
+.card-badge-prescription {
+    -fx-background-color: #FEF3C7;
+    -fx-background-radius: 4px;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 11px;
+    -fx-text-fill: #B45309;
+    -fx-padding: 2 6;
+}
+
+.card-unit {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748B;
+}
+
+.card-warning-tag {
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 11px;
+    -fx-text-fill: #D97706;
+}
+
+.card-low-stock-tag {
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 11px;
+    -fx-text-fill: #DC2626;
+}
+
+.card-price {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 15px;
+    -fx-text-fill: #0066FF;
+}
+
+.card-stock {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748B;
+}
+
+.card-qty-badge {
+    -fx-background-color: #0066FF;
+    -fx-background-radius: 12px;
+    -fx-min-width: 24px;
+    -fx-min-height: 24px;
+    -fx-max-width: 24px;
+    -fx-max-height: 24px;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 12px;
+    -fx-text-fill: #FFFFFF;
+    -fx-alignment: CENTER;
+}
+
+/* ==================== CỘT PHẢI: GIỎ HÀNG (POS TERMINAL PANEL) ==================== */
+.pos-cart-panel {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 16px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 16px;
+    -fx-border-width: 1.5px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.04), 12, 0, 0, 4);
+}
+
+/* CÁC TAB ĐƠN HÀNG */
+.btn-order-tab {
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 6px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1px;
+    -fx-padding: 6 12;
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 13px;
+    -fx-text-fill: #475569;
+    -fx-cursor: hand;
+}
+
+.btn-order-tab.active {
+    -fx-background-color: #EFF6FF;
+    -fx-border-color: #0066FF;
+    -fx-text-fill: #0066FF;
+    -fx-font-family: "Inter 18pt SemiBold";
+}
+
+.btn-add-tab {
+    -fx-background-color: transparent;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-border-width: 1px;
+    -fx-text-fill: #64748B;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 10;
+    -fx-cursor: hand;
+}
+
+.btn-add-tab:hover {
+    -fx-background-color: #F1F5F9;
+    -fx-border-color: #94A3B8;
+    -fx-text-fill: #0F172A;
+}
+
+.btn-clear-cart {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748B;
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+}
+
+.btn-clear-cart:hover {
+    -fx-text-fill: #DC2626;
+    -fx-underline: true;
+}
+
+/* EMPTY STATE GIỎ HÀNG */
+.cart-empty-circle {
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 32px;
+}
+
+.cart-empty-icon {
+    -fx-fill: #94A3B8;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+.cart-empty-title {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 15px;
+    -fx-text-fill: #334155;
+}
+
+.cart-empty-desc {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 12px;
+    -fx-text-fill: #94A3B8;
+    -fx-max-width: 240px;
+}
+
+/* DANH SÁCH MẶT HÀNG TRONG GIỎ */
+.cart-items-scrollpane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-width: 0;
+}
+
+.cart-items-scrollpane .viewport {
+    -fx-background-color: transparent;
+}
+
+.cart-item-row {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 8px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-padding: 10 12;
+}
+
+.cart-item-row:hover {
+    -fx-border-color: #CBD5E1;
+}
+
+.cart-item-name {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-text-fill: #0F172A;
+}
+
+.cart-item-unit-price {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748B;
+}
+
+.cart-item-total {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-text-fill: #0F172A;
+}
+
+/* NÚT TĂNG GIẢM SỐ LƯỢNG TRONG GIỎ */
+.btn-qty-control {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 4px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 4px;
+    -fx-border-width: 1px;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+    -fx-min-width: 26px;
+    -fx-min-height: 26px;
+    -fx-max-width: 26px;
+    -fx-max-height: 26px;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER;
+}
+
+.btn-qty-control:hover {
+    -fx-background-color: #F1F5F9;
+    -fx-border-color: #94A3B8;
+}
+
+.lbl-qty-display {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-text-fill: #0F172A;
+    -fx-min-width: 28px;
+    -fx-alignment: CENTER;
+}
+
+.btn-remove-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-padding: 4;
+}
+
+.btn-remove-item:hover {
+    -fx-text-fill: #DC2626;
+}
+
+/* BANNER CẢNH BÁO THUỐC KÊ TOA */
+.cart-prescription-banner {
+    -fx-background-color: #FEF3C7;
+    -fx-background-radius: 8px;
+    -fx-border-color: #FDE68A;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-padding: 8 12;
+}
+
+.banner-warning-icon {
+    -fx-font-size: 14px;
+    -fx-text-fill: #B45309;
+}
+
+.banner-warning-text {
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 12px;
+    -fx-text-fill: #B45309;
+}
+
+/* PHẦN GIẢM GIÁ & SĐT KHÁCH */
+.expand-trigger-row {
+    -fx-cursor: hand;
+}
+
+.expand-icon {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-text-fill: #0066FF;
+}
+
+.expand-label {
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 13px;
+    -fx-text-fill: #0066FF;
+}
+
+.extra-field-name {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748B;
+    -fx-min-width: 85px;
+}
+
+.extra-input {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 6px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1px;
+    -fx-padding: 5 8;
+    -fx-font-size: 12px;
+    -fx-text-fill: #0F172A;
+}
+
+.extra-input:focused {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #0066FF;
+}
+
+/* TỔNG TIỀN VÀ BIỂU THỨC TÍNH TIỀN TRONG GIỎ HÀNG */
+.cart-calc-box {
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px 0 0 0;
+    -fx-padding: 8 0 0 0;
+}
+
+.cart-summary-line {
+    -fx-padding: 1 0;
+}
+
+.cart-summary-title {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748B;
+}
+
+.cart-summary-val {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-text-fill: #1E293B;
+}
+
+.cart-summary-val.text-danger {
+    -fx-text-fill: #DC2626;
+}
+
+.cart-summary-sep {
+    -fx-background-color: #E2E8F0;
+    -fx-pref-height: 1px;
+    -fx-max-height: 1px;
+    -fx-min-height: 1px;
+}
+
+.cart-formula-hint {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 11px;
+    -fx-text-fill: #94A3B8;
+}
+
+.cart-total-row {
+    -fx-padding: 4 0 0 0;
+}
+
+.cart-total-label {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 15px;
+    -fx-text-fill: #1E293B;
+}
+
+.cart-total-value {
+    -fx-font-family: "Inter 18pt Bold";
+    -fx-font-size: 24px;
+    -fx-text-fill: #0066FF;
+}
+
+.btn-sales-checkout {
+    -fx-background-color: #0066FF;
+    -fx-background-radius: 8px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+}
+
+.btn-sales-checkout:hover {
+    -fx-background-color: #0052CC;
+}
+
+.btn-sales-checkout:pressed {
+    -fx-background-color: #003D99;
+}
+
+.btn-sales-checkout:disabled {
+    -fx-background-color: #CBD5E1;
+    -fx-text-fill: #94A3B8;
+    -fx-cursor: default;
+    -fx-opacity: 0.8;
+}
+
+/* ==================== PAYMENT DIALOG MODAL CSS ==================== */
+.payment-dialog-root {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 16px;
+    -fx-min-width: 690px;
+    -fx-pref-width: 690px;
+    -fx-max-width: 690px;
+}
+
+.payment-breakdown-card {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 12px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 12 16;
+}
+
+.payment-summary-label {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748B;
+}
+
+.payment-summary-value {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-text-fill: #0F172A;
+}
+
+.payment-summary-discount {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-text-fill: #DC2626;
+}
+
+.payment-summary-divider {
+    -fx-background-color: #E2E8F0;
+    -fx-pref-height: 1px;
+    -fx-max-height: 1px;
+    -fx-min-height: 1px;
+}
+
+.payment-formula-hint {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 11px;
+    -fx-text-fill: #94A3B8;
+}
+
+.payment-header-sub {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 15px;
+    -fx-text-fill: #1E293B;
+}
+
+.payment-total-amount {
+    -fx-font-family: "Inter 18pt Bold";
+    -fx-font-size: 26px;
+    -fx-text-fill: #0066FF;
+}
+
+/* HỘP CẢNH BÁO THUỐC KÊ TOA */
+.prescription-warning-box {
+    -fx-background-color: #FFFBEB;
+    -fx-background-radius: 10px;
+    -fx-border-color: #FDE68A;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 12 14;
+}
+
+.prescription-warning-icon {
+    -fx-font-size: 16px;
+    -fx-text-fill: #D97706;
+    -fx-min-width: 20px;
+    -fx-pref-width: 20px;
+}
+
+.prescription-warning-title {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-text-fill: #92400E;
+}
+
+.prescription-checkbox {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-text-fill: #1E293B;
+    -fx-cursor: hand;
+}
+
+.field-label {
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 13px;
+    -fx-text-fill: #475569;
+}
+
+/* NÚT CHỌN TIỀN MẶT / CHUYỂN KHOẢN (KÍCH THƯỚC CỐ ĐỊNH TUYỆT ĐỐI) */
+.payment-method-btn {
+    -fx-background-color: #E2E8F0;
+    -fx-background-radius: 8px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1.5px;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748B;
+    -fx-cursor: hand;
+    -fx-min-height: 44px;
+    -fx-pref-height: 44px;
+    -fx-max-height: 44px;
+    -fx-padding: 0 16;
+    -fx-alignment: CENTER;
+}
+
+.payment-method-btn:hover {
+    -fx-background-color: #CBD5E1;
+    -fx-border-color: #CBD5E1;
+    -fx-text-fill: #1E293B;
+}
+
+.payment-method-btn.active {
+    -fx-background-color: #0066FF;
+    -fx-border-color: #0066FF;
+    -fx-border-width: 1.5px;
+    -fx-text-fill: #FFFFFF;
+    -fx-min-height: 44px;
+    -fx-pref-height: 44px;
+    -fx-max-height: 44px;
+    -fx-padding: 0 16;
+    -fx-alignment: CENTER;
+}
+
+.payment-method-btn.active:hover {
+    -fx-background-color: #0052CC;
+    -fx-border-color: #0052CC;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* BỘ NÚT CHUYỂN ĐỔI GIẢM GIÁ (đ / %) */
+.discount-toggle-group {
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 6px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1px;
+    -fx-padding: 2;
+}
+
+.btn-discount-mode {
+    -fx-background-color: transparent;
+    -fx-background-radius: 4px;
+    -fx-border-width: 0;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748B;
+    -fx-min-width: 28px;
+    -fx-pref-width: 30px;
+    -fx-pref-height: 28px;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.btn-discount-mode:hover {
+    -fx-background-color: #E2E8F0;
+    -fx-text-fill: #0F172A;
+}
+
+.btn-discount-mode.active {
+    -fx-background-color: #0066FF;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* KHUNG CHI TIẾT THANH TOÁN */
+.payment-detail-box {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 12px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 16 18;
+    -fx-min-height: 330px;
+}
+
+/* KHUNG CHI TIẾT THANH TOÁN TIỀN MẶT */
+.cash-entry-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 12px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 16 18;
+}
+
+.cash-entry-label {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 15px;
+    -fx-text-fill: #1E293B;
+}
+
+.cash-input {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 8px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1.5px;
+    -fx-font-family: "Inter 18pt Bold";
+    -fx-font-size: 24px;
+    -fx-text-fill: #0F172A;
+    -fx-padding: 8 14;
+    -fx-pref-height: 52px;
+    -fx-min-height: 52px;
+}
+
+.cash-input:focused {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #0066FF;
+}
+
+.quick-amount-chip {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 8px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #334155;
+    -fx-padding: 8 16;
+    -fx-min-height: 38px;
+    -fx-pref-height: 38px;
+    -fx-cursor: hand;
+}
+
+.quick-amount-chip:hover {
+    -fx-background-color: #EFF6FF;
+    -fx-border-color: #0066FF;
+    -fx-text-fill: #0066FF;
+}
+
+.change-card {
+    -fx-background-color: #FEFCE8;
+    -fx-background-radius: 12px;
+    -fx-border-color: #FDE047;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 16 20;
+}
+
+.change-card-title {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 15.5px;
+    -fx-text-fill: #854D0E;
+}
+
+.change-card-hint {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 11.5px;
+    -fx-text-fill: #A16207;
+}
+
+.change-card-value {
+    -fx-font-family: "Inter 18pt Bold";
+    -fx-font-size: 28px;
+    -fx-text-fill: #D97706;
+}
+
+/* THÔNG TIN CHUYỂN KHOẢN */
+.transfer-info-title {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-text-fill: #1E293B;
+}
+
+.transfer-gateway-badge {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 11.5px;
+    -fx-text-fill: #059669;
+    -fx-background-color: #ECFDF5;
+    -fx-border-color: #A7F3D0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 3 10;
+}
+
+.qr-wrapper-card {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 10;
+}
+
+.qr-scan-hint {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 11px;
+    -fx-text-fill: #64748B;
+    -fx-font-style: italic;
+}
+
+.qr-success-overlay {
+    -fx-background-color: rgba(255, 255, 255, 0.96);
+    -fx-background-radius: 10px;
+    -fx-border-color: #16A34A;
+    -fx-border-width: 2.5px;
+    -fx-border-radius: 10px;
+}
+
+.qr-success-icon {
+    -fx-font-family: "Inter 18pt Bold";
+    -fx-font-size: 46px;
+    -fx-text-fill: #16A34A;
+}
+
+.qr-success-text {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 15px;
+    -fx-text-fill: #16A34A;
+}
+
+.transfer-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 12px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 14 18;
+}
+
+.transfer-field-name {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #64748B;
+    -fx-min-width: 105px;
+    -fx-pref-width: 105px;
+}
+
+.transfer-field-val {
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #1E293B;
+}
+
+.transfer-field-val.bold {
+    -fx-font-family: "Inter 18pt Bold";
+    -fx-font-size: 15px;
+    -fx-text-fill: #0F172A;
+}
+
+.transfer-field-val.text-primary {
+    -fx-font-family: "Inter 18pt Bold";
+    -fx-font-size: 19px;
+    -fx-text-fill: #0066FF;
+}
+
+.transfer-content-badge {
+    -fx-font-family: "Inter 18pt Bold";
+    -fx-font-size: 14.5px;
+    -fx-text-fill: #1D4ED8;
+    -fx-background-color: #EFF6FF;
+    -fx-border-color: #BFDBFE;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 4 10;
+}
+
+.transfer-status-bar {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 6 12;
+}
+
+.status-pulse-dot {
+    -fx-font-size: 12px;
+    -fx-text-fill: #0066FF;
+}
+
+.transfer-status-text {
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 12px;
+    -fx-text-fill: #475569;
+}
+
+/* FOOTER BUTTONS */
+.prescription-hint-text {
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 12px;
+    -fx-text-fill: #DC2626;
+}
+
+.btn-modal-cancel {
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 8px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 14px;
+    -fx-text-fill: #475569;
+    -fx-cursor: hand;
+    -fx-min-width: 100px;
+    -fx-pref-width: 100px;
+    -fx-max-width: 100px;
+    -fx-min-height: 42px;
+    -fx-pref-height: 42px;
+    -fx-max-height: 42px;
+    -fx-padding: 0;
+    -fx-alignment: CENTER;
+}
+
+.btn-modal-cancel:hover {
+    -fx-background-color: #E2E8F0;
+    -fx-text-fill: #0F172A;
+}
+
+.btn-modal-confirm {
+    -fx-background-color: #0066FF;
+    -fx-background-radius: 8px;
+    -fx-border-width: 0;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-text-fill: #FFFFFF;
+    -fx-cursor: hand;
+    -fx-min-width: 175px;
+    -fx-pref-width: 175px;
+    -fx-max-width: 175px;
+    -fx-min-height: 42px;
+    -fx-pref-height: 42px;
+    -fx-max-height: 42px;
+    -fx-padding: 0;
+    -fx-alignment: CENTER;
+}
+
+.btn-modal-confirm:hover {
+    -fx-background-color: #0052CC;
+}
+
+.btn-modal-confirm:pressed {
+    -fx-background-color: #003D99;
+}
+
+.btn-modal-confirm:disabled {
+    -fx-background-color: #94A3B8;
+    -fx-opacity: 0.45;
+    -fx-cursor: default;
+    -fx-min-width: 175px;
+    -fx-pref-width: 175px;
+    -fx-max-width: 175px;
+    -fx-min-height: 42px;
+    -fx-pref-height: 42px;
+    -fx-max-height: 42px;
+    -fx-padding: 0;
+    -fx-alignment: CENTER;
+}
+
+/* ==========================================================================
+   PAGINATION STYLING (PHÂN TRANG 6 THUỐC)
+   ========================================================================== */
+
+.page-btn {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-min-width: 36px;
+    -fx-pref-width: 36px;
+    -fx-max-width: 36px;
+    -fx-min-height: 36px;
+    -fx-pref-height: 36px;
+    -fx-max-height: 36px;
+    -fx-border-width: 1.5px;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-text-fill: #475569;
+    -fx-alignment: CENTER;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.page-btn:hover {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #CBD5E1;
+}
+
+.page-btn-active {
+    -fx-background-color: #E0F2FE;
+    -fx-border-color: #0066FF;
+    -fx-border-width: 1.5px;
+    -fx-text-fill: #0066FF;
+}
+
+.page-dots {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748B;
+    -fx-min-width: 24px;
+    -fx-alignment: CENTER;
+}
+
+.pagination-record-badge {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 0 14;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-text-fill: #475569;
+    -fx-border-width: 1.5px;
+}

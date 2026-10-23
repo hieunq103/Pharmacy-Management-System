@@ -78,7 +78,7 @@
     </ScrollPane>
 
     <!-- Footer -->
-    <HBox alignment="CENTER_RIGHT" spacing="12" style="-fx-padding: 16 24; -fx-border-color: #E2E8F0; -fx-border-width: 1 0 0 0; -fx-background-color: #F8FAFC;">
+    <HBox alignment="CENTER_RIGHT" spacing="12" style="-fx-padding: 12 20; -fx-border-color: #E2E8F0; -fx-border-width: 1 0 0 0; -fx-background-color: #F8FAFC;">
         <Button text="Hủy" onAction="#handleCancel" styleClass="btn-secondary"/>
         <Button fx:id="btnSave" text="Lưu thông tin" onAction="#handleSave" styleClass="btn-primary-add"/>
     </HBox>

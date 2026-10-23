@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox prefHeight="760.0" prefWidth="1200.0" spacing="18.0"
+<VBox spacing="10.0"
       style="-fx-background-color: #F8FAFC;"
       stylesheets="@../../css/employee.css"
       xmlns="http://javafx.com/javafx/21"
@@ -12,7 +12,7 @@
       fx:controller="com.pharmacy.employee.EmployeeController">
 
     <padding>
-        <Insets bottom="20.0" left="32.0" right="32.0" top="24.0" />
+        <Insets bottom="10.0" left="20.0" right="20.0" top="8.0" />
     </padding>
 
     <!-- Header: Thống kê & (Ô tìm kiếm + Nút thêm nhân viên) -->
@@ -45,16 +45,19 @@
     </HBox>
 
     <!-- Bảng danh sách: 7 cột -->
-<HBox spacing="0.0" VBox.vgrow="ALWAYS" styleClass="table-float-container">
-    <TableView fx:id="tableEmployee" styleClass="custom-employee-table" VBox.vgrow="ALWAYS">
+<HBox minHeight="300.0" spacing="0.0" styleClass="table-float-container" VBox.vgrow="ALWAYS">
+    <VBox.margin>
+        <Insets top="20.0" />
+    </VBox.margin>
+    <TableView fx:id="tableEmployee" HBox.hgrow="ALWAYS" styleClass="custom-employee-table">
         <columns>
-            <TableColumn fx:id="colName" minWidth="170.0" prefWidth="180.0" resizable="true" sortable="false" text="Tên" />
-            <TableColumn fx:id="colGender" minWidth="120.0" prefWidth="125.0" resizable="true" sortable="false" text="Giới tính" />
-            <TableColumn fx:id="colPhone" minWidth="130.0" prefWidth="130.0" resizable="true" sortable="false" text="SĐT" />
-            <TableColumn fx:id="colCccd" minWidth="140.0" prefWidth="150.0" text="CCCD" />
-            <TableColumn fx:id="colRole" minWidth="130.0" prefWidth="150.0" resizable="true" sortable="false" text="Vai trò" />
-            <TableColumn fx:id="colStatus" minWidth="120.0" prefWidth="120.0" resizable="true" sortable="false" text="Nhân sự" />
-            <TableColumn fx:id="colAccountStatus" minWidth="130.0" prefWidth="130.0" resizable="true" sortable="false" text="Tài khoản" />
+            <TableColumn fx:id="colName" minWidth="180.0" prefWidth="205.0" resizable="true" sortable="false" text="Tên" />
+            <TableColumn fx:id="colGender" minWidth="120.0" prefWidth="130.0" resizable="true" sortable="false" text="Giới tính" />
+            <TableColumn fx:id="colPhone" minWidth="130.0" prefWidth="140.0" resizable="true" sortable="false" text="SĐT" />
+            <TableColumn fx:id="colCccd" minWidth="150.0" prefWidth="165.0" text="CCCD" />
+            <TableColumn fx:id="colRole" minWidth="140.0" prefWidth="155.0" resizable="true" sortable="false" text="Vai trò" />
+            <TableColumn fx:id="colStatus" minWidth="125.0" prefWidth="135.0" resizable="true" sortable="false" text="Nhân sự" />
+            <TableColumn fx:id="colAccountStatus" minWidth="135.0" prefWidth="145.0" resizable="true" sortable="false" text="Tài khoản" />
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
@@ -66,7 +69,7 @@
                styleClass="custom-employee-table, sticky-action-col">
         <columns>
             <TableColumn fx:id="colAction"
-                         minWidth="108.0" prefWidth="108.0" maxWidth="108.0"
+                         minWidth="80.0" prefWidth="100.0" maxWidth="110.0"
                          resizable="false" sortable="false"
                          style="-fx-alignment: CENTER;" text="Thao tác" />
         </columns>
@@ -77,13 +80,16 @@
 </HBox>
 
     <!-- THANH ĐIỀU HƯỚNG PHÂN TRANG -->
-    <HBox alignment="CENTER" prefHeight="54.0" spacing="12.0">
+    <HBox alignment="CENTER" prefHeight="36.0" spacing="12.0">
+        <VBox.margin>
+            <Insets top="24.0" />
+        </VBox.margin>
         <Region HBox.hgrow="ALWAYS" />
         <HBox fx:id="paginationBox" alignment="CENTER" spacing="6.0" />
         <Region HBox.hgrow="ALWAYS" />
         <Label fx:id="lblRecordRange"
                alignment="CENTER"
-               prefHeight="42.0"
+               prefHeight="34.0"
                minWidth="100.0"
                prefWidth="100.0"
                maxWidth="100.0"

@@ -28,7 +28,8 @@ public final class HibernateUtil {
     private static SessionFactory sessionFactory;
     private static HikariDataSource dataSource;
 
-    private HibernateUtil() {}
+    private HibernateUtil() {
+    }
 
     public static synchronized SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
@@ -38,12 +39,13 @@ public final class HibernateUtil {
     }
 
     public static synchronized void init() {
-        if (sessionFactory != null) return;
+        if (sessionFactory != null)
+            return;
         StandardServiceRegistry registry = null;
         try {
             log.info("Khởi tạo Hibernate SessionFactory với HikariCP...");
 
-            // 1. Cấu hình HikariCP Connection Pool
+            // Cấu hình HikariCP Connection Pool
             HikariConfig config = new HikariConfig();
             config.setDriverClassName("com.mysql.cj.jdbc.Driver");
             config.setJdbcUrl(AppConfig.get("db.url"));
@@ -60,7 +62,7 @@ public final class HibernateUtil {
 
             dataSource = new HikariDataSource(config);
 
-            // 2. Cấu hình Hibernate Service Registry
+            // Cấu hình Hibernate Service Registry
             StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder();
             registryBuilder.applySetting(AvailableSettings.JAKARTA_NON_JTA_DATASOURCE, dataSource);
             registryBuilder.applySetting(AvailableSettings.HBM2DDL_AUTO, "none");
@@ -68,11 +70,13 @@ public final class HibernateUtil {
 
             registry = registryBuilder.build();
 
-            // 3. Đăng ký các Entity ORM
+            // Đăng ký các Entity ORM
             MetadataSources metadataSources = new MetadataSources(registry);
             metadataSources.addAnnotatedClass(Role.class);
             metadataSources.addAnnotatedClass(Employee.class);
             metadataSources.addAnnotatedClass(Account.class);
+            metadataSources.addAnnotatedClass(com.pharmacy.catalog.MedicineCategory.class);
+            metadataSources.addAnnotatedClass(com.pharmacy.catalog.Medicine.class);
 
             sessionFactory = metadataSources.buildMetadata().buildSessionFactory();
             log.info("Hibernate SessionFactory đã sẵn sàng.");
@@ -98,14 +102,16 @@ public final class HibernateUtil {
                 tx.commit();
                 return result;
             } catch (Exception e) {
-                if (tx != null && tx.isActive()) tx.rollback();
+                if (tx != null && tx.isActive())
+                    tx.rollback();
                 throw e;
             }
         }
     }
 
     /**
-     * Thực thi thao tác thay đổi dữ liệu (Insert, Update, Delete) không cần giá trị trả về
+     * Thực thi thao tác thay đổi dữ liệu (Insert, Update, Delete) không cần giá trị
+     * trả về
      */
     public static void execute(Consumer<Session> consumer) {
         try (Session session = getSessionFactory().openSession()) {
@@ -115,7 +121,8 @@ public final class HibernateUtil {
                 consumer.accept(session);
                 tx.commit();
             } catch (Exception e) {
-                if (tx != null && tx.isActive()) tx.rollback();
+                if (tx != null && tx.isActive())
+                    tx.rollback();
                 throw e;
             }
         }
@@ -125,7 +132,8 @@ public final class HibernateUtil {
      * Kiểm tra trạng thái sống của kết nối cơ sở dữ liệu (Heartbeat check)
      */
     public static boolean isDatabaseAlive() {
-        if (dataSource == null || dataSource.isClosed()) return false;
+        if (dataSource == null || dataSource.isClosed())
+            return false;
         try (Connection conn = dataSource.getConnection()) {
             return conn.isValid(2);
         } catch (Exception e) {
@@ -138,8 +146,8 @@ public final class HibernateUtil {
      */
     public static LocalDateTime getCurrentDbTime() {
         try (Connection conn = dataSource.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT CURRENT_TIMESTAMP")) {
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT CURRENT_TIMESTAMP")) {
             if (rs.next()) {
                 return rs.getTimestamp(1).toLocalDateTime();
             }

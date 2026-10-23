@@ -1,0 +1,362 @@
+/* ==========================================================================
+   INVENTORY HISTORY CSS — PharmaOS Medical Design
+   ========================================================================== */
+
+.history-main-title {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 19px;
+    -fx-text-fill: #0F172A;
+}
+
+.history-sub-title {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748B;
+}
+
+.btn-close-history {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748B;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-padding: 6 12;
+}
+
+.btn-close-history:hover {
+    -fx-text-fill: #0F172A;
+    -fx-background-color: #F1F5F9;
+    -fx-border-color: #94A3B8;
+}
+
+.btn-close-history:pressed {
+    -fx-background-color: #E2E8F0;
+}
+
+/* Bộ lọc & DatePicker */
+.filter-label {
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 13px;
+    -fx-text-fill: #475569;
+}
+
+.history-datepicker {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-font-size: 13px;
+}
+
+.history-datepicker .text-field {
+    -fx-background-color: transparent;
+    -fx-padding: 6 10;
+    -fx-font-size: 13px;
+    -fx-text-fill: #1E293B;
+}
+
+.btn-filter-action {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #475569;
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 13px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-padding: 7 12;
+    -fx-cursor: hand;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+}
+
+.btn-filter-action:hover {
+    -fx-background-color: #E2E8F0;
+    -fx-text-fill: #1E293B;
+}
+
+
+
+/* Nút phễu lọc theo ngày: Mặc định chưa lọc (Màu xám) */
+.btn-funnel-filter {
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-padding: 6 10;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER;
+}
+
+.btn-funnel-filter:hover {
+    -fx-background-color: #E2E8F0;
+    -fx-border-color: #94A3B8;
+}
+
+.btn-funnel-filter:pressed {
+    -fx-background-color: #CBD5E1;
+}
+
+.btn-funnel-filter .funnel-icon {
+    -fx-fill: #64748B;
+    -fx-scale-x: 0.72;
+    -fx-scale-y: 0.72;
+}
+
+.btn-funnel-filter:hover .funnel-icon {
+    -fx-fill: #334155;
+}
+
+/* Trạng thái đang áp dụng lọc (Màu xanh thương hiệu) */
+.btn-funnel-filter.active {
+    -fx-background-color: #0066FF;
+    -fx-border-color: #0066FF;
+}
+
+.btn-funnel-filter.active:hover {
+    -fx-background-color: #0052CC;
+    -fx-border-color: #0052CC;
+}
+
+.btn-funnel-filter.active:pressed {
+    -fx-background-color: #003D99;
+    -fx-border-color: #003D99;
+}
+
+.btn-funnel-filter.active .funnel-icon,
+.btn-funnel-filter.active:hover .funnel-icon {
+    -fx-fill: #FFFFFF;
+}
+
+/* TABPANE TÙY BIẾN HIỆN ĐẠI */
+.custom-history-tabpane {
+    -fx-tab-min-height: 38px;
+    -fx-tab-max-height: 38px;
+}
+
+.custom-history-tabpane .tab-header-area {
+    -fx-padding: 0 0 6 0;
+}
+
+.custom-history-tabpane .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.custom-history-tabpane .tab {
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 8px 8px 0 0;
+    -fx-border-color: #CBD5E1 #CBD5E1 transparent #CBD5E1;
+    -fx-border-radius: 8px 8px 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0 20;
+    -fx-cursor: hand;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.custom-history-tabpane .tab:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.custom-history-tabpane .tab:selected {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #0066FF #0066FF transparent #0066FF;
+    -fx-border-width: 2px 2px 0 2px;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-insets: 0;
+}
+
+/* Xoá bỏ hoàn toàn 2 vạch dọc màu xanh (viền focus indicator bên trong) của JavaFX */
+.custom-history-tabpane .tab .focus-indicator,
+.custom-history-tabpane .tab:focused .focus-indicator {
+    -fx-border-color: transparent !important;
+    -fx-border-width: 0 !important;
+    -fx-background-color: transparent !important;
+}
+
+.custom-history-tabpane .tab-container {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.custom-history-tabpane .tab .tab-label {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748B;
+}
+
+.custom-history-tabpane .tab:selected .tab-label {
+    -fx-text-fill: #0066FF;
+}
+
+/* SPLITPANE & SECTIONS */
+.history-splitpane {
+    -fx-background-color: transparent;
+    -fx-box-border: transparent;
+    -fx-padding: 0;
+}
+
+.history-splitpane > .split-pane-divider {
+    -fx-background-color: #E2E8F0;
+    -fx-padding: 3px;
+}
+
+.pane-section-box {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 10px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+    -fx-padding: 10 12;
+}
+
+.detail-section-box {
+    -fx-background-color: #FAFBFD;
+}
+
+.section-badge-title {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 12px;
+    -fx-text-fill: #1E293B;
+    -fx-letter-spacing: 0.5px;
+}
+
+.detail-title-highlight {
+    -fx-text-fill: #0066FF;
+}
+
+.badge-counter {
+    -fx-background-color: #EFF6FF;
+    -fx-text-fill: #0066FF;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 11px;
+    -fx-padding: 2 8;
+    -fx-background-radius: 12px;
+}
+
+.detail-summary-badge {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #475569;
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 12px;
+    -fx-padding: 3 10;
+    -fx-background-radius: 6px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+}
+
+.hint-select-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #94A3B8;
+    -fx-font-style: italic;
+}
+
+/* Master Table & Detail Table */
+.history-master-table .table-row-cell:selected,
+.history-detail-table .table-row-cell:selected {
+    -fx-background-color: #E0EDFF !important;
+}
+
+.history-master-table .table-row-cell:selected .text,
+.history-detail-table .table-row-cell:selected .text {
+    -fx-fill: #0040A8 !important;
+    -fx-font-family: "Inter 18pt SemiBold";
+}
+
+.code-pill {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 12px;
+    -fx-text-fill: #0066FF;
+    -fx-background-color: #EFF6FF;
+    -fx-background-radius: 4px;
+    -fx-padding: 2 6;
+}
+
+.code-pill-export {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 12px;
+    -fx-text-fill: #D97706;
+    -fx-background-color: #FEF3C7;
+    -fx-background-radius: 4px;
+    -fx-padding: 2 6;
+}
+
+/* Căn trái toàn bộ các cột và tiêu đề của bảng lịch sử kho & bảng chi tiết */
+.history-master-table .column-header .label,
+.history-detail-table .column-header .label,
+.history-master-table .column-header:last-visible .label,
+.history-detail-table .column-header:last-visible .label {
+    -fx-alignment: CENTER_LEFT !important;
+}
+
+.history-master-table .table-cell,
+.history-detail-table .table-cell {
+    -fx-alignment: CENTER_LEFT !important;
+}
+
+/* Badges cho phân quyền và trạng thái trong lịch sử bán hàng */
+.badge-pill {
+    -fx-background-radius: 12px;
+    -fx-padding: 3 10;
+    -fx-alignment: CENTER;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 11px;
+}
+
+.badge-blue {
+    -fx-background-color: #EFF6FF;
+    -fx-text-fill: #1D4ED8;
+    -fx-border-color: #BFDBFE;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+}
+
+.badge-green {
+    -fx-background-color: #ECFDF5;
+    -fx-text-fill: #047857;
+    -fx-border-color: #A7F3D0;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+}
+
+.badge-purple {
+    -fx-background-color: #F5F3FF;
+    -fx-text-fill: #6D28D9;
+    -fx-border-color: #DDD6FE;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+}
+
+/* Nút Lịch sử bán hàng trên màn hình bán hàng */
+.btn-sales-history {
+    -fx-background-color: #EFF6FF;
+    -fx-text-fill: #0066FF;
+    -fx-border-color: #BFDBFE;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-padding: 6 14;
+    -fx-cursor: hand;
+}
+
+.btn-sales-history:hover {
+    -fx-background-color: #DBEAFE;
+    -fx-border-color: #93C5FD;
+    -fx-text-fill: #0052CC;
+}
+
+.btn-sales-history:pressed {
+    -fx-background-color: #BFDBFE;
+}
+

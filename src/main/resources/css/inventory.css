@@ -1,0 +1,1303 @@
+/* ==========================================================================
+   TYPOGRAPHY & GLOBAL STYLES (ĐỒNG BỘ TRANG NHÂN VIÊN)
+   ========================================================================== */
+
+.root {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 14px;
+}
+
+.stat-label-primary,
+.stat-label-secondary {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 18px;
+    -fx-text-fill: #1E293B;
+}
+
+.stat-label-primary {
+    -fx-text-fill: #1E293B;
+}
+
+.stat-label-secondary {
+    -fx-text-fill: #1E293B;
+}
+
+/* ==========================================================================
+   HEADER BUTTONS & SEARCH INPUT
+   ========================================================================== */
+
+/* Ô nhập liệu tìm kiếm */
+.search-input {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 8 14;
+    -fx-font-size: 13px;
+    -fx-text-fill: #1E293B;
+    -fx-prompt-text-fill: #94A3B8;
+}
+
+.search-input:hover {
+    -fx-border-color: #94A3B8;
+}
+
+.search-input:focused {
+    -fx-border-color: #2563EB;
+    -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.15), 4, 0, 0, 0);
+}
+
+/* Nút Nhập Kho - Đồng bộ màu #0066FF giống trang nhân viên */
+.btn-primary-import {
+    -fx-background-color: #0066FF;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-width: 0;
+    -fx-padding: 9 18;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER;
+}
+
+.btn-primary-import:hover {
+    -fx-background-color: #0052CC;
+}
+
+.btn-primary-import:pressed {
+    -fx-background-color: #0040A8;
+}
+
+/* Nút Xuất Kho - Tone viền xám trắng trang nhã */
+.btn-secondary-export {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #334155;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-padding: 8 18;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER;
+}
+
+.btn-secondary-export:hover {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #94A3B8;
+    -fx-text-fill: #0F172A;
+}
+
+.btn-secondary-export:pressed {
+    -fx-background-color: #F1F5F9;
+}
+
+/* Nút Lịch sử Nhập / Xuất */
+.btn-secondary-history {
+    -fx-background-color: #EFF6FF;
+    -fx-text-fill: #0066FF;
+    -fx-border-color: #BFDBFE;
+    -fx-border-width: 1px;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER;
+}
+
+.btn-secondary-history:hover {
+    -fx-background-color: #DBEAFE;
+    -fx-border-color: #93C5FD;
+}
+
+.btn-secondary-history:pressed {
+    -fx-background-color: #BFDBFE;
+}
+
+/* ==========================================================================
+   CONTAINER & TABLE STYLING
+   ========================================================================== */
+
+/* Khung bao viền ngoài cùng bo tròn góc chứa bảng */
+.table-float-container {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
+.custom-inventory-table {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+    -fx-selection-bar: #F1F5F9;
+    -fx-selection-bar-text: #1E293B;
+    -fx-selection-bar-non-focused: #F1F5F9;
+}
+
+.custom-inventory-table .virtual-flow,
+.custom-inventory-table .placeholder {
+    -fx-background-color: transparent;
+}
+
+/* Bảng dữ liệu chính */
+.table-scrollable-data {
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+}
+
+/* Cột Thao tác ghim cố định nổi bên phải */
+.sticky-action-col {
+    -fx-border-width: 0 0 0 1.5px;
+    -fx-border-color: #E2E8F0;
+    -fx-background-insets: 0;
+    -fx-background-color: #F8FAFC;
+}
+
+.sticky-action-col,
+.sticky-action-col .virtual-flow,
+.sticky-action-col .placeholder {
+    -fx-background-color: #F8FAFC;
+}
+
+/* Header bảng */
+.custom-inventory-table .column-header-background {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 0 0 1.5px 0;
+    -fx-background-radius: 9px 9px 0 0;
+}
+
+.custom-inventory-table .column-header {
+    -fx-background-color: transparent;
+    -fx-size: 40px;
+    -fx-padding: 0 16px;
+}
+
+.custom-inventory-table .column-header .column-drag-header {
+    -fx-cursor: h-resize;
+}
+
+.custom-inventory-table .column-header .label {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 15px;
+    -fx-text-fill: #334155;
+    -fx-alignment: CENTER_LEFT;
+    -fx-text-overrun: clip;
+}
+
+/* Căn giữa tiêu đề cột Thao tác */
+.sticky-action-col .column-header .label,
+.custom-inventory-table .column-header:last-visible .label {
+    -fx-alignment: CENTER;
+}
+
+/* Bảng chi tiết lô hàng: Tiêu đề cột Nhà cung cấp (cột cuối) luôn căn trái */
+.lot-dialog-root .custom-inventory-table .column-header:last-visible .label {
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Nút sắp xếp tiêu đề cột đồng bộ phong cách bảng Nhân viên */
+.btn-header-sort {
+    -fx-cursor: hand;
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 23px;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-alignment: CENTER;
+}
+
+.custom-inventory-table .column-header:hover .btn-header-sort,
+.btn-header-sort:hover {
+    -fx-text-fill: #0066FF;
+}
+
+.btn-header-sort.sort-active {
+    -fx-text-fill: #0066FF;
+}
+
+/* Icon sắp xếp tiêu đề cột mặc định của JavaFX */
+.custom-inventory-table .column-header .sort-order-dots-and-arrow {
+    -fx-padding: 0 0 0 10px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.custom-inventory-table .column-header .arrow {
+    -fx-background-color: #64748B;
+    -fx-padding: 3.5px 4.5px;
+}
+
+.custom-inventory-table .column-header:hover .arrow {
+    -fx-background-color: #0066FF;
+}
+
+/* Ẩn dấu chấm sort order thừa */
+.custom-inventory-table .column-header .sort-order-dot {
+    -fx-padding: 0;
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+}
+
+/* Thanh cuộn: Ẩn thanh cuộn dọc bảng chính để tránh trùng lặp, hiển thị thanh cuộn dọc mỏng ở cột thao tác */
+.custom-inventory-table .scroll-bar:vertical {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+    -fx-padding: 0;
+}
+
+/* Thanh cuộn dọc ở cột Thao tác (ngoài cùng bên phải) mỏng, thanh lịch */
+.sticky-action-col .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 7px;
+    -fx-max-width: 7px;
+    -fx-padding: 0;
+    -fx-opacity: 1;
+}
+
+.sticky-action-col .scroll-bar:vertical .thumb {
+    -fx-background-color: #CBD5E1;
+    -fx-background-radius: 4px;
+}
+
+.sticky-action-col .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #94A3B8;
+}
+
+.sticky-action-col .scroll-bar:vertical .track,
+.sticky-action-col .scroll-bar:vertical .increment-button,
+.sticky-action-col .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+}
+
+/* Ẩn hoàn toàn thanh cuộn ngang ở cột thao tác */
+.sticky-action-col .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+    -fx-padding: 0;
+}
+
+.custom-inventory-table .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-pref-height: 8px;
+    -fx-max-height: 8px;
+}
+
+.custom-inventory-table .scroll-bar:horizontal .thumb {
+    -fx-background-color: #CBD5E1;
+    -fx-background-radius: 4px;
+}
+
+.custom-inventory-table .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #94A3B8;
+}
+
+.custom-inventory-table .scroll-bar:horizontal .track,
+.custom-inventory-table .scroll-bar:horizontal .increment-button,
+.custom-inventory-table .scroll-bar:horizontal .decrement-button {
+    -fx-background-color: transparent;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+}
+
+.custom-inventory-table .corner,
+.sticky-action-col .corner {
+    -fx-background-color: transparent;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+}
+
+/* Các hàng và ô */
+.custom-inventory-table .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+    -fx-cell-size: 54px;
+}
+
+.custom-inventory-table .table-row-cell:hover {
+    -fx-background-color: #F8FAFC;
+}
+
+.custom-inventory-table .table-row-cell:selected,
+.custom-inventory-table .table-row-cell:filled:selected,
+.custom-inventory-table .table-row-cell:filled:focused:selected,
+.custom-inventory-table:focused .table-row-cell:filled:focused:selected {
+    -fx-background-color: #F1F5F9;
+    -fx-table-cell-border-color: transparent;
+    -fx-text-fill: #1E293B;
+}
+
+.custom-inventory-table .table-row-cell:selected .table-cell,
+.custom-inventory-table .table-row-cell:filled:selected .table-cell,
+.custom-inventory-table .table-row-cell:filled:focused:selected .table-cell,
+.custom-inventory-table:focused .table-row-cell:filled:focused:selected .table-cell {
+    -fx-text-fill: #1E293B;
+}
+
+/* Chỉ áp dụng đổi màu cho text trực tiếp của table-cell (Mã, Nhóm, HSD, Số lượng), không đè lên badge hay label con */
+.custom-inventory-table .table-row-cell:selected > .table-cell > .text,
+.custom-inventory-table .table-row-cell:filled:selected > .table-cell > .text,
+.custom-inventory-table .table-row-cell:filled:focused:selected > .table-cell > .text,
+.custom-inventory-table:focused .table-row-cell:filled:focused:selected > .table-cell > .text {
+    -fx-fill: #1E293B;
+}
+
+.custom-inventory-table .table-row-cell:empty {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.custom-inventory-table .table-cell {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 14.5px;
+    -fx-text-fill: #1E293B;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 16px;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}
+
+/* ==========================================================================
+   STATUS BADGES (ĐỒNG BỘ MÀU PASTEL HIỆN ĐẠI CỦA TRANG NHÂN VIÊN)
+   ========================================================================== */
+
+.status-badge {
+    -fx-background-radius: 16px;
+    -fx-padding: 3 12;
+    -fx-alignment: CENTER;
+    -fx-pref-height: 28px;
+    -fx-min-height: 28px;
+    -fx-max-height: 28px;
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13.5px;
+}
+
+.status-badge .text {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13.5px;
+}
+
+/* Bình thường (Xanh lá pastel giống Active của nhân viên) */
+.status-badge-normal,
+.custom-inventory-table .status-badge-normal,
+.custom-inventory-table .table-row-cell:selected .status-badge-normal,
+.custom-inventory-table .table-row-cell:filled:selected .status-badge-normal,
+.custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-normal,
+.custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-normal {
+    -fx-background-color: #DCFCE7;
+    -fx-text-fill: #16A34A;
+}
+
+.status-badge-normal .text,
+.custom-inventory-table .status-badge-normal .text,
+.custom-inventory-table .table-row-cell:selected .status-badge-normal .text,
+.custom-inventory-table .table-row-cell:filled:selected .status-badge-normal .text,
+.custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-normal .text,
+.custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-normal .text {
+    -fx-fill: #16A34A;
+}
+
+/* Sắp hết hàng (Cam ấm pastel cảnh báo tồn kho ít) */
+.status-badge-low-stock,
+.custom-inventory-table .status-badge-low-stock,
+.custom-inventory-table .table-row-cell:selected .status-badge-low-stock,
+.custom-inventory-table .table-row-cell:filled:selected .status-badge-low-stock,
+.custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-low-stock,
+.custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-low-stock {
+    -fx-background-color: #FFEDD5;
+    -fx-text-fill: #EA580C;
+}
+
+.status-badge-low-stock .text,
+.custom-inventory-table .status-badge-low-stock .text,
+.custom-inventory-table .table-row-cell:selected .status-badge-low-stock .text,
+.custom-inventory-table .table-row-cell:filled:selected .status-badge-low-stock .text,
+.custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-low-stock .text,
+.custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-low-stock .text {
+    -fx-fill: #EA580C;
+}
+
+/* Có lô cận hạn (Vàng/Cam pastel cảnh báo) */
+.status-badge-near-expiry,
+.custom-inventory-table .status-badge-near-expiry,
+.custom-inventory-table .table-row-cell:selected .status-badge-near-expiry,
+.custom-inventory-table .table-row-cell:filled:selected .status-badge-near-expiry,
+.custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-near-expiry,
+.custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-near-expiry {
+    -fx-background-color: #FEF3C7;
+    -fx-text-fill: #D97706;
+}
+
+.status-badge-near-expiry .text,
+.custom-inventory-table .status-badge-near-expiry .text,
+.custom-inventory-table .table-row-cell:selected .status-badge-near-expiry .text,
+.custom-inventory-table .table-row-cell:filled:selected .status-badge-near-expiry .text,
+.custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-near-expiry .text,
+.custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-near-expiry .text {
+    -fx-fill: #D97706;
+}
+
+/* Có lô hết hạn (Đỏ pastel giống Inactive của nhân viên) */
+.status-badge-expired,
+.custom-inventory-table .status-badge-expired,
+.custom-inventory-table .table-row-cell:selected .status-badge-expired,
+.custom-inventory-table .table-row-cell:filled:selected .status-badge-expired,
+.custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-expired,
+.custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-expired {
+    -fx-background-color: #FEECEB;
+    -fx-text-fill: #D9483B;
+}
+
+.status-badge-expired .text,
+.custom-inventory-table .status-badge-expired .text,
+.custom-inventory-table .table-row-cell:selected .status-badge-expired .text,
+.custom-inventory-table .table-row-cell:filled:selected .status-badge-expired .text,
+.custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-expired .text,
+.custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-expired .text {
+    -fx-fill: #D9483B;
+}
+
+/* Hết hàng (Xám pastel) */
+.status-badge-out-of-stock,
+.custom-inventory-table .status-badge-out-of-stock,
+.custom-inventory-table .table-row-cell:selected .status-badge-out-of-stock,
+.custom-inventory-table .table-row-cell:filled:selected .status-badge-out-of-stock,
+.custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-out-of-stock,
+.custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-out-of-stock {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #64748B;
+}
+
+.status-badge-out-of-stock .text,
+.custom-inventory-table .status-badge-out-of-stock .text,
+.custom-inventory-table .table-row-cell:selected .status-badge-out-of-stock .text,
+.custom-inventory-table .table-row-cell:filled:selected .status-badge-out-of-stock .text,
+.custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-out-of-stock .text,
+.custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-out-of-stock .text {
+    -fx-fill: #64748B;
+}
+
+/* Nhãn thuốc kê toa */
+.lbl-prescription-tag,
+.custom-inventory-table .lbl-prescription-tag,
+.custom-inventory-table .table-row-cell:selected .lbl-prescription-tag,
+.custom-inventory-table .table-row-cell:filled:selected .lbl-prescription-tag,
+.custom-inventory-table .table-row-cell:filled:focused:selected .lbl-prescription-tag,
+.custom-inventory-table:focused .table-row-cell:filled:focused:selected .lbl-prescription-tag {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-style: italic;
+    -fx-font-size: 11.5px;
+    -fx-text-fill: #EF4444;
+}
+
+.lbl-prescription-tag .text,
+.custom-inventory-table .lbl-prescription-tag .text,
+.custom-inventory-table .table-row-cell:selected .lbl-prescription-tag .text,
+.custom-inventory-table .table-row-cell:filled:selected .lbl-prescription-tag .text,
+.custom-inventory-table .table-row-cell:filled:focused:selected .lbl-prescription-tag .text,
+.custom-inventory-table:focused .table-row-cell:filled:focused:selected .lbl-prescription-tag .text {
+    -fx-fill: #EF4444;
+}
+
+/* ==========================================================================
+   TABLE ACTION BUTTONS
+   ========================================================================== */
+
+.btn-action-edit {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 5 12;
+    -fx-cursor: hand;
+    -fx-text-fill: #0066FF;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+}
+
+.btn-action-edit:hover {
+    -fx-background-color: #EFF6FF;
+    -fx-border-color: #93C5FD;
+}
+
+.btn-action-detail {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 5 12;
+    -fx-cursor: hand;
+    -fx-text-fill: #475569;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+}
+
+.btn-action-detail:hover {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #94A3B8;
+}
+
+/* ==========================================================================
+   PAGINATION STYLING (ĐỒNG BỘ NÚT BẤM VÀ BADGE TRANG NHÂN VIÊN)
+   ========================================================================== */
+
+.page-btn {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-min-width: 38px;
+    -fx-pref-width: 38px;
+    -fx-max-width: 38px;
+    -fx-min-height: 38px;
+    -fx-pref-height: 38px;
+    -fx-max-height: 38px;
+    -fx-border-width: 1.5px;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-text-fill: #475569;
+    -fx-alignment: CENTER;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.page-btn:hover {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #CBD5E1;
+}
+
+.page-btn-active {
+    -fx-background-color: #E0F2FE;
+    -fx-border-color: #94A3B8;
+    -fx-border-width: 1.5px;
+    -fx-text-fill: #0F172A;
+}
+
+.page-dots {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748B;
+    -fx-min-width: 28px;
+    -fx-alignment: CENTER;
+}
+
+.pagination-record-badge {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 0 16;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-text-fill: #475569;
+}
+
+/* ==========================================================================
+   THAO TÁC (NÚT 3 CHẤM DỌC & BẢNG GHIM PHẢI)
+   ========================================================================== */
+
+.sticky-action-col,
+.sticky-action-col .virtual-flow,
+.sticky-action-col .placeholder {
+    -fx-background-color: #F1F5F9;
+}
+
+/* Nút 3 chấm cột thao tác */
+.btn-action-more {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 4 10;
+    -fx-cursor: hand;
+    -fx-text-fill: #475569;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 15px;
+}
+
+.btn-action-more:hover {
+    -fx-background-color: #F1F5F9;
+    -fx-border-color: #94A3B8;
+}
+
+/* ==========================================================================
+   HEADER FILTER POPUP & TAM GIÁC LỌC (GIỐNG TRANG NHÂN VIÊN)
+   ========================================================================== */
+
+.custom-inventory-table .column-header .btn-header-filter,
+.btn-header-filter {
+    -fx-cursor: hand;
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 21px;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-alignment: CENTER;
+}
+
+.custom-inventory-table .column-header .btn-header-filter:hover,
+.btn-header-filter:hover {
+    -fx-text-fill: #0066FF;
+}
+
+.custom-inventory-table .column-header .btn-header-filter.filter-active,
+.btn-header-filter.filter-active {
+    -fx-text-fill: #0066FF;
+}
+
+.filter-context-menu {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 8px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-padding: 4px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
+}
+
+.filter-context-menu .custom-filter-menu-item {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+.filter-context-menu .custom-filter-menu-item:focused,
+.filter-context-menu .custom-filter-menu-item:hover {
+    -fx-background-color: transparent;
+}
+
+.filter-item-label {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #334155;
+    -fx-padding: 7 14;
+    -fx-background-radius: 6px;
+    -fx-background-color: transparent;
+    -fx-min-width: 160px;
+    -fx-pref-width: 160px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+}
+
+.filter-context-menu .custom-filter-menu-item:hover .filter-item-label {
+    -fx-background-color: #F8FAFC;
+}
+
+.filter-context-menu .custom-filter-menu-item .filter-item-label.filter-item-active,
+.filter-item-label.filter-item-active {
+    -fx-background-color: #EFF6FF;
+    -fx-text-fill: #0066FF;
+    -fx-font-family: "Inter 18pt SemiBold";
+}
+
+.filter-checkbox {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #334155;
+    -fx-cursor: hand;
+}
+
+.filter-checkbox:hover {
+    -fx-text-fill: #0F172A;
+}
+
+.filter-checkbox .box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-border-width: 1.5px;
+}
+
+.filter-checkbox:selected .box {
+    -fx-background-color: #0066FF;
+    -fx-border-color: #0066FF;
+}
+
+.filter-checkbox:selected .mark {
+    -fx-background-color: #FFFFFF;
+}
+
+.action-context-menu {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 8px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-padding: 4px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
+}
+
+.action-context-menu .menu-item {
+    -fx-padding: 7 14;
+    -fx-background-radius: 6px;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.action-context-menu .menu-item .label {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #334155;
+}
+
+.action-context-menu .menu-item:hover,
+.action-context-menu .menu-item:focused {
+    -fx-background-color: #F8FAFC;
+}
+
+.action-context-menu .menu-item:hover .label,
+.action-context-menu .menu-item:focused .label {
+    -fx-text-fill: #0066FF;
+}
+
+/* ==========================================================================
+   INLINE ROW EDITING (CHỈNH SỬA TRỰC TIẾP TRÊN BẢNG)
+   ========================================================================== */
+
+.table-cell-editor {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #0066FF;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 4 8;
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13px;
+    -fx-text-fill: #1E293B;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.18), 4, 0, 0, 0);
+}
+
+.table-cell-editor:focused {
+    -fx-border-color: #0052CC;
+    -fx-background-color: #F8FAFC;
+}
+
+.btn-action-save {
+    -fx-background-color: #10B981;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-padding: 4 8;
+    -fx-cursor: hand;
+}
+
+.btn-action-save:hover {
+    -fx-background-color: #059669;
+}
+
+.btn-action-cancel {
+    -fx-background-color: #94A3B8;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-padding: 4 8;
+    -fx-cursor: hand;
+}
+
+.btn-action-cancel:hover {
+    -fx-background-color: #64748B;
+}
+
+.row-editing {
+    -fx-background-color: #F0F7FF !important;
+}
+
+/* ==========================================================================
+   MEDICINE LOT DETAILS MODAL / DIALOG
+   ========================================================================== */
+
+.lot-dialog-root {
+    -fx-background-color: #FFFFFF;
+}
+
+.lot-dialog-title {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 20px;
+    -fx-text-fill: #0F172A;
+}
+
+.lot-dialog-code-badge {
+    -fx-background-color: #EFF6FF;
+    -fx-text-fill: #0066FF;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 12px;
+    -fx-background-radius: 6px;
+    -fx-padding: 3 8;
+    -fx-border-color: #BFDBFE;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1px;
+}
+
+.lot-dialog-medicine-name {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 16px;
+    -fx-text-fill: #0F172A;
+}
+
+/* Nút X đóng Modal */
+.btn-close-modal {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #64748B;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-background-radius: 8px;
+    -fx-padding: 6 12;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+
+.btn-close-modal:hover {
+    -fx-background-color: #FEE2E2;
+    -fx-text-fill: #EF4444;
+}
+
+/* Card chi tiết thông tin thuốc */
+.lot-info-card {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 12 16;
+}
+
+.lot-info-label {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748B;
+}
+
+.lot-info-value {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-text-fill: #1E293B;
+}
+
+.lot-info-value-highlight {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #0066FF;
+}
+
+/* 4 Thẻ thống kê tóm tắt nhanh */
+.lot-stat-card {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8 14;
+    -fx-min-width: 120px;
+}
+
+.lot-stat-card-warning {
+    -fx-background-color: #FFFBEB;
+    -fx-border-color: #FDE68A;
+}
+
+.lot-stat-card-danger {
+    -fx-background-color: #FEF2F2;
+    -fx-border-color: #FECACA;
+}
+
+.lot-stat-title {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 11.5px;
+    -fx-text-fill: #64748B;
+}
+
+.lot-stat-value {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 17px;
+}
+
+.lot-stat-value-primary {
+    -fx-text-fill: #0F172A;
+}
+
+.lot-stat-value-info {
+    -fx-text-fill: #0066FF;
+}
+
+.lot-stat-value-warning {
+    -fx-text-fill: #D97706;
+}
+
+.lot-stat-value-danger {
+    -fx-text-fill: #DC2626;
+}
+
+/* Bộ lọc ComboBox */
+.lot-filter-combo {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 7px;
+    -fx-background-radius: 7px;
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13px;
+    -fx-pref-height: 40px;
+    -fx-cursor: hand;
+}
+
+.lot-filter-combo:focused {
+    -fx-border-color: #0066FF;
+}
+
+/* Badge tổng giá trị tồn kho */
+.lot-summary-badge {
+    -fx-background-color: #EFF6FF;
+    -fx-border-color: #DBEAFE;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8 14;
+}
+
+.lot-summary-label {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13px;
+    -fx-text-fill: #1E40AF;
+}
+
+.lot-summary-val {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-text-fill: #0066FF;
+}
+
+/* Badges trạng thái cho từng lô hàng */
+.lot-badge-pill {
+    -fx-background-radius: 14px;
+    -fx-padding: 3 10;
+    -fx-alignment: CENTER;
+    -fx-pref-height: 24px;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 12px;
+}
+
+.lot-badge-active {
+    -fx-background-color: #DCFCE7;
+    -fx-text-fill: #16A34A;
+}
+
+.lot-badge-near-expiry {
+    -fx-background-color: #FEF3C7;
+    -fx-text-fill: #D97706;
+}
+
+.lot-badge-expired {
+    -fx-background-color: #FEE2E2;
+    -fx-text-fill: #DC2626;
+}
+
+.lot-badge-depleted {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #64748B;
+}
+
+/* ==========================================================================
+   CĂN CHỈNH TIÊU ĐỀ & DỮ LIỆU CỘT BẢNG LÔ HÀNG
+   ========================================================================== */
+
+.custom-inventory-table .table-cell.lot-col-center,
+.table-cell.lot-col-center {
+    -fx-alignment: CENTER;
+}
+
+.custom-inventory-table .table-cell.lot-col-left,
+.table-cell.lot-col-left {
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* ==========================================================================
+   MODAL DIALOGS (NHẬP KHO & XUẤT KHO) & SEARCHABLE PICKER
+   ========================================================================== */
+
+.inventory-modal-root {
+    -fx-background-color: #FFFFFF;
+    -fx-font-family: "Inter 18pt";
+}
+
+.modal-main-title {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 20px;
+    -fx-text-fill: #0F172A;
+}
+
+.modal-sub-title {
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748B;
+}
+
+.btn-modal-close {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #64748B;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-background-radius: 8px;
+    -fx-padding: 6 12;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+
+.btn-modal-close:hover {
+    -fx-background-color: #FEE2E2;
+    -fx-text-fill: #EF4444;
+}
+
+.import-mode-selector-box {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 10 16;
+}
+
+.form-card-container {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 14 16;
+}
+
+.form-section-title {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-text-fill: #1E293B;
+}
+
+.form-field-label {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 12.5px;
+    -fx-text-fill: #334155;
+}
+
+.form-field-input,
+.form-field-datepicker .text-field {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 7 12;
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13px;
+    -fx-text-fill: #0F172A;
+}
+
+.form-field-input:focused,
+.form-field-datepicker:focused .text-field {
+    -fx-border-color: #0066FF;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.15), 4, 0, 0, 0);
+}
+
+.form-field-combo {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 2 4;
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13px;
+}
+
+.form-field-combo:focused {
+    -fx-border-color: #0066FF;
+}
+
+.selected-med-info-box {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8 12;
+}
+
+.hint-label-fefo {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 11.5px;
+    -fx-text-fill: #0284C7;
+}
+
+.hint-stock-label {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748B;
+}
+
+.unit-badge-label {
+    -fx-background-color: #F1F5F9;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 6 12;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 12.5px;
+    -fx-text-fill: #334155;
+}
+
+.max-available-label {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 12px;
+    -fx-text-fill: #D97706;
+}
+
+.import-calc-total-box {
+    -fx-background-color: #EFF6FF;
+    -fx-border-color: #BFDBFE;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8 14;
+}
+
+.import-total-price-label {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 16px;
+    -fx-text-fill: #0066FF;
+}
+
+.creator-info-box {
+    -fx-background-color: #F8FAFC;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 6 12;
+}
+
+.modal-error-label {
+    -fx-background-color: #FEE2E2;
+    -fx-text-fill: #DC2626;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-padding: 8 14;
+    -fx-background-radius: 6px;
+    -fx-border-color: #FCA5A5;
+    -fx-border-radius: 6px;
+}
+
+.btn-modal-cancel {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 8 18;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #475569;
+    -fx-cursor: hand;
+}
+
+.btn-modal-cancel:hover {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #94A3B8;
+}
+
+.btn-modal-primary {
+    -fx-background-color: #0066FF;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13.5px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-padding: 8 20;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+}
+
+.btn-modal-primary:hover {
+    -fx-background-color: #0052CC;
+}
+
+.btn-modal-danger {
+    -fx-background-color: #DC2626;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13.5px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-padding: 8 20;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+}
+
+.btn-modal-danger:hover {
+    -fx-background-color: #B91C1C;
+}
+
+/* Searchable Medicine Picker Component */
+.medicine-picker-box:focused-within {
+    -fx-border-color: #0066FF;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.15), 4, 0, 0, 0);
+}
+
+.medicine-picker-list {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent;
+}
+
+.medicine-picker-list .list-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #F1F5F9;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 0;
+}
+
+.medicine-picker-list .list-cell:filled:hover {
+    -fx-background-color: #EFF6FF;
+}
+
+.medicine-picker-list .list-cell:filled:selected {
+    -fx-background-color: #DBEAFE;
+}
+
+/* ==========================================================================
+   BẢNG MẶT HÀNG NHẬP KHO & CĂN PHẢI TIỀN TỆ
+   ========================================================================== */
+
+.lot-col-right,
+.custom-inventory-table .column-header.lot-col-right .label,
+.custom-inventory-table .table-cell.lot-col-right,
+.table-cell.lot-col-right {
+    -fx-alignment: CENTER_RIGHT;
+}
+
+/* Hiển thị thanh cuộn dọc & ngang mượt mà cho bảng nhập kho */
+.import-items-table .scroll-bar:vertical {
+    -fx-opacity: 1 !important;
+    -fx-pref-width: 8px !important;
+    -fx-max-width: 8px !important;
+    -fx-background-color: transparent !important;
+}
+
+.import-items-table .scroll-bar:vertical .thumb {
+    -fx-background-color: #CBD5E1 !important;
+    -fx-background-radius: 4px !important;
+}
+
+.import-items-table .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #94A3B8 !important;
+}
+
+.import-items-table .scroll-bar:horizontal {
+    -fx-opacity: 1 !important;
+    -fx-pref-height: 8px !important;
+    -fx-max-height: 8px !important;
+    -fx-background-color: transparent !important;
+}
+
+.import-items-table .scroll-bar:horizontal .thumb {
+    -fx-background-color: #CBD5E1 !important;
+    -fx-background-radius: 4px !important;
+}
+
+.import-items-table .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #94A3B8 !important;
+}

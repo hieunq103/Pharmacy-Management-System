@@ -10,6 +10,10 @@ import org.slf4j.LoggerFactory;
 public class MigrationRunner {
     private static final Logger log = LoggerFactory.getLogger(MigrationRunner.class);
 
+    public static void main(String[] args) {
+        migrate();
+    }
+
     public static void migrate() {
         log.info("Bắt đầu kiểm tra và thực thi Flyway Migration...");
 

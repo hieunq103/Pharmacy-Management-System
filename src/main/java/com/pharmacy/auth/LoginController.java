@@ -1,25 +1,25 @@
 package com.pharmacy.auth;
 
 import com.pharmacy.account.Account;
+import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormValidator;
 import com.pharmacy.common.TogglePasswordField;
 import com.pharmacy.common.UserSession;
 import com.pharmacy.infra.exception.AppException;
 import com.pharmacy.infra.exception.ErrorCode;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,15 +38,19 @@ public class LoginController {
         return t;
     });
 
-    @FXML private GridPane rootBox;
-    @FXML private StackPane heroPane;
-    @FXML private ImageView heroImageView;
-    @FXML private VBox formPane;
+    @FXML
+    private StackPane heroPane;
+    @FXML
+    private ImageView heroImageView;
 
-    @FXML private TextField txtUsername;
-    @FXML private TogglePasswordField txtPassword;
-    @FXML private Label lblError;
-    @FXML private Button btnLogin;
+    @FXML
+    private TextField txtUsername;
+    @FXML
+    private TogglePasswordField txtPassword;
+    @FXML
+    private Label lblError;
+    @FXML
+    private Button btnLogin;
 
     private final AuthService authService = new AuthServiceImpl();
     private boolean isInternalUpdating = false;
@@ -84,10 +88,11 @@ public class LoginController {
                 }
             });
         }
+
     }
 
     @FXML
-    private void handleLogin(ActionEvent event) {
+    private void handleLogin() {
         String identifier = txtUsername != null ? txtUsername.getText().trim() : "";
         String password = txtPassword != null ? txtPassword.getText() : "";
 
@@ -97,9 +102,11 @@ public class LoginController {
             showError(validationResult.errorCode());
             if (validationResult.targetField() == FormValidator.TargetField.IDENTIFIER
                     || validationResult.targetField() == FormValidator.TargetField.BOTH) {
-                if (txtUsername != null) txtUsername.requestFocus();
+                if (txtUsername != null)
+                    txtUsername.requestFocus();
             } else if (validationResult.targetField() == FormValidator.TargetField.PASSWORD) {
-                if (txtPassword != null) txtPassword.requestFocus();
+                if (txtPassword != null)
+                    txtPassword.requestFocus();
             }
             return;
         }
@@ -117,23 +124,18 @@ public class LoginController {
 
         loginTask.setOnSucceeded(e -> {
             setLoading(false);
-            Account account = loginTask.getValue();
             String employeeName = UserSession.getInstance().getEmployeeName();
 
             log.info("Xác thực thành công cho nhân viên [{}]", employeeName);
 
             try {
-                if (account.isMustChangePassword()) {
-                    log.info("Tài khoản nhân viên [{}] yêu cầu đổi mật khẩu lần đầu", employeeName);
-                }
                 navigateToMainLayout();
             } catch (IOException ioEx) {
                 log.error("Không thể tải màn hình chính: ", ioEx);
-                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi giao diện");
-                alert.setHeaderText("Không thể nạp màn hình chính");
-                alert.setContentText(ioEx.getMessage());
-                alert.showAndWait();
+                DialogUtils.showError(
+                        btnLogin != null && btnLogin.getScene() != null ? btnLogin.getScene().getWindow() : null,
+                        "Lỗi giao diện",
+                        "Không thể nạp màn hình chính: " + ioEx.getMessage());
             }
         });
 
@@ -149,7 +151,8 @@ public class LoginController {
                 showError(ErrorCode.DATABASE_CONNECTION_ERROR);
             }
 
-            // Xóa ô nhập mật khẩu dưới cờ chặn để listener không xóa thông báo lỗi vừa hiển thị
+            // Xóa ô nhập mật khẩu dưới cờ chặn để listener không xóa thông báo lỗi vừa hiển
+            // thị
             isInternalUpdating = true;
             try {
                 if (txtPassword != null) {
@@ -175,7 +178,14 @@ public class LoginController {
 
         Parent root = FXMLLoader.load(mainLayoutFxml);
         Stage stage = (Stage) btnLogin.getScene().getWindow();
-        Scene scene = new Scene(root, 1280, 800);
+
+        Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
+        double currentW = (stage.getWidth() > 0) ? stage.getWidth() : 1280;
+        double currentH = (stage.getHeight() > 0) ? stage.getHeight() : 760;
+        double targetWidth = Math.min(currentW, visualBounds.getWidth());
+        double targetHeight = Math.min(currentH, visualBounds.getHeight() - 15);
+
+        Scene scene = new Scene(root, targetWidth, targetHeight);
 
         URL cssResource = getClass().getResource("/css/app.css");
         if (cssResource != null) {
@@ -184,10 +194,15 @@ public class LoginController {
 
         stage.setTitle("PharmaOS — Quản lý cửa hàng thuốc");
         stage.setScene(scene);
-        stage.setMinWidth(1160);
-        stage.setMinHeight(720);
+        stage.setWidth(targetWidth);
+        stage.setHeight(targetHeight);
+        stage.setMinWidth(1024);
+        stage.setMinHeight(580);
         stage.setResizable(true);
-        stage.centerOnScreen();
+        stage.setMaximized(false);
+        stage.setX(visualBounds.getMinX() + (visualBounds.getWidth() - targetWidth) / 2);
+        stage.setY(visualBounds.getMinY() + (visualBounds.getHeight() - targetHeight) / 2);
+        com.pharmacy.common.UiScaleManager.getInstance().install(scene);
         stage.show();
     }
 
@@ -209,7 +224,7 @@ public class LoginController {
             lblError.setText(message);
             lblError.setVisible(true);
             lblError.setManaged(true);
-            lblError.setStyle("-fx-text-fill: #E53935; -fx-font-size: 13px; -fx-font-weight: 500;");
+            lblError.setStyle("-fx-text-fill: #E53935; -fx-font-size: 13px; -fx-font-family: 'Inter 18pt';");
         }
     }
 
@@ -230,8 +245,7 @@ public class LoginController {
                             "-fx-text-fill: white;" +
                             "-fx-font-size: 16px;" +
                             "-fx-background-radius: 8;" +
-                            "-fx-cursor: hand;"
-            );
+                            "-fx-cursor: hand;");
         }
     }
 
@@ -244,8 +258,7 @@ public class LoginController {
                             "-fx-text-fill: white;" +
                             "-fx-font-size: 16px;" +
                             "-fx-background-radius: 8;" +
-                            "-fx-cursor: hand;"
-            );
+                            "-fx-cursor: hand;");
         }
     }
 }

@@ -1,23 +1,20 @@
 package com.pharmacy;
 
-// >>>>>>>>>>>>>>>>> [BẮT ĐẦU CODE MỚI THÊM: IMPORT AUTHENTICATION & SESSION] >>>>>>>>>>>>>>>>>
-import com.pharmacy.account.Account;
 import com.pharmacy.auth.AuthService;
 import com.pharmacy.auth.AuthServiceImpl;
 import com.pharmacy.auth.LoginRequest;
 import com.pharmacy.common.UserSession;
-// <<<<<<<<<<<<<<<<< [KẾT THÚC CODE MỚI THÊM: IMPORT AUTHENTICATION & SESSION] <<<<<<<<<<<<<<<<<
-
 import com.pharmacy.infra.db.DatabaseHealthChecker;
 import com.pharmacy.infra.db.HibernateUtil;
 import com.pharmacy.infra.db.MigrationRunner;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.text.Font;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +33,8 @@ public class PharmacyApplication extends Application {
     @Override
     public void init() {
         // 1. Cấu hình bắt ngoại lệ chưa được xử lý trên toàn bộ Thread (R2)
-        Thread.setDefaultUncaughtExceptionHandler((thread, ex) ->
-                log.error("Uncaught exception trên thread '{}': ", thread.getName(), ex));
+        Thread.setDefaultUncaughtExceptionHandler(
+                (thread, ex) -> log.error("Uncaught exception trên thread '{}': ", thread.getName(), ex));
 
         // 2. Chạy Flyway migration trước để đồng bộ schema (R72)
         try {
@@ -61,7 +58,6 @@ public class PharmacyApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // Nạp font TRƯỚC khi load FXML
         loadFont("/fonts/Inter_18pt-Regular.ttf");
         loadFont("/fonts/Inter_18pt-SemiBold.ttf");
 
@@ -75,81 +71,48 @@ public class PharmacyApplication extends Application {
 
         try {
 
-            // =========================================================================================
-            // >>>>>>>>>>>>>>>>> [BẮT ĐẦU CODE CŨ BỊ ẨN ĐI: MỞ MÀN HÌNH ĐĂNG NHẬP] >>>>>>>>>>>>>>>>>
-            // =========================================================================================
-            /*
-            URL loginFxml = getClass().getResource("/fxml/auth/login.fxml");
-            if (loginFxml == null) {
-                throw new IOException("Không tìm thấy file giao diện /fxml/auth/login.fxml");
-            }
+            boolean autoLoginDevMode = false;
+            String fxmlPath;
+            String title;
 
-            Parent root = FXMLLoader.load(loginFxml);
-            primaryStage.setTitle("PharmaOS — Quản lý cửa hàng thuốc");
-
-            // Giới hạn kích thước sàn khi người dùng kéo co nhỏ lại
-            primaryStage.setMinWidth(880);
-            primaryStage.setMinHeight(540);
-
-            // Tạo Scene với kích thước chuẩn 1160x720
-            Scene scene = new Scene(root, 1160, 720);
-
-            // Nạp file app.css toàn cục
-            URL cssResource = getClass().getResource("/css/app.css");
-            if (cssResource != null) {
-                scene.getStylesheets().add(cssResource.toExternalForm());
+            if (autoLoginDevMode) {
+                AuthService authService = new AuthServiceImpl();
+                authService.login(new LoginRequest("0985549854", "12345678"));
+                log.info("Đăng nhập Admin tự động thành công: {}", UserSession.getInstance().getEmployeeName());
+                fxmlPath = "/fxml/layout/main_layout.fxml";
+                title = "PharmaOS — Quản lý cửa hàng thuốc (Admin Mode)";
             } else {
-                log.warn("Không tìm thấy file CSS: /css/app.css");
+                fxmlPath = "/fxml/auth/login.fxml";
+                title = "PharmaOS — Quản lý cửa hàng thuốc";
             }
 
-            // Gán đúng biến 'scene' đã có CSS vào Stage
-            primaryStage.setScene(scene);
-            primaryStage.setWidth(1160);
-            primaryStage.setHeight(720);
-            primaryStage.centerOnScreen();
-            */
-            // =========================================================================================
-            // <<<<<<<<<<<<<<<<< [KẾT THÚC CODE CŨ BỊ ẨN ĐI: MỞ MÀN HÌNH ĐĂNG NHẬP] <<<<<<<<<<<<<<<<<
-            // =========================================================================================
-
-
-
-            // =========================================================================================
-            // >>>>>>>>>>>>>>>>> [BẮT ĐẦU CODE MỚI THÊM: LOGIN ADMIN & VÀO MAIN LAYOUT] >>>>>>>>>>>>>>>>>
-            // =========================================================================================
-            // 1. Tự động xác thực tài khoản Admin vào UserSession
-            AuthService authService = new AuthServiceImpl();
-            Account adminAccount = authService.login(new LoginRequest("0985549854", "12345678"));
-            log.info("Đăng nhập Admin tự động thành công: {}", UserSession.getInstance().getEmployeeName());
-
-            // 2. Tải thẳng FXML màn hình chính (Main Layout)
-            URL mainLayoutFxml = getClass().getResource("/fxml/layout/main_layout.fxml");
-            if (mainLayoutFxml == null) {
-                throw new IOException("Không tìm thấy file giao diện /fxml/layout/main_layout.fxml");
+            URL fxmlUrl = getClass().getResource(fxmlPath);
+            if (fxmlUrl == null) {
+                throw new IOException("Không tìm thấy file giao diện " + fxmlPath);
             }
 
-            Parent root = FXMLLoader.load(mainLayoutFxml);
-            primaryStage.setTitle("PharmaOS — Quản lý cửa hàng thuốc (Admin Mode)");
+            Parent root = FXMLLoader.load(fxmlUrl);
+            primaryStage.setTitle(title);
 
-            // Thiết lập kích thước cửa sổ rộng cho Dashboard/Main Layout
-            primaryStage.setMinWidth(1160);
-            primaryStage.setMinHeight(720);
+            Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
+            double targetWidth = Math.min(1280, visualBounds.getWidth());
+            double targetHeight = Math.min(760, visualBounds.getHeight() - 15);
 
-            Scene scene = new Scene(root, 1280, 800);
-
-            // Nạp CSS giao diện chung
+            Scene scene = new Scene(root, targetWidth, targetHeight);
             URL cssResource = getClass().getResource("/css/app.css");
             if (cssResource != null) {
                 scene.getStylesheets().add(cssResource.toExternalForm());
             }
 
             primaryStage.setScene(scene);
-            primaryStage.setWidth(1280);
-            primaryStage.setHeight(800);
-            primaryStage.centerOnScreen();
-            // =========================================================================================
-            // <<<<<<<<<<<<<<<<< [KẾT THÚC CODE MỚI THÊM: LOGIN ADMIN & VÀO MAIN LAYOUT] <<<<<<<<<<<<<<<
-            // =========================================================================================
+            primaryStage.setWidth(targetWidth);
+            primaryStage.setHeight(targetHeight);
+            primaryStage.setMinWidth(1024);
+            primaryStage.setMinHeight(580);
+            primaryStage.setResizable(true);
+            primaryStage.setX(visualBounds.getMinX() + (visualBounds.getWidth() - targetWidth) / 2);
+            primaryStage.setY(visualBounds.getMinY() + (visualBounds.getHeight() - targetHeight) / 2);
+            com.pharmacy.common.UiScaleManager.getInstance().install(scene);
 
             // Graceful shutdown khi người dùng bấm nút đóng cửa sổ (R71)
             primaryStage.setOnCloseRequest(event -> {
@@ -184,11 +147,7 @@ public class PharmacyApplication extends Application {
     }
 
     private void showStartupErrorAlert(String detail) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Lỗi khởi động");
-        alert.setHeaderText("Không thể đăng nhập Admin tự động");
-        alert.setContentText("Chi tiết: " + detail);
-        alert.showAndWait();
+        com.pharmacy.common.DialogUtils.showError("Lỗi khởi động", "Không thể khởi động ứng dụng: " + detail);
     }
 
     public static void main(String[] args) {

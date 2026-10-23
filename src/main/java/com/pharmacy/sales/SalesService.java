@@ -1,0 +1,29 @@
+package com.pharmacy.sales;
+
+import com.pharmacy.common.PageResult;
+import com.pharmacy.inventory.dto.MedicineInventoryDTO;
+import com.pharmacy.sales.dto.DailySalesDTO;
+import com.pharmacy.sales.dto.SalesOrderDetailDTO;
+import com.pharmacy.sales.dto.SalesOrderDTO;
+import com.pharmacy.sales.dto.SalesOrderRequest;
+import com.pharmacy.sales.dto.TodaySalesSummary;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public interface SalesService {
+    List<String> getCategories();
+    List<MedicineInventoryDTO> getMedicines(String keyword, String categoryName);
+    PageResult<MedicineInventoryDTO> getMedicinesPage(int page, int size, String keyword, String categoryName);
+    String generateNextOrderCode();
+    String checkout(SalesOrderRequest request);
+    PageResult<SalesOrderDTO> getSalesHistory(LocalDate date, Integer employeeId, String keyword, int page, int size);
+    List<SalesOrderDetailDTO> getSalesOrderDetails(long orderId);
+
+    TodaySalesSummary getTodaySalesSummary();
+    List<DailySalesDTO> get7DaysSales();
+    List<DailySalesDTO> get7DaysSalesUpTo(LocalDate endDate);
+    List<DailySalesDTO> get7DaysSalesUpTo(LocalDate endDate, Integer employeeId);
+    List<SalesOrderDTO> getRecentSalesOrders(int limit);
+}
+

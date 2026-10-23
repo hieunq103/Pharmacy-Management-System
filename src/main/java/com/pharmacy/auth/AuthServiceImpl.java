@@ -28,11 +28,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Account login(LoginRequest request) {
-        // 1. Tìm tài khoản bằng SĐT hoặc CCCD
+        // Tìm tài khoản bằng SĐT hoặc CCCD
         Account account = accountRepository.findByIdentifier(request.identifier())
                 .orElseThrow(() -> {
                     log.warn("Đăng nhập thất bại: Tài khoản không tồn tại [{}]", request.identifier());
-                    return new AuthenticationException(ErrorCode.INVALID_CREDENTIALS, "Tài khoản hoặc mật khẩu không chính xác.");
+                    return new AuthenticationException(ErrorCode.INVALID_CREDENTIALS,
+                            "Tài khoản hoặc mật khẩu không chính xác.");
                 });
 
         String employeeName = (account.getEmployee() != null && account.getEmployee().getFullName() != null)
@@ -41,16 +42,15 @@ public class AuthServiceImpl implements AuthService {
 
         Integer accountId = account.getId();
 
-        // 2. Chỉ kiểm tra trạng thái vô hiệu hóa bởi Quản trị viên
+        // Chỉ kiểm tra trạng thái vô hiệu hóa bởi Quản trị viên
         if (account.getStatus() == Account.Status.DISABLED) {
             log.warn("Nhân viên [{}] - Tài khoản đã bị vô hiệu hóa", employeeName);
             throw new AuthenticationException(
                     ErrorCode.ACCOUNT_DISABLED,
-                    "Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên."
-            );
+                    "Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
         }
 
-        // 3. Kiểm tra mật khẩu
+        // Kiểm tra mật khẩu
         if (!PasswordEncoder.matches(request.password(), account.getPasswordHash())) {
             log.warn("Nhân viên [{}] - Mật khẩu không chính xác", employeeName);
             // Ghi nhận lịch sử đăng nhập thất bại
@@ -58,11 +58,10 @@ public class AuthServiceImpl implements AuthService {
 
             throw new AuthenticationException(
                     ErrorCode.INVALID_CREDENTIALS,
-                    "Tài khoản hoặc mật khẩu không chính xác."
-            );
+                    "Tài khoản hoặc mật khẩu không chính xác.");
         }
 
-        // 4. Xác thực thành công: Ghi nhận lịch sử SUCCESS và khởi tạo Session
+        // Xác thực thành công: Ghi nhận lịch sử SUCCESS và khởi tạo Session
         accountRepository.recordSuccessfulLogin(accountId, CLIENT_INFO);
         UserSession.start(account);
 

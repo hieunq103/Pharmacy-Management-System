@@ -3,6 +3,9 @@ package com.pharmacy.layout;
 import com.pharmacy.account.Account;
 import com.pharmacy.auth.AuthService;
 import com.pharmacy.auth.AuthServiceImpl;
+import com.pharmacy.common.DialogUtils;
+import com.pharmacy.common.FormatUtils;
+import com.pharmacy.common.UiScaleManager;
 import com.pharmacy.common.UserSession;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -12,8 +15,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,45 +30,64 @@ import java.util.Optional;
 public class MainLayoutController {
 
     private static final Logger log = LoggerFactory.getLogger(MainLayoutController.class);
+    private static MainLayoutController instance;
     private final AuthService authService;
+
+    public static MainLayoutController getInstance() {
+        return instance;
+    }
 
     public MainLayoutController() {
         this.authService = new AuthServiceImpl();
     }
 
-    @FXML private BorderPane rootPane;
-    @FXML private StackPane contentArea;
+    @FXML
+    private BorderPane rootPane;
+    @FXML
+    private StackPane contentArea;
 
     // Menu Buttons
-    @FXML private Button btnDashboard;
-    @FXML private Button btnSales;
-    @FXML private Button btnInventory;
-    @FXML private Label lblInventoryBadge;
-    @FXML private Button btnEmployee;
-    @FXML private Button btnReport;
-
-    // Phân quyền cho nhóm Hệ thống
-    @FXML private VBox boxSystemSection;
-    @FXML private Button btnAccountPermission;
+    @FXML
+    private Button btnDashboard;
+    @FXML
+    private Button btnSales;
+    @FXML
+    private HBox boxInventoryNav;
+    @FXML
+    private Button btnInventory;
+    @FXML
+    private Button btnEmployee;
+    @FXML
+    private Button btnReport;
 
     // Thông tin người dùng
-    @FXML private Label lblUserAvatar;
-    @FXML private Label lblUserName;
-    @FXML private Label lblUserRole;
-    @FXML private Button btnLogout;
+    @FXML
+    private Label lblUserAvatar;
+    @FXML
+    private Label lblUserName;
+    @FXML
+    private Label lblUserRole;
 
     // Header
-    @FXML private Label lblHeaderTitle;
-    @FXML private Label lblHeaderSubtitle;
-    @FXML private TextField txtGlobalSearch;
+    @FXML
+    private Label lblHeaderTitle;
+    @FXML
+    private Label lblHeaderSubtitle;
 
     @FXML
     public void initialize() {
+        instance = this;
         initUserInfoAndPermissions();
         initHeaderDate();
+        initUiScaling();
 
-        // Nạp màn hình Dashboard mặc định khi vừa vào
-        handleNavDashboard(null);
+        // Nạp màn hình mặc định khi vừa vào:
+        // Quản lý (MANAGER) vào Tổng quan, Nhân viên (STAFF) vào Bán hàng
+        if (UserSession.isLoggedIn() && !UserSession.getInstance().isManager()) {
+            handleNavSales(null);
+        } else {
+            handleNavDashboard(null);
+        }
     }
 
     private void initUserInfoAndPermissions() {
@@ -88,15 +110,19 @@ public class MainLayoutController {
                 : "Chưa phân quyền";
         lblUserRole.setText(roleName);
 
-        // 2. Phân quyền: Nếu không phải Quản lý (MANAGER) thì ẩn menu Quản lý Nhân viên và mục Hệ thống
+        // 2. Phân quyền:
+        // Quản lý (MANAGER): Xem đầy đủ tất cả các phân hệ.
+        // Nhân viên (STAFF): Không có màn hình Tổng quan, Kho thuốc và Quản lý Nhân
+        // viên.
         boolean isManager = session.isManager();
+        applyNodeVisibility(btnDashboard, isManager);
+        applyNodeVisibility(boxInventoryNav != null ? boxInventoryNav : btnInventory, isManager);
         applyNodeVisibility(btnEmployee, isManager);
-        applyNodeVisibility(boxSystemSection, isManager);
     }
 
     private void initHeaderDate() {
         LocalDate today = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, d 'tháng' M, yyyy", new Locale("vi", "VN"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, d 'tháng' M, yyyy", Locale.of("vi", "VN"));
         String dateStr = today.format(formatter);
         dateStr = Character.toUpperCase(dateStr.charAt(0)) + dateStr.substring(1);
         lblHeaderSubtitle.setText(dateStr);
@@ -110,16 +136,18 @@ public class MainLayoutController {
     }
 
     private String getInitials(String fullName) {
-        if (fullName == null || fullName.trim().isEmpty()) return "U";
-        String[] parts = fullName.trim().split("\\s+");
-        if (parts.length == 1) return parts[0].substring(0, Math.min(2, parts[0].length())).toUpperCase();
-        return (parts[parts.length - 2].substring(0, 1) + parts[parts.length - 1].substring(0, 1)).toUpperCase();
+        return FormatUtils.getInitials(fullName);
     }
 
     // ==================== ĐIỀU HƯỚNG TỪNG TAB ====================
 
     @FXML
     private void handleNavDashboard(ActionEvent event) {
+        if (UserSession.isLoggedIn() && !UserSession.getInstance().isManager()) {
+            log.warn("Nhân viên không có quyền truy cập màn hình Tổng quan! Điều hướng về Bán hàng.");
+            handleNavSales(null);
+            return;
+        }
         setActiveButton(btnDashboard);
         lblHeaderTitle.setText("Tổng quan");
         loadCenterView("/fxml/dashboard/dashboard.fxml");
@@ -134,9 +162,62 @@ public class MainLayoutController {
 
     @FXML
     private void handleNavInventory(ActionEvent event) {
+        navigateToInventory();
+    }
+
+    public void navigateToInventory() {
+        navigateToInventoryWithFilter(null, null);
+    }
+
+    public void navigateToInventoryWithFilter(String[] stockFilters, String[] expiryFilters) {
+        if (UserSession.isLoggedIn() && !UserSession.getInstance().isManager()) {
+            log.warn("Nhân viên không có quyền truy cập màn hình Kho thuốc! Điều hướng về Bán hàng.");
+            handleNavSales(null);
+            return;
+        }
         setActiveButton(btnInventory);
-        lblHeaderTitle.setText("Kho thuốc");
-        loadCenterView("/fxml/inventory/inventory.fxml");
+        if (lblHeaderTitle != null) {
+            lblHeaderTitle.setText("Kho thuốc");
+        }
+        FXMLLoader loader = loadCenterViewWithLoader("/fxml/inventory/inventory.fxml");
+        if (loader != null && loader.getController() instanceof com.pharmacy.inventory.InventoryController invCtrl) {
+            invCtrl.applyFilters(stockFilters, expiryFilters);
+        }
+    }
+
+    public void navigateToInventoryHistory() {
+        if (UserSession.isLoggedIn() && !UserSession.getInstance().isManager()) {
+            log.warn("Nhân viên không có quyền truy cập lịch sử xuất nhập kho! Điều hướng về Bán hàng.");
+            handleNavSales(null);
+            return;
+        }
+        setActiveButton(btnInventory);
+        if (lblHeaderTitle != null) {
+            lblHeaderTitle.setText("Kho thuốc");
+        }
+        FXMLLoader loader = loadCenterViewWithLoader("/fxml/inventory/inventory.fxml");
+        if (loader != null && loader.getController() instanceof com.pharmacy.inventory.InventoryController invCtrl) {
+            invCtrl.showHistoryView();
+        }
+    }
+
+    public void navigateToSales() {
+        setActiveButton(btnSales);
+        if (lblHeaderTitle != null) {
+            lblHeaderTitle.setText("Bán hàng");
+        }
+        loadCenterView("/fxml/sales/sales.fxml");
+    }
+
+    public void navigateToSalesHistory() {
+        setActiveButton(btnSales);
+        if (lblHeaderTitle != null) {
+            lblHeaderTitle.setText("Bán hàng");
+        }
+        FXMLLoader loader = loadCenterViewWithLoader("/fxml/sales/sales.fxml");
+        if (loader != null && loader.getController() instanceof com.pharmacy.sales.SalesController salesCtrl) {
+            salesCtrl.handleOpenSalesHistory();
+        }
     }
 
     @FXML
@@ -150,6 +231,11 @@ public class MainLayoutController {
 
     @FXML
     private void handleNavEmployee(ActionEvent event) {
+        if (UserSession.isLoggedIn() && !UserSession.getInstance().isManager()) {
+            log.warn("Nhân viên không có quyền truy cập quản lý Nhân viên! Điều hướng về Bán hàng.");
+            handleNavSales(null);
+            return;
+        }
         setActiveButton(btnEmployee);
         lblHeaderTitle.setText("Quản lý nhân viên");
         loadCenterView("/fxml/employee/employee.fxml");
@@ -171,6 +257,8 @@ public class MainLayoutController {
         }
 
         Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        DialogUtils.configure(confirmDialog,
+                rootPane != null && rootPane.getScene() != null ? rootPane.getScene().getWindow() : null);
         confirmDialog.setTitle("Xác nhận");
         confirmDialog.setHeaderText(null);
         confirmDialog.setContentText("Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?");
@@ -191,13 +279,15 @@ public class MainLayoutController {
 
         } catch (Exception e) {
             log.error("Lỗi phát sinh trong quá trình đăng xuất: ", e);
-            showFriendlyMessage("Thông báo", "Có lỗi xảy ra trong quá trình đăng xuất. Hệ thống sẽ đưa bạn về trang đăng nhập.");
+            showFriendlyMessage("Thông báo",
+                    "Có lỗi xảy ra trong quá trình đăng xuất. Hệ thống sẽ đưa bạn về trang đăng nhập.");
             forceRedirectToLogin();
         }
     }
 
     /**
-     * Dọn dẹp tài nguyên layout, giải phóng luồng và bộ nhớ trước khi hủy giao diện.
+     * Dọn dẹp tài nguyên layout, giải phóng luồng và bộ nhớ trước khi hủy giao
+     * diện.
      */
     private void cleanupDashboardResources() {
         try {
@@ -209,13 +299,21 @@ public class MainLayoutController {
         }
     }
 
+    private void initUiScaling() {
+        Platform.runLater(() -> {
+            if (rootPane != null && rootPane.getScene() != null) {
+                UiScaleManager.getInstance().install(rootPane.getScene());
+            }
+        });
+    }
+
     private void forceRedirectToLogin() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/login.fxml"));
             Parent root = loader.load();
 
             Stage stage = (Stage) rootPane.getScene().getWindow();
-            Scene scene = new Scene(root, 1160, 720);
+            Scene scene = new Scene(root, 1280, 800);
 
             var css = getClass().getResource("/css/app.css");
             if (css != null) {
@@ -223,9 +321,15 @@ public class MainLayoutController {
             }
 
             stage.setMaximized(false);
+            stage.setResizable(true);
+            stage.setWidth(1280);
+            stage.setHeight(800);
+            stage.setMinWidth(1024);
+            stage.setMinHeight(580);
             stage.setScene(scene);
             stage.setTitle("PharmaOS — Quản lý cửa hàng thuốc");
             stage.centerOnScreen();
+            UiScaleManager.getInstance().install(scene);
         } catch (IOException e) {
             log.error("Không thể nạp giao diện đăng nhập: ", e);
             showFriendlyMessage("Lỗi giao diện", "Không thể tải màn hình đăng nhập. Vui lòng khởi động lại ứng dụng.");
@@ -233,33 +337,38 @@ public class MainLayoutController {
     }
 
     private void showFriendlyMessage(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        DialogUtils.showInfo(rootPane != null && rootPane.getScene() != null ? rootPane.getScene().getWindow() : null,
+                title, message);
     }
 
-    private void loadCenterView(String fxmlPath) {
+    private FXMLLoader loadCenterViewWithLoader(String fxmlPath) {
         try {
             var resource = getClass().getResource(fxmlPath);
             if (resource == null) {
                 Label placeholder = new Label("Giao diện đang được phát triển: " + fxmlPath);
                 placeholder.setStyle("-fx-font-size: 16px; -fx-text-fill: #64748B;");
                 contentArea.getChildren().setAll(placeholder);
-                return;
+                return null;
             }
-            Parent view = FXMLLoader.load(resource);
+            FXMLLoader loader = new FXMLLoader(resource);
+            Parent view = loader.load();
             contentArea.getChildren().setAll(view);
+            return loader;
         } catch (IOException e) {
             log.error("Không thể tải view: {}", fxmlPath, e);
+            return null;
         }
     }
 
+    private void loadCenterView(String fxmlPath) {
+        loadCenterViewWithLoader(fxmlPath);
+    }
+
     private void setActiveButton(Button activeButton) {
-        Button[] allButtons = {btnDashboard, btnSales, btnInventory, btnEmployee, btnReport, btnAccountPermission};
+        Button[] allButtons = { btnDashboard, btnSales, btnInventory, btnEmployee, btnReport };
         for (Button btn : allButtons) {
-            if (btn == null) continue;
+            if (btn == null)
+                continue;
             if (btn == activeButton) {
                 if (!btn.getStyleClass().contains("active")) {
                     btn.getStyleClass().add("active");

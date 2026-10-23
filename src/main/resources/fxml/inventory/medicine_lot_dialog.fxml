@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="640.0" prefWidth="1250.0" spacing="14.0"
+      styleClass="lot-dialog-root"
+      stylesheets="@../../css/inventory.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.pharmacy.inventory.ui.MedicineLotDialogController">
+
+    <padding>
+        <Insets bottom="20.0" left="24.0" right="24.0" top="18.0" />
+    </padding>
+
+    <!-- Header: Tiêu đề & (Mã thuốc + Tên thuốc + Nhãn kê toa trên cùng một dòng) -->
+    <VBox spacing="6.0">
+        <Label styleClass="lot-dialog-title" text="Chi tiết các lô hàng" />
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <Label fx:id="lblMedicineCode" styleClass="lot-dialog-code-badge" text="MED000" />
+            <Label fx:id="lblMedicineName" styleClass="lot-dialog-medicine-name" text="Tên thuốc" />
+            <Label fx:id="lblPrescriptionTag" styleClass="lbl-prescription-tag" text="Thuốc kê toa" />
+        </HBox>
+    </VBox>
+
+    <!-- Card thông tin thuốc chi tiết -->
+    <VBox spacing="8.0" styleClass="lot-info-card">
+        <HBox spacing="24.0" alignment="CENTER_LEFT">
+            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                <Label styleClass="lot-info-label" text="Hoạt chất:" />
+                <Label fx:id="lblActiveIngredient" styleClass="lot-info-value" text="—" />
+            </HBox>
+            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                <Label styleClass="lot-info-label" text="Nhóm:" />
+                <Label fx:id="lblCategory" styleClass="lot-info-value" text="—" />
+            </HBox>
+            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                <Label styleClass="lot-info-label" text="Nhà sản xuất:" />
+                <Label fx:id="lblManufacturer" styleClass="lot-info-value" text="—" />
+            </HBox>
+            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                <Label styleClass="lot-info-label" text="Đơn vị:" />
+                <Label fx:id="lblUnit" styleClass="lot-info-value" text="—" />
+            </HBox>
+            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                <Label styleClass="lot-info-label" text="Giá bán:" />
+                <Label fx:id="lblSellPrice" styleClass="lot-info-value-highlight" text="0 đ" />
+            </HBox>
+        </HBox>
+    </VBox>
+
+    <!-- Toolbar: Tìm kiếm lô, lọc trạng thái -->
+    <HBox alignment="CENTER_LEFT" spacing="12.0">
+        <TextField fx:id="txtSearchLot" prefWidth="280.0"
+                   promptText="Tìm theo số lô, nhà cung cấp..."
+                   styleClass="search-input" />
+
+        <ComboBox fx:id="cbStatusFilter" prefWidth="180.0"
+                  promptText="Tất cả trạng thái"
+                  styleClass="lot-filter-combo" />
+    </HBox>
+
+    <!-- Bảng danh sách các lô hàng -->
+    <TableView fx:id="tableLots" styleClass="custom-inventory-table, table-scrollable-data" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colIndex" styleClass="lot-col-left" minWidth="70.0" prefWidth="75.0" resizable="false" sortable="false" text="STT" />
+            <TableColumn fx:id="colLotNumber" styleClass="lot-col-left" minWidth="160.0" prefWidth="180.0" resizable="true" sortable="false" text="Số lô" />
+            <TableColumn fx:id="colExpiryDate" styleClass="lot-col-left" minWidth="150.0" prefWidth="165.0" resizable="true" sortable="false" text="Hạn sử dụng" />
+            <TableColumn fx:id="colStatus" styleClass="lot-col-left" minWidth="120.0" prefWidth="130.0" resizable="true" sortable="false" text="Trạng thái" />
+            <TableColumn fx:id="colQuantityIn" styleClass="lot-col-left" minWidth="90.0" prefWidth="105.0" resizable="true" sortable="false" text="SL nhập" />
+            <TableColumn fx:id="colQuantityRemaining" styleClass="lot-col-left" minWidth="90.0" prefWidth="105.0" resizable="true" sortable="false" text="Tồn kho" />
+            <TableColumn fx:id="colImportPrice" styleClass="lot-col-left" minWidth="110.0" prefWidth="125.0" resizable="true" sortable="false" text="Giá nhập" />
+            <TableColumn fx:id="colTransactionDate" styleClass="lot-col-left" minWidth="150.0" prefWidth="165.0" resizable="true" sortable="false" text="Ngày nhập" />
+            <TableColumn fx:id="colManufacturer" styleClass="lot-col-left" minWidth="220.0" prefWidth="280.0" resizable="true" sortable="false" text="Nhà sản xuất" />
+            <TableColumn fx:id="colSupplier" styleClass="lot-col-left" minWidth="380.0" prefWidth="480.0" resizable="true" sortable="false" text="Nhà cung cấp" />
+        </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
+        </columnResizePolicy>
+    </TableView>
+
+    <!-- THANH ĐIỀU HƯỚNG PHÂN TRANG CÁC LÔ HÀNG -->
+    <HBox alignment="CENTER" prefHeight="36.0" spacing="12.0">
+        <Region HBox.hgrow="ALWAYS" />
+        <HBox fx:id="lotPaginationBox" alignment="CENTER" spacing="6.0" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Label fx:id="lblLotRecordRange"
+               alignment="CENTER"
+               prefHeight="34.0"
+               minWidth="100.0"
+               prefWidth="100.0"
+               maxWidth="100.0"
+               styleClass="pagination-record-badge"
+               text="0 - 0" />
+    </HBox>
+
+</VBox>

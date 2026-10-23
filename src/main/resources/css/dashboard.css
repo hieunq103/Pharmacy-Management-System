@@ -1,0 +1,470 @@
+/* ==========================================================================
+   DASHBOARD / TỔNG QUAN CSS — PharmaOS Medical Design (White & Blue)
+   ========================================================================== */
+
+.dashboard-root {
+    -fx-background-color: #F8FAFC;
+}
+
+.dashboard-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: #F8FAFC;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.dashboard-scroll-pane > .viewport {
+    -fx-background-color: #F8FAFC;
+}
+
+/* ==========================================================================
+   1. 4 STAT CARDS (TOP ROW)
+   ========================================================================== */
+
+.dashboard-stat-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 12px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 16px 20px;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.04), 8, 0, 0, 2);
+}
+
+.dashboard-stat-card:hover {
+    -fx-border-color: #CBD5E1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 102, 255, 0.08), 12, 0, 0, 4);
+}
+
+.stat-title {
+    -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748B;
+}
+
+.stat-value {
+    -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
+    -fx-font-size: 22px;
+    -fx-text-fill: #0F172A;
+}
+
+.stat-subtext-positive {
+    -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
+    -fx-font-size: 12px;
+    -fx-text-fill: #16A34A;
+}
+
+.stat-subtext-primary {
+    -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
+    -fx-font-size: 12px;
+    -fx-text-fill: #0066FF;
+}
+
+.stat-subtext-warning {
+    -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
+    -fx-font-size: 12px;
+    -fx-text-fill: #D97706;
+}
+
+.stat-subtext-danger {
+    -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
+    -fx-font-size: 12px;
+    -fx-text-fill: #DC2626;
+}
+
+/* Icon Pills */
+.stat-icon-pill {
+    -fx-min-width: 32px;
+    -fx-min-height: 32px;
+    -fx-max-width: 32px;
+    -fx-max-height: 32px;
+    -fx-background-radius: 8px;
+    -fx-alignment: CENTER;
+}
+
+.stat-icon-pill-green {
+    -fx-background-color: #ECFDF5;
+}
+
+.stat-icon-pill-green .stat-svg {
+    -fx-fill: #10B981;
+}
+
+.stat-icon-pill-blue {
+    -fx-background-color: #EFF6FF;
+}
+
+.stat-icon-pill-blue .stat-svg {
+    -fx-fill: #0066FF;
+}
+
+.stat-icon-pill-amber {
+    -fx-background-color: #FEF3C7;
+}
+
+.stat-icon-pill-amber .stat-svg {
+    -fx-fill: #F59E0B;
+}
+
+.stat-icon-pill-rose {
+    -fx-background-color: #FEE2E2;
+}
+
+.stat-icon-pill-rose .stat-svg {
+    -fx-fill: #EF4444;
+}
+
+/* ==========================================================================
+   2. COMMON DASHBOARD CARDS
+   ========================================================================== */
+
+.dashboard-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 12px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 18px 20px;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.04), 8, 0, 0, 2);
+}
+
+.card-header-title {
+    -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
+    -fx-font-size: 16px;
+    -fx-text-fill: #0F172A;
+}
+
+.badge-week-filter {
+    -fx-background-color: #EFF6FF;
+    -fx-text-fill: #0066FF;
+    -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
+    -fx-font-size: 12px;
+    -fx-background-radius: 6px;
+    -fx-border-color: #BFDBFE;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1px;
+    -fx-padding: 3px 10px;
+}
+
+.link-action {
+    -fx-background-color: transparent;
+    -fx-text-fill: #0066FF;
+    -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+    -fx-padding: 4px 6px;
+    -fx-border-color: transparent;
+}
+
+.link-action:hover {
+    -fx-text-fill: #0052CC;
+    -fx-underline: true;
+}
+
+/* ==========================================================================
+   3. 7-DAY SALES BAR CHART
+   ========================================================================== */
+
+.dashboard-bar-chart {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.dashboard-bar-chart .chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.dashboard-bar-chart .chart-vertical-grid-lines {
+    -fx-stroke: transparent;
+}
+
+.dashboard-bar-chart .chart-horizontal-grid-lines {
+    -fx-stroke: #F1F5F9;
+    -fx-stroke-dash-array: 3 3;
+}
+
+.dashboard-bar-chart .axis {
+    -fx-tick-label-font-family: "Inter 18pt", "Inter", sans-serif;
+    -fx-tick-label-font-size: 12px;
+    -fx-tick-label-fill: #64748B;
+}
+
+.dashboard-bar-chart .axis:left {
+    -fx-border-color: transparent;
+}
+
+.dashboard-bar-chart .axis:bottom {
+    -fx-border-color: #E2E8F0 transparent transparent transparent;
+    -fx-border-width: 1px;
+}
+
+/* Thanh bar màu xanh y tế đẹp mắt */
+.dashboard-bar-chart .chart-bar,
+.dashboard-bar-chart .default-color0.chart-bar {
+    -fx-bar-fill: #0066FF;
+    -fx-background-color: #0066FF;
+    -fx-background-radius: 6px 6px 0 0;
+    -fx-background-insets: 0;
+}
+
+.dashboard-bar-chart .chart-bar:hover,
+.dashboard-bar-chart .default-color0.chart-bar:hover {
+    -fx-bar-fill: #2563EB;
+    -fx-background-color: #2563EB;
+    -fx-effect: dropshadow(gaussian, rgba(0, 102, 255, 0.35), 8, 0, 0, 0);
+    -fx-cursor: hand;
+}
+
+/* ==========================================================================
+   4. INVENTORY ALERTS
+   ========================================================================== */
+
+/* Mini Tabs cho Card Cảnh báo kho */
+.pill-tab-btn {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #64748B;
+    -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
+    -fx-font-size: 11.5px;
+    -fx-background-radius: 12px;
+    -fx-padding: 3px 10px;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+}
+
+.pill-tab-btn:hover {
+    -fx-background-color: #E2E8F0;
+    -fx-text-fill: #1E293B;
+}
+
+.pill-tab-active,
+.pill-tab-btn.pill-tab-active {
+    -fx-background-color: #0066FF;
+    -fx-text-fill: #FFFFFF;
+}
+
+.pill-tab-active:hover {
+    -fx-background-color: #2563EB;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* ScrollPane trong suốt cho Cảnh báo kho */
+.alert-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.alert-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.alert-scroll-pane .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 6px;
+}
+
+.alert-scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: #CBD5E1;
+    -fx-background-radius: 3px;
+}
+
+.alert-scroll-pane .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #94A3B8;
+}
+
+.alert-scroll-pane .scroll-bar:vertical .track,
+.alert-scroll-pane .scroll-bar:vertical .increment-button,
+.alert-scroll-pane .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-pref-height: 0;
+}
+
+.alert-items-container {
+    -fx-background-color: transparent;
+    -fx-padding: 0 4px 0 0;
+}
+
+.alert-item-row {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 8px;
+    -fx-border-color: #F1F5F9;
+    -fx-border-radius: 8px;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 10px 8px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.alert-item-row:hover {
+    -fx-background-color: #F8FAFC;
+}
+
+.alert-circle-icon {
+    -fx-min-width: 32px;
+    -fx-min-height: 32px;
+    -fx-max-width: 32px;
+    -fx-max-height: 32px;
+    -fx-background-radius: 16px;
+    -fx-alignment: CENTER;
+}
+
+.alert-circle-danger {
+    -fx-background-color: #FEE2E2;
+}
+
+.alert-circle-danger .alert-svg {
+    -fx-fill: #DC2626;
+}
+
+.alert-circle-warning {
+    -fx-background-color: #FEF3C7;
+}
+
+.alert-circle-warning .alert-svg {
+    -fx-fill: #D97706;
+}
+
+.alert-title {
+    -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #1E293B;
+    -fx-wrap-text: true;
+}
+
+.alert-subtitle {
+    -fx-font-family: "Inter 18pt", "Inter", sans-serif;
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748B;
+    -fx-wrap-text: true;
+}
+
+.alert-badge-danger {
+    -fx-background-color: #FEE2E2;
+    -fx-text-fill: #DC2626;
+    -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
+    -fx-font-size: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 3px 10px;
+    -fx-alignment: CENTER;
+}
+
+.alert-badge-warning {
+    -fx-background-color: #FEF3C7;
+    -fx-text-fill: #B45309;
+    -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
+    -fx-font-size: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 3px 10px;
+    -fx-alignment: CENTER;
+}
+
+/* ==========================================================================
+   5. RECENT TRANSACTIONS TABLE
+   ========================================================================== */
+
+.recent-table-header {
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 8px 12px;
+}
+
+.recent-th-label {
+    -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748B;
+}
+
+.recent-tx-row {
+    -fx-border-color: #F1F5F9;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 10px 12px;
+    -fx-background-color: #FFFFFF;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.recent-tx-row:hover {
+    -fx-background-color: #F8FAFC;
+}
+
+.tx-code {
+    -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #0066FF;
+}
+
+.tx-customer {
+    -fx-font-family: "Inter 18pt", "Inter", sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #334155;
+}
+
+.tx-customer-guest {
+    -fx-text-fill: #94A3B8;
+    -fx-font-style: italic;
+}
+
+.tx-time {
+    -fx-font-family: "Inter 18pt", "Inter", sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748B;
+}
+
+.tx-amount {
+    -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: #0F172A;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Avatar Pill cho Nhân viên */
+.avatar-initials {
+    -fx-min-width: 26px;
+    -fx-min-height: 26px;
+    -fx-max-width: 26px;
+    -fx-max-height: 26px;
+    -fx-background-radius: 13px;
+    -fx-background-color: #E0F2FE;
+    -fx-text-fill: #0284C7;
+    -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
+    -fx-font-size: 11px;
+    -fx-alignment: CENTER;
+}
+
+.employee-name {
+    -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #1E293B;
+}
+
+/* Badges Phương thức thanh toán (gọn gàng, tinh tế) */
+.payment-badge {
+    -fx-background-radius: 10px;
+    -fx-padding: 2px 8px;
+    -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
+    -fx-font-size: 11.5px;
+    -fx-alignment: CENTER;
+}
+
+.badge-cash {
+    -fx-background-color: #ECFDF5;
+    -fx-text-fill: #047857;
+    -fx-border-color: #A7F3D0;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+}
+
+.badge-transfer {
+    -fx-background-color: #EFF6FF;
+    -fx-text-fill: #1D4ED8;
+    -fx-border-color: #BFDBFE;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+}
+
+.badge-card {
+    -fx-background-color: #F5F3FF;
+    -fx-text-fill: #6D28D9;
+    -fx-border-color: #DDD6FE;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+}

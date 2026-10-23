@@ -19,7 +19,8 @@ public class Role implements Serializable {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    public Role() {}
+    public Role() {
+    }
 
     public Role(String code, String name) {
         this.code = code;
@@ -50,10 +51,6 @@ public class Role implements Serializable {
         this.name = name;
     }
 
-    /**
-     * Ghi đè toString giúp ComboBox hoặc các điều khiển UI trong JavaFX
-     * tự động hiển thị tên tiếng Việt ("Quản trị viên", "Nhân viên bán thuốc")
-     */
     @Override
     public String toString() {
         return name;
@@ -61,8 +58,10 @@ public class Role implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Role role = (Role) o;
         return Objects.equals(id, role.id) || Objects.equals(code, role.code);
     }

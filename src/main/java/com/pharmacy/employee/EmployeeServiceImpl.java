@@ -7,7 +7,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
+import com.pharmacy.common.PageResult;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,10 +26,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<Employee> getAllEmployees() {
+    public PageResult<Employee> getEmployeesPage(int page, int size, String keyword, String gender, String role, String status, String accountStatus) {
         if (!UserSession.isLoggedIn()) {
             log.warn("Từ chối truy cập: Chưa đăng nhập vào hệ thống.");
-            return Collections.emptyList();
+            return PageResult.empty(page, size);
         }
 
         Account currentAccount = UserSession.getInstance().getAccount();
@@ -39,10 +39,17 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new SecurityException("Bạn không có quyền truy cập danh sách nhân viên.");
         }
 
-        log.info("Tài khoản Quản lý ID [{}] đang tải danh sách tất cả nhân viên.", currentAccount.getId());
-
-        return employeeRepository.findAllWithDetails();
+        return employeeRepository.getEmployeesPage(page, size, keyword, gender, role, status, accountStatus);
     }
+
+    @Override
+    public EmployeeRepository.EmployeeSummary getEmployeeSummary() {
+        if (!UserSession.isLoggedIn()) {
+            return new EmployeeRepository.EmployeeSummary(0L, 0L);
+        }
+        return employeeRepository.getEmployeeSummary();
+    }
+
 
     @Override
     public Optional<Employee> findByIdWithDetails(Integer id) {
@@ -128,7 +135,15 @@ public class EmployeeServiceImpl implements EmployeeService {
                 normalizedRole
         );
 
-        // 5. Gọi repository thực thi Hibernate Transaction
+        // 5. DB Validation: Kiểm tra trùng lặp CCCD và Số điện thoại với nhân viên khác trong CSDL
+        if (employeeRepository.existsByNationalIdAndNotId(sanitizedRequest.nationalId(), sanitizedRequest.employeeId())) {
+            throw new IllegalArgumentException("Căn cước công dân này đã thuộc về nhân viên khác.");
+        }
+        if (employeeRepository.existsByPhoneAndNotId(sanitizedRequest.phone(), sanitizedRequest.employeeId())) {
+            throw new IllegalArgumentException("Số điện thoại này đã thuộc về nhân viên khác.");
+        }
+
+        // 6. Gọi repository thực thi Hibernate Transaction
         return employeeRepository.updateEmployeeByManager(sanitizedRequest);
     }
 
@@ -153,10 +168,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     private String parseRoleCode(String role) {
         if (role == null) return "STAFF";
         String trimmed = role.trim();
-        if (trimmed.equalsIgnoreCase("Quản lý") || trimmed.equalsIgnoreCase("MANAGER")) {
+        if (trimmed.contains("Quản lý") || trimmed.equalsIgnoreCase("MANAGER")) {
             return "MANAGER";
         }
-        if (trimmed.equalsIgnoreCase("Nhân viên") || trimmed.equalsIgnoreCase("STAFF")) {
+        if (trimmed.contains("Nhân viên") || trimmed.equalsIgnoreCase("STAFF")) {
             return "STAFF";
         }
         return trimmed;

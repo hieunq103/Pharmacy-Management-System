@@ -20,10 +20,11 @@ public final class DatabaseHealthChecker {
         return thread;
     });
 
-    // Thuộc tính theo dõi trạng thái (true = Online, false = Mất kết nối)
+    // Thuộc tính theo dõi trạng thái
     private static final BooleanProperty connected = new SimpleBooleanProperty(true);
 
-    private DatabaseHealthChecker() {}
+    private DatabaseHealthChecker() {
+    }
 
     public static BooleanProperty connectedProperty() {
         return connected;
@@ -35,8 +36,10 @@ public final class DatabaseHealthChecker {
 
     /**
      * Bắt đầu giám sát định kỳ trạng thái CSDL
+     * 
      * @param intervalSeconds Chu kỳ kiểm tra (giây)
-     * @param onStatusChange Callback gọi khi trạng thái thay đổi (chạy trên JavaFX Application Thread)
+     * @param onStatusChange  Callback gọi khi trạng thái thay đổi (chạy trên JavaFX
+     *                        Application Thread)
      */
     public static void startMonitoring(int intervalSeconds, Consumer<Boolean> onStatusChange) {
         scheduler.scheduleWithFixedDelay(() -> {

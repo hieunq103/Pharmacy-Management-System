@@ -9,14 +9,19 @@ import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
+import com.pharmacy.common.PageResult;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class EmployeeRepository {
 
     private static final Logger log = LoggerFactory.getLogger(EmployeeRepository.class);
 
+    /**
+     * Dùng cho CẬP NHẬT: Kiểm tra SĐT có bị trùng với NGƯỜI KHÁC hay không
+     */
     public boolean existsByPhoneAndNotId(String phone, Integer currentEmployeeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String hql = "SELECT COUNT(e.id) FROM Employee e WHERE e.phone = :phone AND e.id != :id";
@@ -32,7 +37,8 @@ public class EmployeeRepository {
     }
 
     public boolean existsByPhone(String phone) {
-        if (phone == null || phone.trim().isEmpty()) return false;
+        if (phone == null || phone.trim().isEmpty())
+            return false;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String hql = "SELECT COUNT(e.id) FROM Employee e WHERE e.phone = :phone";
             Long count = session.createSelectionQuery(hql, Long.class)
@@ -46,7 +52,8 @@ public class EmployeeRepository {
     }
 
     public boolean existsByNationalId(String nationalId) {
-        if (nationalId == null || nationalId.trim().isEmpty()) return false;
+        if (nationalId == null || nationalId.trim().isEmpty())
+            return false;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String hql = "SELECT COUNT(e.id) FROM Employee e WHERE e.nationalId = :nationalId";
             Long count = session.createSelectionQuery(hql, Long.class)
@@ -138,14 +145,15 @@ public class EmployeeRepository {
     }
 
     public Optional<Employee> findByIdWithDetails(Integer id) {
-        if (id == null) return Optional.empty();
+        if (id == null)
+            return Optional.empty();
         return HibernateUtil.executeWithResult(session -> {
             String hql = """
-            SELECT e FROM Employee e
-            LEFT JOIN FETCH e.account a
-            LEFT JOIN FETCH a.role r
-            WHERE e.id = :id
-        """;
+                        SELECT e FROM Employee e
+                        LEFT JOIN FETCH e.account a
+                        LEFT JOIN FETCH a.role r
+                        WHERE e.id = :id
+                    """;
             return session.createSelectionQuery(hql, Employee.class)
                     .setParameter("id", id)
                     .uniqueResultOptional();
@@ -153,33 +161,130 @@ public class EmployeeRepository {
     }
 
     public List<Object[]> getLoginHistory(Integer accountId) {
-        if (accountId == null) return List.of();
+        if (accountId == null)
+            return List.of();
         return HibernateUtil.executeWithResult(session -> {
             String sql = """
-            SELECT login_at, result, client_info 
-            FROM login_history 
-            WHERE account_id = :accountId 
-            ORDER BY login_at DESC 
-            LIMIT 100
-        """;
+                        SELECT login_at, result, client_info
+                        FROM login_history
+                        WHERE account_id = :accountId
+                        ORDER BY login_at DESC
+                        LIMIT 100
+                    """;
             return session.createNativeQuery(sql, Object[].class)
                     .setParameter("accountId", accountId)
                     .list();
         });
     }
 
-    public List<Employee> findAllWithDetails() {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT DISTINCT e FROM Employee e " +
-                    "LEFT JOIN FETCH e.account a " +
-                    "LEFT JOIN FETCH a.role r " +
-                    "ORDER BY e.id DESC";
-            return session.createSelectionQuery(hql, Employee.class).getResultList();
-        } catch (Exception e) {
-            log.error("Lỗi khi lấy danh sách nhân viên: ", e);
-            return Collections.emptyList();
+    public record EmployeeSummary(long totalEmployees, long activeEmployees) {
+        public long total() {
+            return totalEmployees;
+        }
+
+        public long active() {
+            return activeEmployees;
         }
     }
+
+    public EmployeeSummary getEmployeeSummary() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = """
+                        SELECT
+                            (SELECT COUNT(e.id) FROM Employee e),
+                            (SELECT COUNT(e.id) FROM Employee e WHERE e.status = com.pharmacy.employee.Employee.Status.ACTIVE)
+                    """;
+            Object[] row = session.createSelectionQuery(hql, Object[].class).getSingleResult();
+            long total = row[0] != null ? ((Number) row[0]).longValue() : 0L;
+            long active = row[1] != null ? ((Number) row[1]).longValue() : 0L;
+            return new EmployeeSummary(total, active);
+        } catch (Exception e) {
+            log.error("Lỗi khi lấy thống kê nhân viên: ", e);
+            return new EmployeeSummary(0L, 0L);
+        }
+    }
+
+    /**
+     * Phân trang nhân viên chuẩn Server-side: Tìm kiếm và lọc đa tiêu chí tại CSDL
+     */
+    public PageResult<Employee> getEmployeesPage(int page, int size, String keyword, String gender, String role,
+            String status, String accountStatus) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            StringBuilder whereClause = new StringBuilder(" WHERE 1=1 ");
+            Map<String, Object> params = new HashMap<>();
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String cleanKw = keyword.trim();
+                boolean isDigitsOnly = cleanKw.matches("^[0-9+]+$");
+                if (isDigitsOnly) {
+                    whereClause.append(" AND (e.phone LIKE :keyword OR e.nationalId LIKE :keyword) ");
+                } else {
+                    whereClause.append(
+                            " AND (e.fullName LIKE :keyword OR e.phone LIKE :keyword OR e.nationalId LIKE :keyword) ");
+                }
+                params.put("keyword", "%" + cleanKw + "%");
+            }
+
+            if (gender != null && !gender.isBlank() && !"Tất cả".equalsIgnoreCase(gender)) {
+                whereClause.append(" AND e.gender = :gender ");
+                params.put("gender", gender.trim());
+            }
+
+            if (role != null && !role.isBlank() && !"Tất cả".equalsIgnoreCase(role)) {
+                String roleCode = ("Quản lý".equalsIgnoreCase(role) || "MANAGER".equalsIgnoreCase(role)) ? "MANAGER"
+                        : "STAFF";
+                whereClause.append(" AND r.code = :roleCode ");
+                params.put("roleCode", roleCode);
+            }
+
+            if (status != null && !status.isBlank() && !"Tất cả".equalsIgnoreCase(status)) {
+                Employee.Status empStatus = ("Đang làm".equalsIgnoreCase(status) || "ACTIVE".equalsIgnoreCase(status))
+                        ? Employee.Status.ACTIVE
+                        : Employee.Status.INACTIVE;
+                whereClause.append(" AND e.status = :empStatus ");
+                params.put("empStatus", empStatus);
+            }
+
+            if (accountStatus != null && !accountStatus.isBlank() && !"Tất cả".equalsIgnoreCase(accountStatus)) {
+                Account.Status accStatus = "Active".equalsIgnoreCase(accountStatus) ? Account.Status.ACTIVE
+                        : Account.Status.DISABLED;
+                whereClause.append(" AND a.status = :accStatus ");
+                params.put("accStatus", accStatus);
+            }
+
+            boolean needAccountJoin = (role != null && !role.isBlank() && !"Tất cả".equalsIgnoreCase(role))
+                    || (accountStatus != null && !accountStatus.isBlank() && !"Tất cả".equalsIgnoreCase(accountStatus));
+
+            // 1. Query COUNT
+            String countHql = needAccountJoin
+                    ? "SELECT COUNT(DISTINCT e.id) FROM Employee e LEFT JOIN e.account a LEFT JOIN a.role r "
+                            + whereClause
+                    : "SELECT COUNT(e.id) FROM Employee e " + whereClause;
+            var countQuery = session.createSelectionQuery(countHql, Long.class);
+            params.forEach(countQuery::setParameter);
+            Long totalCount = countQuery.getSingleResult();
+            long total = totalCount != null ? totalCount : 0L;
+
+            if (total == 0) {
+                return PageResult.empty(page, size);
+            }
+
+            // 2. Query DATA (phân trang bằng setFirstResult và setMaxResults)
+            String dataHql = "SELECT DISTINCT e FROM Employee e LEFT JOIN FETCH e.account a LEFT JOIN FETCH a.role r "
+                    + whereClause + " ORDER BY e.id DESC";
+            var dataQuery = session.createSelectionQuery(dataHql, Employee.class);
+            params.forEach(dataQuery::setParameter);
+            dataQuery.setFirstResult((page - 1) * size);
+            dataQuery.setMaxResults(size);
+
+            List<Employee> items = dataQuery.getResultList();
+            return new PageResult<>(items, total, page, size);
+        } catch (Exception e) {
+            log.error("Lỗi khi phân trang nhân viên: ", e);
+            return PageResult.empty(page, size);
+        }
+    }
+
 
     public boolean addEmployeeWithAccount(Employee emp, String roleDisplayOrCode, String initialPassword) {
         Transaction tx = null;
@@ -210,7 +315,6 @@ public class EmployeeRepository {
             account.setRole(role);
             account.setPasswordHash(initialPassword);
             account.setStatus(Account.Status.ACTIVE);
-            account.setMustChangePassword(true);
 
             session.persist(account);
 
@@ -242,7 +346,8 @@ public class EmployeeRepository {
             tx.commit();
             return true;
         } catch (Exception e) {
-            if (tx != null && tx.isActive()) tx.rollback();
+            if (tx != null && tx.isActive())
+                tx.rollback();
             log.error("Lỗi khi đánh dấu nhân viên đã nghỉ [ID: {}]: ", employeeId, e);
             return false;
         }
@@ -255,16 +360,16 @@ public class EmployeeRepository {
 
             // 1. Cập nhật bảng employees
             String hqlEmployee = """
-            UPDATE Employee e SET
-                e.fullName = :fullName,
-                e.dob = :dob,
-                e.gender = :gender,
-                e.nationalId = :nationalId,
-                e.phone = :phone,
-                e.address = :address,
-                e.status = :status
-            WHERE e.id = :id
-        """;
+                        UPDATE Employee e SET
+                            e.fullName = :fullName,
+                            e.dob = :dob,
+                            e.gender = :gender,
+                            e.nationalId = :nationalId,
+                            e.phone = :phone,
+                            e.address = :address,
+                            e.status = :status
+                        WHERE e.id = :id
+                    """;
 
             int rowsUpdated = session.createMutationQuery(hqlEmployee)
                     .setParameter("fullName", req.fullName())
@@ -291,11 +396,11 @@ public class EmployeeRepository {
 
             // 3. Cập nhật bảng accounts
             String hqlAccount = """
-            UPDATE Account a SET
-                a.status = :status,
-                a.role.id = :roleId
-            WHERE a.employee.id = :empId
-        """;
+                        UPDATE Account a SET
+                            a.status = :status,
+                            a.role.id = :roleId
+                        WHERE a.employee.id = :empId
+                    """;
 
             if (role != null) {
                 session.createMutationQuery(hqlAccount)
@@ -306,10 +411,10 @@ public class EmployeeRepository {
             } else {
                 // Trường hợp không đổi role, chỉ cập nhật status
                 String hqlAccountStatusOnly = """
-                UPDATE Account a SET
-                    a.status = :status
-                WHERE a.employee.id = :empId
-            """;
+                            UPDATE Account a SET
+                                a.status = :status
+                            WHERE a.employee.id = :empId
+                        """;
                 session.createMutationQuery(hqlAccountStatusOnly)
                         .setParameter("status", Account.Status.valueOf(req.accountStatus()))
                         .setParameter("empId", req.employeeId())

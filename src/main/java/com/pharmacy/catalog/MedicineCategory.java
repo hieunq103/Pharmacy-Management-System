@@ -1,8 +1,18 @@
 package com.pharmacy.catalog;
 
-public class MedicineCategory {
+import jakarta.persistence.*;
+import java.io.Serializable;
 
+@Entity
+@Table(name = "medicine_categories")
+public class MedicineCategory implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+
+    @Column(name = "name", nullable = false, unique = true, length = 100)
     private String name;
 
     public MedicineCategory() {

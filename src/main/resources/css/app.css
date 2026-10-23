@@ -1,6 +1,10 @@
-.label, .button, .text-field, .password-field, .check-box, .hyperlink {
+.root, .label, .button, .toggle-button, .text-field, .password-field, .text-area,
+.check-box, .radio-button, .hyperlink, .combo-box, .choice-box, .list-cell,
+.table-view, .table-cell, .table-column-header, .column-header, .column-header .label,
+.menu, .menu-item, .context-menu, .tooltip, .tab, .tab-pane, .text, .scroll-pane {
     -fx-font-family: "Inter 18pt";
 }
+
 .root {
     -fx-bg: #F5F7F8;
     -fx-surface: #FFFFFF;
@@ -17,8 +21,13 @@
     -fx-background-color: -fx-bg;
 }
 
+/* Chữ thường */
+.font-regular, .text-regular, .regular {
+    -fx-font-family: "Inter 18pt";
+}
+
 /* Chữ đậm */
-.font-semibold {
+.font-semibold, .font-bold, .text-bold, .bold, .lbl-bold, .btn-bold {
     -fx-font-family: "Inter 18pt SemiBold";
 }
 
@@ -54,13 +63,15 @@
 .nav-button.active {
     -fx-background-color: #1E293B;
     -fx-text-fill: #38BDF8;
-    -fx-font-weight: 600;
+    -fx-font-family: "Inter 18pt SemiBold";
 }
 .nav-button.active SVGPath,
 .nav-button.active .shape {
     -fx-fill: #38BDF8;
 }
 
-
-
-
+/* Màn che overlay nền mờ khi mở Drawer */
+.drawer-overlay {
+    -fx-background-color: rgba(15, 23, 42, 0.45);
+    -fx-cursor: hand;
+}
