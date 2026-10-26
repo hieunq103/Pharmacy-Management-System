@@ -51,12 +51,23 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public String generateNextEmployeeCode() {
+        return employeeRepository.generateNextEmployeeCode();
+    }
+
+    @Override
     public boolean createEmployeeWithAccount(Employee employee, String role) {
         requireManager();
         if (employee == null || role == null || role.trim().isEmpty()) {
             return false;
         }
         validateEmployee(employee.getFullName(), employee.getPhone(), employee.getNationalId(), employee.getDob());
+        if (employee.getCode() == null || employee.getCode().isBlank()) {
+            employee.setCode(generateNextEmployeeCode());
+        }
+        if (employeeRepository.existsByCode(employee.getCode())) {
+            throw new IllegalArgumentException("Mã nhân viên này đã tồn tại trong hệ thống.");
+        }
         if (employeeRepository.existsByNationalId(employee.getNationalId())) {
             throw new IllegalArgumentException("Căn cước công dân này đã tồn tại trong hệ thống.");
         }
@@ -73,7 +84,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employeeId == null) return false;
         requireManager();
         if (employeeId.equals(UserSession.currentEmployeeId())) {
-            throw new IllegalArgumentException("Không thể tự đánh dấu nghỉ việc cho chính tài khoản đang đăng nhập.");
+            throw new IllegalArgumentException("Quản lý không thể tự đánh dấu nghỉ việc cho chính mình.");
         }
         return employeeRepository.markAsInactive(employeeId);
     }
@@ -85,8 +96,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             return false;
         }
         requireManager();
-        if (accountId.equals(UserSession.getInstance().getAccount().getId())) {
-            throw new IllegalArgumentException("Không thể tự khóa tài khoản đang đăng nhập.");
+        if (accountId.equals(UserSession.getInstance().getAccountId())) {
+            throw new IllegalArgumentException("Quản lý không thể tự khóa tài khoản của chính mình.");
         }
         return accountRepository.lockAccount(accountId);
     }
@@ -123,6 +134,28 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         // 3. Chuẩn hóa Role: sang code hệ thống (ví dụ: MANAGER, STAFF)
         String normalizedRole = parseRoleCode(req.roleName());
+
+        // Ràng buộc bảo mật: Quản lý không được tự đổi role, tự cho nghỉ hoặc tự khóa tài khoản chính mình
+        if (UserSession.isLoggedIn()) {
+            Integer currentEmpId = UserSession.getInstance().getEmployeeId();
+            if (currentEmpId != null && currentEmpId.equals(req.employeeId())) {
+                Account currentAcc = UserSession.getInstance().getAccount();
+                if (currentAcc != null && currentAcc.getRole() != null) {
+                    String currentRoleCode = currentAcc.getRole().getCode();
+                    if (currentRoleCode != null && !currentRoleCode.equalsIgnoreCase(normalizedRole)) {
+                        throw new IllegalArgumentException("Quản lý không thể tự thay đổi vai trò hệ thống của chính mình.");
+                    }
+                }
+
+                if ("INACTIVE".equalsIgnoreCase(normalizedEmpStatus)) {
+                    throw new IllegalArgumentException("Quản lý không thể tự đánh dấu nghỉ việc cho chính mình.");
+                }
+
+                if ("DISABLED".equalsIgnoreCase(normalizedAccStatus)) {
+                    throw new IllegalArgumentException("Quản lý không thể tự khóa tài khoản của chính mình.");
+                }
+            }
+        }
 
         // 4. Đóng gói dữ liệu đã được làm sạch
         EmployeeUpdateRequest sanitizedRequest = new EmployeeUpdateRequest(

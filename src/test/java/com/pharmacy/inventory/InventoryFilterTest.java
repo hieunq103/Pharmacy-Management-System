@@ -136,7 +136,7 @@ public class InventoryFilterTest {
 
     @Test
     void testImportRequiresManager() {
-        DbTestSupport.loginAs(DbTestSupport.STAFF_PHONE);
+        DbTestSupport.loginAs(DbTestSupport.STAFF_USERNAME);
         InventoryService service = new InventoryServiceImpl(repo);
         List<BatchImportItemDTO> items = List.of(BatchImportItemDTO.fromExisting(1, "MED001", "x", null, null,
                 "LOT-X", LocalDate.now().plusYears(1), "Hộp", 1, BigDecimal.ONE));

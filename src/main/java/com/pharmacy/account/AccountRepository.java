@@ -8,17 +8,22 @@ import java.util.Optional;
 
 public class AccountRepository {
 
-    public Optional<Account> findByIdentifier(String identifier) {
+    /**
+     * Tìm kiếm tài khoản duy nhất bằng tên đăng nhập (Mã nhân viên PMSxxxx).
+     */
+    public Optional<Account> findByUsername(String username) {
+        if (username == null || username.isBlank()) {
+            return Optional.empty();
+        }
         return HibernateUtil.executeWithResult(session -> {
             String hql = """
             SELECT a FROM Account a
             JOIN FETCH a.employee e
             JOIN FETCH a.role r
-            WHERE e.phone = :identifier
-               OR e.nationalId = :identifier
+            WHERE a.username = :username
         """;
             Query<Account> query = session.createQuery(hql, Account.class);
-            query.setParameter("identifier", identifier);
+            query.setParameter("username", username.trim());
             return query.uniqueResultOptional();
         });
     }

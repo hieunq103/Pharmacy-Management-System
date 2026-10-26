@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `employees` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `code` VARCHAR(20) NOT NULL UNIQUE,
     `full_name` VARCHAR(100) NOT NULL,
     `dob` DATE NOT NULL,
     `gender` ENUM('Nam', 'Nữ', 'Khác') NOT NULL,
@@ -24,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `employees` (
     `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_employees_code` (`code`),
     INDEX `idx_employees_full_name` (`full_name`),
     INDEX `idx_employees_status` (`status`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -34,11 +36,13 @@ CREATE TABLE IF NOT EXISTS `employees` (
 CREATE TABLE IF NOT EXISTS `accounts` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `employee_id` INT NOT NULL UNIQUE,
+    `username` VARCHAR(50) NOT NULL UNIQUE,
     `password_hash` VARCHAR(255) NOT NULL,
     `role_id` INT NOT NULL,
     `status` ENUM('ACTIVE', 'DISABLED') NOT NULL DEFAULT 'ACTIVE',
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_accounts_username` (`username`),
     CONSTRAINT `fk_accounts_employees` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT `fk_accounts_roles` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -177,21 +181,23 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO `roles` (`code`, `name`) VALUES ('MANAGER', 'Quản lý cửa hàng'), ('STAFF', 'Nhân viên bán thuốc');
 
-INSERT INTO `employees` (`full_name`, `dob`, `gender`, `national_id`, `address`, `phone`, `hired_date`, `status`) VALUES
-    ('Quản lý cửa hàng', '1990-01-01', 'Nam', '001090000001', 'Hà Nội', '0985549854', '2026-01-01', 'ACTIVE');
+INSERT INTO `employees` (`code`, `full_name`, `dob`, `gender`, `national_id`, `address`, `phone`, `hired_date`, `status`) VALUES
+    ('PMS0001', 'Quản lý cửa hàng', '1990-01-01', 'Nam', '001090000001', 'Hà Nội', '0985549854', '2026-01-01', 'ACTIVE');
 
-INSERT INTO `accounts` (`employee_id`, `password_hash`, `role_id`, `status`) VALUES (
+INSERT INTO `accounts` (`employee_id`, `username`, `password_hash`, `role_id`, `status`) VALUES (
   (SELECT `id` FROM `employees` WHERE `national_id` = '001090000001'),
+  'PMS0001',
   '$2a$12$1/E8j01kLrkJvjJ4.R91x.5A7B8nzOtVk1mZSonKBWP/Ecm3Abtce',
   (SELECT `id` FROM `roles` WHERE `code` = 'MANAGER'),
   'ACTIVE'
 );
 
-INSERT INTO `employees` (`full_name`, `dob`, `gender`, `national_id`, `address`, `phone`, `hired_date`, `status`) VALUES
-    ('Nguyễn Quang Hiếu', '2005-03-10', 'Nam', '001095000002', 'Hà Nội', '0989261809', '2026-02-01', 'ACTIVE');
+INSERT INTO `employees` (`code`, `full_name`, `dob`, `gender`, `national_id`, `address`, `phone`, `hired_date`, `status`) VALUES
+    ('PMS0002', 'Nguyễn Quang Hiếu', '2005-03-10', 'Nam', '001095000002', 'Hà Nội', '0989261809', '2026-02-01', 'ACTIVE');
 
-INSERT INTO `accounts` (`employee_id`, `password_hash`, `role_id`, `status`) VALUES (
+INSERT INTO `accounts` (`employee_id`, `username`, `password_hash`, `role_id`, `status`) VALUES (
   (SELECT `id` FROM `employees` WHERE `national_id` = '001095000002'),
+  'PMS0002',
   '$2a$12$1/E8j01kLrkJvjJ4.R91x.5A7B8nzOtVk1mZSonKBWP/Ecm3Abtce',
   (SELECT `id` FROM `roles` WHERE `code` = 'STAFF'),
   'ACTIVE'

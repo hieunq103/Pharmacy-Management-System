@@ -84,6 +84,21 @@ public final class UserSession {
         return "Nhân viên";
     }
 
+    public String getUsername() {
+        return account != null ? account.getUsername() : null;
+    }
+
+    public String getEmployeeCode() {
+        if (account != null && account.getEmployee() != null) {
+            return account.getEmployee().getCode();
+        }
+        return null;
+    }
+
+    public Integer getAccountId() {
+        return account != null ? account.getId() : null;
+    }
+
     public Integer getEmployeeId() {
         if (account != null && account.getEmployee() != null) {
             return account.getEmployee().getId();

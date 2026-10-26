@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** Unit test đăng nhập — dùng repository giả, không cần CSDL. */
 class AuthServiceImplTest {
 
-    private static final String PHONE = "0912345678";
+    private static final String USERNAME = "PMS0099";
     private static final String STRONG_PASSWORD = "MatKhau@2026";
 
     private FakeAccountRepository repo;
@@ -32,8 +32,8 @@ class AuthServiceImplTest {
         final List<String> history = new ArrayList<>();
 
         @Override
-        public Optional<Account> findByIdentifier(String identifier) {
-            return PHONE.equals(identifier) ? Optional.of(account) : Optional.empty();
+        public Optional<Account> findByUsername(String username) {
+            return USERNAME.equals(username) ? Optional.of(account) : Optional.empty();
         }
 
         @Override
@@ -51,10 +51,11 @@ class AuthServiceImplTest {
         Employee e = new Employee();
         e.setId(7);
         e.setFullName("Test");
-        e.setPhone(PHONE);
+        e.setCode(USERNAME);
         Account a = new Account();
         a.setId(70);
         a.setEmployee(e);
+        a.setUsername(USERNAME);
         a.setRole(new Role("STAFF", "Nhân viên"));
         a.setPasswordHash(PasswordEncoder.hash(rawPassword));
         a.setStatus(status);
@@ -76,7 +77,7 @@ class AuthServiceImplTest {
     void wrongPasswordIsRecordedAsFailed() {
         repo.account = account(STRONG_PASSWORD, Account.Status.ACTIVE);
         AuthenticationException ex = assertThrows(AuthenticationException.class,
-                () -> service.login(new LoginRequest(PHONE, "sai-mat-khau")));
+                () -> service.login(new LoginRequest(USERNAME, "sai-mat-khau")));
         assertEquals(ErrorCode.INVALID_CREDENTIALS, ex.getErrorCode());
         assertEquals(List.of("FAILED"), repo.history);
         assertFalse(UserSession.isLoggedIn());
@@ -86,15 +87,15 @@ class AuthServiceImplTest {
     void disabledAccountIsRevealedOnlyWithCorrectPassword() {
         repo.account = account(STRONG_PASSWORD, Account.Status.DISABLED);
         assertEquals(ErrorCode.INVALID_CREDENTIALS, assertThrows(AuthenticationException.class,
-                () -> service.login(new LoginRequest(PHONE, "sai"))).getErrorCode());
+                () -> service.login(new LoginRequest(USERNAME, "sai"))).getErrorCode());
         assertEquals(ErrorCode.ACCOUNT_DISABLED, assertThrows(AuthenticationException.class,
-                () -> service.login(new LoginRequest(PHONE, STRONG_PASSWORD))).getErrorCode());
+                () -> service.login(new LoginRequest(USERNAME, STRONG_PASSWORD))).getErrorCode());
     }
 
     @Test
     void defaultPasswordForcesPasswordChange() {
         repo.account = account(AuthServiceImpl.defaultPassword(), Account.Status.ACTIVE);
-        Account logged = service.login(new LoginRequest(PHONE, AuthServiceImpl.defaultPassword()));
+        Account logged = service.login(new LoginRequest(USERNAME, AuthServiceImpl.defaultPassword()));
         assertTrue(logged.isMustChangePassword());
         assertTrue(UserSession.isLoggedIn());
     }
@@ -102,7 +103,7 @@ class AuthServiceImplTest {
     @Test
     void ownPasswordDoesNotForceChange() {
         repo.account = account(STRONG_PASSWORD, Account.Status.ACTIVE);
-        assertFalse(service.login(new LoginRequest(PHONE, STRONG_PASSWORD)).isMustChangePassword());
+        assertFalse(service.login(new LoginRequest(USERNAME, STRONG_PASSWORD)).isMustChangePassword());
         assertEquals(List.of("SUCCESS"), repo.history);
     }
 }

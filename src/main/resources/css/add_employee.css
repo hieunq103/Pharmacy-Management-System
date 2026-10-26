@@ -69,6 +69,15 @@
     -fx-effect: dropshadow(three-pass-box, rgba(239, 68, 68, 0.2), 4, 0, 0, 0) !important;
 }
 
+/* Ô nhập bị khóa chết (Read-only, cố định mã NV) */
+.form-input-locked {
+    -fx-background-color: #F1F5F9 !important;
+    -fx-border-color: #CBD5E1 !important;
+    -fx-text-fill: #475569 !important;
+    -fx-cursor: default !important;
+    -fx-opacity: 0.9 !important;
+}
+
 .medicine-picker-box, .string-picker-box {
     -fx-background-color: #FFFFFF;
     -fx-border-color: #CBD5E1;

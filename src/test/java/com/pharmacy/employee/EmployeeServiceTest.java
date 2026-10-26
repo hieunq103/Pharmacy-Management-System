@@ -36,12 +36,14 @@ class EmployeeServiceTest {
         PageResult<Employee> byCccd = service.getEmployeesPage(1, 7, first.getNationalId(), null, null, null, null);
         assertEquals(first.getNationalId(), byCccd.getItems().get(0).getNationalId());
         assertTrue(service.getEmployeesPage(1, 7, first.getFullName(), null, null, null, null).getTotalElements() > 0);
+        PageResult<Employee> byCode = service.getEmployeesPage(1, 7, first.getCode(), null, null, null, null);
+        assertEquals(first.getCode(), byCode.getItems().get(0).getCode(), "Tìm theo mã nhân viên");
         assertTrue(service.getEmployeeSummary().total() >= page.getTotalElements());
     }
 
     @Test
     void staffCannotUseEmployeeModule() {
-        var staff = DbTestSupport.loginAs(DbTestSupport.STAFF_PHONE);
+        var staff = DbTestSupport.loginAs(DbTestSupport.STAFF_USERNAME);
         assertThrows(SecurityException.class, () -> service.getEmployeesPage(1, 7, null, null, null, null, null));
         assertThrows(SecurityException.class, () -> service.lockAccount(staff.getId()));
         assertThrows(SecurityException.class, () -> service.markAsInactive(staff.getEmployee().getId()));
@@ -68,7 +70,9 @@ class EmployeeServiceTest {
         e.setHiredDate(LocalDate.now());
         assertTrue(service.createEmployeeWithAccount(e, "STAFF"));
 
-        var account = new com.pharmacy.account.AccountRepository().findByIdentifier(e.getPhone()).orElseThrow();
+        assertTrue(e.getCode() != null && e.getCode().startsWith("PMS"), "Mã nhân viên tự sinh: " + e.getCode());
+        var account = new com.pharmacy.account.AccountRepository().findByUsername(e.getCode()).orElseThrow();
+        assertEquals(e.getCode(), account.getUsername(), "Tên đăng nhập = mã nhân viên");
         assertTrue(account.isMustChangePassword());
         assertThrows(IllegalArgumentException.class, () -> service.createEmployeeWithAccount(e, "STAFF"),
                 "Trùng CCCD/SĐT phải bị chặn");

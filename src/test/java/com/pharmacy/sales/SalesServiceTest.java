@@ -144,7 +144,7 @@ public class SalesServiceTest {
         }
 
         // Nhân viên chỉ xem được đơn của chính mình dù UI truyền employeeId = null
-        var staff = DbTestSupport.loginAs(DbTestSupport.STAFF_PHONE);
+        var staff = DbTestSupport.loginAs(DbTestSupport.STAFF_USERNAME);
         for (var order : salesService.getSalesHistory(today, null, "", 1, 50).getItems()) {
             assertEquals(staff.getEmployee().getId(), order.getEmployeeId());
         }

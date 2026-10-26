@@ -354,21 +354,30 @@ public class SalesController implements Initializable {
         gridMedicineCards.setVisible(true);
         gridMedicineCards.setManaged(true);
 
-        for (int i = 0; i < allLoadedMedicines.size(); i++) {
-            MedicineInventoryDTO med = allLoadedMedicines.get(i);
-            VBox card = createMedicineCard(med);
-
+        for (int i = 0; i < PAGE_SIZE; i++) {
             int col = i % 2;
             int row = i / 2;
 
-            gridMedicineCards.add(card, col, row);
-            GridPane.setFillWidth(card, true);
-            GridPane.setFillHeight(card, true);
+            if (i < allLoadedMedicines.size()) {
+                MedicineInventoryDTO med = allLoadedMedicines.get(i);
+                VBox card = createMedicineCard(med);
+                gridMedicineCards.add(card, col, row);
+                GridPane.setFillWidth(card, true);
+                GridPane.setFillHeight(card, true);
+            } else {
+                // Ô trống giữ chỗ giúp kích thước 6 ô chứa luôn đồng nhất tuyệt đối giữa các trang
+                Region emptySlot = new Region();
+                emptySlot.setMaxWidth(Double.MAX_VALUE);
+                emptySlot.setMaxHeight(Double.MAX_VALUE);
+                GridPane.setFillWidth(emptySlot, true);
+                GridPane.setFillHeight(emptySlot, true);
+                gridMedicineCards.add(emptySlot, col, row);
+            }
         }
     }
 
     private VBox createMedicineCard(MedicineInventoryDTO med) {
-        VBox card = new VBox(6);
+        VBox card = new VBox(5);
         card.getStyleClass().add("medicine-card");
         card.setMaxWidth(Double.MAX_VALUE);
         card.setMaxHeight(Double.MAX_VALUE);
@@ -379,46 +388,62 @@ public class SalesController implements Initializable {
             card.getStyleClass().add("out-of-stock");
         }
 
-        // Hàng 1: Tên thuốc + Số lượng đã chọn (nếu có trong giỏ)
-        HBox row1 = new HBox(4);
-        row1.setAlignment(Pos.TOP_LEFT);
+        // Hàng 1: Mã thuốc (bên trái) + Badge Kê toa (bên phải)
+        HBox rowHeader = new HBox(6);
+        rowHeader.setAlignment(Pos.CENTER_LEFT);
 
-        Label lblName = new Label(med.getMedicineName());
-        lblName.getStyleClass().add("card-title");
-        lblName.setWrapText(true);
-        HBox.setHgrow(lblName, Priority.ALWAYS);
+        if (med.getMedicineCode() != null && !med.getMedicineCode().isBlank()) {
+            Label lblCode = new Label(med.getMedicineCode());
+            lblCode.getStyleClass().add("badge-medicine-code");
+            lblCode.setMinWidth(Region.USE_PREF_SIZE);
+            rowHeader.getChildren().add(lblCode);
+        }
 
-        row1.getChildren().add(lblName);
-
-        // Hàng 2: Đơn vị tính + Badge kê toa (nếu có)
-        HBox row2 = new HBox(6);
-        row2.setAlignment(Pos.CENTER_LEFT);
-
-        Label lblUnit = new Label(med.getUnit() != null ? med.getUnit() : "hộp");
-        lblUnit.getStyleClass().add("card-unit");
-        row2.getChildren().add(lblUnit);
+        Region headerSpacer = new Region();
+        HBox.setHgrow(headerSpacer, Priority.ALWAYS);
+        rowHeader.getChildren().add(headerSpacer);
 
         if (Boolean.TRUE.equals(med.getRequiresPrescription())) {
             Label lblPrescription = new Label("Kê toa");
             lblPrescription.getStyleClass().add("card-badge-prescription");
-            row2.getChildren().add(lblPrescription);
+            lblPrescription.setMinWidth(Region.USE_PREF_SIZE);
+            rowHeader.getChildren().add(lblPrescription);
         }
 
-        // Hàng 3: Cảnh báo HSD gần hoặc Sắp hết (nếu có)
+        // Hàng 2: Tên thuốc (chiếm toàn bộ chiều ngang, viết 2 dòng nếu dài, chiều cao chuẩn 36px cố định cho mọi thẻ)
+        Label lblName = new Label(med.getMedicineName());
+        lblName.getStyleClass().add("card-title");
+        lblName.setWrapText(true);
+        lblName.setMinHeight(36.0);
+        lblName.setPrefHeight(36.0);
+        lblName.setMaxHeight(36.0);
+        lblName.setAlignment(Pos.TOP_LEFT);
+
+        // Hàng 3: Đơn vị tính + Cảnh báo HSD gần hoặc Sắp hết (nếu có)
         HBox row3 = new HBox(6);
         row3.setAlignment(Pos.CENTER_LEFT);
+        row3.setMinHeight(18.0);
+        row3.setPrefHeight(18.0);
+
+        Label lblUnit = new Label(med.getUnit() != null ? med.getUnit() : "hộp");
+        lblUnit.getStyleClass().add("card-unit");
+        row3.getChildren().add(lblUnit);
+
         if (med.getStatus() == MedicineInventoryDTO.InventoryStatus.HAS_NEAR_EXPIRY_LOT) {
             Label lblWarning = new Label("HSD gần");
             lblWarning.getStyleClass().add("card-warning-tag");
+            lblWarning.setMinWidth(Region.USE_PREF_SIZE);
             row3.getChildren().add(lblWarning);
         }
         if (med.getTotalQuantity() > 0 && med.getTotalQuantity() <= 10) {
             Label lblLowStock = new Label("Sắp hết · " + med.getTotalQuantity());
             lblLowStock.getStyleClass().add("card-low-stock-tag");
+            lblLowStock.setMinWidth(Region.USE_PREF_SIZE);
             row3.getChildren().add(lblLowStock);
         } else if (outOfStock) {
             Label lblOut = new Label("Hết hàng");
             lblOut.getStyleClass().add("card-low-stock-tag");
+            lblOut.setMinWidth(Region.USE_PREF_SIZE);
             row3.getChildren().add(lblOut);
         }
 
@@ -429,6 +454,7 @@ public class SalesController implements Initializable {
         // Hàng 4: Giá tiền (bên trái) + Số lượng còn lại (bên phải)
         HBox row4 = new HBox();
         row4.setAlignment(Pos.BOTTOM_LEFT);
+        row4.setMinHeight(22.0);
 
         Label lblPrice = new Label(FormatUtils.formatCurrency(med.getSellPrice()));
         lblPrice.getStyleClass().add("card-price");
@@ -441,7 +467,7 @@ public class SalesController implements Initializable {
 
         row4.getChildren().addAll(lblPrice, spacerBottom, lblStock);
 
-        card.getChildren().addAll(row1, row2, row3, spacer, row4);
+        card.getChildren().addAll(rowHeader, lblName, row3, spacer, row4);
 
         boolean inCart = getCartQuantityForMedicine(med.getMedicineId()) > 0;
         if (inCart) {
@@ -543,15 +569,26 @@ public class SalesController implements Initializable {
         VBox infoBox = new VBox(2);
         HBox.setHgrow(infoBox, Priority.ALWAYS);
 
-        HBox nameRow = new HBox(4);
+        HBox nameRow = new HBox(6);
         nameRow.setAlignment(Pos.CENTER_LEFT);
+
+        if (item.getMedicineCode() != null && !item.getMedicineCode().isBlank()) {
+            Label lblCode = new Label(item.getMedicineCode());
+            lblCode.getStyleClass().add("badge-medicine-code");
+            lblCode.setMinWidth(Region.USE_PREF_SIZE);
+            nameRow.getChildren().add(lblCode);
+        }
+
         Label lblName = new Label(item.getMedicineName());
         lblName.getStyleClass().add("cart-item-name");
+        lblName.setWrapText(true);
+        HBox.setHgrow(lblName, Priority.ALWAYS);
         nameRow.getChildren().add(lblName);
 
         if (Boolean.TRUE.equals(item.isRequiresPrescription())) {
             Label lblReq = new Label("Kê toa");
             lblReq.getStyleClass().add("card-badge-prescription");
+            lblReq.setMinWidth(Region.USE_PREF_SIZE);
             nameRow.getChildren().add(lblReq);
         }
 
@@ -564,7 +601,7 @@ public class SalesController implements Initializable {
         Label lblTotal = new Label(FormatUtils.formatCurrency(item.getLineTotal()));
         lblTotal.getStyleClass().add("cart-item-total");
 
-        // Bộ nút tăng/giảm [-] [qty] [+]
+        // Bộ nút tăng/giảm [-] [txtQty] [+]
         HBox qtyBox = new HBox(4);
         qtyBox.setAlignment(Pos.CENTER);
 
@@ -581,8 +618,56 @@ public class SalesController implements Initializable {
             renderMedicineCards();
         });
 
-        Label lblQty = new Label(String.valueOf(item.getQuantity()));
-        lblQty.getStyleClass().add("lbl-qty-display");
+        // Hỗ trợ nhập trực tiếp số thuốc cần mua (số nguyên dương)
+        TextField txtQty = new TextField(String.valueOf(item.getQuantity()));
+        txtQty.getStyleClass().add("txt-qty-input");
+        txtQty.setPrefWidth(42);
+        txtQty.setMaxWidth(48);
+        txtQty.setPrefHeight(26);
+        txtQty.setAlignment(Pos.CENTER);
+
+        // Chỉ cho phép nhập số
+        txtQty.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null && !newVal.matches("\\d*")) {
+                txtQty.setText(newVal.replaceAll("[^0-9]", ""));
+            }
+        });
+
+        Runnable commitQty = () -> {
+            String text = txtQty.getText() != null ? txtQty.getText().trim() : "";
+            if (text.isEmpty() || "0".equals(text)) {
+                txtQty.setText(String.valueOf(item.getQuantity()));
+                return;
+            }
+            try {
+                int newQty = Integer.parseInt(text);
+                if (newQty <= 0) newQty = 1;
+                if (newQty > item.getMaxStock()) {
+                    DialogUtils.showWarning("Vượt quá tồn kho", "Số lượng trong kho chỉ còn " + item.getMaxStock() + ".");
+                    newQty = item.getMaxStock();
+                }
+                if (newQty != item.getQuantity()) {
+                    item.setQuantity(newQty);
+                    recalculateDiscount();
+                    renderCartItems();
+                    renderMedicineCards();
+                } else {
+                    txtQty.setText(String.valueOf(newQty));
+                }
+            } catch (Exception ex) {
+                txtQty.setText(String.valueOf(item.getQuantity()));
+            }
+        };
+
+        txtQty.setOnAction(e -> commitQty.run());
+        txtQty.setOnMouseClicked(e -> txtQty.selectAll());
+        txtQty.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
+            if (isFocused) {
+                javafx.application.Platform.runLater(txtQty::selectAll);
+            } else {
+                commitQty.run();
+            }
+        });
 
         Button btnPlus = new Button("+");
         btnPlus.getStyleClass().add("btn-qty-control");
@@ -607,7 +692,7 @@ public class SalesController implements Initializable {
             renderMedicineCards();
         });
 
-        qtyBox.getChildren().addAll(btnMinus, lblQty, btnPlus);
+        qtyBox.getChildren().addAll(btnMinus, txtQty, btnPlus);
 
         row.getChildren().addAll(infoBox, lblTotal, qtyBox, btnDelete);
         return row;
@@ -702,6 +787,11 @@ public class SalesController implements Initializable {
             });
 
             stage.showAndWait();
+
+            // Đồng bộ lại giỏ hàng vì có thể đã thêm bớt số lượng hoặc xóa thuốc trong dialog thanh toán
+            recalculateDiscount();
+            renderCartItems();
+            renderMedicineCards();
         } catch (IOException e) {
             log.error("Lỗi khi mở hộp thoại thanh toán: ", e);
             DialogUtils.showError("Lỗi hệ thống", "Không thể mở hộp thoại thanh toán: " + e.getMessage());

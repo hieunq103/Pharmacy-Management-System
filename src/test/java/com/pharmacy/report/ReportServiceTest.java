@@ -76,7 +76,7 @@ class ReportServiceTest {
     @Test
     @DisplayName("Nhân viên chỉ xem được báo cáo của chính mình")
     void testStaffScopedToOwnData() {
-        Integer staffId = DbTestSupport.loginAs(DbTestSupport.STAFF_PHONE).getEmployee().getId();
+        Integer staffId = DbTestSupport.loginAs(DbTestSupport.STAFF_USERNAME).getEmployee().getId();
         ReportSummaryDTO requestedAll = reportService.getSummary(MARCH_START, MARCH_END, null);
         DbTestSupport.loginAsManager();
         ReportSummaryDTO ownByManager = reportService.getSummary(MARCH_START, MARCH_END, staffId);

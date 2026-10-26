@@ -29,10 +29,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Account login(LoginRequest request) {
-        // Tìm tài khoản bằng SĐT hoặc CCCD
-        Account account = accountRepository.findByIdentifier(request.identifier())
+        // Tìm tài khoản duy nhất bằng tên đăng nhập (Mã nhân viên)
+        Account account = accountRepository.findByUsername(request.username())
                 .orElseThrow(() -> {
-                    log.warn("Đăng nhập thất bại: Tài khoản không tồn tại [{}]", request.identifier());
+                    log.warn("Đăng nhập thất bại: Tài khoản không tồn tại [{}]", request.username());
                     return new AuthenticationException(ErrorCode.INVALID_CREDENTIALS,
                             "Tài khoản hoặc mật khẩu không chính xác.");
                 });

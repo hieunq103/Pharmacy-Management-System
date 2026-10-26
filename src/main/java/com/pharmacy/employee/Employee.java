@@ -23,6 +23,9 @@ public class Employee implements Serializable {
     @Column(name = "id")
     private Integer id;
 
+    @Column(name = "code", nullable = false, unique = true, length = 20)
+    private String code;
+
     @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
 
@@ -66,6 +69,14 @@ public class Employee implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getFullName() {

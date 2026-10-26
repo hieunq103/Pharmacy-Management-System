@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.FormValidator;
+import com.pharmacy.common.UserSession;
 import javafx.stage.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +93,9 @@ public class EmployeeDetailController {
 
         boolean isInactive = (employee.getStatus() == Employee.Status.INACTIVE);
 
-        setTextSafe(txtEmpId, employee.getId() != null ? String.valueOf(employee.getId()) : "");
+        setTextSafe(txtEmpId, (employee.getCode() != null && !employee.getCode().isBlank())
+                ? employee.getCode()
+                : (employee.getId() != null ? String.valueOf(employee.getId()) : ""));
         setTextSafe(txtFullName, employee.getFullName());
         setTextSafe(txtDob, employee.getDob() != null ? FormatUtils.formatDate(employee.getDob()) : "");
         setTextSafe(txtGender, employee.getGender());
@@ -164,6 +167,18 @@ public class EmployeeDetailController {
         }
     }
 
+    private boolean isEditingSelf() {
+        if (!UserSession.isLoggedIn() || employee == null) {
+            return false;
+        }
+        Integer loggedInEmpId = UserSession.getInstance().getEmployeeId();
+        if (loggedInEmpId != null && loggedInEmpId.equals(employee.getId())) {
+            return true;
+        }
+        String loggedInCode = UserSession.getInstance().getEmployeeCode();
+        return loggedInCode != null && !loggedInCode.isBlank() && loggedInCode.equalsIgnoreCase(employee.getCode());
+    }
+
     private void setEditMode(boolean editing) {
         setEditableSafe(txtEmpId, false);
         setEditableSafe(txtHiredDate, false);
@@ -175,11 +190,37 @@ public class EmployeeDetailController {
         setEditableSafe(txtAddress, editing);
 
         toggleField(txtGender, cbGender, editing);
-        toggleField(txtEmpStatus, cbEmpStatus, editing);
-        toggleField(txtRole, cbRole, editing);
-        toggleField(txtAccountStatus, cbAccountStatus, editing);
 
-        if (editing && cbEmpStatus != null) {
+        // Quản lý khi xem/sửa CHÍNH MÌNH thì KHÔNG được sửa vai trò, trạng thái làm việc hay trạng thái tài khoản
+        boolean canManageRoleAndStatus = editing && !isEditingSelf();
+        toggleField(txtEmpStatus, cbEmpStatus, canManageRoleAndStatus);
+        toggleField(txtRole, cbRole, canManageRoleAndStatus);
+        toggleField(txtAccountStatus, cbAccountStatus, canManageRoleAndStatus);
+
+        setEditableSafe(txtEmpStatus, false);
+        setEditableSafe(txtRole, false);
+        setEditableSafe(txtAccountStatus, false);
+
+        if (editing) {
+            Tooltip fixedTooltip = new Tooltip("Mã nhân viên và ngày vào làm là thông tin cố định, không thể chỉnh sửa.");
+            if (txtEmpId != null) txtEmpId.setTooltip(fixedTooltip);
+            if (txtHiredDate != null) txtHiredDate.setTooltip(fixedTooltip);
+
+            if (isEditingSelf()) {
+                Tooltip selfTooltip = new Tooltip("Không thể tự thay đổi vai trò hoặc trạng thái tài khoản của chính mình.");
+                if (txtRole != null) txtRole.setTooltip(selfTooltip);
+                if (txtEmpStatus != null) txtEmpStatus.setTooltip(selfTooltip);
+                if (txtAccountStatus != null) txtAccountStatus.setTooltip(selfTooltip);
+            }
+        } else {
+            if (txtEmpId != null) txtEmpId.setTooltip(null);
+            if (txtHiredDate != null) txtHiredDate.setTooltip(null);
+            if (txtRole != null) txtRole.setTooltip(null);
+            if (txtEmpStatus != null) txtEmpStatus.setTooltip(null);
+            if (txtAccountStatus != null) txtAccountStatus.setTooltip(null);
+        }
+
+        if (canManageRoleAndStatus && cbEmpStatus != null) {
             applyAccountStatusConstraint(cbEmpStatus.getValue());
         }
 
@@ -245,22 +286,35 @@ public class EmployeeDetailController {
                 ? cbGender.getValue()
                 : ((txtGender != null && txtGender.getText() != null) ? txtGender.getText().trim() : "");
 
-        String empStatus = (cbEmpStatus != null && cbEmpStatus.getValue() != null)
-                ? cbEmpStatus.getValue()
-                : ((txtEmpStatus != null && txtEmpStatus.getText() != null) ? txtEmpStatus.getText().trim() : "Đang làm việc");
-
+        String empStatus;
         String accountStatus;
-        if ("Đã nghỉ việc".equalsIgnoreCase(empStatus)) {
-            accountStatus = "Đang bị khóa";
-        } else {
-            accountStatus = (cbAccountStatus != null && cbAccountStatus.getValue() != null)
-                    ? cbAccountStatus.getValue()
-                    : ((txtAccountStatus != null && txtAccountStatus.getText() != null) ? txtAccountStatus.getText().trim() : "Đang hoạt động");
-        }
+        String roleName;
 
-        String roleName = (cbRole != null && cbRole.getValue() != null)
-                ? cbRole.getValue()
-                : ((txtRole != null && txtRole.getText() != null) ? txtRole.getText().trim() : "Nhân viên bán thuốc");
+        if (isEditingSelf()) {
+            // Khi quản lý tự sửa chính mình: giữ nguyên trạng thái nhân sự, vai trò và trạng thái tài khoản
+            empStatus = (employee.getStatus() == Employee.Status.INACTIVE) ? "Đã nghỉ việc" : "Đang làm việc";
+            Account acc = employee.getAccount();
+            accountStatus = (acc != null && acc.getStatus() == Account.Status.DISABLED) ? "Đang bị khóa" : "Đang hoạt động";
+            roleName = (acc != null && acc.getRole() != null && acc.getRole().getName() != null)
+                    ? acc.getRole().getName()
+                    : "Quản lý cửa hàng";
+        } else {
+            empStatus = (cbEmpStatus != null && cbEmpStatus.getValue() != null)
+                    ? cbEmpStatus.getValue()
+                    : ((txtEmpStatus != null && txtEmpStatus.getText() != null) ? txtEmpStatus.getText().trim() : "Đang làm việc");
+
+            if ("Đã nghỉ việc".equalsIgnoreCase(empStatus)) {
+                accountStatus = "Đang bị khóa";
+            } else {
+                accountStatus = (cbAccountStatus != null && cbAccountStatus.getValue() != null)
+                        ? cbAccountStatus.getValue()
+                        : ((txtAccountStatus != null && txtAccountStatus.getText() != null) ? txtAccountStatus.getText().trim() : "Đang hoạt động");
+            }
+
+            roleName = (cbRole != null && cbRole.getValue() != null)
+                    ? cbRole.getValue()
+                    : ((txtRole != null && txtRole.getText() != null) ? txtRole.getText().trim() : "Nhân viên bán thuốc");
+        }
 
         boolean hasError = false;
 
@@ -348,25 +402,37 @@ public class EmployeeDetailController {
                 employee.setGender(request.gender());
                 employee.setPhone(request.phone());
                 employee.setAddress(request.address());
-                employee.setStatus(
-                        ("INACTIVE".equalsIgnoreCase(request.empStatus()) || "Đã nghỉ việc".equalsIgnoreCase(request.empStatus()))
-                                ? Employee.Status.INACTIVE
-                                : Employee.Status.ACTIVE
-                );
 
-                if (employee.getAccount() != null) {
-                    employee.getAccount().setStatus(
-                            ("DISABLED".equalsIgnoreCase(request.accountStatus()) || "Đang bị khóa".equalsIgnoreCase(request.accountStatus()))
-                                    ? Account.Status.DISABLED
-                                    : Account.Status.ACTIVE
+                if (!isEditingSelf()) {
+                    employee.setStatus(
+                            ("INACTIVE".equalsIgnoreCase(request.empStatus()) || "Đã nghỉ việc".equalsIgnoreCase(request.empStatus()))
+                                    ? Employee.Status.INACTIVE
+                                    : Employee.Status.ACTIVE
                     );
-                    if (employee.getAccount().getRole() != null) {
-                        employee.getAccount().getRole().setName(request.roleName());
+
+                    if (employee.getAccount() != null) {
+                        employee.getAccount().setStatus(
+                                ("DISABLED".equalsIgnoreCase(request.accountStatus()) || "Đang bị khóa".equalsIgnoreCase(request.accountStatus()))
+                                        ? Account.Status.DISABLED
+                                        : Account.Status.ACTIVE
+                        );
+                        if (employee.getAccount().getRole() != null) {
+                            employee.getAccount().getRole().setName(request.roleName());
+                        }
                     }
+                } else if (UserSession.isLoggedIn() && UserSession.getInstance().getEmployee() != null) {
+                    // Cập nhật đồng bộ thông tin session của quản lý đang đăng nhập
+                    Employee sessionEmp = UserSession.getInstance().getEmployee();
+                    sessionEmp.setFullName(request.fullName());
+                    sessionEmp.setNationalId(request.nationalId());
+                    sessionEmp.setDob(request.dob());
+                    sessionEmp.setGender(request.gender());
+                    sessionEmp.setPhone(request.phone());
+                    sessionEmp.setAddress(request.address());
                 }
 
                 clearAllErrors();
-                showAlert(Alert.AlertType.INFORMATION, "Cập nhật hồ sơ và quyền hạn nhân viên thành công!");
+                showAlert(Alert.AlertType.INFORMATION, "Cập nhật hồ sơ thành công!");
                 populateData();
                 setEditMode(false);
             } else {

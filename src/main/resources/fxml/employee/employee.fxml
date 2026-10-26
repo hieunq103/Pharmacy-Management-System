@@ -33,7 +33,7 @@
         <!-- Cụm bên phải: Ô tìm kiếm + Nút Thêm -->
         <HBox alignment="CENTER_RIGHT" spacing="12.0">
             <TextField fx:id="txtSearch"
-                       promptText="Tìm theo tên, SĐT, CCCD..."
+                       promptText="Tìm theo mã NV, tên, SĐT, CCCD..."
                        prefWidth="280.0"
                        styleClass="search-input" />
 
@@ -44,20 +44,21 @@
         </HBox>
     </HBox>
 
-    <!-- Bảng danh sách: 7 cột -->
+    <!-- Bảng danh sách: 8 cột -->
 <HBox minHeight="300.0" spacing="0.0" styleClass="table-float-container" VBox.vgrow="ALWAYS">
     <VBox.margin>
         <Insets top="20.0" />
     </VBox.margin>
     <TableView fx:id="tableEmployee" HBox.hgrow="ALWAYS" styleClass="custom-employee-table">
         <columns>
-            <TableColumn fx:id="colName" minWidth="180.0" prefWidth="205.0" resizable="true" sortable="false" text="Tên" />
-            <TableColumn fx:id="colGender" minWidth="120.0" prefWidth="130.0" resizable="true" sortable="false" text="Giới tính" />
-            <TableColumn fx:id="colPhone" minWidth="130.0" prefWidth="140.0" resizable="true" sortable="false" text="SĐT" />
-            <TableColumn fx:id="colCccd" minWidth="150.0" prefWidth="165.0" text="CCCD" />
-            <TableColumn fx:id="colRole" minWidth="140.0" prefWidth="155.0" resizable="true" sortable="false" text="Vai trò" />
-            <TableColumn fx:id="colStatus" minWidth="125.0" prefWidth="135.0" resizable="true" sortable="false" text="Nhân sự" />
-            <TableColumn fx:id="colAccountStatus" minWidth="135.0" prefWidth="145.0" resizable="true" sortable="false" text="Tài khoản" />
+            <TableColumn fx:id="colCode" minWidth="95.0" prefWidth="105.0" resizable="true" sortable="false" text="Mã NV" />
+            <TableColumn fx:id="colName" minWidth="175.0" prefWidth="195.0" resizable="true" sortable="false" text="Tên" />
+            <TableColumn fx:id="colGender" minWidth="110.0" prefWidth="120.0" resizable="true" sortable="false" text="Giới tính" />
+            <TableColumn fx:id="colPhone" minWidth="120.0" prefWidth="130.0" resizable="true" sortable="false" text="SĐT" />
+            <TableColumn fx:id="colCccd" minWidth="140.0" prefWidth="155.0" text="CCCD" />
+            <TableColumn fx:id="colRole" minWidth="135.0" prefWidth="150.0" resizable="true" sortable="false" text="Vai trò" />
+            <TableColumn fx:id="colStatus" minWidth="120.0" prefWidth="130.0" resizable="true" sortable="false" text="Nhân sự" />
+            <TableColumn fx:id="colAccountStatus" minWidth="130.0" prefWidth="140.0" resizable="true" sortable="false" text="Tài khoản" />
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />

@@ -19,6 +19,38 @@ public class EmployeeRepository {
     private static final Logger log = LoggerFactory.getLogger(EmployeeRepository.class);
 
     /**
+     * Kiểm tra mã nhân viên đã tồn tại hay chưa
+     */
+    public boolean existsByCode(String code) {
+        return existsByField("code", code, null, "mã nhân viên");
+    }
+
+    /**
+     * Tự động sinh mã nhân viên tiếp theo theo định dạng PMS + 4 chữ số (PMS0001, PMS0002...).
+     */
+    public String generateNextEmployeeCode() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String sql = "SELECT code FROM employees WHERE code LIKE 'PMS%' ORDER BY LENGTH(code) DESC, code DESC LIMIT 1";
+            Object result = session.createNativeQuery(sql, String.class).uniqueResult();
+            int nextNumber = 1;
+            if (result != null) {
+                String code = result.toString().trim();
+                if (code.startsWith("PMS")) {
+                    try {
+                        String numPart = code.substring(3);
+                        nextNumber = Integer.parseInt(numPart) + 1;
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+            return String.format("PMS%04d", nextNumber);
+        } catch (Exception e) {
+            log.error("Lỗi khi sinh mã nhân viên tiếp theo: ", e);
+            throw new RuntimeException("Lỗi truy vấn cơ sở dữ liệu khi sinh mã nhân viên.", e);
+        }
+    }
+
+    /**
      * Dùng cho CẬP NHẬT: Kiểm tra SĐT có bị trùng với NGƯỜI KHÁC hay không
      */
     public boolean existsByPhoneAndNotId(String phone, Integer currentEmployeeId) {
@@ -168,10 +200,10 @@ public class EmployeeRepository {
                 String cleanKw = keyword.trim();
                 boolean isDigitsOnly = cleanKw.matches("^[0-9+]+$");
                 if (isDigitsOnly) {
-                    whereClause.append(" AND (e.phone LIKE :keyword OR e.nationalId LIKE :keyword) ");
+                    whereClause.append(" AND (e.phone LIKE :keyword OR e.nationalId LIKE :keyword OR e.code LIKE :keyword) ");
                 } else {
                     whereClause.append(
-                            " AND (e.fullName LIKE :keyword OR e.phone LIKE :keyword OR e.nationalId LIKE :keyword) ");
+                            " AND (e.fullName LIKE :keyword OR e.phone LIKE :keyword OR e.nationalId LIKE :keyword OR e.code LIKE :keyword) ");
                 }
                 params.put("keyword", "%" + cleanKw + "%");
             }
@@ -255,10 +287,15 @@ public class EmployeeRepository {
                     log.error("Không tìm thấy vai trò với mã: {}", code);
                     return false;
                 }
+                if (emp.getCode() == null || emp.getCode().isBlank()) {
+                    emp.setCode(generateNextEmployeeCode());
+                }
                 session.persist(emp);
 
                 Account account = new Account();
                 account.setEmployee(emp);
+                // Tên đăng nhập gắn cố định theo mã nhân viên (PMSxxxx)
+                account.setUsername(emp.getCode());
                 account.setRole(role);
                 account.setPasswordHash(initialPasswordHash);
                 account.setStatus(Account.Status.ACTIVE);

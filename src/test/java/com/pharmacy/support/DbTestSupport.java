@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  */
 public final class DbTestSupport {
 
-    /** Quản lý được seed trong V1__init_schema.sql */
-    public static final String MANAGER_PHONE = "0985549854";
-    /** Nhân viên bán hàng được seed trong V1__init_schema.sql */
-    public static final String STAFF_PHONE = "0989261809";
+    /** Tên đăng nhập (mã NV) của Quản lý được seed trong V1__init_schema.sql */
+    public static final String MANAGER_USERNAME = "PMS0001";
+    /** Tên đăng nhập (mã NV) của Nhân viên bán hàng được seed trong V1__init_schema.sql */
+    public static final String STAFF_USERNAME = "PMS0002";
 
     private static Boolean available;
 
@@ -36,15 +36,15 @@ public final class DbTestSupport {
         assumeTrue(available, "Bỏ qua integration test: không kết nối được MySQL");
     }
 
-    public static Account loginAs(String phone) {
-        Account account = new AccountRepository().findByIdentifier(phone)
-                .orElseThrow(() -> new IllegalStateException("Thiếu tài khoản seed " + phone));
+    public static Account loginAs(String username) {
+        Account account = new AccountRepository().findByUsername(username)
+                .orElseThrow(() -> new IllegalStateException("Thiếu tài khoản seed " + username));
         UserSession.start(account);
         return account;
     }
 
     public static Account loginAsManager() {
-        return loginAs(MANAGER_PHONE);
+        return loginAs(MANAGER_USERNAME);
     }
 
     public static void logout() {

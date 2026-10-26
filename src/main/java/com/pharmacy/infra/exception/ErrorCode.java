@@ -7,17 +7,16 @@ public enum ErrorCode {
     DATABASE_QUERY_ERROR("DB_002", "Lỗi thực thi truy vấn cơ sở dữ liệu."),
 
     // 2. Nhóm lỗi xác thực & tài khoản (AUTH)
-    INVALID_CREDENTIALS("AUTH_001", "Số điện thoại/CCCD hoặc mật khẩu không chính xác."),
+    INVALID_CREDENTIALS("AUTH_001", "Tên đăng nhập hoặc mật khẩu không chính xác."),
     ACCOUNT_DISABLED("AUTH_003", "Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên."),
     UNAUTHENTICATED("AUTH_004", "Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại."),
     UNAUTHORIZED("AUTH_005", "Bạn không có quyền thực hiện chức năng này."),
     PASSWORD_CHANGE_REQUIRED("AUTH_006", "Bạn cần đổi mật khẩu trong lần đăng nhập đầu tiên."),
 
     // 3. Nhóm lỗi thẩm định dữ liệu đầu vào (VAL)
-    EMPTY_LOGIN_FIELDS("VAL_001", "Vui lòng nhập Số điện thoại/CCCD và mật khẩu."),
-    EMPTY_IDENTIFIER("VAL_002", "Vui lòng nhập Số điện thoại hoặc số CCCD."),
-    EMPTY_PASSWORD("VAL_003", "Vui lòng nhập mật khẩu."),
-    INVALID_IDENTIFIER_FORMAT("VAL_004", "Số điện thoại (10 số) hoặc CCCD (12 số) không đúng định dạng.");
+    EMPTY_LOGIN_FIELDS("VAL_001", "Vui lòng nhập tên đăng nhập và mật khẩu."),
+    EMPTY_IDENTIFIER("VAL_002", "Vui lòng nhập tên đăng nhập."),
+    EMPTY_PASSWORD("VAL_003", "Vui lòng nhập mật khẩu.");
 
     private final String code;
     private final String defaultMessage;

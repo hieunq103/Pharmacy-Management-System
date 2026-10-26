@@ -5,6 +5,7 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
@@ -12,18 +13,36 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefWidth="690.0" spacing="16.0"
+<VBox prefWidth="720.0" spacing="6.0"
       styleClass="payment-dialog-root"
       stylesheets="@../../css/sales.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.pharmacy.sales.PaymentDialogController">
 
     <padding>
-        <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+        <Insets bottom="8.0" left="16.0" right="16.0" top="8.0" />
     </padding>
 
-    <!-- HEADER / TOTAL AMOUNT & FORMULA BREAKDOWN -->
-    <VBox spacing="8.0" styleClass="payment-breakdown-card">
+    <!-- MÃ HÓA ĐƠN -->
+    <HBox alignment="CENTER_LEFT">
+        <Label fx:id="lblDialogOrderCode" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px; -fx-text-fill: #475569;" text="Mã hóa đơn: HDB..." />
+    </HBox>
+
+    <!-- 1. DANH SÁCH THUỐC TRONG GIỎ HÀNG (HIỂN THỊ VỪA VẶN 3 THUỐC) -->
+    <VBox spacing="3.0">
+        <HBox alignment="CENTER_LEFT">
+            <Label styleClass="field-label" style="-fx-font-size: 12px;" text="Danh sách thuốc mua" />
+        </HBox>
+        <ScrollPane fx:id="scrollDialogCart" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                    minHeight="120.0" prefHeight="124.0" maxHeight="125.0" styleClass="dialog-cart-scrollpane">
+            <VBox fx:id="boxDialogCartItems" spacing="4.0" styleClass="dialog-cart-list">
+                <!-- Render động các dòng thuốc -->
+            </VBox>
+        </ScrollPane>
+    </VBox>
+
+    <!-- 2. TỔNG TIỀN HÀNG, GIẢM GIÁ & TỔNG THANH TOÁN (NẰM Ở DƯỚI DANH SÁCH THUỐC) -->
+    <VBox spacing="3.0" styleClass="payment-breakdown-card">
         <HBox alignment="CENTER_LEFT">
             <Label styleClass="payment-summary-label" text="Tổng tiền hàng:" />
             <Region HBox.hgrow="ALWAYS" />
@@ -36,7 +55,7 @@
         </HBox>
         <Region styleClass="payment-summary-divider" />
         <HBox alignment="CENTER_LEFT">
-            <VBox spacing="2.0">
+            <VBox spacing="1.0">
                 <Label styleClass="payment-header-sub" text="Tổng thanh toán:" />
                 <Label styleClass="payment-formula-hint" text="(Tổng tiền hàng - Giảm giá)" />
             </VBox>
@@ -45,122 +64,114 @@
         </HBox>
     </VBox>
 
-    <!-- CHỌN PHƯƠNG THỨC THANH TOÁN (TIỀN MẶT / CHUYỂN KHOẢN) -->
-    <VBox spacing="8.0">
-        <Label styleClass="field-label" text="Phương thức thanh toán" />
-        <HBox spacing="12.0">
-            <Button fx:id="btnMethodCash" HBox.hgrow="ALWAYS" maxWidth="Infinity" minWidth="315.0" prefWidth="315.0" minHeight="44.0" prefHeight="44.0" maxHeight="44.0" onAction="#handleSelectCash" styleClass="payment-method-btn" text="Tiền mặt" />
-            <Button fx:id="btnMethodTransfer" HBox.hgrow="ALWAYS" maxWidth="Infinity" minWidth="315.0" prefWidth="315.0" minHeight="44.0" prefHeight="44.0" maxHeight="44.0" onAction="#handleSelectTransfer" styleClass="payment-method-btn" text="Chuyển khoản" />
+    <!-- 3. CHỌN PHƯƠNG THỨC THANH TOÁN (TIỀN MẶT / CHUYỂN KHOẢN) -->
+    <VBox spacing="3.0">
+        <Label styleClass="field-label" style="-fx-font-size: 11.5px;" text="Phương thức thanh toán" />
+        <HBox spacing="10.0">
+            <Button fx:id="btnMethodCash" HBox.hgrow="ALWAYS" maxWidth="Infinity" minWidth="325.0" prefWidth="325.0" minHeight="34.0" prefHeight="34.0" maxHeight="34.0" onAction="#handleSelectCash" styleClass="payment-method-btn" text="Tiền mặt" />
+            <Button fx:id="btnMethodTransfer" HBox.hgrow="ALWAYS" maxWidth="Infinity" minWidth="325.0" prefWidth="325.0" minHeight="34.0" prefHeight="34.0" maxHeight="34.0" onAction="#handleSelectTransfer" styleClass="payment-method-btn" text="Chuyển khoản" />
         </HBox>
     </VBox>
 
-    <!-- KHUNG CHI TIẾT THEO PHƯƠNG THỨC -->
-    <StackPane VBox.vgrow="ALWAYS" minHeight="330.0">
-        <!-- 1. KHUNG TIỀN MẶT -->
-        <VBox fx:id="paneCash" minHeight="330.0" spacing="16.0" styleClass="payment-detail-box" alignment="CENTER">
-            <!-- Ô nhập tiền khách đưa -->
-            <VBox spacing="12.0" styleClass="cash-entry-card">
-                <HBox alignment="CENTER_LEFT" spacing="12.0">
-                    <Label styleClass="cash-entry-label" text="Tiền khách đưa:" />
+    <!-- 4. KHUNG CHI TIẾT THEO PHƯƠNG THỨC -->
+    <StackPane VBox.vgrow="ALWAYS">
+        <!-- 1. KHUNG TIỀN MẶT (GỘP TIỀN KHÁCH ĐƯA VÀ TIỀN THỪA VÀO 1 Ô GỌN GÀNG) -->
+        <VBox fx:id="paneCash" spacing="6.0" styleClass="payment-detail-box" alignment="CENTER">
+            <VBox spacing="6.0" styleClass="cash-combined-card">
+                <!-- Hàng 1: Tiền khách đưa + Gợi ý tiền nhanh -->
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
+                    <Label styleClass="cash-entry-label" text="Tiền khách đưa:" minWidth="105.0" prefWidth="105.0" />
+                    <TextField fx:id="txtCashGiven" alignment="CENTER_RIGHT" prefWidth="160.0" promptText="0" styleClass="cash-input-compact" />
                     <Region HBox.hgrow="ALWAYS" />
-                    <TextField fx:id="txtCashGiven" alignment="CENTER_RIGHT" prefWidth="280.0" promptText="0" styleClass="cash-input" />
+                    <HBox fx:id="boxQuickAmounts" alignment="CENTER_RIGHT" spacing="6.0">
+                        <Button fx:id="btnExactAmount" onAction="#handleExactCash" styleClass="quick-amount-chip-compact" text="Vừa đủ" />
+                        <Button fx:id="btnQuick1" onAction="#handleQuickAmount1" styleClass="quick-amount-chip-compact" text="400.000" />
+                        <Button fx:id="btnQuick2" onAction="#handleQuickAmount2" styleClass="quick-amount-chip-compact" text="500.000" />
+                    </HBox>
                 </HBox>
 
-                <!-- Gợi ý tiền nhanh -->
-                <HBox fx:id="boxQuickAmounts" alignment="CENTER_RIGHT" spacing="10.0">
-                    <Button fx:id="btnExactAmount" onAction="#handleExactCash" styleClass="quick-amount-chip" text="Vừa đủ" />
-                    <Button fx:id="btnQuick1" onAction="#handleQuickAmount1" styleClass="quick-amount-chip" text="400.000" />
-                    <Button fx:id="btnQuick2" onAction="#handleQuickAmount2" styleClass="quick-amount-chip" text="500.000" />
+                <!-- Đường kẻ phân cách -->
+                <Region styleClass="cash-divider-line" />
+
+                <!-- Hàng 2: Tiền thừa trả khách -->
+                <HBox alignment="CENTER_LEFT">
+                    <VBox spacing="1.0">
+                        <Label styleClass="change-card-title-compact" text="Tiền thừa trả khách:" />
+                        <Label styleClass="change-card-hint-compact" text="Số tiền cần hoàn trả lại cho khách" />
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label fx:id="lblChangeAmount" styleClass="change-card-value-compact" text="0đ" />
                 </HBox>
             </VBox>
-
-            <!-- Thẻ hiển thị Tiền thừa trả khách to nổi bật -->
-            <HBox alignment="CENTER_LEFT" styleClass="change-card">
-                <VBox spacing="4.0">
-                    <Label styleClass="change-card-title" text="Tiền thừa trả khách:" />
-                    <Label styleClass="change-card-hint" text="Số tiền cần hoàn trả lại cho khách" />
-                </VBox>
-                <Region HBox.hgrow="ALWAYS" />
-                <Label fx:id="lblChangeAmount" styleClass="change-card-value" text="0đ" />
-            </HBox>
         </VBox>
 
-        <!-- 2. KHUNG CHUYỂN KHOẢN -->
-        <VBox fx:id="paneTransfer" minHeight="330.0" spacing="12.0" styleClass="payment-detail-box" visible="false">
+        <!-- 2. KHUNG CHUYỂN KHOẢN (GỌN GÀNG, QR TO HƠN, BỎ DIỆN TÍCH TRẮNG) -->
+        <VBox fx:id="paneTransfer" spacing="5.0" styleClass="payment-detail-box" visible="false">
             <HBox alignment="CENTER_LEFT">
                 <Label styleClass="transfer-info-title" text="Thông tin chuyển khoản" />
             </HBox>
 
-            <HBox alignment="CENTER" spacing="18.0" VBox.vgrow="ALWAYS">
-                <!-- Mã QR Container (Kích thước lớn 230x230 rõ nét) -->
-                <VBox alignment="CENTER" spacing="8.0" styleClass="qr-wrapper-card" minWidth="250.0" prefWidth="250.0">
-                    <StackPane alignment="CENTER" minWidth="230.0" prefWidth="230.0" maxWidth="230.0" minHeight="230.0" prefHeight="230.0" maxHeight="230.0">
-                        <ImageView fx:id="imgQrCode" fitWidth="230.0" fitHeight="230.0" preserveRatio="true" />
-                        <ProgressIndicator fx:id="progressQr" maxWidth="40.0" maxHeight="40.0" />
-                        <VBox fx:id="boxSuccessOverlay" alignment="CENTER" spacing="6.0" styleClass="qr-success-overlay" visible="false">
-                            <Label styleClass="qr-success-icon" text="✓" />
-                            <Label styleClass="qr-success-text" text="Đã nhận tiền!" />
+            <HBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
+                <!-- Mã QR Container: QR to hơn, viền ôm sát loại bỏ diện tích trắng -->
+                <VBox alignment="CENTER" spacing="2.0" styleClass="qr-wrapper-card" minWidth="175.0" prefWidth="175.0" maxWidth="175.0">
+                    <StackPane alignment="CENTER" minWidth="165.0" prefWidth="165.0" maxWidth="165.0" minHeight="165.0" prefHeight="165.0" maxHeight="165.0">
+                        <ImageView fx:id="imgQrCode" fitWidth="165.0" fitHeight="165.0" preserveRatio="true" />
+                        <ProgressIndicator fx:id="progressQr" maxWidth="30.0" maxHeight="30.0" />
+                        <VBox fx:id="boxSuccessOverlay" alignment="CENTER" spacing="2.0" styleClass="qr-success-overlay" visible="false">
+                            <Label styleClass="qr-success-icon" style="-fx-font-size: 26px;" text="✓" />
+                            <Label styleClass="qr-success-text" style="-fx-font-size: 12px;" text="Đã nhận tiền!" />
                         </VBox>
                     </StackPane>
                     <Label styleClass="qr-scan-hint" text="Quét bằng mọi App Ngân hàng" />
                 </VBox>
 
                 <!-- Thông tin chuyển khoản -->
-                <VBox spacing="10.0" styleClass="transfer-card" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+                <VBox spacing="3.0" styleClass="transfer-card" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
                     <HBox alignment="CENTER_LEFT">
-                        <Label minWidth="105.0" prefWidth="105.0" styleClass="transfer-field-name" text="Ngân hàng:" />
+                        <Label minWidth="85.0" prefWidth="85.0" styleClass="transfer-field-name" text="Ngân hàng:" />
                         <Region HBox.hgrow="ALWAYS" />
                         <Label fx:id="lblBankName" styleClass="transfer-field-val" text="MB Bank" />
                     </HBox>
                     <HBox alignment="CENTER_LEFT">
-                        <Label minWidth="105.0" prefWidth="105.0" styleClass="transfer-field-name" text="Số tài khoản:" />
+                        <Label minWidth="85.0" prefWidth="85.0" styleClass="transfer-field-name" text="Số tài khoản:" />
                         <Region HBox.hgrow="ALWAYS" />
                         <Label fx:id="lblAccountNo" styleClass="transfer-field-val, bold" text="0989261809" />
                     </HBox>
                     <HBox alignment="CENTER_LEFT">
-                        <Label minWidth="105.0" prefWidth="105.0" styleClass="transfer-field-name" text="Chủ tài khoản:" />
+                        <Label minWidth="85.0" prefWidth="85.0" styleClass="transfer-field-name" text="Chủ tài khoản:" />
                         <Region HBox.hgrow="ALWAYS" />
                         <Label fx:id="lblAccountName" styleClass="transfer-field-val" text="NGUYEN QUANG HIEU" />
                     </HBox>
                     <HBox alignment="CENTER_LEFT">
-                        <Label minWidth="105.0" prefWidth="105.0" styleClass="transfer-field-name" text="Số tiền:" />
+                        <Label minWidth="85.0" prefWidth="85.0" styleClass="transfer-field-name" text="Số tiền:" />
                         <Region HBox.hgrow="ALWAYS" />
-                        <Label fx:id="lblTransferAmount" styleClass="transfer-field-val, text-primary" text="0đ" />
+                        <Label fx:id="lblTransferAmount" styleClass="transfer-field-val, text-primary" style="-fx-font-size: 15px;" text="0đ" />
                     </HBox>
                     <HBox alignment="CENTER_LEFT">
-                        <Label minWidth="105.0" prefWidth="105.0" styleClass="transfer-field-name" text="Nội dung:" />
+                        <Label minWidth="85.0" prefWidth="85.0" styleClass="transfer-field-name" text="Nội dung:" />
                         <Region HBox.hgrow="ALWAYS" />
                         <Label fx:id="lblTransferContent" styleClass="transfer-content-badge" text="HDB..." />
                     </HBox>
                 </VBox>
             </HBox>
-
-            <!-- Trạng thái lắng nghe giao dịch tự động -->
-            <HBox alignment="CENTER_LEFT" spacing="8.0" styleClass="transfer-status-bar">
-                <Label fx:id="lblStatusPulse" styleClass="status-pulse-dot" text="●" />
-                <Label fx:id="lblTransferStatus" styleClass="transfer-status-text" text="Đang chờ chuyển khoản..." HBox.hgrow="ALWAYS" />
-            </HBox>
         </VBox>
     </StackPane>
 
-    <!-- PRESCRIPTION WARNING BOX (CHỈ HIỂN THỊ KHI ĐƠN CÓ THUỐC KÊ TOA) -->
-    <VBox fx:id="boxPrescriptionWarning" spacing="10.0" styleClass="prescription-warning-box">
-        <HBox alignment="CENTER_LEFT" spacing="8.0">
-            <Label minWidth="18.0" prefWidth="18.0" styleClass="prescription-warning-icon" text="⚠" />
-            <Label styleClass="prescription-warning-title" text="Đơn có thuốc kê toa — phải kiểm tra đơn của bác sĩ trước khi bán." wrapText="true" HBox.hgrow="ALWAYS" />
-        </HBox>
-        <CheckBox fx:id="chkPrescriptionConfirmed" styleClass="prescription-checkbox" text="Tôi đã kiểm tra đơn thuốc của khách hàng" />
-    </VBox>
+    <!-- 5. PRESCRIPTION WARNING BOX (GỌN GÀNG, KHÔNG CHIẾM DIỆN TÍCH) -->
+    <HBox fx:id="boxPrescriptionWarning" alignment="CENTER_LEFT" spacing="8.0" styleClass="prescription-warning-box-compact">
+        <Label styleClass="prescription-warning-icon-compact" text="⚠" />
+        <Label styleClass="prescription-warning-title-compact" text="Thuốc kê toa:" />
+        <CheckBox fx:id="chkPrescriptionConfirmed" styleClass="prescription-checkbox-compact" text="Tôi đã kiểm tra đơn thuốc của bác sĩ" HBox.hgrow="ALWAYS" />
+    </HBox>
 
-    <!-- FOOTER ACTIONS -->
-    <HBox alignment="CENTER_RIGHT" spacing="12.0">
+    <!-- 6. FOOTER ACTIONS -->
+    <HBox alignment="CENTER_RIGHT" spacing="10.0">
         <padding>
-            <Insets top="4.0" />
+            <Insets top="2.0" />
         </padding>
-        <Label fx:id="lblPrescriptionHint" styleClass="prescription-hint-text" text="Cần xác nhận đã kiểm tra đơn thuốc" wrapText="true" HBox.hgrow="ALWAYS" />
         <Region HBox.hgrow="ALWAYS" />
-        <Button onAction="#handleCancel" minWidth="110.0" prefWidth="110.0" minHeight="44.0" prefHeight="44.0" styleClass="btn-modal-cancel" text="Quay lại" />
-        <Button fx:id="btnConfirmPayment" onAction="#handleConfirmPayment" minWidth="185.0" prefWidth="185.0" minHeight="44.0" prefHeight="44.0" styleClass="btn-modal-confirm" text="Xác nhận thanh toán" />
+        <Button onAction="#handleCancel" minWidth="90.0" prefWidth="90.0" minHeight="34.0" prefHeight="34.0" styleClass="btn-modal-cancel" text="Quay lại" />
+        <Button fx:id="btnConfirmPayment" onAction="#handleConfirmPayment" minWidth="170.0" prefWidth="170.0" minHeight="34.0" prefHeight="34.0" styleClass="btn-modal-confirm" text="Xác nhận thanh toán" />
     </HBox>
 
 </VBox>

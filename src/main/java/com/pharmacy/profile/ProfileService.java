@@ -2,5 +2,5 @@ package com.pharmacy.profile;
 
 public interface ProfileService {
     void updateProfile(ProfileUpdateRequest request);
-    void changePassword(String identifier, String currentPassword, String newPassword);
+    void changePassword(String username, String currentPassword, String newPassword);
 }

@@ -9,6 +9,7 @@ public interface EmployeeService {
     PageResult<Employee> getEmployeesPage(int page, int size, String keyword, String gender, String role, String status, String accountStatus);
     EmployeeRepository.EmployeeSummary getEmployeeSummary();
     Optional<Employee> findByIdWithDetails(Integer id);
+    String generateNextEmployeeCode();
     boolean createEmployeeWithAccount(Employee employee, String role);
     boolean markAsInactive(Integer employeeId);
     boolean lockAccount(Integer accountId);

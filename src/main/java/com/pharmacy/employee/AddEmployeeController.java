@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 public class AddEmployeeController implements Initializable {
 
+    @FXML private TextField txtEmployeeCode;
     @FXML private TextField txtFullName;
     @FXML private DatePicker dpBirthDate;
     @FXML private ComboBox<String> cbGender;
@@ -31,6 +32,8 @@ public class AddEmployeeController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        loadNextEmployeeCode();
+
         cbGender.setItems(FXCollections.observableArrayList(
                 Employee.GENDER_MALE,
                 Employee.GENDER_FEMALE,
@@ -50,6 +53,23 @@ public class AddEmployeeController implements Initializable {
         txtCitizenId.textProperty().addListener((obs, o, n) -> clearError(txtCitizenId, lblErrorCitizenId));
         txtPhone.textProperty().addListener((obs, o, n) -> clearError(txtPhone, lblErrorPhone));
         txtAddress.textProperty().addListener((obs, o, n) -> clearError(txtAddress, lblErrorAddress));
+    }
+
+    public void loadNextEmployeeCode() {
+        javafx.concurrent.Task<String> task = new javafx.concurrent.Task<>() {
+            @Override
+            protected String call() {
+                return employeeService.generateNextEmployeeCode();
+            }
+        };
+        task.setOnSucceeded(e -> {
+            if (txtEmployeeCode != null) {
+                txtEmployeeCode.setText(task.getValue());
+            }
+        });
+        Thread t = new Thread(task);
+        t.setDaemon(true);
+        t.start();
     }
 
     public void setOnCloseCallback(Runnable onCloseCallback) {
@@ -125,6 +145,10 @@ public class AddEmployeeController implements Initializable {
 
         // 6. Gán dữ liệu vào Entity Employee
         Employee newEmp = new Employee();
+        String code = txtEmployeeCode != null ? txtEmployeeCode.getText().trim() : "";
+        if (!code.isEmpty()) {
+            newEmp.setCode(code);
+        }
         newEmp.setFullName(name);
         newEmp.setDob(birthDate);
         newEmp.setGender(gender);
@@ -178,6 +202,7 @@ public class AddEmployeeController implements Initializable {
     }
 
     public void clearForm() {
+        loadNextEmployeeCode();
         txtFullName.clear();
         dpBirthDate.setValue(null);
         cbGender.setValue(Employee.GENDER_MALE);
