@@ -84,6 +84,11 @@ public class SalesServiceImpl implements SalesService {
     }
 
     @Override
+    public PageResult<SalesOrderDTO> getSalesHistory(LocalDate fromDate, LocalDate toDate, Integer employeeId, String keyword, int page, int size) {
+        return salesRepository.getSalesOrders(fromDate, toDate, UserSession.scopeEmployeeId(employeeId), keyword, page, size);
+    }
+
+    @Override
     public List<SalesOrderDetailDTO> getSalesOrderDetails(long orderId) {
         return salesRepository.getSalesOrderItems(orderId);
     }

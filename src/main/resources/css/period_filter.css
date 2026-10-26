@@ -1,0 +1,83 @@
+/* Bộ lọc kỳ thời gian (Theo ngày / Theo tháng) dùng chung cho Báo cáo và Lịch sử bán hàng */
+.period-pill-btn {
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 6px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1px;
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 13px;
+    -fx-text-fill: #475569;
+    -fx-padding: 4 14;
+    -fx-cursor: hand;
+    -fx-pref-height: 32px;
+}
+
+.period-pill-btn:hover {
+    -fx-background-color: #E2E8F0;
+    -fx-text-fill: #1E293B;
+}
+
+.period-pill-btn.active {
+    -fx-background-color: #0066FF;
+    -fx-border-color: #0066FF;
+    -fx-text-fill: #FFFFFF;
+}
+
+.combo-filter-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-font-size: 13px;
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-pref-height: 32px;
+    -fx-max-height: 32px;
+}
+
+.combo-filter-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1E293B;
+    -fx-padding: 2 8;
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13px;
+}
+
+.year-text-input {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-font-size: 13px;
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-pref-height: 32px;
+    -fx-max-height: 32px;
+    -fx-alignment: CENTER;
+    -fx-text-fill: #1E293B;
+}
+
+.year-text-input:focused {
+    -fx-border-color: #0066FF;
+}
+
+.date-filter-picker {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13px;
+    -fx-pref-height: 32px;
+    -fx-max-height: 32px;
+}
+
+.date-filter-picker .text-field {
+    -fx-background-color: transparent;
+    -fx-padding: 4 8;
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13px;
+    -fx-text-fill: #1E293B;
+}

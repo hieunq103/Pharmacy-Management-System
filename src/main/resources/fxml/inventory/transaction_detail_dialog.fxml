@@ -9,10 +9,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.shape.SVGPath?>
 
 <VBox prefHeight="650.0" prefWidth="1200.0" spacing="14.0"
       styleClass="lot-dialog-root"
-      stylesheets="@../../css/inventory.css, @../../css/inventory_history.css"
+      stylesheets="@../../css/inventory.css, @../../css/inventory_history.css, @../../css/icon_buttons.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.pharmacy.inventory.ui.TransactionDetailDialogController">
 
@@ -27,6 +29,14 @@
             <Label fx:id="lblTransactionTime" styleClass="history-sub-title" text="Thời gian: 00:00 - 01/01/2026" />
         </VBox>
         <Region HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-icon-close">
+            <graphic>
+                <SVGPath content="M 0 0 L 10 10 M 10 0 L 0 10" styleClass="btn-icon-glyph" />
+            </graphic>
+            <tooltip>
+                <Tooltip text="Đóng" />
+            </tooltip>
+        </Button>
     </HBox>
 
     <!-- Card thông tin tổng quan của phiếu -->

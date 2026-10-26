@@ -28,17 +28,6 @@
 
         <!-- ==================== CỘT TRÁI: DANH SÁCH THUỐC VÀ TÌM KIẾM ==================== -->
         <VBox spacing="12.0" HBox.hgrow="ALWAYS">
-            <!-- TIÊU ĐỀ BÁN HÀNG & NÚT LỊCH SỬ BÁN HÀNG -->
-            <HBox alignment="CENTER_LEFT" spacing="12.0">
-                <VBox spacing="2.0">
-                    <Label styleClass="sales-main-title" text="Bán hàng" />
-                    <Label styleClass="sales-sub-title" text="Tạo hóa đơn bán lẻ thuốc tại quầy" />
-                </VBox>
-                <Region HBox.hgrow="ALWAYS" />
-                <Button fx:id="btnSalesHistory" onAction="#handleOpenSalesHistory"
-                        styleClass="btn-secondary-history" text="Lịch sử bán hàng" />
-            </HBox>
-
         <!-- BỘ LỌC: TÌM KIẾM THEO TÊN/MÃ VÀ CHỌN NHÓM THUỐC (ĐÃ BỎ NÚT F2 VÀ THANH CUỘN PILL) -->
         <HBox alignment="CENTER_LEFT" spacing="10.0">
             <!-- Ô tìm kiếm theo tên hoặc mã thuốc -->
@@ -50,6 +39,10 @@
 
             <!-- Dropdown chọn Nhóm thuốc -->
             <ComboBox fx:id="cboCategory" minWidth="210.0" prefWidth="230.0" promptText="Tất cả nhóm thuốc" styleClass="sales-category-combo" />
+
+            <!-- Nút mở Lịch sử bán hàng -->
+            <Button fx:id="btnSalesHistory" onAction="#handleOpenSalesHistory"
+                    styleClass="btn-secondary-history" text="Lịch sử bán hàng" />
         </HBox>
 
         <!-- VÙNG HIỂN THỊ 6 THUỐC (2 CỘT x 3 HÀNG - LOẠI BỎ CUỘN HOÀN TOÀN) -->
@@ -88,9 +81,8 @@
             <Insets bottom="16.0" left="16.0" right="16.0" top="14.0" />
         </padding>
 
-        <!-- HEADER GIỎ HÀNG: DUY NHẤT 1 TAB HÓA ĐƠN + NÚT XÓA HẾT -->
+        <!-- HEADER GIỎ HÀNG: NÚT XÓA HẾT -->
         <HBox alignment="CENTER_LEFT" spacing="8.0">
-            <Label styleClass="btn-order-tab, active" text="Hóa đơn" />
             <Region HBox.hgrow="ALWAYS" />
             <Button onAction="#handleClearCurrentCart" styleClass="btn-clear-cart" text="Xóa hết" />
         </HBox>

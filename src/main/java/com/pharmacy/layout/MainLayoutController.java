@@ -209,6 +209,20 @@ public class MainLayoutController {
         loadCenterView("/fxml/sales/sales.fxml");
     }
 
+    /**
+     * Mở Lịch sử bán hàng đã lọc sẵn theo tháng/năm (từ nút "Xem đầy đủ..." ở trang Báo cáo).
+     */
+    public void navigateToSalesHistoryForMonth(int year, int month) {
+        setActiveButton(btnSales);
+        if (lblHeaderTitle != null) {
+            lblHeaderTitle.setText("Bán hàng");
+        }
+        FXMLLoader loader = loadCenterViewWithLoader("/fxml/sales/sales.fxml");
+        if (loader != null && loader.getController() instanceof com.pharmacy.sales.SalesController salesCtrl) {
+            salesCtrl.openSalesHistoryForMonth(year, month);
+        }
+    }
+
     public void navigateToSalesHistory() {
         setActiveButton(btnSales);
         if (lblHeaderTitle != null) {

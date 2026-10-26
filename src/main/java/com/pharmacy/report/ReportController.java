@@ -92,6 +92,9 @@ public class ReportController {
     @FXML private TableColumn<SoldMedicineDTO, String> colMedRevenue;
     @FXML private HBox paginationBox;
     @FXML private Label lblRecordRange;
+    @FXML private Label lblMedTableTitle;
+    @FXML private HBox boxMedPagination;
+    @FXML private HBox boxViewFullMonth;
 
     // Trạng thái lọc thời gian hiện tại
     private enum PeriodMode { DAY, MONTH }
@@ -110,6 +113,12 @@ public class ReportController {
     private boolean medicinesLoadedForCurrentPeriod = false;
 
     private final ObservableList<SoldMedicineDTO> masterSoldMedicines = FXCollections.observableArrayList();
+
+    // Chế độ Theo tháng: bảng chỉ hiện top N thuốc bán chạy, kèm link "Xem đầy đủ..." sang Lịch sử bán hàng
+    private static final int TOP_MONTH_LIMIT = 5;
+    private boolean medTopMode = false;
+    private int medTopYear;
+    private int medTopMonth;
 
     public ReportController() {
         this.reportService = new ReportServiceImpl();
@@ -586,6 +595,7 @@ public class ReportController {
                 medicinesLoadedForCurrentPeriod = true;
                 List<SoldMedicineDTO> soldMedicines = getValue();
                 masterSoldMedicines.setAll(soldMedicines != null ? soldMedicines : List.of());
+                applyMedicineTableMode(mode == PeriodMode.MONTH, targetYear, targetMonth);
                 filterSoldMedicines(txtSearchMedicine != null ? txtSearchMedicine.getText() : null);
 
                 if (masterSoldMedicines.isEmpty()) {
@@ -782,7 +792,50 @@ public class ReportController {
         }
     }
 
+    /**
+     * Theo ngày: bảng đầy đủ có tìm kiếm + phân trang.
+     * Theo tháng: chỉ top 5 thuốc bán chạy nhất (dữ liệu đã sắp theo số lượng bán giảm dần),
+     * ẩn tìm kiếm/phân trang và hiện link "Xem đầy đủ..." mở Lịch sử bán hàng của tháng đó.
+     */
+    private void applyMedicineTableMode(boolean topMode, int year, int month) {
+        medTopMode = topMode;
+        medTopYear = year;
+        medTopMonth = month;
+        if (lblMedTableTitle != null) {
+            lblMedTableTitle.setText(topMode
+                    ? "Top " + TOP_MONTH_LIMIT + " thuốc bán chạy nhất tháng " + month + "/" + year
+                    : "Bảng chi tiết sản lượng từng mặt hàng thuốc");
+        }
+        if (tblSoldMedicines != null) {
+            // Top 5: thu gọn bảng vừa đủ 5 dòng thay vì chiều cao của trang 7 dòng
+            tblSoldMedicines.setPrefHeight(topMode ? 335 : 425);
+        }
+        setShown(txtSearchMedicine, !topMode);
+        setShown(boxMedPagination, !topMode);
+        setShown(boxViewFullMonth, topMode && !masterSoldMedicines.isEmpty());
+    }
+
+    private static void setShown(Node node, boolean shown) {
+        if (node != null) {
+            node.setVisible(shown);
+            node.setManaged(shown);
+        }
+    }
+
+    @FXML
+    private void handleViewFullMonth(ActionEvent event) {
+        com.pharmacy.layout.MainLayoutController layout = com.pharmacy.layout.MainLayoutController.getInstance();
+        if (layout != null) {
+            layout.navigateToSalesHistoryForMonth(medTopYear, medTopMonth);
+        }
+    }
+
     private void filterSoldMedicines(String keyword) {
+        if (medTopMode) {
+            currentPage = 1;
+            pageSoldMedicines.setAll(masterSoldMedicines.subList(0, Math.min(TOP_MONTH_LIMIT, masterSoldMedicines.size())));
+            return;
+        }
         if (keyword == null || keyword.isBlank()) {
             filteredSoldMedicines.setAll(masterSoldMedicines);
         } else {

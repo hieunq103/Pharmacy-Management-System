@@ -22,6 +22,9 @@ public interface SalesService {
      */
     String checkout(SalesOrderRequest request);
     PageResult<SalesOrderDTO> getSalesHistory(LocalDate date, Integer employeeId, String keyword, int page, int size);
+
+    /** Lịch sử bán hàng trong khoảng ngày [fromDate, toDate], ví dụ cả một tháng. */
+    PageResult<SalesOrderDTO> getSalesHistory(LocalDate fromDate, LocalDate toDate, Integer employeeId, String keyword, int page, int size);
     List<SalesOrderDetailDTO> getSalesOrderDetails(long orderId);
 
     TodaySalesSummary getTodaySalesSummary();

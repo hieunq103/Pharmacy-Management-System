@@ -9,10 +9,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.shape.SVGPath?>
 
 <VBox prefHeight="650.0" prefWidth="1120.0" spacing="14.0"
       styleClass="lot-dialog-root"
-      stylesheets="@../../css/inventory.css, @../../css/inventory_history.css, @../../css/sales.css"
+      stylesheets="@../../css/inventory.css, @../../css/inventory_history.css, @../../css/sales.css, @../../css/icon_buttons.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.pharmacy.sales.SalesOrderDetailDialogController">
 
@@ -20,7 +22,7 @@
         <Insets bottom="16.0" left="24.0" right="24.0" top="18.0" />
     </padding>
 
-    <!-- Header: Tiêu đề + Mã hóa đơn + Ngày giờ + Nút đóng ✕ -->
+    <!-- Header: Tiêu đề + Mã hóa đơn + Ngày giờ + Nút X đóng -->
     <HBox alignment="CENTER_LEFT" spacing="12.0">
         <VBox spacing="4.0">
             <HBox alignment="CENTER_LEFT" spacing="10.0">
@@ -30,7 +32,14 @@
             <Label fx:id="lblOrderTime" styleClass="history-sub-title" text="Thời gian: 00:00 - 01/01/2026" />
         </VBox>
         <Region HBox.hgrow="ALWAYS" />
-        <Button onAction="#handleClose" styleClass="btn-close-history" text="✕" />
+        <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-icon-close">
+            <graphic>
+                <SVGPath content="M 0 0 L 10 10 M 10 0 L 0 10" styleClass="btn-icon-glyph" />
+            </graphic>
+            <tooltip>
+                <Tooltip text="Đóng" />
+            </tooltip>
+        </Button>
     </HBox>
 
     <!-- Card thông tin tổng quan của đơn hàng -->
@@ -100,11 +109,6 @@
                 <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
             </columnResizePolicy>
         </TableView>
-    </HBox>
-
-    <!-- Footer: Nút Đóng -->
-    <HBox alignment="CENTER_RIGHT" spacing="12.0">
-        <Button onAction="#handleClose" prefHeight="40.0" prefWidth="110.0" styleClass="btn-modal-cancel" text="Đóng" />
     </HBox>
 
 </VBox>

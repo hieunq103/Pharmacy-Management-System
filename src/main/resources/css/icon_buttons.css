@@ -1,0 +1,60 @@
+/* Nút biểu tượng hình vuông bo góc dùng chung:
+   - .btn-icon-close : nút X (nền đỏ, dấu X trắng) đóng cửa sổ chi tiết
+   - .btn-icon-back  : nút quay về trang trước (nền trắng, viền xám, mũi tên xám) */
+.btn-icon-close,
+.btn-icon-back {
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-pref-width: 40px;
+    -fx-pref-height: 40px;
+    -fx-max-width: 40px;
+    -fx-max-height: 40px;
+    -fx-padding: 0;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-cursor: hand;
+}
+
+/* ---------- Nút X đóng ---------- */
+.btn-icon-close {
+    -fx-background-color: #EF4444;
+    -fx-border-color: #DC2626;
+    -fx-border-width: 1px;
+}
+
+.btn-icon-close:hover {
+    -fx-background-color: #DC2626;
+}
+
+.btn-icon-close:pressed {
+    -fx-background-color: #B91C1C;
+}
+
+.btn-icon-close .btn-icon-glyph {
+    -fx-stroke: #FFFFFF;
+    -fx-stroke-width: 2;
+    -fx-stroke-line-cap: round;
+}
+
+/* ---------- Nút quay về ---------- */
+.btn-icon-back {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+}
+
+.btn-icon-back:hover {
+    -fx-background-color: #F1F5F9;
+    -fx-border-color: #94A3B8;
+}
+
+.btn-icon-back:pressed {
+    -fx-background-color: #E2E8F0;
+}
+
+.btn-icon-back .btn-icon-glyph {
+    -fx-stroke: #475569;
+    -fx-stroke-width: 2;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+}

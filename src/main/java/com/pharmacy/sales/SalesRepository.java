@@ -370,12 +370,22 @@ public class SalesRepository {
      */
     public PageResult<SalesOrderDTO> getSalesOrders(LocalDate date, Integer employeeId, String keyword, int page, int size) {
         if (date == null) date = LocalDate.now();
+        return getSalesOrders(date, date, employeeId, keyword, page, size);
+    }
+
+    /**
+     * Lịch sử bán hàng trong khoảng ngày [fromDate, toDate] (gồm cả hai đầu), ví dụ cả một tháng.
+     */
+    public PageResult<SalesOrderDTO> getSalesOrders(LocalDate fromDate, LocalDate toDate, Integer employeeId, String keyword,
+                                                    int page, int size) {
+        if (fromDate == null) fromDate = LocalDate.now();
+        if (toDate == null || toDate.isBefore(fromDate)) toDate = fromDate;
         int validPage = Math.max(1, page);
         int validSize = Math.max(1, size);
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             boolean hasKeyword = hasText(keyword);
-            // Khoảng nửa mở [00:00 ngày D, 00:00 ngày D+1) dùng được chỉ mục created_at (DATE(created_at) thì không)
+            // Khoảng nửa mở [00:00 ngày đầu, 00:00 ngày sau ngày cuối) dùng được chỉ mục created_at
             StringBuilder where = new StringBuilder(" WHERE so.created_at >= :fromTs AND so.created_at < :toTs ");
             if (employeeId != null) where.append(" AND so.employee_id = :empId ");
             if (hasKeyword) {
@@ -383,7 +393,7 @@ public class SalesRepository {
             }
 
             var countQuery = session.createNativeQuery("SELECT COUNT(*) FROM sales_orders so " + where, Long.class);
-            bindOrderFilter(countQuery, date, employeeId, hasKeyword ? keyword : null);
+            bindOrderFilter(countQuery, fromDate, toDate, employeeId, hasKeyword ? keyword : null);
             long totalRecords = toLong(countQuery.uniqueResult());
             if (totalRecords == 0) {
                 return new PageResult<>(Collections.emptyList(), 0L, validPage, validSize);
@@ -392,7 +402,7 @@ public class SalesRepository {
             String pageIds = "SELECT so.id FROM sales_orders so " + where
                     + " ORDER BY so.created_at DESC, so.id DESC LIMIT :limit OFFSET :offset";
             NativeQuery<Object[]> query = session.createNativeQuery(ORDER_SUMMARY_SELECT.formatted(pageIds), Object[].class);
-            bindOrderFilter(query, date, employeeId, hasKeyword ? keyword : null);
+            bindOrderFilter(query, fromDate, toDate, employeeId, hasKeyword ? keyword : null);
             query.setParameter("limit", validSize);
             query.setParameter("offset", (validPage - 1) * validSize);
 
@@ -407,9 +417,9 @@ public class SalesRepository {
         }
     }
 
-    private static void bindOrderFilter(NativeQuery<?> query, LocalDate date, Integer employeeId, String keyword) {
-        query.setParameter("fromTs", Timestamp.valueOf(date.atStartOfDay()));
-        query.setParameter("toTs", Timestamp.valueOf(date.plusDays(1).atStartOfDay()));
+    private static void bindOrderFilter(NativeQuery<?> query, LocalDate fromDate, LocalDate toDate, Integer employeeId, String keyword) {
+        query.setParameter("fromTs", Timestamp.valueOf(fromDate.atStartOfDay()));
+        query.setParameter("toTs", Timestamp.valueOf(toDate.plusDays(1).atStartOfDay()));
         if (employeeId != null) query.setParameter("empId", employeeId);
         if (keyword != null) query.setParameter("kw", likeParam(keyword));
     }

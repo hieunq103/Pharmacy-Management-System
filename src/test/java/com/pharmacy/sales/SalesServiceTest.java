@@ -133,6 +133,20 @@ public class SalesServiceTest {
         assertThrows(SecurityException.class, () -> salesService.checkout(request(cartItem(med, 1, med.getSellPrice()))));
     }
 
+    /** Lịch sử bán hàng lọc theo tháng phải khớp số đơn của báo cáo tháng ("Xem đầy đủ..." ở trang Báo cáo). */
+    @Test
+    void testSalesHistoryByMonthMatchesReport() {
+        LocalDate from = LocalDate.of(2026, 3, 1);
+        LocalDate to = from.withDayOfMonth(from.lengthOfMonth());
+        var history = salesService.getSalesHistory(from, to, null, "", 1, 7);
+        var summary = new com.pharmacy.report.ReportServiceImpl().getSummary(from, to, null);
+        assertTrue(history.getTotalElements() > 0);
+        assertEquals(summary.totalOrders(), history.getTotalElements());
+        for (var order : history.getItems()) {
+            assertEquals(3, order.getCreatedAt().getMonthValue());
+        }
+    }
+
     @Test
     void testSalesHistoryAndOrderDetails() {
         LocalDate today = LocalDate.now();

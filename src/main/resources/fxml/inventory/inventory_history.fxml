@@ -17,7 +17,7 @@
 
 <VBox spacing="10.0"
       style="-fx-background-color: #F8FAFC;"
-      stylesheets="@../../css/inventory.css, @../../css/inventory_history.css"
+      stylesheets="@../../css/inventory.css, @../../css/inventory_history.css, @../../css/icon_buttons.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.pharmacy.inventory.ui.InventoryHistoryController">
 
@@ -25,13 +25,22 @@
         <Insets bottom="10.0" left="20.0" right="20.0" top="8.0" />
     </padding>
 
-    <!-- HEADER: Tiêu đề + Bộ lọc theo ngày & Nút đóng ✕ ở góc phải -->
+    <!-- HEADER: Nút quay về + Tiêu đề + Bộ lọc theo ngày -->
     <HBox alignment="CENTER_LEFT" spacing="14.0">
+        <!-- Nút quay về màn hình kho -->
+        <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-icon-back">
+            <graphic>
+                <SVGPath content="M 12 6 L 0 6 M 5 0 L 0 6 L 5 12" styleClass="btn-icon-glyph" />
+            </graphic>
+            <tooltip>
+                <Tooltip text="Quay về" />
+            </tooltip>
+        </Button>
         <Label styleClass="history-main-title" text="Lịch sử Xuất - Nhập kho" />
 
         <Region HBox.hgrow="ALWAYS" />
 
-        <!-- Cụm lọc theo ngày + Nút ✕ đóng -->
+        <!-- Cụm lọc theo ngày -->
         <HBox alignment="CENTER_RIGHT" spacing="16.0">
             <!-- Lọc theo ngày (Nhập ngày và bấm phễu lọc để xem lịch sử của ngày đó) -->
             <HBox alignment="CENTER_LEFT" spacing="6.0">
@@ -47,8 +56,6 @@
                 </Button>
             </HBox>
 
-            <!-- Nút X ở góc phải trên cao thay thế nút quay lại -->
-            <Button fx:id="btnClose" text="✕" onAction="#handleClose" styleClass="btn-close-history" />
         </HBox>
     </HBox>
 

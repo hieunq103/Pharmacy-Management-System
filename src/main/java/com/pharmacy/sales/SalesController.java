@@ -814,6 +814,14 @@ public class SalesController implements Initializable {
         }
     }
 
+    /** Mở Lịch sử bán hàng với bộ lọc Theo tháng của tháng/năm chỉ định. */
+    public void openSalesHistoryForMonth(int year, int month) {
+        handleOpenSalesHistory();
+        if (historyController != null) {
+            historyController.showMonth(year, month);
+        }
+    }
+
     public void handleCloseSalesHistory() {
         if (viewSalesHistory != null) {
             viewSalesHistory.setVisible(false);

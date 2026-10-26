@@ -30,6 +30,7 @@ public class TransactionDetailDialogController implements Initializable {
 
     private static final Logger log = LoggerFactory.getLogger(TransactionDetailDialogController.class);
 
+    @FXML private Button btnClose;
     @FXML private Label lblDialogTitle;
     @FXML private Label lblTransactionTime;
 
@@ -72,6 +73,15 @@ public class TransactionDetailDialogController implements Initializable {
     private final int pageSize = com.pharmacy.common.AppConstants.DEFAULT_PAGE_SIZE;
     private int totalPages = 1;
     private long totalRecords = 0;
+
+    /** Nút X ở góc phải: đóng cửa sổ chi tiết phiếu nhập / xuất kho. */
+    @FXML
+    private void handleClose() {
+        if (btnClose != null && btnClose.getScene() != null
+                && btnClose.getScene().getWindow() instanceof javafx.stage.Stage stage) {
+            stage.close();
+        }
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

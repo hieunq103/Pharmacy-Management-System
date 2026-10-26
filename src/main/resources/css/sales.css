@@ -2,19 +2,6 @@
    SALES & POS MODULE CSS — PharmaOS Medical White & Blue Theme
    ========================================================================== */
 
-/* TIÊU ĐỀ TRANG */
-.sales-main-title {
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 20px;
-    -fx-text-fill: #0F172A;
-}
-
-.sales-sub-title {
-    -fx-font-family: "Inter 18pt";
-    -fx-font-size: 13px;
-    -fx-text-fill: #64748B;
-}
-
 /* Ô TÌM KIẾM NHANH */
 .search-box-container {
     -fx-background-color: #FFFFFF;
@@ -203,26 +190,6 @@
 }
 
 /* CÁC TAB ĐƠN HÀNG */
-.btn-order-tab {
-    -fx-background-color: #F1F5F9;
-    -fx-background-radius: 6px;
-    -fx-border-color: #CBD5E1;
-    -fx-border-radius: 6px;
-    -fx-border-width: 1px;
-    -fx-padding: 6 12;
-    -fx-font-family: "Inter 18pt Medium";
-    -fx-font-size: 13px;
-    -fx-text-fill: #475569;
-    -fx-cursor: hand;
-}
-
-.btn-order-tab.active {
-    -fx-background-color: #EFF6FF;
-    -fx-border-color: #0066FF;
-    -fx-text-fill: #0066FF;
-    -fx-font-family: "Inter 18pt SemiBold";
-}
-
 .btn-add-tab {
     -fx-background-color: transparent;
     -fx-border-color: #CBD5E1;

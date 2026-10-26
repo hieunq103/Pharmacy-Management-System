@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
@@ -16,7 +17,7 @@
 
 <VBox spacing="10.0"
       style="-fx-background-color: #F8FAFC;"
-      stylesheets="@../../css/inventory.css, @../../css/inventory_history.css, @../../css/sales.css"
+      stylesheets="@../../css/inventory.css, @../../css/inventory_history.css, @../../css/sales.css, @../../css/icon_buttons.css, @../../css/period_filter.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.pharmacy.sales.SalesHistoryController">
 
@@ -24,37 +25,41 @@
         <Insets bottom="10.0" left="20.0" right="20.0" top="8.0" />
     </padding>
 
-    <!-- HEADER: Tiêu đề + Phân quyền + Bộ lọc theo ngày & Ô tìm kiếm & Nút ✕ -->
+    <!-- HEADER: Nút quay về + Tiêu đề + Bộ lọc & Ô tìm kiếm -->
     <HBox alignment="CENTER_LEFT" spacing="14.0">
-        <VBox spacing="2.0">
+        <!-- Nút quay về màn hình bán hàng -->
+        <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-icon-back">
+            <graphic>
+                <SVGPath content="M 12 6 L 0 6 M 5 0 L 0 6 L 5 12" styleClass="btn-icon-glyph" />
+            </graphic>
+            <tooltip>
+                <Tooltip text="Quay về" />
+            </tooltip>
+        </Button>
+        <VBox alignment="CENTER_LEFT" spacing="2.0">
             <Label styleClass="history-main-title" text="Lịch sử bán hàng" />
         </VBox>
 
         <Region HBox.hgrow="ALWAYS" />
 
-        <!-- Cụm công cụ: Ô tìm kiếm nhanh + Lọc theo ngày + Nút ✕ đóng -->
+        <!-- Cụm công cụ: Ô tìm kiếm nhanh + Bộ lọc -->
         <HBox alignment="CENTER_RIGHT" spacing="12.0">
             <!-- Ô tìm kiếm nhanh theo mã đơn, SĐT, tên thu ngân -->
             <TextField fx:id="txtSearch" prefWidth="240.0"
                        promptText="Tìm theo mã đơn, SĐT khách..."
                        styleClass="search-input" />
 
-            <!-- Lọc theo ngày (mặc định hôm nay) -->
-            <HBox alignment="CENTER_LEFT" spacing="6.0">
-                <Label styleClass="filter-label" text="Ngày:" />
-                <DatePicker fx:id="dpFilterDate" prefWidth="145.0" promptText="dd/MM/yyyy" styleClass="history-datepicker" />
-                <Button fx:id="btnFilterDate" onAction="#handleFilterDate" styleClass="btn-funnel-filter">
-                    <graphic>
-                        <SVGPath content="M2 3h20l-8 9.5v6.5l-4 2v-8.5L2 3z" styleClass="funnel-icon" />
-                    </graphic>
-                    <tooltip>
-                        <Tooltip fx:id="tooltipFilter" text="Nhấn để áp dụng lọc theo ngày" />
-                    </tooltip>
-                </Button>
+            <!-- Bộ lọc kỳ thời gian giống trang Báo cáo: Theo ngày (mặc định hôm nay) hoặc Theo tháng -->
+            <HBox alignment="CENTER_LEFT" spacing="8.0">
+                <Button fx:id="btnFilterDay" onAction="#handleSelectDayMode" styleClass="period-pill-btn, active" text="Theo ngày" />
+                <DatePicker fx:id="dpFilterDate" prefWidth="135.0" promptText="dd/MM/yyyy" styleClass="date-filter-picker" onAction="#handleFilterDate" />
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="8.0">
+                <Button fx:id="btnFilterMonth" onAction="#handleSelectMonthMode" styleClass="period-pill-btn" text="Theo tháng" />
+                <TextField fx:id="txtFilterYear" prefWidth="70.0" alignment="CENTER" promptText="Năm" styleClass="year-text-input" onAction="#handleYearAction" />
+                <ComboBox fx:id="cbFilterMonth" prefWidth="110.0" promptText="Tháng" styleClass="combo-filter-box" onAction="#handleMonthChanged" />
             </HBox>
 
-            <!-- Nút ✕ đóng lịch sử quay lại màn hình bán hàng -->
-            <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-close-history" text="✕" />
         </HBox>
     </HBox>
 

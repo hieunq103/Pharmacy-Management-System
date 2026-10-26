@@ -22,6 +22,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -29,7 +30,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -49,9 +49,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Controller quản lý lịch sử bán hàng theo ngày.
+ * Controller quản lý lịch sử bán hàng.
  * - Phân quyền: Quản lý xem toàn hệ thống, Nhân viên chỉ xem đơn của chính mình.
- * - Lọc theo ngày (mặc định hôm nay).
+ * - Lọc Theo ngày (mặc định hôm nay) hoặc Theo tháng (giống trang Báo cáo).
  * - Bấm vào từng dòng để mở xem chi tiết đơn hàng.
  */
 public class SalesHistoryController implements Initializable {
@@ -66,8 +66,10 @@ public class SalesHistoryController implements Initializable {
     // Header controls
     @FXML private TextField txtSearch;
     @FXML private DatePicker dpFilterDate;
-    @FXML private Button btnFilterDate;
-    @FXML private Tooltip tooltipFilter;
+    @FXML private Button btnFilterDay;
+    @FXML private Button btnFilterMonth;
+    @FXML private TextField txtFilterYear;
+    @FXML private ComboBox<String> cbFilterMonth;
 
     // Table controls
     @FXML private TableView<SalesOrderDTO> tableSalesOrders;
@@ -96,6 +98,11 @@ public class SalesHistoryController implements Initializable {
     private long totalRecords = 0;
 
     private LocalDate selectedDate = LocalDate.now();
+    private boolean monthMode = false;
+    private int selectedYear = LocalDate.now().getYear();
+    private int selectedMonth = LocalDate.now().getMonthValue();
+    // Chặn sự kiện onAction khi chương trình tự gán giá trị cho các ô lọc
+    private boolean updatingControls = false;
     private String currentKeyword = "";
     private Integer filterEmployeeId = null;
     private boolean isManager = true;
@@ -111,7 +118,7 @@ public class SalesHistoryController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupRoleAccess();
-        setupDatePicker();
+        setupFilterControls();
         setupTableColumns();
         setupEventHandlers();
 
@@ -144,22 +151,129 @@ public class SalesHistoryController implements Initializable {
     }
 
     /**
-     * Khởi tạo DatePicker định dạng dd/MM/yyyy và mặc định là ngày hôm nay.
+     * Khởi tạo bộ lọc: DatePicker dd/MM/yyyy (mặc định hôm nay), ô Năm và danh sách Tháng.
      */
-    private void setupDatePicker() {
+    private void setupFilterControls() {
         selectedDate = LocalDate.now();
-        if (dpFilterDate != null) {
-            dpFilterDate.setValue(selectedDate);
-            FormatUtils.setupDatePicker(dpFilterDate);
-
-            // Khi người dùng gõ ngày rồi ấn Enter -> áp dụng lọc ngay
-            dpFilterDate.getEditor().setOnAction(e -> applyDateFilter());
-
-            if (btnFilterDate != null && !btnFilterDate.getStyleClass().contains("active")) {
-                btnFilterDate.getStyleClass().add("active");
+        updatingControls = true;
+        try {
+            if (dpFilterDate != null) {
+                dpFilterDate.setValue(selectedDate);
+                FormatUtils.setupDatePicker(dpFilterDate);
+                // Khi người dùng gõ ngày rồi ấn Enter -> áp dụng lọc ngay
+                dpFilterDate.getEditor().setOnAction(e -> applyDateFilter());
             }
-            if (tooltipFilter != null) {
-                tooltipFilter.setText("Đang hiển thị ngày: " + FormatUtils.DATE_FORMATTER.format(selectedDate));
+            if (txtFilterYear != null) {
+                txtFilterYear.setText(String.valueOf(selectedYear));
+                txtFilterYear.focusedProperty().addListener((obs, wasFocused, focused) -> {
+                    if (!focused) handleYearAction(null);
+                });
+            }
+            if (cbFilterMonth != null) {
+                cbFilterMonth.getItems().clear();
+                for (int m = 1; m <= 12; m++) {
+                    cbFilterMonth.getItems().add("Tháng " + m);
+                }
+                cbFilterMonth.setValue("Tháng " + selectedMonth);
+            }
+        } finally {
+            updatingControls = false;
+        }
+        updateFilterButtonStyles();
+    }
+
+    private void updateFilterButtonStyles() {
+        if (btnFilterDay != null) {
+            btnFilterDay.getStyleClass().remove("active");
+            if (!monthMode) btnFilterDay.getStyleClass().add("active");
+        }
+        if (btnFilterMonth != null) {
+            btnFilterMonth.getStyleClass().remove("active");
+            if (monthMode) btnFilterMonth.getStyleClass().add("active");
+        }
+    }
+
+    /**
+     * Mở lịch sử bán hàng của cả một tháng (dùng khi bấm "Xem đầy đủ..." ở trang Báo cáo).
+     */
+    public void showMonth(int year, int month) {
+        selectedYear = year;
+        selectedMonth = month;
+        monthMode = true;
+        updatingControls = true;
+        try {
+            if (txtFilterYear != null) txtFilterYear.setText(String.valueOf(year));
+            if (cbFilterMonth != null) cbFilterMonth.setValue("Tháng " + month);
+        } finally {
+            updatingControls = false;
+        }
+        updateFilterButtonStyles();
+        currentPage = 1;
+        loadSalesHistoryData();
+    }
+
+    @FXML
+    private void handleSelectDayMode(ActionEvent event) {
+        applyDateFilter();
+    }
+
+    @FXML
+    private void handleSelectMonthMode(ActionEvent event) {
+        if (!readYearInput()) return;
+        readMonthInput();
+        monthMode = true;
+        updateFilterButtonStyles();
+        currentPage = 1;
+        loadSalesHistoryData();
+    }
+
+    @FXML
+    private void handleYearAction(ActionEvent event) {
+        if (updatingControls) return;
+        int before = selectedYear;
+        if (!readYearInput()) return;
+        // Nhập năm (Enter) hoặc đổi năm -> chuyển sang lọc Theo tháng
+        if (event != null || before != selectedYear) {
+            monthMode = true;
+            updateFilterButtonStyles();
+            currentPage = 1;
+            loadSalesHistoryData();
+        }
+    }
+
+    @FXML
+    private void handleMonthChanged(ActionEvent event) {
+        if (updatingControls) return;
+        readMonthInput();
+        monthMode = true;
+        updateFilterButtonStyles();
+        currentPage = 1;
+        loadSalesHistoryData();
+    }
+
+    /** Đọc ô Năm; trả về false (và khôi phục giá trị cũ) nếu năm không hợp lệ. */
+    private boolean readYearInput() {
+        if (txtFilterYear == null) return true;
+        String text = txtFilterYear.getText() != null ? txtFilterYear.getText().trim() : "";
+        try {
+            int y = Integer.parseInt(text);
+            if (y >= 2000 && y <= 2100) {
+                selectedYear = y;
+                return true;
+            }
+        } catch (NumberFormatException ignored) {
+        }
+        com.pharmacy.common.DialogUtils.showWarning("Năm không hợp lệ",
+                "Vui lòng nhập năm từ 2000 trở đi (ví dụ: " + LocalDate.now().getYear() + ").");
+        txtFilterYear.setText(String.valueOf(selectedYear));
+        return false;
+    }
+
+    private void readMonthInput() {
+        if (cbFilterMonth != null && cbFilterMonth.getValue() != null) {
+            try {
+                selectedMonth = Integer.parseInt(cbFilterMonth.getValue().replace("Tháng", "").trim());
+            } catch (NumberFormatException ignored) {
             }
         }
     }
@@ -256,7 +370,7 @@ public class SalesHistoryController implements Initializable {
     }
 
     private void applyDateFilter() {
-        if (dpFilterDate == null) return;
+        if (dpFilterDate == null || updatingControls) return;
 
         LocalDate targetDate = dpFilterDate.getValue();
         if (targetDate == null) {
@@ -276,17 +390,14 @@ public class SalesHistoryController implements Initializable {
         }
 
         selectedDate = targetDate;
+        monthMode = false;
+        updateFilterButtonStyles();
         currentPage = 1;
-
-        if (tooltipFilter != null) {
-            tooltipFilter.setText("Đang hiển thị ngày: " + FormatUtils.DATE_FORMATTER.format(selectedDate));
-        }
-
         loadSalesHistoryData();
     }
 
     /**
-     * Tải dữ liệu lịch sử bán hàng theo ngày bất đồng bộ để giữ UI luôn mượt mà.
+     * Tải dữ liệu lịch sử bán hàng (theo ngày hoặc cả tháng) bất đồng bộ để giữ UI luôn mượt mà.
      */
     public void loadSalesHistoryData() {
         setupRoleAccess();
@@ -294,7 +405,8 @@ public class SalesHistoryController implements Initializable {
             runningTask.cancel();
         }
 
-        final LocalDate queryDate = selectedDate;
+        final LocalDate fromDate = monthMode ? LocalDate.of(selectedYear, selectedMonth, 1) : selectedDate;
+        final LocalDate toDate = monthMode ? fromDate.withDayOfMonth(fromDate.lengthOfMonth()) : selectedDate;
         final Integer empId = filterEmployeeId;
         final String keyword = currentKeyword;
         final int page = currentPage;
@@ -303,7 +415,7 @@ public class SalesHistoryController implements Initializable {
         runningTask = new Task<>() {
             @Override
             protected PageResult<SalesOrderDTO> call() {
-                return salesService.getSalesHistory(queryDate, empId, keyword, page, size);
+                return salesService.getSalesHistory(fromDate, toDate, empId, keyword, page, size);
             }
         };
 
