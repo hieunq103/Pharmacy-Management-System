@@ -94,8 +94,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void changePassword(String identifier, String currentPassword, String newPassword) {
-        if (identifier == null || identifier.isBlank()) {
+    public void changePassword(String username, String currentPassword, String newPassword) {
+        if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("Thông tin tài khoản không hợp lệ.");
         }
         if (currentPassword == null || currentPassword.isBlank()) {
@@ -111,7 +111,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw new IllegalArgumentException("Mật khẩu mới không được trùng với mật khẩu hiện tại.");
         }
 
-        Account account = accountRepository.findByIdentifier(identifier)
+        Account account = accountRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalStateException("Không tìm thấy tài khoản trong hệ thống."));
 
         if (!BCrypt.checkpw(currentPassword, account.getPasswordHash())) {

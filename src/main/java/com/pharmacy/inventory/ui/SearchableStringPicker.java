@@ -19,8 +19,8 @@ import javafx.util.Duration;
 import java.util.List;
 
 /**
- * Ô nhập liệu tìm kiếm gợi ý linh hoạt (Autocomplete Searchable Input):
- * - Có icon tìm kiếm, prompt rõ ràng, nút xoá nhanh ✕.
+ * Ô nhập liệu tìm kiếm gợi ý linh hoạt
+ * - Có icon tìm kiếm, nút xoá nhanh ✕.
  * - Hỗ trợ tìm kiếm theo danh sách đã có (Nhà cung cấp, Nhóm thuốc...) cả tiếng Việt có dấu và không dấu.
  * - Cơ chế Debounce 300ms: người dùng nhập và dừng tay thì danh sách gợi ý xổ xuống ngay dưới ô nhập liệu.
  * - Khi không có kết quả gợi ý trùng khớp, danh sách ẩn đi, giữ nguyên giá trị người dùng gõ để tự động tạo mới.

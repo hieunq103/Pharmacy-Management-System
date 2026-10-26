@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class InventoryFilterTest {
@@ -122,6 +123,14 @@ public class InventoryFilterTest {
             System.out.println("Search employee by Name '" + name + "' took: " + cost + "ms, found: " + nameResult.getTotalElements());
             assertTrue(nameResult.getTotalElements() > 0, "Tìm theo tên phải thấy nhân viên");
         }
+
+        // Kiểm tra mã nhân viên (code) và tìm kiếm theo mã NV
+        assertNotNull(firstEmp.getCode(), "Mã nhân viên không được null");
+        assertTrue(firstEmp.getCode().startsWith("PMS"), "Mã nhân viên phải bắt đầu bằng PMS: " + firstEmp.getCode());
+        com.pharmacy.common.PageResult<com.pharmacy.employee.Employee> codeResult =
+                empRepo.getEmployeesPage(1, 7, firstEmp.getCode(), null, null, null, null);
+        assertTrue(codeResult.getTotalElements() > 0, "Tìm theo mã nhân viên phải thấy kết quả");
+        assertEquals(firstEmp.getCode(), codeResult.getItems().get(0).getCode());
     }
 
     @Test

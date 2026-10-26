@@ -13,14 +13,14 @@ public final class FormValidator {
     }
 
     /**
-     * Xác thực form đăng nhập với định danh là SĐT hoặc CCCD
+     * Xác thực form đăng nhập với tên đăng nhập (Mã nhân viên PMSxxxx).
      */
-    public static ValidationResult validateLoginForm(String identifier, String password) {
-        String cleanIdentifier = (identifier != null) ? identifier.trim() : "";
-        boolean idEmpty = cleanIdentifier.isEmpty();
+    public static ValidationResult validateLoginForm(String username, String password) {
+        String cleanUsername = (username != null) ? username.trim() : "";
+        boolean idEmpty = cleanUsername.isEmpty();
         boolean pwdEmpty = (password == null || password.isEmpty());
 
-        // 1. Kiểm tra để trống
+        // Kiểm tra để trống
         if (idEmpty && pwdEmpty) {
             return ValidationResult.fail(TargetField.BOTH, ErrorCode.EMPTY_LOGIN_FIELDS);
         }
@@ -31,23 +31,7 @@ public final class FormValidator {
             return ValidationResult.fail(TargetField.PASSWORD, ErrorCode.EMPTY_PASSWORD);
         }
 
-        // 2. Kiểm tra định dạng SĐT (10 số) hoặc CCCD (12 số)
-        if (!isValidIdentifier(cleanIdentifier)) {
-            return ValidationResult.fail(TargetField.IDENTIFIER, ErrorCode.INVALID_CREDENTIALS);
-        }
-
         return ValidationResult.ok();
-    }
-
-    /**
-     * Kiểm tra chuỗi định danh có đúng cấu trúc SĐT hoặc CCCD hợp lệ hay không
-     */
-    public static boolean isValidIdentifier(String identifier) {
-        if (identifier == null) {
-            return false;
-        }
-        String trimmed = identifier.trim();
-        return isValidPhone(trimmed) || isValidNationalId(trimmed);
     }
 
     /**

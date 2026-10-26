@@ -93,11 +93,11 @@ public class LoginController {
 
     @FXML
     private void handleLogin() {
-        String identifier = txtUsername != null ? txtUsername.getText().trim() : "";
+        String username = txtUsername != null ? txtUsername.getText().trim() : "";
         String password = txtPassword != null ? txtPassword.getText() : "";
 
-        // Validate form rỗng và định dạng SĐT / CCCD
-        FormValidator.ValidationResult validationResult = FormValidator.validateLoginForm(identifier, password);
+        // Validate form rỗng
+        FormValidator.ValidationResult validationResult = FormValidator.validateLoginForm(username, password);
         if (!validationResult.isValid()) {
             showError(validationResult.errorCode());
             if (validationResult.targetField() == FormValidator.TargetField.IDENTIFIER
@@ -113,12 +113,12 @@ public class LoginController {
 
         clearError();
         setLoading(true);
-        log.debug("Bắt đầu xác thực cho SĐT/CCCD: {}", identifier);
+        log.debug("Bắt đầu xác thực cho tài khoản: {}", username);
 
         Task<Account> loginTask = new Task<>() {
             @Override
             protected Account call() {
-                return authService.login(new LoginRequest(identifier, password));
+                return authService.login(new LoginRequest(username, password));
             }
         };
 
@@ -142,7 +142,7 @@ public class LoginController {
         loginTask.setOnFailed(e -> {
             setLoading(false);
             Throwable ex = loginTask.getException();
-            log.warn("Đăng nhập thất bại cho [{}]: {}", identifier, ex.getMessage());
+            log.warn("Đăng nhập thất bại cho [{}]: {}", username, ex.getMessage());
 
             if (ex instanceof AppException appEx) {
                 showError(appEx.getMessage());

@@ -341,9 +341,13 @@ public class ProfileController {
     private void handleChangePassword(ActionEvent event) {
         clearStatus();
 
-        Employee emp = UserSession.getInstance().getEmployee();
-        if (emp == null || emp.getPhone() == null || emp.getPhone().isBlank()) {
-            showStatus("Không tìm thấy thông tin số điện thoại của tài khoản.", StatusType.ERROR);
+        Account acc = UserSession.getInstance().getAccount();
+        String username = (acc != null && acc.getUsername() != null && !acc.getUsername().isBlank())
+                ? acc.getUsername()
+                : (UserSession.getInstance().getEmployee() != null ? UserSession.getInstance().getEmployee().getCode() : null);
+
+        if (username == null || username.isBlank()) {
+            showStatus("Không tìm thấy thông tin tài khoản đăng nhập.", StatusType.ERROR);
             return;
         }
 
@@ -351,7 +355,7 @@ public class ProfileController {
         ChangePasswordDialog dialog = new ChangePasswordDialog(
                 owner,
                 profileService,
-                emp.getPhone(),
+                username,
                 successMsg -> showStatus(successMsg, StatusType.SUCCESS));
 
         dialog.showAndWait();

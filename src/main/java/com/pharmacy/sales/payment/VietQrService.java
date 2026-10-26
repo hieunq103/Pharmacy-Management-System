@@ -85,7 +85,7 @@ public class VietQrService {
             reqBody.put("amount", amountVal);
             reqBody.put("addInfo", content != null ? content : "");
             reqBody.put("format", "text");
-            reqBody.put("template", "compact2");
+            reqBody.put("template", "qr_only");
 
             String jsonPayload = mapper.writeValueAsString(reqBody);
 

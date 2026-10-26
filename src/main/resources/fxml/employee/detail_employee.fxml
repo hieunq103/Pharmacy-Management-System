@@ -27,10 +27,10 @@
                 <ColumnConstraints percentWidth="50" />
             </columnConstraints>
 
-            <!-- Mã nhân viên (ID) -->
+            <!-- Mã nhân viên (Khóa chết) -->
             <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                <Label text="Mã nhân viên (ID)" styleClass="form-label" />
-                <TextField fx:id="txtEmpId" editable="false" styleClass="form-input-readonly" />
+                <Label text="Mã nhân viên" styleClass="form-label" />
+                <TextField fx:id="txtEmpId" editable="false" focusTraversable="false" mouseTransparent="true" styleClass="form-input-readonly" style="-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-font-family: 'Inter 18pt SemiBold';" />
             </VBox>
 
             <!-- Họ và tên -->
