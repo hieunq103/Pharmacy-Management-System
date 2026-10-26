@@ -3,7 +3,9 @@ package com.pharmacy.employee;
 import com.pharmacy.account.Account;
 import com.pharmacy.account.AccountRepository;
 import com.pharmacy.common.UserSession;
-import org.mindrot.jbcrypt.BCrypt;
+import com.pharmacy.auth.AuthServiceImpl;
+import com.pharmacy.common.FormValidator;
+import com.pharmacy.infra.security.PasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,26 +29,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public PageResult<Employee> getEmployeesPage(int page, int size, String keyword, String gender, String role, String status, String accountStatus) {
-        if (!UserSession.isLoggedIn()) {
-            log.warn("Từ chối truy cập: Chưa đăng nhập vào hệ thống.");
-            return PageResult.empty(page, size);
-        }
-
-        Account currentAccount = UserSession.getInstance().getAccount();
-        if (currentAccount == null || !currentAccount.isManager()) {
-            log.warn("Từ chối truy cập: Tài khoản ID [{}] không có quyền Quản lý để xem danh sách nhân sự.",
-                    currentAccount != null ? currentAccount.getId() : "null");
-            throw new SecurityException("Bạn không có quyền truy cập danh sách nhân viên.");
-        }
-
+        requireManager();
         return employeeRepository.getEmployeesPage(page, size, keyword, gender, role, status, accountStatus);
     }
 
     @Override
     public EmployeeRepository.EmployeeSummary getEmployeeSummary() {
-        if (!UserSession.isLoggedIn()) {
-            return new EmployeeRepository.EmployeeSummary(0L, 0L);
-        }
+        requireManager();
         return employeeRepository.getEmployeeSummary();
     }
 
@@ -57,29 +46,35 @@ public class EmployeeServiceImpl implements EmployeeService {
             log.warn("Yêu cầu tìm kiếm thất bại: ID không hợp lệ ({})", id);
             return Optional.empty();
         }
-
+        requireManager();
         return employeeRepository.findByIdWithDetails(id);
     }
 
     @Override
     public boolean createEmployeeWithAccount(Employee employee, String role) {
+        requireManager();
         if (employee == null || role == null || role.trim().isEmpty()) {
             return false;
         }
+        validateEmployee(employee.getFullName(), employee.getPhone(), employee.getNationalId(), employee.getDob());
         if (employeeRepository.existsByNationalId(employee.getNationalId())) {
             throw new IllegalArgumentException("Căn cước công dân này đã tồn tại trong hệ thống.");
         }
         if (employeeRepository.existsByPhone(employee.getPhone())) {
             throw new IllegalArgumentException("Số điện thoại này đã được sử dụng trong hệ thống.");
         }
-        String defaultInitialPassword = "12345678";
-        String hashedPassword = BCrypt.hashpw(defaultInitialPassword, BCrypt.gensalt(10));
+        // Mật khẩu khởi tạo lấy từ cấu hình; tài khoản được gắn cờ bắt buộc đổi ở lần đăng nhập đầu
+        String hashedPassword = PasswordEncoder.hash(AuthServiceImpl.defaultPassword());
         return employeeRepository.addEmployeeWithAccount(employee, role.trim(), hashedPassword);
     }
 
     @Override
     public boolean markAsInactive(Integer employeeId) {
         if (employeeId == null) return false;
+        requireManager();
+        if (employeeId.equals(UserSession.currentEmployeeId())) {
+            throw new IllegalArgumentException("Không thể tự đánh dấu nghỉ việc cho chính tài khoản đang đăng nhập.");
+        }
         return employeeRepository.markAsInactive(employeeId);
     }
 
@@ -88,6 +83,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (accountId == null) {
             log.warn("Yêu cầu khóa tài khoản thất bại: accountId null.");
             return false;
+        }
+        requireManager();
+        if (accountId.equals(UserSession.getInstance().getAccount().getId())) {
+            throw new IllegalArgumentException("Không thể tự khóa tài khoản đang đăng nhập.");
         }
         return accountRepository.lockAccount(accountId);
     }
@@ -98,11 +97,13 @@ public class EmployeeServiceImpl implements EmployeeService {
             log.warn("Yêu cầu mở khóa tài khoản thất bại: accountId null.");
             return false;
         }
+        requireManager();
         return accountRepository.unlockAccount(accountId);
     }
 
     @Override
     public List<Object[]> getLoginHistory(Integer accountId) {
+        requireManager();
         return employeeRepository.getLoginHistory(accountId);
     }
 
@@ -111,6 +112,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (req == null || req.employeeId() == null) {
             throw new IllegalArgumentException("Dữ liệu cập nhật nhân viên không hợp lệ.");
         }
+        requireManager();
+        validateEmployee(req.fullName(), req.phone(), req.nationalId(), req.dob());
 
         // 1. Chuẩn hóa trạng thái Employee: sang "ACTIVE" hoặc "INACTIVE"
         String normalizedEmpStatus = parseEmployeeStatus(req.empStatus());
@@ -145,6 +148,33 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         // 6. Gọi repository thực thi Hibernate Transaction
         return employeeRepository.updateEmployeeByManager(sanitizedRequest);
+    }
+
+    private static void requireManager() {
+        try {
+            UserSession.requireManager();
+        } catch (SecurityException e) {
+            Account current = UserSession.isLoggedIn() ? UserSession.getInstance().getAccount() : null;
+            log.warn("Từ chối truy cập module nhân sự: tài khoản ID [{}] không có quyền Quản lý.",
+                    current != null ? current.getId() : "null");
+            throw e;
+        }
+    }
+
+    /** Kiểm tra dữ liệu hồ sơ ở tầng service (không chỉ dựa vào form). */
+    static void validateEmployee(String fullName, String phone, String nationalId, java.time.LocalDate dob) {
+        if (fullName == null || fullName.isBlank()) {
+            throw new IllegalArgumentException("Họ tên nhân viên không được để trống.");
+        }
+        if (!FormValidator.isValidPhone(phone)) {
+            throw new IllegalArgumentException("Số điện thoại không hợp lệ.");
+        }
+        if (!FormValidator.isValidNationalId(nationalId)) {
+            throw new IllegalArgumentException("Số CCCD phải gồm đúng 12 chữ số.");
+        }
+        if (dob == null || dob.isAfter(java.time.LocalDate.now().minusYears(18))) {
+            throw new IllegalArgumentException("Ngày sinh không hợp lệ (nhân viên phải từ đủ 18 tuổi trở lên).");
+        }
     }
 
     private String parseEmployeeStatus(String status) {

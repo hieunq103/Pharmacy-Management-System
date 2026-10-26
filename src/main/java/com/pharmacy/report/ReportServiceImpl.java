@@ -1,29 +1,28 @@
 package com.pharmacy.report;
 
+import com.pharmacy.common.FormatUtils;
+import com.pharmacy.common.UserSession;
+import com.pharmacy.report.dto.MedicineTimelineDTO;
 import com.pharmacy.report.dto.ReportSummaryDTO;
 import com.pharmacy.report.dto.RevenueTimelineDTO;
-import com.pharmacy.report.dto.MedicineTimelineDTO;
 import com.pharmacy.report.dto.SoldMedicineDTO;
-
 import com.pharmacy.sales.SalesService;
 import com.pharmacy.sales.SalesServiceImpl;
 import com.pharmacy.sales.dto.DailySalesDTO;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 import java.util.Collections;
 import java.util.List;
 
-
 /**
  * ReportService hoạt động theo mô hình Aggregator / Facade:
- * Tái sử dụng trực tiếp các phương thức nghiệp vụ từ SalesService (như get7DaysSales),
- * kết hợp với ReportRepository cho các thống kê tài chính và sản phẩm chuyên sâu.
+ * Tái sử dụng SalesService cho biểu đồ 7 ngày, kết hợp ReportRepository cho thống kê chuyên sâu.
  */
 public class ReportServiceImpl implements ReportService {
+
+    private static final DateTimeFormatter SHORT_FMT = DateTimeFormatter.ofPattern("dd/MM");
+    private static final DateTimeFormatter FULL_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final SalesService salesService;
     private final ReportRepository repository;
@@ -32,179 +31,62 @@ public class ReportServiceImpl implements ReportService {
         this(new SalesServiceImpl(), new ReportRepository());
     }
 
-    public ReportServiceImpl(ReportRepository repository) {
-        this(new SalesServiceImpl(), repository);
-    }
-
     public ReportServiceImpl(SalesService salesService, ReportRepository repository) {
         this.salesService = salesService;
         this.repository = repository;
     }
 
     @Override
-    public ReportSummaryDTO getSummaryToday() {
-        LocalDate today = LocalDate.now();
-        return getSummary(today, today);
-    }
-
-    @Override
-    public ReportSummaryDTO getSummaryThisMonth() {
-        LocalDate today = LocalDate.now();
-        LocalDate firstDay = today.with(TemporalAdjusters.firstDayOfMonth());
-        LocalDate lastDay = today.with(TemporalAdjusters.lastDayOfMonth());
-        return getSummary(firstDay, lastDay);
-    }
-
-    @Override
-    public ReportSummaryDTO getSummary(LocalDate from, LocalDate to) {
-        return getSummary(from, to, null);
-    }
-
-    @Override
     public ReportSummaryDTO getSummary(LocalDate from, LocalDate to, Integer employeeId) {
-        LocalDateTime fromTime = from.atStartOfDay();
-        LocalDateTime toTime = to.atTime(LocalTime.MAX);
-        return repository.getReportSummary(fromTime, toTime, employeeId);
-    }
-
-    @Override
-    public List<SoldMedicineDTO> getSoldMedicinesToday(String keyword) {
-        LocalDate today = LocalDate.now();
-        return getSoldMedicines(today, today, keyword);
-    }
-
-    @Override
-    public List<SoldMedicineDTO> getSoldMedicinesThisMonth(String keyword) {
-        LocalDate today = LocalDate.now();
-        LocalDate firstDay = today.with(TemporalAdjusters.firstDayOfMonth());
-        LocalDate lastDay = today.with(TemporalAdjusters.lastDayOfMonth());
-        return getSoldMedicines(firstDay, lastDay, keyword);
-    }
-
-    @Override
-    public List<SoldMedicineDTO> getSoldMedicines(LocalDate from, LocalDate to, String keyword) {
-        return getSoldMedicines(from, to, keyword, null);
+        return repository.getReportSummary(from, to, UserSession.scopeEmployeeId(employeeId));
     }
 
     @Override
     public List<SoldMedicineDTO> getSoldMedicines(LocalDate from, LocalDate to, String keyword, Integer employeeId) {
-        LocalDateTime fromTime = from.atStartOfDay();
-        LocalDateTime toTime = to.atTime(LocalTime.MAX);
-        return repository.getSoldMedicines(fromTime, toTime, keyword, employeeId);
+        return repository.getSoldMedicines(from, to, keyword, UserSession.scopeEmployeeId(employeeId));
     }
 
-    private static record CacheKey(LocalDate endDate, Integer employeeId) {}
+    // Biểu đồ doanh số và sản lượng 7 ngày được vẽ cùng lúc -> dùng chung 1 lần truy vấn trong 2 giây
+    private record CacheKey(LocalDate endDate, Integer employeeId) {}
     private CacheKey lastCacheKey;
     private long lastCacheTimeMs = 0;
     private List<DailySalesDTO> cached7DaysSales = Collections.emptyList();
 
     private synchronized List<DailySalesDTO> getCached7DaysSales(LocalDate endDate, Integer employeeId) {
         long now = System.currentTimeMillis();
-        CacheKey currentKey = new CacheKey(endDate, employeeId);
+        CacheKey currentKey = new CacheKey(endDate, UserSession.scopeEmployeeId(employeeId));
         if (currentKey.equals(lastCacheKey) && (now - lastCacheTimeMs < 2000)) {
             return cached7DaysSales;
         }
-        cached7DaysSales = salesService.get7DaysSalesUpTo(endDate, employeeId);
+        cached7DaysSales = salesService.get7DaysSalesUpTo(endDate, currentKey.employeeId());
         lastCacheKey = currentKey;
         lastCacheTimeMs = now;
         return cached7DaysSales;
     }
 
     @Override
-    public List<RevenueTimelineDTO> getLast7DaysRevenueTimeline() {
-        return get7DaysRevenueTimelineUpTo(LocalDate.now(), null);
-    }
-
-    @Override
-    public List<RevenueTimelineDTO> get7DaysRevenueTimelineUpTo(LocalDate endDate) {
-        return get7DaysRevenueTimelineUpTo(endDate, null);
-    }
-
-    @Override
     public List<RevenueTimelineDTO> get7DaysRevenueTimelineUpTo(LocalDate endDate, Integer employeeId) {
-        List<DailySalesDTO> dailySales = getCached7DaysSales(endDate, employeeId);
-        DateTimeFormatter shortFmt = DateTimeFormatter.ofPattern("dd/MM");
-        DateTimeFormatter fullFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        return dailySales.stream()
-                .map(d -> {
-                    String label = d.getDate().format(shortFmt);
-                    String tooltip = "Ngày " + d.getDate().format(fullFmt) + ": " 
-                            + com.pharmacy.common.FormatUtils.formatCurrency(d.getAmount()) + " VNĐ";
-                    return new RevenueTimelineDTO(label, d.getAmount(), d.getOrderCount(), tooltip);
-                })
+        return getCached7DaysSales(endDate, employeeId).stream()
+                .map(d -> new RevenueTimelineDTO(d.getDate().format(SHORT_FMT), d.getAmount(), d.getOrderCount(),
+                        "Ngày " + d.getDate().format(FULL_FMT) + ": " + FormatUtils.formatCurrency(d.getAmount()) + " VNĐ"))
                 .toList();
-    }
-
-    @Override
-    public List<RevenueTimelineDTO> get12MonthsRevenueTimeline(int year) {
-        return get12MonthsRevenueTimeline(year, null);
     }
 
     @Override
     public List<RevenueTimelineDTO> get12MonthsRevenueTimeline(int year, Integer employeeId) {
-        return repository.get12MonthsRevenueTimeline(year, employeeId);
-    }
-
-    @Override
-    public List<RevenueTimelineDTO> getRevenueTimeline(LocalDate from, LocalDate to) {
-        return getRevenueTimeline(from, to, null);
-    }
-
-    @Override
-    public List<RevenueTimelineDTO> getRevenueTimeline(LocalDate from, LocalDate to, Integer employeeId) {
-        if (from.equals(to)) {
-            return get7DaysRevenueTimelineUpTo(to, employeeId);
-        } else {
-            return repository.getDailyRevenueTimeline(from, to, employeeId);
-        }
-    }
-
-    @Override
-    public List<MedicineTimelineDTO> getLast7DaysMedicineTimeline() {
-        return get7DaysMedicineTimelineUpTo(LocalDate.now(), null);
-    }
-
-    @Override
-    public List<MedicineTimelineDTO> get7DaysMedicineTimelineUpTo(LocalDate endDate) {
-        return get7DaysMedicineTimelineUpTo(endDate, null);
+        return repository.get12MonthsRevenueTimeline(year, UserSession.scopeEmployeeId(employeeId));
     }
 
     @Override
     public List<MedicineTimelineDTO> get7DaysMedicineTimelineUpTo(LocalDate endDate, Integer employeeId) {
-        List<DailySalesDTO> dailySales = getCached7DaysSales(endDate, employeeId);
-        DateTimeFormatter shortFmt = DateTimeFormatter.ofPattern("dd/MM");
-        DateTimeFormatter fullFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        return dailySales.stream()
-                .map(d -> {
-                    String label = d.getDate().format(shortFmt);
-                    String tooltip = "Ngày " + d.getDate().format(fullFmt) + ": " 
-                            + String.format("%,d", d.getTotalQuantity()) + " sản phẩm";
-                    return new MedicineTimelineDTO(label, d.getTotalQuantity(), tooltip);
-                })
+        return getCached7DaysSales(endDate, employeeId).stream()
+                .map(d -> new MedicineTimelineDTO(d.getDate().format(SHORT_FMT), d.getTotalQuantity(),
+                        "Ngày " + d.getDate().format(FULL_FMT) + ": " + String.format("%,d", d.getTotalQuantity()) + " sản phẩm"))
                 .toList();
     }
 
     @Override
-    public List<MedicineTimelineDTO> get12MonthsMedicineTimeline(int year) {
-        return get12MonthsMedicineTimeline(year, null);
-    }
-
-    @Override
     public List<MedicineTimelineDTO> get12MonthsMedicineTimeline(int year, Integer employeeId) {
-        return repository.get12MonthsMedicineTimeline(year, employeeId);
-    }
-
-    @Override
-    public List<MedicineTimelineDTO> getMedicineTimeline(LocalDate from, LocalDate to) {
-        return getMedicineTimeline(from, to, null);
-    }
-
-    @Override
-    public List<MedicineTimelineDTO> getMedicineTimeline(LocalDate from, LocalDate to, Integer employeeId) {
-        if (from.equals(to)) {
-            return get7DaysMedicineTimelineUpTo(to, employeeId);
-        } else {
-            return repository.getDailyMedicineTimeline(from, to, employeeId);
-        }
+        return repository.get12MonthsMedicineTimeline(year, UserSession.scopeEmployeeId(employeeId));
     }
 }

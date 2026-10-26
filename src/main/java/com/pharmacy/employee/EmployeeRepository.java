@@ -5,7 +5,6 @@ import com.pharmacy.account.Role;
 import com.pharmacy.infra.db.HibernateUtil;
 import com.pharmacy.profile.ProfileUpdateRequest;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,107 +22,65 @@ public class EmployeeRepository {
      * Dùng cho CẬP NHẬT: Kiểm tra SĐT có bị trùng với NGƯỜI KHÁC hay không
      */
     public boolean existsByPhoneAndNotId(String phone, Integer currentEmployeeId) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT COUNT(e.id) FROM Employee e WHERE e.phone = :phone AND e.id != :id";
-            Long count = session.createSelectionQuery(hql, Long.class)
-                    .setParameter("phone", phone.trim())
-                    .setParameter("id", currentEmployeeId)
-                    .getSingleResult();
-            return count != null && count > 0;
-        } catch (Exception e) {
-            log.error("Lỗi khi kiểm tra trùng số điện thoại [{}]: ", phone, e);
-            throw new RuntimeException("Lỗi truy vấn cơ sở dữ liệu khi kiểm tra số điện thoại.", e);
-        }
+        return existsByField("phone", phone, currentEmployeeId, "số điện thoại");
     }
 
     public boolean existsByPhone(String phone) {
-        if (phone == null || phone.trim().isEmpty())
-            return false;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT COUNT(e.id) FROM Employee e WHERE e.phone = :phone";
-            Long count = session.createSelectionQuery(hql, Long.class)
-                    .setParameter("phone", phone.trim())
-                    .getSingleResult();
-            return count != null && count > 0;
-        } catch (Exception e) {
-            log.error("Lỗi khi kiểm tra trùng số điện thoại [{}]: ", phone, e);
-            throw new RuntimeException("Lỗi truy vấn cơ sở dữ liệu khi kiểm tra số điện thoại.", e);
-        }
+        return existsByField("phone", phone, null, "số điện thoại");
     }
 
     public boolean existsByNationalId(String nationalId) {
-        if (nationalId == null || nationalId.trim().isEmpty())
-            return false;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT COUNT(e.id) FROM Employee e WHERE e.nationalId = :nationalId";
-            Long count = session.createSelectionQuery(hql, Long.class)
-                    .setParameter("nationalId", nationalId.trim())
-                    .getSingleResult();
-            return count != null && count > 0;
-        } catch (Exception e) {
-            log.error("Lỗi khi kiểm tra trùng CCCD [{}]: ", nationalId, e);
-            throw new RuntimeException("Lỗi truy vấn cơ sở dữ liệu khi kiểm tra CCCD.", e);
-        }
+        return existsByField("nationalId", nationalId, null, "CCCD");
     }
 
     /**
      * Dùng cho CẬP NHẬT: Kiểm tra CCCD có bị trùng với NGƯỜI KHÁC hay không
      */
     public boolean existsByNationalIdAndNotId(String nationalId, Integer employeeId) {
-        if (nationalId == null || nationalId.trim().isEmpty() || employeeId == null) {
-            return false;
-        }
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT COUNT(e.id) FROM Employee e WHERE e.nationalId = :nationalId AND e.id != :id";
-            Long count = session.createSelectionQuery(hql, Long.class)
-                    .setParameter("nationalId", nationalId.trim())
-                    .setParameter("id", employeeId)
-                    .getSingleResult();
-            return count != null && count > 0;
+        if (employeeId == null) return false;
+        return existsByField("nationalId", nationalId, employeeId, "CCCD");
+    }
+
+    /** Đếm nhân viên có field = value (bỏ qua nhân viên excludeId nếu có). Cột phone/national_id đều có UNIQUE index. */
+    private boolean existsByField(String field, String value, Integer excludeId, String label) {
+        if (value == null || value.isBlank()) return false;
+        try {
+            return HibernateUtil.executeWithResult(session -> {
+                String hql = "SELECT COUNT(e.id) FROM Employee e WHERE e." + field + " = :value"
+                        + (excludeId != null ? " AND e.id <> :id" : "");
+                var query = session.createSelectionQuery(hql, Long.class).setParameter("value", value.trim());
+                if (excludeId != null) query.setParameter("id", excludeId);
+                Long count = query.getSingleResult();
+                return count != null && count > 0;
+            });
         } catch (Exception e) {
-            log.error("Lỗi khi kiểm tra trùng CCCD [{}] cho Employee ID [{}]: ", nationalId, employeeId, e);
-            throw new RuntimeException("Lỗi truy vấn cơ sở dữ liệu khi kiểm tra CCCD.", e);
+            log.error("Lỗi khi kiểm tra trùng {} [{}]: ", label, value, e);
+            throw new RuntimeException("Lỗi truy vấn cơ sở dữ liệu khi kiểm tra " + label + ".", e);
         }
     }
 
     public boolean updateStaffProfile(Integer employeeId, String phone, String address) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-
-            String hql = "UPDATE Employee e SET e.phone = :phone, e.address = :address WHERE e.id = :id";
-            int rowsUpdated = session.createMutationQuery(hql)
+        try {
+            return HibernateUtil.executeWithResult(session -> session
+                    .createMutationQuery("UPDATE Employee e SET e.phone = :phone, e.address = :address WHERE e.id = :id")
                     .setParameter("phone", phone)
                     .setParameter("address", address)
                     .setParameter("id", employeeId)
-                    .executeUpdate();
-
-            tx.commit();
-            return rowsUpdated > 0;
-        } catch (Exception e) {
-            if (tx != null && tx.isActive()) {
-                tx.rollback();
-            }
+                    .executeUpdate() > 0);
+        } catch (RuntimeException e) {
             log.error("Lỗi khi cập nhật hồ sơ Staff [ID: {}]: ", employeeId, e);
             throw e;
         }
     }
 
     public boolean updateManagerProfile(ProfileUpdateRequest req) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-
-            String hql = "UPDATE Employee e SET " +
-                    "e.phone = :phone, " +
-                    "e.address = :address, " +
-                    "e.fullName = :fullName, " +
-                    "e.nationalId = :nationalId, " +
-                    "e.dob = :dob, " +
-                    "e.gender = :gender " +
-                    "WHERE e.id = :id";
-
-            int rowsUpdated = session.createMutationQuery(hql)
+        try {
+            return HibernateUtil.executeWithResult(session -> session.createMutationQuery("""
+                        UPDATE Employee e SET
+                            e.phone = :phone, e.address = :address, e.fullName = :fullName,
+                            e.nationalId = :nationalId, e.dob = :dob, e.gender = :gender
+                        WHERE e.id = :id
+                    """)
                     .setParameter("phone", req.phone())
                     .setParameter("address", req.address())
                     .setParameter("fullName", req.fullName())
@@ -131,14 +88,8 @@ public class EmployeeRepository {
                     .setParameter("dob", req.dob())
                     .setParameter("gender", req.gender())
                     .setParameter("id", req.employeeId())
-                    .executeUpdate();
-
-            tx.commit();
-            return rowsUpdated > 0;
-        } catch (Exception e) {
-            if (tx != null && tx.isActive()) {
-                tx.rollback();
-            }
+                    .executeUpdate() > 0);
+        } catch (RuntimeException e) {
             log.error("Lỗi khi cập nhật hồ sơ Manager [ID: {}]: ", req.employeeId(), e);
             throw e;
         }
@@ -257,7 +208,7 @@ public class EmployeeRepository {
 
             // 1. Query COUNT
             String countHql = needAccountJoin
-                    ? "SELECT COUNT(DISTINCT e.id) FROM Employee e LEFT JOIN e.account a LEFT JOIN a.role r "
+                    ? "SELECT COUNT(e.id) FROM Employee e LEFT JOIN e.account a LEFT JOIN a.role r "
                             + whereClause
                     : "SELECT COUNT(e.id) FROM Employee e " + whereClause;
             var countQuery = session.createSelectionQuery(countHql, Long.class);
@@ -270,7 +221,8 @@ public class EmployeeRepository {
             }
 
             // 2. Query DATA (phân trang bằng setFirstResult và setMaxResults)
-            String dataHql = "SELECT DISTINCT e FROM Employee e LEFT JOIN FETCH e.account a LEFT JOIN FETCH a.role r "
+            // Quan hệ to-one nên JOIN FETCH không nhân bản dòng -> không cần DISTINCT, LIMIT/OFFSET chạy ở SQL
+            String dataHql = "SELECT e FROM Employee e LEFT JOIN FETCH e.account a LEFT JOIN FETCH a.role r "
                     + whereClause + " ORDER BY e.id DESC";
             var dataQuery = session.createSelectionQuery(dataHql, Employee.class);
             params.forEach(dataQuery::setParameter);
@@ -286,147 +238,100 @@ public class EmployeeRepository {
     }
 
 
-    public boolean addEmployeeWithAccount(Employee emp, String roleDisplayOrCode, String initialPassword) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-            String roleCode = roleDisplayOrCode;
-            if ("Quản lý".equalsIgnoreCase(roleDisplayOrCode) || "MANAGER".equalsIgnoreCase(roleDisplayOrCode)) {
-                roleCode = "MANAGER";
-            } else if ("Nhân viên".equalsIgnoreCase(roleDisplayOrCode) || "STAFF".equalsIgnoreCase(roleDisplayOrCode)) {
-                roleCode = "STAFF";
-            }
+    public boolean addEmployeeWithAccount(Employee emp, String roleDisplayOrCode, String initialPasswordHash) {
+        String roleCode = roleDisplayOrCode;
+        if ("Quản lý".equalsIgnoreCase(roleDisplayOrCode) || "MANAGER".equalsIgnoreCase(roleDisplayOrCode)) {
+            roleCode = "MANAGER";
+        } else if ("Nhân viên".equalsIgnoreCase(roleDisplayOrCode) || "STAFF".equalsIgnoreCase(roleDisplayOrCode)) {
+            roleCode = "STAFF";
+        }
+        final String code = roleCode;
+        try {
+            return HibernateUtil.executeWithResult(session -> {
+                Role role = session.createSelectionQuery("FROM Role r WHERE r.code = :code", Role.class)
+                        .setParameter("code", code)
+                        .uniqueResult();
+                if (role == null) {
+                    log.error("Không tìm thấy vai trò với mã: {}", code);
+                    return false;
+                }
+                session.persist(emp);
 
-            String hqlRole = "FROM Role r WHERE UPPER(r.code) = :code";
-            Role role = session.createSelectionQuery(hqlRole, Role.class)
-                    .setParameter("code", roleCode)
-                    .uniqueResult();
-
-            if (role == null) {
-                log.error("Không tìm thấy vai trò với mã: {}", roleCode);
-                return false;
-            }
-
-            session.persist(emp);
-
-            // 3. Khởi tạo Account đúng theo các setter của Account.java
-            Account account = new Account();
-            account.setEmployee(emp);
-            account.setRole(role);
-            account.setPasswordHash(initialPassword);
-            account.setStatus(Account.Status.ACTIVE);
-
-            session.persist(account);
-
-            tx.commit();
-            return true;
-
+                Account account = new Account();
+                account.setEmployee(emp);
+                account.setRole(role);
+                account.setPasswordHash(initialPasswordHash);
+                account.setStatus(Account.Status.ACTIVE);
+                // Tài khoản mới dùng mật khẩu khởi tạo -> bắt buộc đổi ở lần đăng nhập đầu tiên
+                account.setMustChangePassword(true);
+                session.persist(account);
+                return true;
+            });
         } catch (Exception e) {
-            if (tx != null && tx.isActive()) {
-                tx.rollback();
-            }
             log.error("Lỗi khi thêm mới nhân viên và tài khoản: ", e);
             return false;
         }
     }
 
     public boolean markAsInactive(Integer employeeId) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-
-            session.createMutationQuery("UPDATE Employee e SET e.status = 'INACTIVE' WHERE e.id = :id")
-                    .setParameter("id", employeeId)
-                    .executeUpdate();
-
-            session.createMutationQuery("UPDATE Account a SET a.status = 'DISABLED' WHERE a.employee.id = :id")
-                    .setParameter("id", employeeId)
-                    .executeUpdate();
-
-            tx.commit();
+        try {
+            HibernateUtil.execute(session -> {
+                session.createMutationQuery("UPDATE Employee e SET e.status = :st WHERE e.id = :id")
+                        .setParameter("st", Employee.Status.INACTIVE)
+                        .setParameter("id", employeeId)
+                        .executeUpdate();
+                session.createMutationQuery("UPDATE Account a SET a.status = :st WHERE a.employee.id = :id")
+                        .setParameter("st", Account.Status.DISABLED)
+                        .setParameter("id", employeeId)
+                        .executeUpdate();
+            });
             return true;
         } catch (Exception e) {
-            if (tx != null && tx.isActive())
-                tx.rollback();
             log.error("Lỗi khi đánh dấu nhân viên đã nghỉ [ID: {}]: ", employeeId, e);
             return false;
         }
     }
 
     public boolean updateEmployeeByManager(EmployeeUpdateRequest req) {
-        Transaction tx = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-
-            // 1. Cập nhật bảng employees
-            String hqlEmployee = """
-                        UPDATE Employee e SET
-                            e.fullName = :fullName,
-                            e.dob = :dob,
-                            e.gender = :gender,
-                            e.nationalId = :nationalId,
-                            e.phone = :phone,
-                            e.address = :address,
-                            e.status = :status
-                        WHERE e.id = :id
-                    """;
-
-            int rowsUpdated = session.createMutationQuery(hqlEmployee)
-                    .setParameter("fullName", req.fullName())
-                    .setParameter("dob", req.dob())
-                    .setParameter("gender", req.gender())
-                    .setParameter("nationalId", req.nationalId())
-                    .setParameter("phone", req.phone())
-                    .setParameter("address", req.address())
-                    .setParameter("status", Employee.Status.valueOf(req.empStatus()))
-                    .setParameter("id", req.employeeId())
-                    .executeUpdate();
-
-            if (rowsUpdated == 0) {
-                tx.rollback();
-                return false;
-            }
-
-            // 2. Tìm Role theo code hoặc name
-            String hqlRole = "FROM Role r WHERE r.code = :roleVal OR r.name = :roleVal";
-            Role role = session.createQuery(hqlRole, Role.class)
-                    .setParameter("roleVal", req.roleName())
-                    .setMaxResults(1)
-                    .uniqueResult();
-
-            // 3. Cập nhật bảng accounts
-            String hqlAccount = """
-                        UPDATE Account a SET
-                            a.status = :status,
-                            a.role.id = :roleId
-                        WHERE a.employee.id = :empId
-                    """;
-
-            if (role != null) {
-                session.createMutationQuery(hqlAccount)
-                        .setParameter("status", Account.Status.valueOf(req.accountStatus()))
-                        .setParameter("roleId", role.getId())
-                        .setParameter("empId", req.employeeId())
+        try {
+            return HibernateUtil.executeWithResult(session -> {
+                int rowsUpdated = session.createMutationQuery("""
+                            UPDATE Employee e SET
+                                e.fullName = :fullName, e.dob = :dob, e.gender = :gender,
+                                e.nationalId = :nationalId, e.phone = :phone, e.address = :address,
+                                e.status = :status
+                            WHERE e.id = :id
+                        """)
+                        .setParameter("fullName", req.fullName())
+                        .setParameter("dob", req.dob())
+                        .setParameter("gender", req.gender())
+                        .setParameter("nationalId", req.nationalId())
+                        .setParameter("phone", req.phone())
+                        .setParameter("address", req.address())
+                        .setParameter("status", Employee.Status.valueOf(req.empStatus()))
+                        .setParameter("id", req.employeeId())
                         .executeUpdate();
-            } else {
-                // Trường hợp không đổi role, chỉ cập nhật status
-                String hqlAccountStatusOnly = """
-                            UPDATE Account a SET
-                                a.status = :status
-                            WHERE a.employee.id = :empId
-                        """;
-                session.createMutationQuery(hqlAccountStatusOnly)
-                        .setParameter("status", Account.Status.valueOf(req.accountStatus()))
-                        .setParameter("empId", req.employeeId())
-                        .executeUpdate();
-            }
+                if (rowsUpdated == 0) {
+                    return false;
+                }
 
-            tx.commit();
-            return true;
-        } catch (Exception e) {
-            if (tx != null && tx.isActive()) {
-                tx.rollback();
-            }
+                // Tìm Role theo code hoặc tên hiển thị; không tìm thấy thì giữ nguyên role, chỉ đổi trạng thái
+                Role role = session.createSelectionQuery("FROM Role r WHERE r.code = :roleVal OR r.name = :roleVal", Role.class)
+                        .setParameter("roleVal", req.roleName())
+                        .setMaxResults(1)
+                        .uniqueResult();
+                var accountUpdate = session.createMutationQuery(role != null
+                                ? "UPDATE Account a SET a.status = :status, a.role.id = :roleId WHERE a.employee.id = :empId"
+                                : "UPDATE Account a SET a.status = :status WHERE a.employee.id = :empId")
+                        .setParameter("status", Account.Status.valueOf(req.accountStatus()))
+                        .setParameter("empId", req.employeeId());
+                if (role != null) {
+                    accountUpdate.setParameter("roleId", role.getId());
+                }
+                accountUpdate.executeUpdate();
+                return true;
+            });
+        } catch (RuntimeException e) {
             log.error("Lỗi cập nhật nhân viên bởi Manager [ID: {}]: ", req.employeeId(), e);
             throw e;
         }

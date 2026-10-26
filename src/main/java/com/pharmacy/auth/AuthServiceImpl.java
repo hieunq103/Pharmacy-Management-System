@@ -3,6 +3,7 @@ package com.pharmacy.auth;
 import com.pharmacy.account.Account;
 import com.pharmacy.account.AccountRepository;
 import com.pharmacy.common.UserSession;
+import com.pharmacy.infra.config.AppConfig;
 import com.pharmacy.infra.exception.AuthenticationException;
 import com.pharmacy.infra.exception.ErrorCode;
 import com.pharmacy.infra.security.PasswordEncoder;
@@ -17,13 +18,17 @@ public class AuthServiceImpl implements AuthService {
     private static final String CLIENT_INFO = "JavaFX Desktop Client";
 
     private final AccountRepository accountRepository;
+    private final int maxFailedAttempts;
+    private final int lockoutMinutes;
 
     public AuthServiceImpl() {
-        this.accountRepository = new AccountRepository();
+        this(new AccountRepository());
     }
 
     public AuthServiceImpl(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
+        this.maxFailedAttempts = AppConfig.getInt("auth.maxFailedLoginAttempts", 5);
+        this.lockoutMinutes = AppConfig.getInt("auth.lockoutMinutes", 15);
     }
 
     @Override
@@ -39,10 +44,24 @@ public class AuthServiceImpl implements AuthService {
         String employeeName = (account.getEmployee() != null && account.getEmployee().getFullName() != null)
                 ? account.getEmployee().getFullName()
                 : "N/A";
-
         Integer accountId = account.getId();
 
-        // Chỉ kiểm tra trạng thái vô hiệu hóa bởi Quản trị viên
+        // Chống dò mật khẩu: tạm khóa đăng nhập sau N lần sai liên tiếp trong cửa sổ thời gian
+        if (maxFailedAttempts > 0 && accountRepository.countRecentFailedLogins(accountId, lockoutMinutes) >= maxFailedAttempts) {
+            log.warn("Nhân viên [{}] - Tạm khóa đăng nhập do sai mật khẩu {} lần", employeeName, maxFailedAttempts);
+            throw new AuthenticationException(ErrorCode.ACCOUNT_TEMPORARILY_LOCKED,
+                    "Đăng nhập sai quá " + maxFailedAttempts + " lần. Vui lòng thử lại sau " + lockoutMinutes + " phút.");
+        }
+
+        // Kiểm tra mật khẩu TRƯỚC trạng thái để không tiết lộ tình trạng tài khoản cho người không biết mật khẩu
+        if (!PasswordEncoder.matches(request.password(), account.getPasswordHash())) {
+            log.warn("Nhân viên [{}] - Mật khẩu không chính xác", employeeName);
+            accountRepository.saveLoginHistory(accountId, "FAILED", CLIENT_INFO);
+            throw new AuthenticationException(
+                    ErrorCode.INVALID_CREDENTIALS,
+                    "Tài khoản hoặc mật khẩu không chính xác.");
+        }
+
         if (account.getStatus() == Account.Status.DISABLED) {
             log.warn("Nhân viên [{}] - Tài khoản đã bị vô hiệu hóa", employeeName);
             throw new AuthenticationException(
@@ -50,23 +69,21 @@ public class AuthServiceImpl implements AuthService {
                     "Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
         }
 
-        // Kiểm tra mật khẩu
-        if (!PasswordEncoder.matches(request.password(), account.getPasswordHash())) {
-            log.warn("Nhân viên [{}] - Mật khẩu không chính xác", employeeName);
-            // Ghi nhận lịch sử đăng nhập thất bại
-            accountRepository.saveLoginHistory(accountId, "FAILED", CLIENT_INFO);
-
-            throw new AuthenticationException(
-                    ErrorCode.INVALID_CREDENTIALS,
-                    "Tài khoản hoặc mật khẩu không chính xác.");
+        // Tài khoản mới (cờ must_change_password) hoặc vẫn dùng mật khẩu khởi tạo mặc định -> bắt buộc đổi
+        if (request.password().equals(defaultPassword())) {
+            account.setMustChangePassword(true);
         }
 
-        // Xác thực thành công: Ghi nhận lịch sử SUCCESS và khởi tạo Session
         accountRepository.recordSuccessfulLogin(accountId, CLIENT_INFO);
         UserSession.start(account);
 
         log.info("Nhân viên [{}] đăng nhập thành công", UserSession.getInstance().getEmployeeName());
         return account;
+    }
+
+    /** Mật khẩu khởi tạo cho tài khoản mới (cấu hình auth.defaultPassword). */
+    public static String defaultPassword() {
+        return AppConfig.get("auth.defaultPassword", "12345678");
     }
 
     @Override

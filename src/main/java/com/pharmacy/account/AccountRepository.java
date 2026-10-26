@@ -46,9 +46,33 @@ public class AccountRepository {
                 .executeUpdate();
     }
 
+    /**
+     * Số lần đăng nhập sai liên tiếp gần đây: tính các lần FAILED trong cửa sổ {@code windowMinutes} phút
+     * và sau lần đăng nhập thành công gần nhất. Dùng chỉ mục idx_login_history_account_time.
+     */
+    public long countRecentFailedLogins(Integer accountId, int windowMinutes) {
+        return HibernateUtil.executeWithResult(session -> {
+            String sql = """
+                SELECT COUNT(*) FROM login_history
+                WHERE account_id = :accountId
+                  AND result = 'FAILED'
+                  AND login_at > GREATEST(
+                        NOW() - INTERVAL :minutes MINUTE,
+                        COALESCE((SELECT MAX(login_at) FROM login_history
+                                  WHERE account_id = :accountId AND result = 'SUCCESS'), '1970-01-01'))
+            """;
+            Long count = session.createNativeQuery(sql, Long.class)
+                    .setParameter("accountId", accountId)
+                    .setParameter("minutes", windowMinutes)
+                    .uniqueResult();
+            return count != null ? count : 0L;
+        });
+    }
+
     public boolean updatePassword(Integer accountId, String newPasswordHash) {
         return HibernateUtil.executeWithResult(session -> {
-            String hql = "UPDATE Account a SET a.passwordHash = :passwordHash WHERE a.id = :id";
+            // Đổi mật khẩu thành công thì gỡ cờ bắt buộc đổi mật khẩu lần đầu
+            String hql = "UPDATE Account a SET a.passwordHash = :passwordHash, a.mustChangePassword = false WHERE a.id = :id";
             int rowsUpdated = session.createMutationQuery(hql)
                     .setParameter("passwordHash", newPasswordHash)
                     .setParameter("id", accountId)

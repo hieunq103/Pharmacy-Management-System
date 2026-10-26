@@ -7,6 +7,8 @@ import com.pharmacy.common.TogglePasswordField;
 import com.pharmacy.common.UserSession;
 import com.pharmacy.infra.exception.AppException;
 import com.pharmacy.infra.exception.ErrorCode;
+import com.pharmacy.profile.ChangePasswordDialog;
+import com.pharmacy.profile.ProfileServiceImpl;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -128,6 +130,14 @@ public class LoginController {
 
             log.info("Xác thực thành công cho nhân viên [{}]", employeeName);
 
+            // Tài khoản mới / còn dùng mật khẩu khởi tạo: bắt buộc đổi mật khẩu trước khi vào hệ thống
+            Account account = loginTask.getValue();
+            if (account != null && account.isMustChangePassword() && !promptForcedPasswordChange(account)) {
+                authService.logout();
+                showError(ErrorCode.PASSWORD_CHANGE_REQUIRED);
+                return;
+            }
+
             try {
                 navigateToMainLayout();
             } catch (IOException ioEx) {
@@ -168,6 +178,22 @@ public class LoginController {
         });
 
         EXECUTOR.submit(loginTask);
+    }
+
+    /**
+     * Hiển thị hộp thoại đổi mật khẩu bắt buộc. Trả về true nếu người dùng đã đổi thành công.
+     */
+    private boolean promptForcedPasswordChange(Account account) {
+        boolean[] changed = {false};
+        ChangePasswordDialog dialog = new ChangePasswordDialog(
+                btnLogin != null && btnLogin.getScene() != null ? btnLogin.getScene().getWindow() : null,
+                new ProfileServiceImpl(),
+                account.getEmployee().getPhone(),
+                msg -> changed[0] = true);
+        dialog.setTitle("Đổi mật khẩu lần đầu");
+        dialog.setHeaderText("Bạn đang dùng mật khẩu khởi tạo. Vui lòng đổi mật khẩu để tiếp tục.");
+        dialog.showAndWait();
+        return changed[0];
     }
 
     private void navigateToMainLayout() throws IOException {

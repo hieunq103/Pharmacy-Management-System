@@ -17,9 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.time.LocalDateTime;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -59,6 +56,8 @@ public final class HibernateUtil {
             config.setMaxLifetime(Long.parseLong(AppConfig.get("db.pool.maxLifetimeMs", "1800000")));
             config.setIdleTimeout(Long.parseLong(AppConfig.get("db.pool.idleTimeoutMs", "600000")));
             config.setPoolName("PharmaOS-MainPool");
+            // Driver MySQL gộp các câu trong JDBC batch thành 1 câu INSERT nhiều dòng (giảm round-trip)
+            config.addDataSourceProperty("rewriteBatchedStatements", "true");
 
             dataSource = new HikariDataSource(config);
 
@@ -66,7 +65,15 @@ public final class HibernateUtil {
             StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder();
             registryBuilder.applySetting(AvailableSettings.JAKARTA_NON_JTA_DATASOURCE, dataSource);
             registryBuilder.applySetting(AvailableSettings.HBM2DDL_AUTO, "none");
-            registryBuilder.applySetting(AvailableSettings.SHOW_SQL, "false");
+            // Log SQL / thống kê để đo số câu truy vấn (bật qua application.properties khi cần profiling)
+            registryBuilder.applySetting(AvailableSettings.SHOW_SQL, AppConfig.get("hibernate.show_sql", "false"));
+            registryBuilder.applySetting(AvailableSettings.FORMAT_SQL, AppConfig.get("hibernate.format_sql", "false"));
+            registryBuilder.applySetting(AvailableSettings.GENERATE_STATISTICS,
+                    AppConfig.get("hibernate.generate_statistics", "false"));
+            // Gom insert/update theo lô (JDBC batch) cho các thao tác ghi hàng loạt
+            registryBuilder.applySetting(AvailableSettings.STATEMENT_BATCH_SIZE, AppConfig.get("hibernate.jdbc.batch_size", "50"));
+            registryBuilder.applySetting(AvailableSettings.ORDER_INSERTS, "true");
+            registryBuilder.applySetting(AvailableSettings.ORDER_UPDATES, "true");
 
             registry = registryBuilder.build();
 
@@ -75,8 +82,6 @@ public final class HibernateUtil {
             metadataSources.addAnnotatedClass(Role.class);
             metadataSources.addAnnotatedClass(Employee.class);
             metadataSources.addAnnotatedClass(Account.class);
-            metadataSources.addAnnotatedClass(com.pharmacy.catalog.MedicineCategory.class);
-            metadataSources.addAnnotatedClass(com.pharmacy.catalog.Medicine.class);
 
             sessionFactory = metadataSources.buildMetadata().buildSessionFactory();
             log.info("Hibernate SessionFactory đã sẵn sàng.");
@@ -139,22 +144,6 @@ public final class HibernateUtil {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    /**
-     * R54: Lấy thời gian chuẩn từ máy chủ MySQL Server
-     */
-    public static LocalDateTime getCurrentDbTime() {
-        try (Connection conn = dataSource.getConnection();
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT CURRENT_TIMESTAMP")) {
-            if (rs.next()) {
-                return rs.getTimestamp(1).toLocalDateTime();
-            }
-        } catch (Exception e) {
-            log.error("Không lấy được thời gian từ DB server: {}", e.getMessage());
-        }
-        return LocalDateTime.now();
     }
 
     /**

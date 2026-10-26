@@ -91,7 +91,7 @@
                         </StackPane>
                     </HBox>
                     <Label fx:id="lblNearExpiryCount" styleClass="stat-value" text="0" />
-                    <Label styleClass="stat-subtext-danger" text="Hết hạn trong 30 ngày" />
+                    <Label styleClass="stat-subtext-danger" text="Hết hạn trong 90 ngày" />
                 </VBox>
             </GridPane>
 

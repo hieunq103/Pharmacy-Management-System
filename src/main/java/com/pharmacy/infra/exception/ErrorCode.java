@@ -9,6 +9,7 @@ public enum ErrorCode {
     // 2. Nhóm lỗi xác thực & tài khoản (AUTH)
     INVALID_CREDENTIALS("AUTH_001", "Số điện thoại/CCCD hoặc mật khẩu không chính xác."),
     ACCOUNT_DISABLED("AUTH_003", "Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên."),
+    ACCOUNT_TEMPORARILY_LOCKED("AUTH_007", "Đăng nhập sai quá nhiều lần. Vui lòng thử lại sau ít phút."),
     UNAUTHENTICATED("AUTH_004", "Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại."),
     UNAUTHORIZED("AUTH_005", "Bạn không có quyền thực hiện chức năng này."),
     PASSWORD_CHANGE_REQUIRED("AUTH_006", "Bạn cần đổi mật khẩu trong lần đăng nhập đầu tiên."),

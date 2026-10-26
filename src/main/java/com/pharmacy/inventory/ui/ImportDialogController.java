@@ -527,11 +527,7 @@ public class ImportDialogController implements Initializable {
         }
 
         // 3. Lấy nhân viên đang thao tác
-        Integer employeeId = 1;
-        if (UserSession.isLoggedIn() && UserSession.getInstance().getAccount() != null
-                && UserSession.getInstance().getAccount().getEmployee() != null) {
-            employeeId = UserSession.getInstance().getAccount().getEmployee().getId();
-        }
+        Integer employeeId = UserSession.currentEmployeeId();
 
         String note = txtNote.getText() != null ? txtNote.getText().trim() : "";
 

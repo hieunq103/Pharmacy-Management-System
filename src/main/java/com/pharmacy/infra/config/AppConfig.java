@@ -10,6 +10,7 @@ import java.util.Properties;
 public final class AppConfig {
     private static final Logger log = LoggerFactory.getLogger(AppConfig.class);
     private static final Properties properties = new Properties();
+    private static Dotenv dotenv;
 
     static {
         loadConfiguration();
@@ -26,22 +27,40 @@ public final class AppConfig {
             log.error("Không thể đọc application.properties", e);
         }
 
-        Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+        dotenv = Dotenv.configure().ignoreIfMissing().load();
 
-        override("DB_URL", "db.url", dotenv);
-        override("DB_USER", "db.username", dotenv);
-        override("DB_PASSWORD", "db.password", dotenv);
+        override("DB_URL", "db.url");
+        override("DB_USER", "db.username");
+        override("DB_PASSWORD", "db.password");
 
         log.info("AppConfig đã nạp xong cấu hình hệ thống.");
     }
 
-    private static void override(String envKey, String propKey, Dotenv dotenv) {
-        String val = System.getenv(envKey);
-        if (val == null || val.isBlank()) {
-            val = dotenv.get(envKey);
-        }
-        if (val != null && !val.isBlank()) {
+    private static void override(String envKey, String propKey) {
+        String val = env(envKey);
+        if (val != null) {
             properties.setProperty(propKey, val);
+        }
+    }
+
+    /**
+     * Đọc bí mật từ biến môi trường, nếu không có thì từ file .env (không commit lên git).
+     * Trả về null nếu không cấu hình hoặc giá trị rỗng.
+     */
+    public static String env(String key) {
+        String val = System.getenv(key);
+        if ((val == null || val.isBlank()) && dotenv != null) {
+            val = dotenv.get(key);
+        }
+        return (val == null || val.isBlank()) ? null : val.trim();
+    }
+
+    public static int getInt(String key, int defaultValue) {
+        try {
+            return Integer.parseInt(get(key, String.valueOf(defaultValue)).trim());
+        } catch (NumberFormatException e) {
+            log.warn("Cấu hình [{}] không phải số nguyên, dùng mặc định {}", key, defaultValue);
+            return defaultValue;
         }
     }
 

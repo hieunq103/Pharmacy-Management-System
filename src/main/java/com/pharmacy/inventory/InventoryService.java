@@ -14,11 +14,6 @@ import java.util.List;
 public interface InventoryService {
 
     /**
-     * Lấy danh sách thuốc phân trang theo từ khóa và trạng thái tồn kho.
-     */
-    PageResult<MedicineInventoryDTO> getInventoryPage(int page, int pageSize, String keyword, String statusFilter);
-
-    /**
      * Lấy danh sách thuốc phân trang hỗ trợ lọc độc lập cả Mức tồn kho và Hạn dùng.
      */
     PageResult<MedicineInventoryDTO> getInventoryPage(int page, int pageSize, String keyword, String stockFilter, String expiryFilter);
@@ -53,33 +48,6 @@ public interface InventoryService {
      */
     InventoryRepository getRepository();
 
-    /**
-     * Nhập kho thuốc mới hoặc nhập lô mới cho thuốc đã có.
-     * Kiểm tra validate logic nghiệp vụ & DB tại Service.
-     */
-    boolean importStock(
-            Integer existingMedicineId,
-            String newCode, String newName, String newActiveIngredient,
-            String newCategoryName, String newManufacturer, BigDecimal newSellPrice,
-            boolean newRequiresPrescription,
-            String lotNumber, String supplierName, java.time.LocalDate expiryDate,
-            int quantityIn, String unit, BigDecimal importPrice, String note,
-            Integer employeeId
-    );
-
-    /**
-     * Xuất kho / xuất hủy thuốc.
-     * Kiểm tra validate logic nghiệp vụ & DB tồn kho thực tế tại Service.
-     */
-    boolean exportDisposalStock(
-            int medicineId,
-            long lotId,
-            int quantity,
-            String reason,
-            String note,
-            Integer employeeId
-    );
-
     List<String> getAllSupplierNames();
 
     List<String> getAllCategoryNames();
@@ -92,6 +60,9 @@ public interface InventoryService {
 
     List<com.pharmacy.inventory.dto.InventoryTransactionDetailDTO> getTransactionDetails(Long transactionId, String type);
 
+    /**
+     * Lập phiếu nhập kho nhiều lô (chỉ Quản lý). Nhân viên thực hiện lấy từ phiên đăng nhập.
+     */
     boolean importBatchStock(
             String supplierName,
             Integer employeeId,
@@ -99,6 +70,9 @@ public interface InventoryService {
             List<com.pharmacy.inventory.dto.BatchImportItemDTO> items
     );
 
+    /**
+     * Lập phiếu xuất hủy nhiều lô (chỉ Quản lý). Nhân viên thực hiện lấy từ phiên đăng nhập.
+     */
     boolean exportBatchStock(
             String reason,
             Integer employeeId,

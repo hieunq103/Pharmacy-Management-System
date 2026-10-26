@@ -91,3 +91,21 @@ Mirror cấu trúc `src/main` theo module — test ở đâu thì đặt cùng p
 2. Cấu hình lại `src/main/resources/application.properties` với thông tin MySQL thật trên máy bạn.
 3. Chạy thử Flyway: `V1__init_schema.sql` hiện mới có bảng `roles` — điền tiếp `employees`, `accounts`, `login_history` theo Data Dictionary trước khi code `auth/service`.
 4. Viết `PharmacyApplication.java` → nạp `AppConfig` → chạy `MigrationRunner.migrate()` → mở `fxml/auth/login.fxml`.
+
+## Cấu hình & chạy
+
+1. **MySQL ≥ 8.0.16** (migration V5 dùng `CHECK` constraint; repository dùng `LATERAL` — có từ 8.0.14).
+2. Sao chép `.env.example` thành `.env` và điền `DB_URL`, `DB_USER`, `DB_PASSWORD`, `SEPAY_API_TOKEN`.
+   File `.env` đã nằm trong `.gitignore` — **không commit mật khẩu / token thật** (`payment.properties` để trống `sepay.api_token`).
+3. Ứng dụng tự chạy Flyway khi khởi động; có thể chạy riêng: `mvn compile exec:java -Dexec.mainClass=com.pharmacy.infra.db.MigrationRunner`.
+4. Tài khoản mới (và tài khoản còn dùng mật khẩu khởi tạo `auth.defaultPassword`) bắt buộc đổi mật khẩu ở lần đăng nhập đầu.
+   Sai mật khẩu `auth.maxFailedLoginAttempts` lần liên tiếp sẽ bị tạm khóa đăng nhập `auth.lockoutMinutes` phút.
+
+### Test
+- `mvn test`: unit test (không cần DB) luôn chạy; integration test cần MySQL đã migrate (đọc `DB_URL`/`DB_USER`/`DB_PASSWORD`
+  từ biến môi trường hoặc `.env`) và **tự bỏ qua** khi không kết nối được CSDL.
+
+### Đo số câu SQL
+- Bật `hibernate.show_sql=true` / `hibernate.generate_statistics=true` trong `application.properties` để log câu SQL và thống kê Hibernate.
+- `docs/benchmark/`: script sinh dữ liệu lớn (5.000 thuốc, 50.000 lô, 100.000 hóa đơn) và chương trình `QueryBench`
+  đo số câu SQL (`Com_select/insert/update`), số dòng InnoDB đọc và thời gian cho từng truy vấn báo cáo/thống kê.

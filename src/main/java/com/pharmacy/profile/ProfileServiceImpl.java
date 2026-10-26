@@ -5,7 +5,7 @@ import com.pharmacy.account.AccountRepository;
 import com.pharmacy.common.FormValidator;
 import com.pharmacy.common.UserSession;
 import com.pharmacy.employee.EmployeeRepository;
-import org.mindrot.jbcrypt.BCrypt;
+import com.pharmacy.infra.security.PasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,17 +114,23 @@ public class ProfileServiceImpl implements ProfileService {
         Account account = accountRepository.findByIdentifier(identifier)
                 .orElseThrow(() -> new IllegalStateException("Không tìm thấy tài khoản trong hệ thống."));
 
-        if (!BCrypt.checkpw(currentPassword, account.getPasswordHash())) {
+        if (!PasswordEncoder.matches(currentPassword, account.getPasswordHash())) {
             throw new IllegalArgumentException("Mật khẩu hiện tại không chính xác.");
         }
 
-        String newPasswordHash = BCrypt.hashpw(newPassword, BCrypt.gensalt(10));
+        String newPasswordHash = PasswordEncoder.hash(newPassword);
         boolean updated = accountRepository.updatePassword(account.getId(), newPasswordHash);
         if (!updated) {
             throw new IllegalStateException("Đổi mật khẩu thất bại. Vui lòng thử lại.");
         }
 
         account.setPasswordHash(newPasswordHash);
+        account.setMustChangePassword(false);
+        // Đồng bộ tài khoản trong phiên hiện tại (đối tượng có thể khác instance vừa đọc từ DB)
+        if (UserSession.isLoggedIn() && account.getId().equals(UserSession.getInstance().getAccount().getId())) {
+            UserSession.getInstance().getAccount().setPasswordHash(newPasswordHash);
+            UserSession.getInstance().getAccount().setMustChangePassword(false);
+        }
         log.info("Đổi mật khẩu thành công cho tài khoản ID: {}", account.getId());
     }
 }

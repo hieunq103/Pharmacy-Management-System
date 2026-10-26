@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -684,7 +685,8 @@ public class InventoryController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/inventory/import_drawer.fxml"));
             importDrawerRoot = loader.load();
             importController = loader.getController();
-            importController.initData(inventoryService.getMedicinesForPicker(), inventoryService.getRepository(), this::onStockUpdated);
+            // Danh sách thuốc được nạp ngay trong showImportDrawer() -> không truy vấn 2 lần ở lần mở đầu tiên
+            importController.initData(List.of(), inventoryService.getRepository(), this::onStockUpdated);
             importController.setOnCloseCallback(drawerHelper::close);
 
             drawerHelper.registerDrawer(importDrawerRoot);
@@ -699,7 +701,8 @@ public class InventoryController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/inventory/export_drawer.fxml"));
             exportDrawerRoot = loader.load();
             exportController = loader.getController();
-            exportController.initData(inventoryService.getMedicinesForPicker(), inventoryService.getRepository(), null, this::onStockUpdated);
+            // Danh sách thuốc được nạp ngay trong showExportDrawer()
+            exportController.initData(List.of(), inventoryService.getRepository(), null, this::onStockUpdated);
             exportController.setOnCloseCallback(drawerHelper::close);
 
             drawerHelper.registerDrawer(exportDrawerRoot);

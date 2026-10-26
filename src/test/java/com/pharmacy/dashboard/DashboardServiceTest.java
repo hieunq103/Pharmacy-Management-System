@@ -4,6 +4,8 @@ import com.pharmacy.dashboard.dto.DashboardStatsDTO;
 import com.pharmacy.inventory.dto.InventoryAlertDTO;
 import com.pharmacy.sales.dto.DailySalesDTO;
 import com.pharmacy.sales.dto.SalesOrderDTO;
+import com.pharmacy.support.DbTestSupport;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,6 +13,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DashboardServiceTest {
+
+    @BeforeAll
+    static void requireDb() {
+        DbTestSupport.assumeDatabase();
+    }
 
     @Test
     void testDashboardDataRetrieval() {

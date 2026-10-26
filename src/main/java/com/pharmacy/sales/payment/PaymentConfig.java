@@ -1,5 +1,6 @@
 package com.pharmacy.sales.payment;
 
+import com.pharmacy.infra.config.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,27 +50,12 @@ public class PaymentConfig {
                 } catch (NumberFormatException ignored) {
                 }
 
-                // Cho phép ghi đè qua Biến môi trường (Environment Variables) để bảo mật khi
-                // deploy
-                String envBankId = System.getenv("PAYMENT_BANK_ID");
-                if (envBankId != null && !envBankId.isBlank())
-                    bankId = envBankId.trim();
-
-                String envAccountNo = System.getenv("PAYMENT_ACCOUNT_NO");
-                if (envAccountNo != null && !envAccountNo.isBlank())
-                    accountNo = envAccountNo.trim();
-
-                String envAccountName = System.getenv("PAYMENT_ACCOUNT_NAME");
-                if (envAccountName != null && !envAccountName.isBlank())
-                    accountName = envAccountName.trim();
-
-                String envToken = System.getenv("SEPAY_API_TOKEN");
-                if (envToken != null && !envToken.isBlank())
-                    sepayApiToken = envToken.trim();
-
-                String envStoreCode = System.getenv("PAYMENT_STORE_CODE");
-                if (envStoreCode != null && !envStoreCode.isBlank())
-                    storeCode = envStoreCode.trim();
+                // Ghi đè qua biến môi trường hoặc file .env (bắt buộc với SEPAY_API_TOKEN — không commit token)
+                bankId = envOr("PAYMENT_BANK_ID", bankId);
+                accountNo = envOr("PAYMENT_ACCOUNT_NO", accountNo);
+                accountName = envOr("PAYMENT_ACCOUNT_NAME", accountName);
+                sepayApiToken = envOr("SEPAY_API_TOKEN", sepayApiToken);
+                storeCode = envOr("PAYMENT_STORE_CODE", storeCode);
 
                 log.info(
                         "Loaded payment configuration: StoreCode={}, Bank={}, AccountNo={}, AccountName={}, SePAY Token present={}",
@@ -87,36 +73,25 @@ public class PaymentConfig {
         }
     }
 
-    public static String getBankId() {
-        return bankId;
+    private static String envOr(String key, String fallback) {
+        String val = AppConfig.env(key);
+        return val != null ? val : fallback;
     }
 
-    public static void setBankId(String bankId) {
-        PaymentConfig.bankId = bankId;
+    public static String getBankId() {
+        return bankId;
     }
 
     public static String getAccountNo() {
         return accountNo;
     }
 
-    public static void setAccountNo(String accountNo) {
-        PaymentConfig.accountNo = accountNo;
-    }
-
     public static String getAccountName() {
         return accountName;
     }
 
-    public static void setAccountName(String accountName) {
-        PaymentConfig.accountName = accountName;
-    }
-
     public static String getSepayApiToken() {
         return sepayApiToken;
-    }
-
-    public static void setSepayApiToken(String token) {
-        PaymentConfig.sepayApiToken = token;
     }
 
     public static String getSepayBaseUrl() {
@@ -129,10 +104,6 @@ public class PaymentConfig {
 
     public static String getStoreCode() {
         return storeCode;
-    }
-
-    public static void setStoreCode(String storeCode) {
-        PaymentConfig.storeCode = storeCode;
     }
 
     public static boolean isSepayConfigured() {

@@ -1,13 +1,18 @@
 package com.pharmacy.report;
 
+import com.pharmacy.report.dto.MedicineTimelineDTO;
 import com.pharmacy.report.dto.ReportSummaryDTO;
 import com.pharmacy.report.dto.RevenueTimelineDTO;
 import com.pharmacy.report.dto.SoldMedicineDTO;
-import org.junit.jupiter.api.BeforeEach;
+import com.pharmacy.support.DbTestSupport;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,122 +20,66 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Kiểm thử phân hệ Báo cáo & Thống kê")
 class ReportServiceTest {
 
-    private ReportService reportService;
+    // Dữ liệu seed V4 có đơn bán từ tháng 1 đến tháng 9/2026
+    private static final LocalDate MARCH_START = LocalDate.of(2026, 3, 1);
+    private static final LocalDate MARCH_END = MARCH_START.with(TemporalAdjusters.lastDayOfMonth());
 
-    @BeforeEach
-    void setUp() {
-        reportService = new ReportServiceImpl();
+    private final ReportService reportService = new ReportServiceImpl();
+
+    @BeforeAll
+    static void requireDb() {
+        DbTestSupport.assumeDatabase();
+    }
+
+    @AfterEach
+    void logout() {
+        DbTestSupport.logout();
     }
 
     @Test
-    @DisplayName("Lấy tổng hợp báo cáo hôm nay")
-    void testGetSummaryToday() {
-        ReportSummaryDTO summary = reportService.getSummaryToday();
-        assertNotNull(summary, "ReportSummaryDTO không được null");
-        assertNotNull(summary.totalRevenue(), "Doanh thu không được null");
-        assertTrue(summary.totalOrders() >= 0, "Tổng số hóa đơn phải >= 0");
-        assertTrue(summary.totalMedicinesSold() >= 0, "Số lượng thuốc đã bán phải >= 0");
+    @DisplayName("Tổng hợp tháng khớp với biểu đồ 12 tháng và bảng thuốc đã bán")
+    void testSummaryConsistentWithTimelines() {
+        ReportSummaryDTO march = reportService.getSummary(MARCH_START, MARCH_END, null);
+        assertTrue(march.totalOrders() > 0, "Seed V4 phải có đơn tháng 3/2026");
+        assertTrue(march.cashRevenue().add(march.transferRevenue()).compareTo(march.totalRevenue()) <= 0);
+
+        List<RevenueTimelineDTO> months = reportService.get12MonthsRevenueTimeline(2026, null);
+        assertEquals(12, months.size());
+        assertEquals(0, march.totalRevenue().compareTo(months.get(2).revenue()));
+        assertEquals(march.totalOrders(), months.get(2).orderCount());
+
+        List<MedicineTimelineDTO> qtyMonths = reportService.get12MonthsMedicineTimeline(2026, null);
+        assertEquals(march.totalMedicinesSold(), qtyMonths.get(2).quantitySold());
+
+        List<SoldMedicineDTO> sold = reportService.getSoldMedicines(MARCH_START, MARCH_END, null, null);
+        assertEquals(march.totalMedicinesSold(), sold.stream().mapToLong(SoldMedicineDTO::getQuantitySold).sum());
+        BigDecimal soldRevenue = sold.stream().map(SoldMedicineDTO::getTotalRevenue).reduce(BigDecimal.ZERO, BigDecimal::add);
+        assertTrue(soldRevenue.compareTo(march.totalRevenue()) >= 0, "Tổng tiền hàng (trước giảm giá) >= doanh thu");
     }
 
     @Test
-    @DisplayName("Lấy tổng hợp báo cáo tháng này")
-    void testGetSummaryThisMonth() {
-        ReportSummaryDTO summary = reportService.getSummaryThisMonth();
-        assertNotNull(summary, "ReportSummaryDTO tháng này không được null");
-        assertNotNull(summary.totalRevenue());
-        assertTrue(summary.totalOrders() >= 0);
-    }
-
-    @Test
-    @DisplayName("Lấy danh sách thuốc đã bán trong ngày và trong tháng")
-    void testGetSoldMedicines() {
-        List<SoldMedicineDTO> todayMeds = reportService.getSoldMedicinesToday(null);
-        assertNotNull(todayMeds, "Danh sách thuốc bán hôm nay không được null");
-
-        List<SoldMedicineDTO> monthMeds = reportService.getSoldMedicinesThisMonth(null);
-        assertNotNull(monthMeds, "Danh sách thuốc bán tháng này không được null");
-    }
-
-    @Test
-    @DisplayName("Lấy timeline biểu đồ 7 ngày gần nhất và 12 tháng")
-    void testGetRevenueTimeline() {
-        // 1. Biểu đồ 7 ngày gần nhất
-        List<RevenueTimelineDTO> sevenDays = reportService.getLast7DaysRevenueTimeline();
-        assertNotNull(sevenDays, "Dữ liệu biểu đồ 7 ngày không được null");
-        assertEquals(7, sevenDays.size(), "Biểu đồ theo ngày phải có đúng 7 cột đại diện cho 7 ngày gần nhất");
-
-        // 2. Biểu đồ 12 tháng trong năm hiện tại
-        int currentYear = LocalDate.now().getYear();
-        List<RevenueTimelineDTO> twelveMonths = reportService.get12MonthsRevenueTimeline(currentYear);
-        assertNotNull(twelveMonths, "Dữ liệu biểu đồ 12 tháng không được null");
-        assertEquals(12, twelveMonths.size(), "Biểu đồ theo tháng phải có đúng 12 cột đại diện cho 12 tháng");
-        assertEquals("Thg 1", twelveMonths.get(0).timeLabel(), "Cột đầu tiên phải là Thg 1");
-        assertEquals("Thg 12", twelveMonths.get(11).timeLabel(), "Cột cuối cùng phải là Thg 12");
-    }
-
-    @Test
-    @DisplayName("Lấy timeline biểu đồ sản lượng thuốc 7 ngày gần nhất và 12 tháng")
-    void testGetMedicineTimeline() {
-        // 1. Biểu đồ sản lượng thuốc 7 ngày gần nhất
-        List<com.pharmacy.report.dto.MedicineTimelineDTO> sevenDays = reportService.getLast7DaysMedicineTimeline();
-        assertNotNull(sevenDays, "Dữ liệu biểu đồ sản lượng thuốc 7 ngày không được null");
-        assertEquals(7, sevenDays.size(), "Biểu đồ theo ngày phải có đúng 7 cột đại diện cho 7 ngày gần nhất");
-
-        // 2. Biểu đồ sản lượng thuốc 12 tháng trong năm hiện tại
-        int currentYear = LocalDate.now().getYear();
-        List<com.pharmacy.report.dto.MedicineTimelineDTO> twelveMonths = reportService.get12MonthsMedicineTimeline(currentYear);
-        assertNotNull(twelveMonths, "Dữ liệu biểu đồ sản lượng thuốc 12 tháng không được null");
-        assertEquals(12, twelveMonths.size(), "Biểu đồ theo tháng phải có đúng 12 cột đại diện cho 12 tháng");
-        assertEquals("Thg 1", twelveMonths.get(0).timeLabel());
-        assertEquals("Thg 12", twelveMonths.get(11).timeLabel());
-    }
-
-    @Test
-    @DisplayName("Lấy timeline biểu đồ 7 ngày kết thúc tại một ngày bất kỳ (ví dụ 15/05/2026)")
+    @DisplayName("Biểu đồ 7 ngày tính đến ngày bất kỳ luôn đủ 7 cột và khớp tổng hợp")
     void testGet7DaysTimelineUpToArbitraryDate() {
-        LocalDate selectedDate = LocalDate.of(2026, 5, 15);
+        LocalDate selectedDate = LocalDate.of(2026, 3, 15);
+        List<RevenueTimelineDTO> rev = reportService.get7DaysRevenueTimelineUpTo(selectedDate, null);
+        List<MedicineTimelineDTO> med = reportService.get7DaysMedicineTimelineUpTo(selectedDate, null);
+        assertEquals(7, rev.size());
+        assertEquals(7, med.size());
+        assertEquals("09/03", rev.get(0).timeLabel());
+        assertEquals("15/03", rev.get(6).timeLabel());
 
-        // Biểu đồ doanh số 7 ngày (09/05 - 15/05)
-        List<RevenueTimelineDTO> rev7Days = reportService.get7DaysRevenueTimelineUpTo(selectedDate);
-        assertNotNull(rev7Days);
-        assertEquals(7, rev7Days.size(), "Phải có đúng 7 ngày tính đến ngày được chọn");
-        assertEquals("09/05", rev7Days.get(0).timeLabel());
-        assertEquals("15/05", rev7Days.get(6).timeLabel());
-
-        // Biểu đồ sản lượng thuốc 7 ngày (09/05 - 15/05)
-        List<com.pharmacy.report.dto.MedicineTimelineDTO> med7Days = reportService.get7DaysMedicineTimelineUpTo(selectedDate);
-        assertNotNull(med7Days);
-        assertEquals(7, med7Days.size());
-        assertEquals("09/05", med7Days.get(0).timeLabel());
-        assertEquals("15/05", med7Days.get(6).timeLabel());
+        ReportSummaryDTO week = reportService.getSummary(selectedDate.minusDays(6), selectedDate, null);
+        assertEquals(0, week.totalRevenue().compareTo(rev.stream().map(RevenueTimelineDTO::revenue).reduce(BigDecimal.ZERO, BigDecimal::add)));
+        assertEquals(week.totalMedicinesSold(), med.stream().mapToLong(MedicineTimelineDTO::quantitySold).sum());
     }
 
-
     @Test
-    @DisplayName("Lấy báo cáo và biểu đồ lọc theo nhân viên cụ thể")
-    void testReportWithEmployeeFilter() {
-        LocalDate today = LocalDate.now();
-        Integer testEmpId = 1;
-
-        ReportSummaryDTO empSummary = reportService.getSummary(today, today, testEmpId);
-        assertNotNull(empSummary);
-
-        List<RevenueTimelineDTO> empRev7Days = reportService.get7DaysRevenueTimelineUpTo(today, testEmpId);
-        assertNotNull(empRev7Days);
-        assertEquals(7, empRev7Days.size());
-
-        List<com.pharmacy.report.dto.MedicineTimelineDTO> empMed7Days = reportService.get7DaysMedicineTimelineUpTo(today, testEmpId);
-        assertNotNull(empMed7Days);
-        assertEquals(7, empMed7Days.size());
-
-        List<RevenueTimelineDTO> emp12Months = reportService.get12MonthsRevenueTimeline(2026, testEmpId);
-        assertNotNull(emp12Months);
-        assertEquals(12, emp12Months.size());
-
-        List<SoldMedicineDTO> empSoldMeds = reportService.getSoldMedicines(today, today, null, testEmpId);
-        assertNotNull(empSoldMeds);
+    @DisplayName("Nhân viên chỉ xem được báo cáo của chính mình")
+    void testStaffScopedToOwnData() {
+        Integer staffId = DbTestSupport.loginAs(DbTestSupport.STAFF_PHONE).getEmployee().getId();
+        ReportSummaryDTO requestedAll = reportService.getSummary(MARCH_START, MARCH_END, null);
+        DbTestSupport.loginAsManager();
+        ReportSummaryDTO ownByManager = reportService.getSummary(MARCH_START, MARCH_END, staffId);
+        assertEquals(ownByManager, requestedAll, "Staff truyền employeeId = null vẫn chỉ thấy số liệu của mình");
     }
 }
-
-
-

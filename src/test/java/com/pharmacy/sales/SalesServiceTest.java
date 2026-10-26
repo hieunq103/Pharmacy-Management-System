@@ -1,153 +1,152 @@
 package com.pharmacy.sales;
 
+import com.pharmacy.common.PageResult;
+import com.pharmacy.inventory.InventoryRepository;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
+import com.pharmacy.inventory.dto.MedicineLotDTO;
 import com.pharmacy.sales.dto.CartItem;
 import com.pharmacy.sales.dto.SalesOrderRequest;
+import com.pharmacy.support.DbTestSupport;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/** Integration test phân hệ Bán hàng (cần MySQL đã chạy migration V1..V5). */
 public class SalesServiceTest {
 
-    @Test
-    void testSalesDataRetrieval() {
-        SalesService salesService = new SalesServiceImpl();
-        List<MedicineInventoryDTO> list = salesService.getMedicines("", "Tất cả");
-        assertNotNull(list);
-        assertFalse(list.isEmpty(), "Danh sách thuốc bán hàng không được rỗng");
+    private final SalesService salesService = new SalesServiceImpl();
+    private final InventoryRepository inventoryRepository = new InventoryRepository();
 
-        MedicineInventoryDTO first = list.get(0);
-        System.out.println("Thuốc bán hàng: " + first.getMedicineName() + ", Giá bán: " + first.getSellPrice() + ", Tồn: " + first.getTotalQuantity() + ", Kê toa: " + first.getRequiresPrescription());
-        assertNotNull(first.getSellPrice());
+    @BeforeAll
+    static void requireDb() {
+        DbTestSupport.assumeDatabase();
+    }
 
-        var categories = salesService.getCategories();
-        assertNotNull(categories);
-        assertFalse(categories.isEmpty(), "Danh mục thuốc không được rỗng");
-        System.out.println("Tổng số danh mục: " + categories.size());
+    @BeforeEach
+    void login() {
+        DbTestSupport.loginAsManager();
+    }
+
+    @AfterEach
+    void logout() {
+        DbTestSupport.logout();
+    }
+
+    private List<MedicineInventoryDTO> allSalesMedicines() {
+        return salesService.getMedicinesPage(1, 10_000, "", "Tất cả").getItems();
+    }
+
+    private static CartItem cartItem(MedicineInventoryDTO m, int qty, BigDecimal price) {
+        return new CartItem(m.getMedicineId(), m.getMedicineCode(), m.getMedicineName(), m.getUnit(),
+                Boolean.TRUE.equals(m.getRequiresPrescription()), price, qty, m.getTotalQuantity());
+    }
+
+    private static SalesOrderRequest request(CartItem item) {
+        SalesOrderRequest request = new SalesOrderRequest(null, "0987654321", BigDecimal.ZERO, "CASH", true, List.of(item));
+        request.setOrderCode("HDB-TEST-" + System.nanoTime() % 1_000_000_000L);
+        return request;
+    }
+
+    private int lotRemaining(int medicineId, long lotId) {
+        return inventoryRepository.getLotsByMedicineId(medicineId).stream()
+                .filter(l -> l.getId() == lotId).findFirst().orElseThrow().getQuantityRemaining();
+    }
+
+    private MedicineInventoryDTO anyInStock() {
+        return allSalesMedicines().stream().filter(m -> m.getTotalQuantity() > 0).findFirst().orElseThrow();
     }
 
     @Test
     void testSalesPaginationAndFilter() {
-        SalesService salesService = new SalesServiceImpl();
-        // Test pagination 6 items per page
-        var page1 = salesService.getMedicinesPage(1, 6, "", "Tất cả nhóm thuốc");
-        assertNotNull(page1);
+        PageResult<MedicineInventoryDTO> page1 = salesService.getMedicinesPage(1, 6, "", "Tất cả nhóm thuốc");
         assertEquals(6, page1.getItems().size(), "Trang 1 phải có đúng 6 thuốc");
-        assertTrue(page1.getTotalElements() > 6, "Tổng số thuốc phải > 6");
-        assertTrue(page1.getTotalPages() >= 2, "Tổng số trang phải >= 2");
+        assertTrue(page1.getTotalPages() >= 2);
 
-        // Test filter by category
-        var categories = salesService.getCategories();
-        if (!categories.isEmpty()) {
-            String firstCat = categories.get(0);
-            var catPage = salesService.getMedicinesPage(1, 6, "", firstCat);
-            assertNotNull(catPage);
-            System.out.println("Lọc nhóm '" + firstCat + "': tìm thấy " + catPage.getTotalElements() + " thuốc");
-            for (var m : catPage.getItems()) {
-                assertEquals(firstCat, m.getCategoryName(), "Thuốc phải thuộc nhóm " + firstCat);
-            }
+        // Thuốc còn hàng bán được luôn đứng trước thuốc hết hàng
+        List<MedicineInventoryDTO> all = allSalesMedicines();
+        int firstOut = -1;
+        for (int i = 0; i < all.size(); i++) {
+            boolean out = all.get(i).getTotalQuantity() == 0;
+            if (out && firstOut < 0) firstOut = i;
+            if (!out && firstOut >= 0) fail("Thuốc còn hàng ở vị trí " + i + " đứng sau thuốc hết hàng ở " + firstOut);
+        }
+
+        String firstCat = salesService.getCategories().get(0);
+        for (MedicineInventoryDTO m : salesService.getMedicinesPage(1, 6, "", firstCat).getItems()) {
+            assertEquals(firstCat, m.getCategoryName());
+        }
+    }
+
+    /** FEFO: trừ lô còn hạn gần nhất, KHÔNG trừ lô đã hết hạn. */
+    @Test
+    void testCheckoutUsesEarliestNonExpiredLot() {
+        LocalDate today = LocalDate.now();
+        MedicineInventoryDTO med = allSalesMedicines().stream()
+                .filter(m -> m.getTotalQuantity() > 0 && m.getStatus() == MedicineInventoryDTO.InventoryStatus.HAS_EXPIRED_LOT)
+                .findFirst()
+                .orElseGet(this::anyInStock);
+        List<MedicineLotDTO> lots = inventoryRepository.getLotsByMedicineId(med.getMedicineId());
+        MedicineLotDTO fefoLot = lots.stream()
+                .filter(l -> l.getQuantityRemaining() > 0 && l.getExpiryDate().isAfter(today))
+                .min(Comparator.comparing(MedicineLotDTO::getExpiryDate).thenComparing(MedicineLotDTO::getId))
+                .orElseThrow();
+        List<MedicineLotDTO> expiredLots = lots.stream()
+                .filter(l -> l.getQuantityRemaining() > 0 && !l.getExpiryDate().isAfter(today)).toList();
+
+        assertNotNull(salesService.checkout(request(cartItem(med, 1, med.getSellPrice()))));
+
+        assertEquals(fefoLot.getQuantityRemaining() - 1, lotRemaining(med.getMedicineId(), fefoLot.getId()));
+        for (MedicineLotDTO expired : expiredLots) {
+            assertEquals(expired.getQuantityRemaining(), lotRemaining(med.getMedicineId(), expired.getId()),
+                    "Không được bán từ lô đã hết hạn " + expired.getLotNumber());
         }
     }
 
     @Test
-    void testSalesCheckoutFEFO() {
-        SalesService salesService = new SalesServiceImpl();
-        List<MedicineInventoryDTO> list = salesService.getMedicines("", "Tất cả");
-
-        // Find a medicine with available stock > 2
-        MedicineInventoryDTO availableMed = list.stream()
-                .filter(m -> m.getTotalQuantity() != null && m.getTotalQuantity() > 2)
-                .findFirst()
-                .orElse(null);
-
-        assertNotNull(availableMed, "Phải có thuốc còn tồn để test thanh toán");
-
-        CartItem item = new CartItem(
-                availableMed.getMedicineId(),
-                availableMed.getMedicineCode(),
-                availableMed.getMedicineName(),
-                availableMed.getUnit(),
-                Boolean.TRUE.equals(availableMed.getRequiresPrescription()),
-                availableMed.getSellPrice(),
-                1,
-                availableMed.getTotalQuantity()
-        );
-
-        SalesOrderRequest request = new SalesOrderRequest();
-        request.setEmployeeId(1);
-        request.setCustomerPhone("0987654321");
-        request.setDiscount(BigDecimal.ZERO);
-        request.setPaymentMethod("CASH");
-        request.setPrescriptionConfirmed(Boolean.TRUE.equals(availableMed.getRequiresPrescription()));
-        request.setItems(List.of(item));
-
-        String orderCode = salesService.checkout(request);
-        assertNotNull(orderCode, "Mã đơn hàng không được null");
-        assertTrue(orderCode.startsWith("HDB-"), "Mã đơn hàng phải bắt đầu bằng HDB-");
-        System.out.println("Tạo đơn hàng thành công: " + orderCode);
+    void testCheckoutRejectsOverSellableQuantity() {
+        MedicineInventoryDTO med = anyInStock();
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> salesService.checkout(request(cartItem(med, med.getTotalQuantity() + 1, med.getSellPrice()))));
+        assertTrue(ex.getMessage().contains("không đủ số lượng"), ex.getMessage());
     }
 
     @Test
-    void testDiscountCappedToSubtotal() {
-        com.pharmacy.sales.dto.CartOrder order = new com.pharmacy.sales.dto.CartOrder(1, "Hóa đơn test");
-        CartItem item = new CartItem(
-                1, "MED001", "Thuốc A", "Hộp", false,
-                BigDecimal.valueOf(50000), 2, 10
-        ); // Subtotal = 100,000
-        order.addItem(item);
+    void testCheckoutRejectsTamperedPrice() {
+        MedicineInventoryDTO med = anyInStock();
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> salesService.checkout(request(cartItem(med, 1, BigDecimal.ONE))));
+        assertTrue(ex.getMessage().contains("đã thay đổi"), ex.getMessage());
+    }
 
-        assertEquals(BigDecimal.valueOf(100000), order.getSubtotal());
-
-        // Giảm giá vượt quá tổng tiền hàng (200.000 > 100.000)
-        order.setDiscount(BigDecimal.valueOf(200000));
-        assertEquals(BigDecimal.valueOf(100000), order.getDiscount(), "Giảm giá phải bị giới hạn tối đa bằng tổng tiền hàng");
-        assertEquals(BigDecimal.ZERO, order.getTotalAmount(), "Tổng thanh toán phải là 0, không được âm");
-
-        // Giảm giá âm
-        order.setDiscount(BigDecimal.valueOf(-50000));
-        assertEquals(BigDecimal.ZERO, order.getDiscount(), "Giảm giá âm phải về 0");
-        assertEquals(BigDecimal.valueOf(100000), order.getTotalAmount());
-
-        // Giảm giá hợp lệ (30.000)
-        order.setDiscount(BigDecimal.valueOf(30000));
-        assertEquals(BigDecimal.valueOf(30000), order.getDiscount());
-        assertEquals(BigDecimal.valueOf(70000), order.getTotalAmount());
+    @Test
+    void testCheckoutRequiresLogin() {
+        MedicineInventoryDTO med = anyInStock();
+        DbTestSupport.logout();
+        assertThrows(SecurityException.class, () -> salesService.checkout(request(cartItem(med, 1, med.getSellPrice()))));
     }
 
     @Test
     void testSalesHistoryAndOrderDetails() {
-        SalesService salesService = new SalesServiceImpl();
-        java.time.LocalDate today = java.time.LocalDate.now();
-
-        // 1. Quản lý xem toàn hệ thống (employeeId = null)
+        LocalDate today = LocalDate.now();
         var allHistory = salesService.getSalesHistory(today, null, "", 1, 10);
-        assertNotNull(allHistory);
         assertNotNull(allHistory.getItems());
-        System.out.println("Lịch sử bán hàng hôm nay (Toàn hệ thống): " + allHistory.getTotalElements() + " đơn");
+        for (var order : allHistory.getItems()) {
+            var details = salesService.getSalesOrderDetails(order.getId());
+            assertEquals(order.getTotalQuantity(), details.stream().mapToInt(d -> d.getQuantity()).sum());
+        }
 
-        // 2. Nhân viên chỉ xem của bản thân (employeeId = 1)
-        var empHistory = salesService.getSalesHistory(today, 1, "", 1, 10);
-        assertNotNull(empHistory);
-        assertNotNull(empHistory.getItems());
-        System.out.println("Lịch sử bán hàng hôm nay (Nhân viên 1): " + empHistory.getTotalElements() + " đơn");
-
-        if (!allHistory.getItems().isEmpty()) {
-            var firstOrder = allHistory.getItems().get(0);
-            assertNotNull(firstOrder.getCode());
-            assertNotNull(firstOrder.getFormattedTotal());
-
-            // 3. Lấy chi tiết đơn hàng
-            var details = salesService.getSalesOrderDetails(firstOrder.getId());
-            assertNotNull(details);
-            System.out.println("Đơn hàng " + firstOrder.getCode() + " có " + details.size() + " mặt hàng chi tiết");
-            for (var d : details) {
-                assertNotNull(d.getMedicineName());
-                assertNotNull(d.getLotNumber());
-                assertTrue(d.getQuantity() > 0);
-            }
+        // Nhân viên chỉ xem được đơn của chính mình dù UI truyền employeeId = null
+        var staff = DbTestSupport.loginAs(DbTestSupport.STAFF_PHONE);
+        for (var order : salesService.getSalesHistory(today, null, "", 1, 50).getItems()) {
+            assertEquals(staff.getEmployee().getId(), order.getEmployeeId());
         }
     }
 }
