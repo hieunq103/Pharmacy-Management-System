@@ -22,7 +22,7 @@ public class EmployeeDetailController {
 
     private static final Logger log = LoggerFactory.getLogger(EmployeeDetailController.class);
 
-    @FXML private Button btnBack;
+    @FXML private Button btnClose;
     @FXML private Button btnViewHistory;
     @FXML private Button btnUpdateProfile;
     @FXML private HBox boxEditActions;
@@ -183,13 +183,16 @@ public class EmployeeDetailController {
         setEditableSafe(txtEmpId, false);
         setEditableSafe(txtHiredDate, false);
 
+        // Họ tên, SĐT, địa chỉ: luôn sửa được (kể cả hồ sơ của chính mình)
         setEditableSafe(txtFullName, editing);
-        setEditableSafe(txtDob, editing);
-        setEditableSafe(txtNationalId, editing);
         setEditableSafe(txtPhone, editing);
         setEditableSafe(txtAddress, editing);
 
-        toggleField(txtGender, cbGender, editing);
+        // Ngày sinh, CCCD, giới tính: chỉ Quản lý sửa cho người KHÁC; hồ sơ của chính mình thì khóa
+        boolean canEditIdentity = editing && !isEditingSelf();
+        setEditableSafe(txtDob, canEditIdentity);
+        setEditableSafe(txtNationalId, canEditIdentity);
+        toggleField(txtGender, cbGender, canEditIdentity);
 
         // Quản lý khi xem/sửa CHÍNH MÌNH thì KHÔNG được sửa vai trò, trạng thái làm việc hay trạng thái tài khoản
         boolean canManageRoleAndStatus = editing && !isEditingSelf();
@@ -207,10 +210,13 @@ public class EmployeeDetailController {
             if (txtHiredDate != null) txtHiredDate.setTooltip(fixedTooltip);
 
             if (isEditingSelf()) {
-                Tooltip selfTooltip = new Tooltip("Không thể tự thay đổi vai trò hoặc trạng thái tài khoản của chính mình.");
+                Tooltip selfTooltip = new Tooltip("Với hồ sơ của chính mình, chỉ có thể thay đổi Họ và tên, Số điện thoại và Địa chỉ.");
                 if (txtRole != null) txtRole.setTooltip(selfTooltip);
                 if (txtEmpStatus != null) txtEmpStatus.setTooltip(selfTooltip);
                 if (txtAccountStatus != null) txtAccountStatus.setTooltip(selfTooltip);
+                if (txtDob != null) txtDob.setTooltip(selfTooltip);
+                if (txtNationalId != null) txtNationalId.setTooltip(selfTooltip);
+                if (txtGender != null) txtGender.setTooltip(selfTooltip);
             }
         } else {
             if (txtEmpId != null) txtEmpId.setTooltip(null);
@@ -218,6 +224,9 @@ public class EmployeeDetailController {
             if (txtRole != null) txtRole.setTooltip(null);
             if (txtEmpStatus != null) txtEmpStatus.setTooltip(null);
             if (txtAccountStatus != null) txtAccountStatus.setTooltip(null);
+            if (txtDob != null) txtDob.setTooltip(null);
+            if (txtNationalId != null) txtNationalId.setTooltip(null);
+            if (txtGender != null) txtGender.setTooltip(null);
         }
 
         if (canManageRoleAndStatus && cbEmpStatus != null) {
@@ -285,6 +294,11 @@ public class EmployeeDetailController {
         String gender = (cbGender != null && cbGender.getValue() != null)
                 ? cbGender.getValue()
                 : ((txtGender != null && txtGender.getText() != null) ? txtGender.getText().trim() : "");
+        if (isEditingSelf()) {
+            // Hồ sơ của chính mình: chỉ Họ tên, SĐT, địa chỉ được đổi; giữ nguyên CCCD và giới tính hiện tại
+            nationalId = employee.getNationalId() != null ? employee.getNationalId() : "";
+            gender = employee.getGender();
+        }
 
         String empStatus;
         String accountStatus;
@@ -325,7 +339,9 @@ public class EmployeeDetailController {
 
         LocalDate parsedDob = null;
         String dobStr = (txtDob != null && txtDob.getText() != null) ? txtDob.getText().trim() : "";
-        if (dobStr.isEmpty()) {
+        if (isEditingSelf()) {
+            parsedDob = employee.getDob();
+        } else if (dobStr.isEmpty()) {
             showFieldError(txtDob, lblErrDob, "Ngày sinh không được để trống.");
             hasError = true;
         } else {
@@ -522,14 +538,15 @@ public class EmployeeDetailController {
         if (btnSave != null && btnSave.getScene() != null) {
             return btnSave.getScene().getWindow();
         }
-        if (btnBack != null && btnBack.getScene() != null) {
-            return btnBack.getScene().getWindow();
+        if (btnClose != null && btnClose.getScene() != null) {
+            return btnClose.getScene().getWindow();
         }
         return DialogUtils.getActiveWindow();
     }
 
+    /** Nút X tròn đỏ ở góc phải: thoát khỏi trang hồ sơ chi tiết, quay về danh sách nhân viên. */
     @FXML
-    private void handleBack() {
+    private void handleClose() {
         if (onBackCallback != null) {
             onBackCallback.run();
         }

@@ -1,0 +1,28 @@
+/* Nút đóng hình tròn màu đỏ, dấu X màu trắng — dùng cho các trang/cửa sổ chi tiết
+   (Hồ sơ chi tiết nhân viên, Chi tiết các lô hàng) */
+.btn-close-circle {
+    -fx-background-color: #EF4444;
+    -fx-background-radius: 50%;
+    -fx-min-width: 32px;
+    -fx-min-height: 32px;
+    -fx-pref-width: 32px;
+    -fx-pref-height: 32px;
+    -fx-max-width: 32px;
+    -fx-max-height: 32px;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+
+.btn-close-circle:hover {
+    -fx-background-color: #DC2626;
+}
+
+.btn-close-circle:pressed {
+    -fx-background-color: #B91C1C;
+}
+
+.btn-close-circle .btn-close-icon {
+    -fx-stroke: #FFFFFF;
+    -fx-stroke-width: 2.2;
+    -fx-stroke-line-cap: round;
+}

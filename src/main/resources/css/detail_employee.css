@@ -11,58 +11,92 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.06), 10, 0, 0, 3);
 }
 
+/* Tiêu đề, nhãn và ô nhập đồng bộ với trang Hồ sơ cá nhân (profile.css) */
 .detail-title {
     -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 18px;
-    -fx-text-fill: #1E293B;
+    -fx-font-size: 16px;
+    -fx-text-fill: #0F172A;
 }
 
 .form-label {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-text-fill: #475569;
-    -fx-font-size: 13px;
+    -fx-font-size: 14px;
 }
 
+/* app.css gán "Inter 18pt" cho mọi node .text -> phải chỉ định lại cho phần chữ bên trong nhãn/tiêu đề */
+.detail-title .text,
+.form-label .text {
+    -fx-font-family: "Inter 18pt SemiBold";
+}
+
+/* Trạng thái CHỈ XEM (Read-only) */
 .form-input-readonly {
     -fx-background-color: #F1F5F9;
     -fx-border-color: #CBD5E1;
     -fx-border-radius: 6;
     -fx-background-radius: 6;
-    -fx-padding: 7 12;
+    -fx-border-width: 1;
+    -fx-pref-height: 38px;
+    -fx-min-height: 38px;
+    -fx-max-height: 38px;
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 13px;
-    -fx-text-fill: #0F172A;
+    -fx-font-size: 14px;
+    -fx-text-fill: #1E293B;
 }
 
+/* Trạng thái CHỈNH SỬA (Editable) */
 .form-input-editable {
     -fx-background-color: #FFFFFF;
-    -fx-border-color: #3B82F6;
+    -fx-border-color: #2563EB;
     -fx-border-radius: 6;
     -fx-background-radius: 6;
-    -fx-padding: 7 12;
+    -fx-border-width: 1;
+    -fx-pref-height: 38px;
+    -fx-min-height: 38px;
+    -fx-max-height: 38px;
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 13px;
+    -fx-font-size: 14px;
     -fx-text-fill: #0F172A;
 }
 
 .text-field .text {
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 13px;
+    -fx-font-size: 14px;
 }
 
 .form-combo-box {
     -fx-background-color: #FFFFFF;
-    -fx-border-color: #3B82F6;
-    -fx-border-radius: 6;
-    -fx-background-radius: 6;
-    -fx-padding: 4 12;
+    -fx-background-insets: 0;
+    -fx-background-radius: 6px;
+    -fx-border-color: #2563EB;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+    -fx-pref-height: 38px;
+    -fx-min-height: 38px;
+    -fx-max-height: 38px;
+    -fx-padding: 0 4 0 8;
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 13px;
+    -fx-font-size: 14px;
 }
 
 .form-combo-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1E293B;
+    -fx-padding: 4 0 4 2;
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 13px;
+    -fx-font-size: 14px;
+}
+
+.form-combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.form-combo-box .arrow {
+    -fx-background-color: #64748B;
+    -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
+    -fx-padding: 3;
 }
 
 .btn-secondary {
@@ -80,20 +114,6 @@
 .btn-secondary:hover {
     -fx-background-color: #E2E8F0;
     -fx-text-fill: #1E293B;
-}
-
-.btn-back {
-    -fx-background-color: #0F172A;
-    -fx-text-fill: #FFFFFF;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 14px;
-    -fx-padding: 7 16;
-    -fx-background-radius: 6;
-    -fx-cursor: hand;
-}
-
-.btn-back:hover {
-    -fx-background-color: #334155;
 }
 
 .btn-primary {

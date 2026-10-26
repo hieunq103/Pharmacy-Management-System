@@ -154,6 +154,15 @@ public class EmployeeServiceImpl implements EmployeeService {
                 if ("DISABLED".equalsIgnoreCase(normalizedAccStatus)) {
                     throw new IllegalArgumentException("Quản lý không thể tự khóa tài khoản của chính mình.");
                 }
+
+                // Hồ sơ của chính mình chỉ được đổi Họ tên, SĐT, Địa chỉ (giống trang Hồ sơ cá nhân)
+                Employee self = UserSession.getInstance().getEmployee();
+                if (self != null && (changed(self.getNationalId(), req.nationalId() != null ? req.nationalId().trim() : null)
+                        || changed(self.getDob(), req.dob())
+                        || changed(self.getGender(), req.gender()))) {
+                    throw new IllegalArgumentException(
+                            "Với hồ sơ của chính mình, chỉ có thể thay đổi Họ và tên, Số điện thoại và Địa chỉ.");
+                }
             }
         }
 
@@ -181,6 +190,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         // 6. Gọi repository thực thi Hibernate Transaction
         return employeeRepository.updateEmployeeByManager(sanitizedRequest);
+    }
+
+    /** Giá trị mới khác giá trị hiện tại (bỏ qua khi hiện tại chưa có dữ liệu). */
+    private static boolean changed(Object current, Object requested) {
+        return current != null && !current.equals(requested);
     }
 
     private static void requireManager() {

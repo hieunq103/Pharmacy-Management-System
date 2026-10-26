@@ -11,8 +11,6 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.layout.StackPane?>
 <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: #F8FAFC;"
             stylesheets="@../../css/profile.css" xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pharmacy.profile.ProfileController">
@@ -23,7 +21,7 @@
                   style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 10, 0, 0, 2);">
 
                 <Label style="-fx-font-size: 16px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0F172A;" text="Hồ sơ cá nhân" />
-                <Label style="-fx-font-size: 13px; -fx-text-fill: #64748B;" text="Nhân viên chỉ có thể cập nhật thông tin liên hệ. Các thông tin định danh do Quản trị viên quản lý." />
+                <Label style="-fx-font-size: 13px; -fx-text-fill: #64748B;" text="Bạn chỉ có thể cập nhật Họ và tên, Số điện thoại và Địa chỉ. Các thông tin khác do Quản lý cửa hàng cập nhật." />
 
                 <!-- Thông báo trạng thái -->
                 <Label fx:id="lblStatusMessage" managed="false" visible="false"
@@ -35,18 +33,18 @@
                         <ColumnConstraints percentWidth="50.0" />
                     </columnConstraints>
 
-                    <!-- Hàng 0: Họ tên & CCCD (Luôn khóa) -->
+                    <!-- Hàng 0: Mã nhân viên (Luôn khóa) & Họ tên (CHO PHÉP SỬA) -->
                     <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                        <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #475569;" text="Họ và tên" />
-                        <TextField fx:id="txtFullName" editable="false" styleClass="form-input, readonly" />
+                        <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #475569;" text="Mã nhân viên" />
+                        <TextField fx:id="txtEmployeeCode" editable="false" focusTraversable="false" styleClass="form-input, readonly" />
                     </VBox>
 
                     <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                        <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #475569;" text="Số CCCD" />
-                        <TextField fx:id="txtNationalId" editable="false" styleClass="form-input, readonly" />
+                        <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #1E293B;" text="Họ và tên" />
+                        <TextField fx:id="txtFullName" editable="false" styleClass="form-input, readonly" />
                     </VBox>
 
-
+                    <!-- Hàng 1: Ngày sinh & Giới tính (Khóa) -->
                     <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
                         <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #475569;" text="Ngày sinh" />
                         <TextField fx:id="txtDob" editable="false" styleClass="form-input, readonly" />
@@ -54,27 +52,34 @@
 
                     <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                         <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #475569;" text="Giới tính" />
-                        <StackPane alignment="CENTER_LEFT">
-                            <TextField fx:id="txtGender" editable="false" maxWidth="Infinity" styleClass="form-input, readonly" />
-                            <ComboBox fx:id="cbGender" maxWidth="Infinity" visible="false" managed="false"
-                                      promptText="Chọn giới tính" styleClass="form-input" />
-                        </StackPane>
+                        <TextField fx:id="txtGender" editable="false" styleClass="form-input, readonly" />
                     </VBox>
 
-                    <!-- Hàng 2: Số điện thoại (CHO PHÉP SỬA) & Vai trò (Khóa) -->
+                    <!-- Hàng 2: Số CCCD (Khóa) & Số điện thoại (CHO PHÉP SỬA) -->
                     <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                        <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #475569;" text="Số CCCD" />
+                        <TextField fx:id="txtNationalId" editable="false" styleClass="form-input, readonly" />
+                    </VBox>
+
+                    <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                         <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #1E293B;" text="Số điện thoại" />
                         <TextField fx:id="txtPhone" editable="false" promptText="09xxxxxxxx"
                                    styleClass="form-input, readonly" />
                     </VBox>
 
-                    <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <!-- Hàng 3: Ngày vào làm & Vai trò (Khóa) -->
+                    <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                        <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #475569;" text="Ngày vào làm" />
+                        <TextField fx:id="txtHiredDate" editable="false" focusTraversable="false" styleClass="form-input, readonly" />
+                    </VBox>
+
+                    <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                         <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #475569;" text="Vai trò hệ thống" />
                         <TextField fx:id="txtRole" editable="false" styleClass="form-input, readonly" />
                     </VBox>
 
-                    <!-- Hàng 3: Địa chỉ (CHO PHÉP SỬA) -->
-                    <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="3">
+                    <!-- Hàng 4: Địa chỉ (CHO PHÉP SỬA) -->
+                    <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="4">
                         <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #1E293B;" text="Địa chỉ thường trú" />
                         <TextField fx:id="txtAddress" editable="false" promptText="Nhập địa chỉ cư trú..."
                                    styleClass="form-input, readonly" />
@@ -91,7 +96,7 @@
 
                     <Button fx:id="btnEdit" onAction="#handleStartEditing"
                             styleClass="btn-action, btn-primary"
-                            text="Chỉnh sửa thông tin liên hệ" />
+                            text="Chỉnh sửa thông tin" />
 
                     <HBox fx:id="boxEditActions" alignment="CENTER_RIGHT" managed="false" spacing="12.0" visible="false">
                         <Button fx:id="btnCancel" onAction="#handleCancelEditing"

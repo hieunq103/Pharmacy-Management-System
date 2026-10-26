@@ -9,7 +9,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -33,6 +32,10 @@ public class ProfileController {
     private Label lblStatusMessage;
 
     @FXML
+    private TextField txtEmployeeCode;
+    @FXML
+    private TextField txtHiredDate;
+    @FXML
     private TextField txtFullName;
     @FXML
     private TextField txtNationalId;
@@ -40,8 +43,6 @@ public class ProfileController {
     private TextField txtDob;
     @FXML
     private TextField txtGender;
-    @FXML
-    private ComboBox<String> cbGender;
     @FXML
     private TextField txtRole;
 
@@ -69,7 +70,11 @@ public class ProfileController {
         loadEmployeeData();
         setEditMode(false);
 
-        cbGender.getItems().setAll("Nam", "Nữ", "Khác");
+        txtFullName.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (lblStatusMessage.isVisible()) {
+                clearStatus();
+            }
+        });
         txtPhone.textProperty().addListener((obs, oldVal, newVal) -> {
             if (lblStatusMessage.isVisible()) {
                 clearStatus();
@@ -94,6 +99,8 @@ public class ProfileController {
 
         Employee emp = account.getEmployee();
         if (emp != null) {
+            txtEmployeeCode.setText(emp.getCode() != null ? emp.getCode() : "");
+            txtHiredDate.setText(emp.getHiredDate() != null ? FormatUtils.formatDate(emp.getHiredDate()) : "Chưa cập nhật");
             txtFullName.setText(emp.getFullName() != null ? emp.getFullName() : "");
             txtNationalId.setText(emp.getNationalId() != null ? emp.getNationalId() : "");
 
@@ -106,7 +113,6 @@ public class ProfileController {
             txtGender.setText(emp.getGender() != null ? emp.getGender() : "");
             txtPhone.setText(emp.getPhone() != null ? emp.getPhone() : "");
             txtAddress.setText(emp.getAddress() != null ? emp.getAddress() : "");
-            cbGender.setValue(emp.getGender() != null ? emp.getGender() : "");
         }
 
         if (account.getRole() != null) {
@@ -115,29 +121,14 @@ public class ProfileController {
     }
 
     private void setEditMode(boolean editing) {
-        boolean isManager = UserSession.isLoggedIn() && UserSession.getInstance().isManager();
-
-        txtPhone.setEditable(editing);
-        txtAddress.setEditable(editing);
-        applyInputState(txtPhone, editing);
-        applyInputState(txtAddress, editing);
-
-        boolean managerEditable = editing && isManager;
-        txtFullName.setEditable(managerEditable);
-        txtNationalId.setEditable(managerEditable);
-        txtDob.setEditable(managerEditable);
-
-        applyInputState(txtFullName, managerEditable);
-        applyInputState(txtNationalId, managerEditable);
-        applyInputState(txtDob, managerEditable);
-
-        txtGender.setVisible(!managerEditable);
-        txtGender.setManaged(!managerEditable);
-
-        cbGender.setVisible(managerEditable);
-        cbGender.setManaged(managerEditable);
-        if (managerEditable) {
-            cbGender.setValue(txtGender.getText());
+        // Cả Nhân viên và Quản lý chỉ được đổi Họ và tên, Số điện thoại, Địa chỉ của chính mình
+        for (TextField editable : new TextField[]{txtFullName, txtPhone, txtAddress}) {
+            editable.setEditable(editing);
+            applyInputState(editable, editing);
+        }
+        for (TextField locked : new TextField[]{txtEmployeeCode, txtHiredDate, txtNationalId, txtDob, txtGender}) {
+            locked.setEditable(false);
+            applyInputState(locked, false);
         }
 
         txtRole.setEditable(false);
@@ -162,8 +153,8 @@ public class ProfileController {
     private void handleStartEditing(ActionEvent event) {
         clearStatus();
         setEditMode(true);
-        txtPhone.requestFocus();
-        txtPhone.positionCaret(txtPhone.getText() != null ? txtPhone.getText().length() : 0);
+        txtFullName.requestFocus();
+        txtFullName.positionCaret(txtFullName.getText() != null ? txtFullName.getText().length() : 0);
     }
 
     @FXML
@@ -183,10 +174,21 @@ public class ProfileController {
             return;
         }
 
-        boolean isManager = UserSession.getInstance().isManager();
-
+        String fullName = txtFullName.getText() != null ? txtFullName.getText().trim() : "";
         String phone = txtPhone.getText() != null ? txtPhone.getText().trim() : "";
         String address = txtAddress.getText() != null ? txtAddress.getText().trim() : "";
+
+        if (fullName.isEmpty()) {
+            showStatus("Họ và tên không được để trống.", StatusType.ERROR);
+            txtFullName.requestFocus();
+            return;
+        }
+
+        if (fullName.length() > 100) {
+            showStatus("Họ và tên không được vượt quá 100 ký tự.", StatusType.ERROR);
+            txtFullName.requestFocus();
+            return;
+        }
 
         if (phone.isEmpty()) {
             showStatus("Số điện thoại không được để trống.", StatusType.ERROR);
@@ -213,64 +215,9 @@ public class ProfileController {
             return;
         }
 
-        String fullName = txtFullName.getText() != null ? txtFullName.getText().trim() : "";
-        String nationalId = txtNationalId.getText() != null ? txtNationalId.getText().trim() : "";
-        String gender = isManager
-                ? (cbGender.getValue() != null ? cbGender.getValue() : "")
-                : (txtGender.getText() != null ? txtGender.getText().trim() : "");
-        java.time.LocalDate parsedDob = emp.getDob();
-
-        if (isManager) {
-            if (fullName.isEmpty()) {
-                showStatus("Họ và tên không được để trống.", StatusType.ERROR);
-                txtFullName.requestFocus();
-                return;
-            }
-
-            if (!FormValidator.isValidNationalId(nationalId)) {
-                showStatus("Căn cước công dân phải đúng 12 chữ số.", StatusType.ERROR);
-                txtNationalId.requestFocus();
-                return;
-            }
-
-            String dobStr = txtDob.getText() != null ? txtDob.getText().trim() : "";
-            try {
-                parsedDob = java.time.LocalDate.parse(dobStr, FormatUtils.DATE_FORMATTER);
-                if (parsedDob.isAfter(java.time.LocalDate.now().minusYears(18))) {
-                    showStatus("Nhân viên phải từ đủ 18 tuổi trở lên.", StatusType.ERROR);
-                    txtDob.requestFocus();
-                    return;
-                }
-            } catch (Exception ex) {
-                showStatus("Ngày sinh sai định dạng (dd/MM/yyyy).", StatusType.ERROR);
-                txtDob.requestFocus();
-                return;
-            }
-        }
-
-        String currentPhone = emp.getPhone() != null ? emp.getPhone().trim() : "";
-        String currentAddress = emp.getAddress() != null ? emp.getAddress().trim() : "";
-
-        boolean hasChanged;
-        if (isManager) {
-            String currentFullName = emp.getFullName() != null ? emp.getFullName().trim() : "";
-            String currentNationalId = emp.getNationalId() != null ? emp.getNationalId().trim() : "";
-            String currentGender = emp.getGender() != null ? emp.getGender().trim() : "";
-            java.time.LocalDate currentDob = emp.getDob();
-
-            boolean phoneChanged = !phone.equals(currentPhone);
-            boolean addressChanged = !address.equals(currentAddress);
-            boolean nameChanged = !fullName.equals(currentFullName);
-            boolean nationalIdChanged = !nationalId.equals(currentNationalId);
-            boolean genderChanged = !gender.equals(currentGender);
-            boolean dobChanged = (parsedDob != null && !parsedDob.equals(currentDob))
-                    || (parsedDob == null && currentDob != null);
-
-            hasChanged = phoneChanged || addressChanged || nameChanged
-                    || nationalIdChanged || genderChanged || dobChanged;
-        } else {
-            hasChanged = !phone.equals(currentPhone) || !address.equals(currentAddress);
-        }
+        boolean hasChanged = !fullName.equals(emp.getFullName() != null ? emp.getFullName().trim() : "")
+                || !phone.equals(emp.getPhone() != null ? emp.getPhone().trim() : "")
+                || !address.equals(emp.getAddress() != null ? emp.getAddress().trim() : "");
 
         if (!hasChanged) {
             showStatus("Thông tin được giữ nguyên, không có thay đổi nào cần lưu.", StatusType.INFO);
@@ -278,12 +225,7 @@ public class ProfileController {
             return;
         }
 
-        final ProfileUpdateRequest request;
-        if (isManager) {
-            request = new ProfileUpdateRequest(emp.getId(), phone, address, fullName, nationalId, parsedDob, gender);
-        } else {
-            request = new ProfileUpdateRequest(emp.getId(), phone, address);
-        }
+        final ProfileUpdateRequest request = new ProfileUpdateRequest(emp.getId(), fullName, phone, address);
 
         btnSave.setDisable(true);
         btnCancel.setDisable(true);
@@ -300,14 +242,9 @@ public class ProfileController {
             btnSave.setDisable(false);
             btnCancel.setDisable(false);
 
+            emp.setFullName(request.fullName());
             emp.setPhone(request.phone());
             emp.setAddress(request.address());
-            if (request.isManagerUpdate()) {
-                emp.setFullName(request.fullName());
-                emp.setNationalId(request.nationalId());
-                emp.setDob(request.dob());
-                emp.setGender(request.gender());
-            }
 
             showStatus("Cập nhật thông tin thành công!", StatusType.SUCCESS);
             loadEmployeeData();
@@ -326,7 +263,7 @@ public class ProfileController {
                 txtPhone.requestFocus();
             } else if (errorMsg != null
                     && (errorMsg.contains("Duplicate entry") || errorMsg.contains("ConstraintViolationException"))) {
-                showStatus("Số điện thoại hoặc CCCD này đã được sử dụng bởi một nhân viên khác.", StatusType.ERROR);
+                showStatus("Số điện thoại này đã được sử dụng bởi một nhân viên khác.", StatusType.ERROR);
                 txtPhone.requestFocus();
             } else {
                 showStatus("Lỗi khi lưu dữ liệu: " + (errorMsg != null ? errorMsg : "Không xác định"),

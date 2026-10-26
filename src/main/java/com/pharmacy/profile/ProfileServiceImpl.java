@@ -30,16 +30,24 @@ public class ProfileServiceImpl implements ProfileService {
         if (request == null || request.employeeId() == null) {
             throw new IllegalArgumentException("Dữ liệu yêu cầu cập nhật không hợp lệ.");
         }
+        // Hồ sơ cá nhân: chỉ được sửa hồ sơ của chính người đang đăng nhập
+        UserSession.requireAuthenticated();
+        if (!request.employeeId().equals(UserSession.currentEmployeeId())) {
+            throw new SecurityException("Chỉ được cập nhật hồ sơ cá nhân của chính mình.");
+        }
 
-        boolean isManager = UserSession.isLoggedIn() && UserSession.getInstance().isManager();
-
+        if (request.fullName() == null || request.fullName().isBlank()) {
+            throw new IllegalArgumentException("Họ và tên không được để trống.");
+        }
+        if (request.fullName().trim().length() > 100) {
+            throw new IllegalArgumentException("Họ và tên không được vượt quá 100 ký tự.");
+        }
         if (request.phone() == null || request.phone().isBlank()) {
             throw new IllegalArgumentException("Số điện thoại không được để trống.");
         }
         if (!FormValidator.isValidPhone(request.phone())) {
             throw new IllegalArgumentException("Số điện thoại không hợp lệ (gồm 10 chữ số, bắt đầu bằng 03, 05, 07, 08 hoặc 09).");
         }
-
         if (request.address() == null || request.address().isBlank()) {
             throw new IllegalArgumentException("Địa chỉ không được để trống.");
         }
@@ -47,44 +55,15 @@ public class ProfileServiceImpl implements ProfileService {
             throw new IllegalArgumentException("Địa chỉ không được vượt quá 255 ký tự.");
         }
 
-        if (isManager) {
-            if (request.fullName() == null || request.fullName().isBlank()) {
-                throw new IllegalArgumentException("Họ và tên không được để trống.");
-            }
-            if (request.nationalId() == null || !FormValidator.isValidNationalId(request.nationalId())) {
-                throw new IllegalArgumentException("Căn cước công dân phải đúng 12 chữ số.");
-            }
-            if (request.dob() == null) {
-                throw new IllegalArgumentException("Ngày sinh không được để trống.");
-            }
-            if (request.dob().isAfter(java.time.LocalDate.now().minusYears(18))) {
-                throw new IllegalArgumentException("Nhân viên phải từ đủ 18 tuổi trở lên.");
-            }
-        }
+        log.info("Bắt đầu cập nhật hồ sơ cá nhân cho nhân viên ID: {}", request.employeeId());
 
-        log.info("Bắt đầu cập nhật hồ sơ cho nhân viên ID: {} (Vai trò: {})",
-                request.employeeId(), isManager ? "Manager" : "Staff");
-
-        boolean isPhoneTakenByOthers = employeeRepository.existsByPhoneAndNotId(request.phone(), request.employeeId());
-        if (isPhoneTakenByOthers) {
+        if (employeeRepository.existsByPhoneAndNotId(request.phone(), request.employeeId())) {
             log.warn("Cập nhật thất bại: Số điện thoại {} đã được sử dụng bởi nhân viên khác.", request.phone());
             throw new IllegalArgumentException("Số điện thoại này đã được sử dụng bởi nhân viên khác.");
         }
 
-        boolean success;
-
-        if (isManager) {
-            boolean isNationalIdTaken = employeeRepository.existsByNationalIdAndNotId(request.nationalId(), request.employeeId());
-            if (isNationalIdTaken) {
-                log.warn("Cập nhật thất bại: CCCD {} đã thuộc về nhân viên khác.", request.nationalId());
-                throw new IllegalArgumentException("Căn cước công dân này đã thuộc về nhân viên khác.");
-            }
-
-            success = employeeRepository.updateManagerProfile(request);
-        } else {
-            success = employeeRepository.updateStaffProfile(request.employeeId(), request.phone(), request.address());
-        }
-
+        boolean success = employeeRepository.updateOwnProfile(request.employeeId(),
+                request.fullName().trim(), request.phone().trim(), request.address().trim());
         if (!success) {
             log.error("Không tìm thấy nhân viên hoặc không thể cập nhật dữ liệu với ID: {}", request.employeeId());
             throw new IllegalStateException("Không tìm thấy nhân viên hoặc không thể cập nhật dữ liệu.");

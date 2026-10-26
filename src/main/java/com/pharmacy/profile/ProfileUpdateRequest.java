@@ -1,24 +1,14 @@
 package com.pharmacy.profile;
 
-import java.time.LocalDate;
-
+/**
+ * Cập nhật hồ sơ cá nhân của chính người đang đăng nhập.
+ * Cả Nhân viên và Quản lý chỉ được đổi Họ và tên, Số điện thoại, Địa chỉ của mình;
+ * các thông tin khác do Quản lý chỉnh ở màn hình Quản lý nhân viên.
+ */
 public record ProfileUpdateRequest(
         Integer employeeId,
-        String phone,
-        String address,
         String fullName,
-        String nationalId,
-        LocalDate dob,
-        String gender,
-        boolean isManagerUpdate
-)  {
-
-    public ProfileUpdateRequest(Integer employeeId, String phone, String address) {
-        this(employeeId, phone, address, null, null, null, null, false);
-    }
-
-    public ProfileUpdateRequest(Integer employeeId, String phone, String address,
-                                String fullName, String nationalId, LocalDate dob, String gender) {
-        this(employeeId, phone, address, fullName, nationalId, dob, gender, true);
-    }
+        String phone,
+        String address
+) {
 }

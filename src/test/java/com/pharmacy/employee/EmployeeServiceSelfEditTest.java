@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -163,6 +164,31 @@ class EmployeeServiceSelfEditTest {
         });
 
         assertTrue(ex.getMessage().contains("khóa tài khoản"));
+    }
+
+    @Test
+    void testManagerSelfEditOnlyNamePhoneAddress() {
+        currentManager.setNationalId("001090000001");
+        currentManager.setDob(LocalDate.of(1990, 1, 1));
+        currentManager.setGender("Nam");
+
+        // Đổi Họ tên, SĐT, Địa chỉ của chính mình: được phép
+        EmployeeUpdateRequest allowed = new EmployeeUpdateRequest(1, "Tên Mới", "001090000001", "0987654321",
+                "Hà Đông", LocalDate.of(1990, 1, 1), "Nam", "Đang làm việc", "Đang hoạt động", "Quản lý cửa hàng");
+        assertTrue(employeeService.updateEmployeeByManager(allowed));
+
+        // Tự đổi CCCD / ngày sinh / giới tính: bị chặn
+        EmployeeUpdateRequest changeCccd = new EmployeeUpdateRequest(1, "Tên Mới", "001090000099", "0987654321",
+                "Hà Đông", LocalDate.of(1990, 1, 1), "Nam", "Đang làm việc", "Đang hoạt động", "Quản lý cửa hàng");
+        EmployeeUpdateRequest changeDob = new EmployeeUpdateRequest(1, "Tên Mới", "001090000001", "0987654321",
+                "Hà Đông", LocalDate.of(1991, 1, 1), "Nam", "Đang làm việc", "Đang hoạt động", "Quản lý cửa hàng");
+        EmployeeUpdateRequest changeGender = new EmployeeUpdateRequest(1, "Tên Mới", "001090000001", "0987654321",
+                "Hà Đông", LocalDate.of(1990, 1, 1), "Nữ", "Đang làm việc", "Đang hoạt động", "Quản lý cửa hàng");
+        for (EmployeeUpdateRequest req : List.of(changeCccd, changeDob, changeGender)) {
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                    () -> employeeService.updateEmployeeByManager(req));
+            assertTrue(ex.getMessage().contains("chỉ có thể thay đổi"));
+        }
     }
 
     @Test

@@ -2,10 +2,11 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.SVGPath?>
 
 <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="Infinity" spacing="12.0"
       styleClass="detail-container"
-      stylesheets="@../../css/detail_employee.css"
+      stylesheets="@../../css/detail_employee.css, @../../css/close_button.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.pharmacy.employee.EmployeeDetailController">
 
@@ -18,35 +19,42 @@
 
             <Region HBox.hgrow="ALWAYS" />
 
-            <Button fx:id="btnBack" onAction="#handleBack" text="Quay lại →" styleClass="btn-back" />
+            <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-close-circle">
+                <graphic>
+                    <SVGPath content="M 0 0 L 10 10 M 10 0 L 0 10" styleClass="btn-close-icon" />
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Đóng" />
+                </tooltip>
+            </Button>
         </HBox>
 
-        <GridPane hgap="20.0" vgap="10.0">
+        <GridPane hgap="20.0" vgap="16.0">
             <columnConstraints>
                 <ColumnConstraints percentWidth="50" />
                 <ColumnConstraints percentWidth="50" />
             </columnConstraints>
 
             <!-- Mã nhân viên (Khóa chết) -->
-            <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
                 <Label text="Mã nhân viên" styleClass="form-label" />
-                <TextField fx:id="txtEmpId" editable="false" focusTraversable="false" mouseTransparent="true" styleClass="form-input-readonly" style="-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-font-family: 'Inter 18pt SemiBold';" />
+                <TextField fx:id="txtEmpId" editable="false" focusTraversable="false" mouseTransparent="true" styleClass="form-input-readonly" />
             </VBox>
 
             <!-- Họ và tên -->
-            <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
                 <Label text="Họ và tên" styleClass="form-label" />
                 <TextField fx:id="txtFullName" editable="false" styleClass="form-input-readonly" />
                 <Label fx:id="lblErrFullName" visible="false" managed="false" styleClass="form-error-label" />
             </VBox>
 
             <!-- Hàng 1: Ngày sinh - Giới tính -->
-            <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
                 <Label text="Ngày sinh (dd/MM/yyyy)" styleClass="form-label" />
                 <TextField fx:id="txtDob" editable="false" styleClass="form-input-readonly" />
                 <Label fx:id="lblErrDob" visible="false" managed="false" styleClass="form-error-label" />
             </VBox>
-            <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                 <Label text="Giới tính" styleClass="form-label" />
                 <StackPane alignment="CENTER_LEFT">
                     <TextField fx:id="txtGender" editable="false" maxWidth="Infinity" styleClass="form-input-readonly" />
@@ -55,23 +63,23 @@
             </VBox>
 
             <!-- Hàng 2: Số CCCD - Số điện thoại -->
-            <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
+            <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
                 <Label text="Số CCCD" styleClass="form-label" />
                 <TextField fx:id="txtNationalId" editable="false" styleClass="form-input-readonly" />
                 <Label fx:id="lblErrNationalId" visible="false" managed="false" styleClass="form-error-label" />
             </VBox>
-            <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                 <Label text="Số điện thoại" styleClass="form-label" />
                 <TextField fx:id="txtPhone" editable="false" styleClass="form-input-readonly" />
                 <Label fx:id="lblErrPhone" visible="false" managed="false" styleClass="form-error-label" />
             </VBox>
 
             <!-- Hàng 3: Ngày vào làm - Trạng thái làm việc -->
-            <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="3">
+            <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="3">
                 <Label text="Ngày vào làm" styleClass="form-label" />
                 <TextField fx:id="txtHiredDate" editable="false" styleClass="form-input-readonly" />
             </VBox>
-            <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                 <Label text="Trạng thái làm việc" styleClass="form-label" />
                 <StackPane alignment="CENTER_LEFT">
                     <TextField fx:id="txtEmpStatus" editable="false" maxWidth="Infinity" styleClass="form-input-readonly" />
@@ -80,14 +88,14 @@
             </VBox>
 
             <!-- Hàng 4: Vai trò hệ thống - Trạng thái tài khoản -->
-            <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="4">
+            <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="4">
                 <Label text="Vai trò hệ thống" styleClass="form-label" />
                 <StackPane alignment="CENTER_LEFT">
                     <TextField fx:id="txtRole" editable="false" maxWidth="Infinity" styleClass="form-input-readonly" />
                     <ComboBox fx:id="cbRole" visible="false" managed="false" maxWidth="Infinity" styleClass="form-combo-box" />
                 </StackPane>
             </VBox>
-            <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                 <Label text="Trạng thái tài khoản" styleClass="form-label" />
                 <StackPane alignment="CENTER_LEFT">
                     <TextField fx:id="txtAccountStatus" editable="false" maxWidth="Infinity" styleClass="form-input-readonly" />
@@ -95,7 +103,7 @@
                 </StackPane>
             </VBox>
 
-            <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="5">
+            <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="5">
                 <Label text="Địa chỉ thường trú" styleClass="form-label" />
                 <TextField fx:id="txtAddress" editable="false" styleClass="form-input-readonly" />
                 <Label fx:id="lblErrAddress" visible="false" managed="false" styleClass="form-error-label" />

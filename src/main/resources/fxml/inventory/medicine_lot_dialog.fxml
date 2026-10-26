@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
 
 <VBox prefHeight="640.0" prefWidth="1250.0" spacing="14.0"
       styleClass="lot-dialog-root"
-      stylesheets="@../../css/inventory.css"
+      stylesheets="@../../css/inventory.css, @../../css/close_button.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.pharmacy.inventory.ui.MedicineLotDialogController">
 
@@ -22,7 +25,18 @@
 
     <!-- Header: Tiêu đề & (Mã thuốc + Tên thuốc + Nhãn kê toa trên cùng một dòng) -->
     <VBox spacing="6.0">
-        <Label styleClass="lot-dialog-title" text="Chi tiết các lô hàng" />
+        <HBox alignment="CENTER_LEFT">
+            <Label styleClass="lot-dialog-title" text="Chi tiết các lô hàng" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-close-circle">
+                <graphic>
+                    <SVGPath content="M 0 0 L 10 10 M 10 0 L 0 10" styleClass="btn-close-icon" />
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Đóng" />
+                </tooltip>
+            </Button>
+        </HBox>
         <HBox alignment="CENTER_LEFT" spacing="10.0">
             <Label fx:id="lblMedicineCode" styleClass="lot-dialog-code-badge" text="MED000" />
             <Label fx:id="lblMedicineName" styleClass="lot-dialog-medicine-name" text="Tên thuốc" />

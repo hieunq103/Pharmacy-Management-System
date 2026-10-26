@@ -35,6 +35,7 @@ public class MedicineLotDialogController implements Initializable {
 
     private static final Logger log = LoggerFactory.getLogger(MedicineLotDialogController.class);
 
+    @FXML private Button btnClose;
     @FXML private Label lblMedicineCode;
     @FXML private Label lblPrescriptionTag;
     @FXML private Label lblMedicineName;
@@ -88,6 +89,15 @@ public class MedicineLotDialogController implements Initializable {
         setupFilters();
         TableSyncHelper.enableAutoRowHeight(tableLots, null, AppConstants.DEFAULT_PAGE_SIZE);
         TableSyncHelper.setupTableScrollProtection(tableLots, AppConstants.DEFAULT_PAGE_SIZE);
+    }
+
+    /** Nút X tròn đỏ ở góc phải: đóng cửa sổ chi tiết lô hàng. */
+    @FXML
+    private void handleClose() {
+        if (btnClose != null && btnClose.getScene() != null
+                && btnClose.getScene().getWindow() instanceof javafx.stage.Stage stage) {
+            stage.close();
+        }
     }
 
     public void setMedicineData(MedicineInventoryDTO dto, InventoryRepository repo) {

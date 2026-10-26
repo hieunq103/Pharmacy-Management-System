@@ -3,7 +3,6 @@ package com.pharmacy.employee;
 import com.pharmacy.account.Account;
 import com.pharmacy.account.Role;
 import com.pharmacy.infra.db.HibernateUtil;
-import com.pharmacy.profile.ProfileUpdateRequest;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,38 +90,20 @@ public class EmployeeRepository {
         }
     }
 
-    public boolean updateStaffProfile(Integer employeeId, String phone, String address) {
+    /** Cập nhật hồ sơ cá nhân: chỉ Họ tên, SĐT, địa chỉ. */
+    public boolean updateOwnProfile(Integer employeeId, String fullName, String phone, String address) {
         try {
-            return HibernateUtil.executeWithResult(session -> session
-                    .createMutationQuery("UPDATE Employee e SET e.phone = :phone, e.address = :address WHERE e.id = :id")
+            return HibernateUtil.executeWithResult(session -> session.createMutationQuery("""
+                        UPDATE Employee e SET e.fullName = :fullName, e.phone = :phone, e.address = :address
+                        WHERE e.id = :id
+                    """)
+                    .setParameter("fullName", fullName)
                     .setParameter("phone", phone)
                     .setParameter("address", address)
                     .setParameter("id", employeeId)
                     .executeUpdate() > 0);
         } catch (RuntimeException e) {
-            log.error("Lỗi khi cập nhật hồ sơ Staff [ID: {}]: ", employeeId, e);
-            throw e;
-        }
-    }
-
-    public boolean updateManagerProfile(ProfileUpdateRequest req) {
-        try {
-            return HibernateUtil.executeWithResult(session -> session.createMutationQuery("""
-                        UPDATE Employee e SET
-                            e.phone = :phone, e.address = :address, e.fullName = :fullName,
-                            e.nationalId = :nationalId, e.dob = :dob, e.gender = :gender
-                        WHERE e.id = :id
-                    """)
-                    .setParameter("phone", req.phone())
-                    .setParameter("address", req.address())
-                    .setParameter("fullName", req.fullName())
-                    .setParameter("nationalId", req.nationalId())
-                    .setParameter("dob", req.dob())
-                    .setParameter("gender", req.gender())
-                    .setParameter("id", req.employeeId())
-                    .executeUpdate() > 0);
-        } catch (RuntimeException e) {
-            log.error("Lỗi khi cập nhật hồ sơ Manager [ID: {}]: ", req.employeeId(), e);
+            log.error("Lỗi khi cập nhật hồ sơ cá nhân [ID: {}]: ", employeeId, e);
             throw e;
         }
     }
