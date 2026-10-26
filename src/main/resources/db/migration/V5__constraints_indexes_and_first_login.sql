@@ -11,7 +11,7 @@ ALTER TABLE `accounts`
     ADD COLUMN `must_change_password` BOOLEAN NOT NULL DEFAULT FALSE AFTER `status`;
 
 -- -----------------------------------------------------------------------------
--- 2. LỊCH SỬ ĐĂNG NHẬP: đếm số lần sai gần đây + xem lịch sử theo thời gian
+-- 2. LỊCH SỬ ĐĂNG NHẬP: xem lịch sử theo tài khoản, sắp xếp theo thời gian (ORDER BY login_at DESC LIMIT 100)
 --    (index (account_id, login_at) thay thế index FK chỉ có account_id)
 -- -----------------------------------------------------------------------------
 ALTER TABLE `login_history`

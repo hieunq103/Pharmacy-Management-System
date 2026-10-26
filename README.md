@@ -99,7 +99,6 @@ Mirror cấu trúc `src/main` theo module — test ở đâu thì đặt cùng p
    File `.env` đã nằm trong `.gitignore` — **không commit mật khẩu / token thật** (`payment.properties` để trống `sepay.api_token`).
 3. Ứng dụng tự chạy Flyway khi khởi động; có thể chạy riêng: `mvn compile exec:java -Dexec.mainClass=com.pharmacy.infra.db.MigrationRunner`.
 4. Tài khoản mới (và tài khoản còn dùng mật khẩu khởi tạo `auth.defaultPassword`) bắt buộc đổi mật khẩu ở lần đăng nhập đầu.
-   Sai mật khẩu `auth.maxFailedLoginAttempts` lần liên tiếp sẽ bị tạm khóa đăng nhập `auth.lockoutMinutes` phút.
 
 ### Test
 - `mvn test`: unit test (không cần DB) luôn chạy; integration test cần MySQL đã migrate (đọc `DB_URL`/`DB_USER`/`DB_PASSWORD`

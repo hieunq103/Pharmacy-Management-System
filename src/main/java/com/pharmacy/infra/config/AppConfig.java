@@ -55,15 +55,6 @@ public final class AppConfig {
         return (val == null || val.isBlank()) ? null : val.trim();
     }
 
-    public static int getInt(String key, int defaultValue) {
-        try {
-            return Integer.parseInt(get(key, String.valueOf(defaultValue)).trim());
-        } catch (NumberFormatException e) {
-            log.warn("Cấu hình [{}] không phải số nguyên, dùng mặc định {}", key, defaultValue);
-            return defaultValue;
-        }
-    }
-
     public static String get(String key) {
         return properties.getProperty(key);
     }

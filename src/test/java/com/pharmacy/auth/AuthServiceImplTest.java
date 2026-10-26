@@ -29,17 +29,11 @@ class AuthServiceImplTest {
 
     static class FakeAccountRepository extends AccountRepository {
         Account account;
-        long recentFailures;
         final List<String> history = new ArrayList<>();
 
         @Override
         public Optional<Account> findByIdentifier(String identifier) {
             return PHONE.equals(identifier) ? Optional.of(account) : Optional.empty();
-        }
-
-        @Override
-        public long countRecentFailedLogins(Integer accountId, int windowMinutes) {
-            return recentFailures;
         }
 
         @Override
@@ -86,16 +80,6 @@ class AuthServiceImplTest {
         assertEquals(ErrorCode.INVALID_CREDENTIALS, ex.getErrorCode());
         assertEquals(List.of("FAILED"), repo.history);
         assertFalse(UserSession.isLoggedIn());
-    }
-
-    @Test
-    void tooManyFailuresLocksLoginEvenWithCorrectPassword() {
-        repo.account = account(STRONG_PASSWORD, Account.Status.ACTIVE);
-        repo.recentFailures = 5;
-        AuthenticationException ex = assertThrows(AuthenticationException.class,
-                () -> service.login(new LoginRequest(PHONE, STRONG_PASSWORD)));
-        assertEquals(ErrorCode.ACCOUNT_TEMPORARILY_LOCKED, ex.getErrorCode());
-        assertTrue(repo.history.isEmpty(), "Khi đang bị khóa tạm thời không ghi thêm lịch sử");
     }
 
     @Test
