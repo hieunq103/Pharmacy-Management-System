@@ -1,7 +1,8 @@
 /* Nút biểu tượng hình vuông bo góc dùng chung:
    - .btn-icon-close   : nút X (nền đỏ, dấu X trắng) đóng cửa sổ chi tiết
    - .btn-back         : nút "Quay lại →" (nền xám, chữ + mũi tên xám đậm)
-   - .btn-icon-history : nút mở Lịch sử bán hàng ở trang Bán hàng (nền xanh nhạt, biểu tượng xanh) */
+   - .btn-icon-history : nút mở Lịch sử bán hàng ở trang Bán hàng (nền xanh nhạt, biểu tượng xanh)
+   - .btn-view-full    : nút "Xem đầy đủ →" (nền xanh nhạt, chữ xanh) */
 .btn-icon-close {
     -fx-min-width: 40px;
     -fx-min-height: 40px;
@@ -113,4 +114,41 @@
     -fx-fill: #0066FF;
     -fx-scale-x: 0.95;
     -fx-scale-y: 0.95;
+}
+
+/* ---------- Nút "Xem đầy đủ →" (Báo cáo: top 5 thuốc; Tổng quan: giao dịch gần đây) ---------- */
+.btn-view-full {
+    -fx-background-color: #EFF6FF;
+    -fx-background-radius: 8px;
+    -fx-border-color: #BFDBFE;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-padding: 6 14;
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 13px;
+    -fx-text-fill: #0066FF;
+    -fx-content-display: RIGHT;
+    -fx-graphic-text-gap: 8px;
+    -fx-cursor: hand;
+}
+
+.btn-view-full .text {
+    -fx-font-family: "Inter 18pt SemiBold";
+}
+
+.btn-view-full:hover {
+    -fx-background-color: #DBEAFE;
+    -fx-border-color: #93C5FD;
+}
+
+.btn-view-full:pressed {
+    -fx-background-color: #BFDBFE;
+}
+
+.btn-view-full-glyph {
+    -fx-fill: transparent;
+    -fx-stroke: #0066FF;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
 }

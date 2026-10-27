@@ -790,27 +790,6 @@
     -fx-border-color: #0066FF;
 }
 
-.quick-amount-chip-compact {
-    -fx-background-color: #F1F5F9;
-    -fx-background-radius: 6px;
-    -fx-border-color: #CBD5E1;
-    -fx-border-radius: 6px;
-    -fx-border-width: 1px;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 11px;
-    -fx-text-fill: #334155;
-    -fx-padding: 3 8;
-    -fx-min-height: 26px;
-    -fx-pref-height: 26px;
-    -fx-cursor: hand;
-}
-
-.quick-amount-chip-compact:hover {
-    -fx-background-color: #EFF6FF;
-    -fx-border-color: #0066FF;
-    -fx-text-fill: #0066FF;
-}
-
 .cash-divider-line {
     -fx-background-color: #F1F5F9;
     -fx-pref-height: 1px;

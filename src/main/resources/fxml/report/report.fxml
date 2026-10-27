@@ -24,7 +24,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
-<StackPane stylesheets="@../../css/report.css, @../../css/inventory.css, @../../css/period_filter.css"
+<StackPane stylesheets="@../../css/report.css, @../../css/inventory.css, @../../css/period_filter.css, @../../css/icon_buttons.css"
            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.pharmacy.report.ReportController">
 <ScrollPane fx:id="reportScrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER"

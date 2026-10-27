@@ -355,6 +355,22 @@ public class DashboardController implements Initializable {
         }
     }
 
+    /** Bấm thẻ "Sắp hết hàng" -> Kho thuốc lọc Tồn kho: Sắp hết hàng + Hết hàng (khớp số trên thẻ). */
+    @FXML
+    private void handleOpenLowStockInventory(javafx.scene.input.MouseEvent event) {
+        if (MainLayoutController.getInstance() != null) {
+            MainLayoutController.getInstance().navigateToInventoryWithFilter(new String[]{"Sắp hết hàng", "Hết hàng"}, null);
+        }
+    }
+
+    /** Bấm thẻ "Cận hạn sử dụng" -> Kho thuốc lọc Hạn dùng: Có lô cận hạn (khớp số trên thẻ). */
+    @FXML
+    private void handleOpenNearExpiryInventory(javafx.scene.input.MouseEvent event) {
+        if (MainLayoutController.getInstance() != null) {
+            MainLayoutController.getInstance().navigateToInventoryWithFilter(null, new String[]{"Có lô cận hạn"});
+        }
+    }
+
     /** Bấm thẻ Doanh số/Hóa đơn hôm nay -> Lịch sử bán hàng lọc đúng ngày hôm nay. */
     @FXML
     private void handleOpenTodaySalesHistory(javafx.scene.input.MouseEvent event) {

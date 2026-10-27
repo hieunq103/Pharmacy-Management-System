@@ -18,7 +18,7 @@
 
 <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
             styleClass="dashboard-scroll-pane"
-            stylesheets="@../../css/dashboard.css"
+            stylesheets="@../../css/dashboard.css, @../../css/icon_buttons.css"
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.pharmacy.dashboard.DashboardController">
 
@@ -67,7 +67,7 @@
                 </VBox>
 
                 <!-- THẺ 3: SẮP HẾT HÀNG -->
-                <VBox spacing="6.0" styleClass="dashboard-stat-card" GridPane.columnIndex="2">
+                <VBox onMouseClicked="#handleOpenLowStockInventory" spacing="6.0" styleClass="dashboard-stat-card, dashboard-stat-card-link" GridPane.columnIndex="2">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Sắp hết hàng" />
                         <Region HBox.hgrow="ALWAYS" />
@@ -81,7 +81,7 @@
                 </VBox>
 
                 <!-- THẺ 4: CẬN HẠN SỬ DỤNG -->
-                <VBox spacing="6.0" styleClass="dashboard-stat-card" GridPane.columnIndex="3">
+                <VBox onMouseClicked="#handleOpenNearExpiryInventory" spacing="6.0" styleClass="dashboard-stat-card, dashboard-stat-card-link" GridPane.columnIndex="3">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Cận hạn sử dụng" />
                         <Region HBox.hgrow="ALWAYS" />
@@ -139,7 +139,11 @@
                 <HBox alignment="CENTER_LEFT">
                     <Label styleClass="card-header-title" text="Giao dịch gần đây" />
                     <Region HBox.hgrow="ALWAYS" />
-                    <Button onAction="#handleNavSalesHistory" styleClass="link-action" text="Xem tất cả →" />
+                    <Button onAction="#handleNavSalesHistory" styleClass="btn-view-full" text="Xem đầy đủ">
+                        <graphic>
+                            <SVGPath content="M 0 5 L 10 5 M 6 1 L 10 5 L 6 9" styleClass="btn-view-full-glyph" />
+                        </graphic>
+                    </Button>
                 </HBox>
 
                 <!-- Tiêu đề các cột bảng: Căn trái toàn bộ -->

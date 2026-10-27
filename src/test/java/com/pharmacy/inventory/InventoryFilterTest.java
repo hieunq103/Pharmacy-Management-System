@@ -168,4 +168,14 @@ public class InventoryFilterTest {
             assertNotNull(repo.getExportTransactions(kw, null, null));
         }
     }
+
+    @Test
+    void testDashboardCountsMatchInventoryFilters() {
+        // Bấm thẻ "Sắp hết hàng"/"Cận hạn sử dụng" ở Tổng quan mở Kho với bộ lọc tương ứng -> số phải khớp
+        InventoryRepository.InventorySummary summary = repo.getInventorySummary();
+        assertEquals(summary.lowStockMedicines(),
+                repo.getInventoryPageResult(1, 7, null, "Sắp hết hàng,Hết hàng", null).getTotalElements());
+        assertEquals(summary.nearExpiryMedicines(),
+                repo.getInventoryPageResult(1, 7, null, null, "Có lô cận hạn").getTotalElements());
+    }
 }

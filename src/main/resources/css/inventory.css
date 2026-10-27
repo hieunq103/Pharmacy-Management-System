@@ -48,9 +48,9 @@
     -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.15), 4, 0, 0, 0);
 }
 
-/* Nút Nhập Kho - Đồng bộ màu #0066FF giống trang nhân viên */
+/* Nút Nhập Kho - nền xanh lá (hàng vào kho), chữ trắng */
 .btn-primary-import {
-    -fx-background-color: #0066FF;
+    -fx-background-color: #16A34A;
     -fx-text-fill: #FFFFFF;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
@@ -63,36 +63,33 @@
 }
 
 .btn-primary-import:hover {
-    -fx-background-color: #0052CC;
+    -fx-background-color: #15803D;
 }
 
 .btn-primary-import:pressed {
-    -fx-background-color: #0040A8;
+    -fx-background-color: #166534;
 }
 
-/* Nút Xuất Kho - Tone viền xám trắng trang nhã */
+/* Nút Xuất Kho - nền xanh dương, chữ trắng */
 .btn-secondary-export {
-    -fx-background-color: #FFFFFF;
-    -fx-text-fill: #334155;
-    -fx-border-color: #CBD5E1;
-    -fx-border-width: 1px;
+    -fx-background-color: #0066FF;
+    -fx-text-fill: #FFFFFF;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
     -fx-background-radius: 10px;
     -fx-border-radius: 10px;
-    -fx-padding: 8 18;
+    -fx-border-width: 0;
+    -fx-padding: 9 18;
     -fx-cursor: hand;
     -fx-alignment: CENTER;
 }
 
 .btn-secondary-export:hover {
-    -fx-background-color: #F8FAFC;
-    -fx-border-color: #94A3B8;
-    -fx-text-fill: #0F172A;
+    -fx-background-color: #0052CC;
 }
 
 .btn-secondary-export:pressed {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: #0040A8;
 }
 
 /* Nút Lịch sử Nhập / Xuất */

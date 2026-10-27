@@ -12,6 +12,7 @@
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
@@ -25,29 +26,12 @@
         <Insets bottom="10.0" left="20.0" right="20.0" top="8.0" />
     </padding>
 
-    <!-- HEADER: Tiêu đề + Bộ lọc theo ngày + Nút quay về (bên phải) -->
+    <!-- HEADER: Tiêu đề + Nút quay về (bên phải) -->
     <HBox alignment="CENTER_LEFT" spacing="14.0">
         <Label styleClass="history-main-title" text="Lịch sử Xuất - Nhập kho" />
 
         <Region HBox.hgrow="ALWAYS" />
 
-        <!-- Cụm lọc theo ngày -->
-        <HBox alignment="CENTER_RIGHT" spacing="16.0">
-            <!-- Lọc theo ngày (Nhập ngày và bấm phễu lọc để xem lịch sử của ngày đó) -->
-            <HBox alignment="CENTER_LEFT" spacing="6.0">
-                <Label styleClass="filter-label" text="Ngày:" />
-                <DatePicker fx:id="dpFilterDate" prefWidth="150.0" promptText="dd/MM/yyyy" styleClass="history-datepicker" />
-                <Button fx:id="btnFilterDate" onAction="#handleFilterDate" styleClass="btn-funnel-filter">
-                    <graphic>
-                        <SVGPath content="M2 3h20l-8 9.5v6.5l-4 2v-8.5L2 3z" styleClass="funnel-icon" />
-                    </graphic>
-                    <tooltip>
-                        <Tooltip fx:id="tooltipFilter" text="Nhấn để lọc theo ngày" />
-                    </tooltip>
-                </Button>
-            </HBox>
-
-        </HBox>
         <!-- Nút quay về màn hình kho -->
         <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-back" text="Quay lại">
             <graphic>
@@ -56,8 +40,9 @@
         </Button>
     </HBox>
 
-    <!-- KHU VỰC BẢNG: TABPANE 2 TABS (NHẬP KHO & XUẤT KHO) -->
-    <TabPane fx:id="historyTabPane" styleClass="custom-history-tabpane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+    <!-- KHU VỰC BẢNG: TABPANE 2 TABS (NHẬP KHO & XUẤT KHO); cụm lọc ngày nằm cùng hàng tiêu đề tab, sát phải -->
+    <StackPane VBox.vgrow="ALWAYS">
+    <TabPane fx:id="historyTabPane" styleClass="custom-history-tabpane" tabClosingPolicy="UNAVAILABLE">
         <tabs>
             <!-- ==================== TAB 1: LỊCH SỬ NHẬP KHO ==================== -->
             <Tab fx:id="tabImport" text="Lịch sử Nhập kho">
@@ -151,4 +136,18 @@
             </Tab>
         </tabs>
     </TabPane>
+
+    <HBox alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" spacing="6.0" StackPane.alignment="TOP_RIGHT">
+        <Label styleClass="filter-label" text="Ngày:" />
+        <DatePicker fx:id="dpFilterDate" prefWidth="150.0" promptText="dd/MM/yyyy" styleClass="history-datepicker" />
+        <Button fx:id="btnFilterDate" onAction="#handleFilterDate" styleClass="btn-funnel-filter">
+            <graphic>
+                <SVGPath content="M2 3h20l-8 9.5v6.5l-4 2v-8.5L2 3z" styleClass="funnel-icon" />
+            </graphic>
+            <tooltip>
+                <Tooltip fx:id="tooltipFilter" text="Nhấn để lọc theo ngày" />
+            </tooltip>
+        </Button>
+    </HBox>
+    </StackPane>
 </VBox>

@@ -408,43 +408,6 @@
 }
 
 
-/* Nút "Xem đầy đủ" ở góc trên bên phải bảng top 5 thuốc bán chạy -> Lịch sử bán hàng của kỳ đang xem */
-.btn-view-full {
-    -fx-background-color: #EFF6FF;
-    -fx-background-radius: 8px;
-    -fx-border-color: #BFDBFE;
-    -fx-border-radius: 8px;
-    -fx-border-width: 1px;
-    -fx-padding: 6 14;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 13px;
-    -fx-text-fill: #0066FF;
-    -fx-content-display: RIGHT;
-    -fx-graphic-text-gap: 8px;
-    -fx-cursor: hand;
-}
-
-.btn-view-full .text {
-    -fx-font-family: "Inter 18pt SemiBold";
-}
-
-.btn-view-full:hover {
-    -fx-background-color: #DBEAFE;
-    -fx-border-color: #93C5FD;
-}
-
-.btn-view-full:pressed {
-    -fx-background-color: #BFDBFE;
-}
-
-.btn-view-full-glyph {
-    -fx-fill: transparent;
-    -fx-stroke: #0066FF;
-    -fx-stroke-width: 1.8;
-    -fx-stroke-line-cap: round;
-    -fx-stroke-line-join: round;
-}
-
 /* Lớp phủ "Đang tải báo cáo..." */
 .report-loading-overlay {
     -fx-background-color: rgba(248, 250, 252, 0.72);

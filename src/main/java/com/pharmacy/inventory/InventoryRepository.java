@@ -39,7 +39,8 @@ public class InventoryRepository {
     private static final Logger log = LoggerFactory.getLogger(InventoryRepository.class);
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public record InventorySummary(long totalMedicines, long inStockMedicines, long lowStockMedicines, long nearExpiryLots) {}
+    /** lowStockMedicines/nearExpiryMedicines đếm theo thuốc, khớp bộ lọc Tồn kho/Hạn dùng của trang Kho thuốc. */
+    public record InventorySummary(long totalMedicines, long inStockMedicines, long lowStockMedicines, long nearExpiryMedicines) {}
 
     /**
      * Thống kê tổng quan kho cho Dashboard: 1 câu SQL, 1 lần GROUP BY trên inventory_lots
@@ -52,7 +53,7 @@ public class InventoryRepository {
                     COUNT(*) AS total_medicines,
                     COALESCE(SUM(ls.total_qty > 0), 0) AS instock_medicines,
                     COALESCE(SUM(COALESCE(ls.total_qty, 0) <= %s), 0) AS low_stock_medicines,
-                    COALESCE(SUM(ls.near_expiry_lots), 0) AS near_expiry_lots
+                    COALESCE(SUM(ls.near_expiry_lots > 0), 0) AS near_expiry_medicines
                 FROM medicines m
                 LEFT JOIN (
                     SELECT il.medicine_id,

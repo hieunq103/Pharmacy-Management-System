@@ -79,16 +79,11 @@
         <!-- 1. KHUNG TIỀN MẶT (GỘP TIỀN KHÁCH ĐƯA VÀ TIỀN THỪA VÀO 1 Ô GỌN GÀNG) -->
         <VBox fx:id="paneCash" spacing="6.0" styleClass="payment-detail-box" alignment="CENTER">
             <VBox spacing="6.0" styleClass="cash-combined-card">
-                <!-- Hàng 1: Tiền khách đưa + Gợi ý tiền nhanh -->
+                <!-- Hàng 1: Tiền khách đưa (ô nhập căn sát phải) -->
                 <HBox alignment="CENTER_LEFT" spacing="8.0">
                     <Label styleClass="cash-entry-label" text="Tiền khách đưa:" minWidth="105.0" prefWidth="105.0" />
-                    <TextField fx:id="txtCashGiven" alignment="CENTER_RIGHT" prefWidth="160.0" promptText="0" styleClass="cash-input-compact" />
                     <Region HBox.hgrow="ALWAYS" />
-                    <HBox fx:id="boxQuickAmounts" alignment="CENTER_RIGHT" spacing="6.0">
-                        <Button fx:id="btnExactAmount" onAction="#handleExactCash" styleClass="quick-amount-chip-compact" text="Vừa đủ" />
-                        <Button fx:id="btnQuick1" onAction="#handleQuickAmount1" styleClass="quick-amount-chip-compact" text="400.000" />
-                        <Button fx:id="btnQuick2" onAction="#handleQuickAmount2" styleClass="quick-amount-chip-compact" text="500.000" />
-                    </HBox>
+                    <TextField fx:id="txtCashGiven" alignment="CENTER_RIGHT" prefWidth="200.0" promptText="0" styleClass="cash-input-compact" />
                 </HBox>
 
                 <!-- Đường kẻ phân cách -->

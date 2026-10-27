@@ -31,7 +31,7 @@ public class DashboardServiceImpl implements DashboardService {
     public DashboardStatsDTO getStats() {
         TodaySalesSummary salesSummary = salesService.getTodaySalesSummary();
         InventoryRepository.InventorySummary invSummary = inventoryService.getInventorySummary();
-        return new DashboardStatsDTO(salesSummary, invSummary.lowStockMedicines(), invSummary.nearExpiryLots());
+        return new DashboardStatsDTO(salesSummary, invSummary.lowStockMedicines(), invSummary.nearExpiryMedicines());
     }
 
     @Override

@@ -51,9 +51,6 @@ public class PaymentDialogController {
 
     @FXML private VBox paneCash;
     @FXML private TextField txtCashGiven;
-    @FXML private Button btnExactAmount;
-    @FXML private Button btnQuick1;
-    @FXML private Button btnQuick2;
     @FXML private Label lblChangeAmount;
 
     @FXML private VBox paneTransfer;
@@ -130,7 +127,6 @@ public class PaymentDialogController {
         renderDialogCartItems();
         updateTotalsAndStatus();
 
-        setupQuickAmounts();
         setupCashInput();
         selectCash();
 
@@ -333,8 +329,6 @@ public class PaymentDialogController {
         renderDialogCartItems();
         updateTotalsAndStatus();
 
-        setupQuickAmounts();
-
         if (txtCashGiven != null) {
             String digits = txtCashGiven.getText().replaceAll("[^0-9]", "");
             BigDecimal cashGiven = digits.isEmpty() ? BigDecimal.ZERO : new BigDecimal(digits);
@@ -419,32 +413,6 @@ public class PaymentDialogController {
             }
             btnConfirmPayment.setDisable(false);
         }
-    }
-
-    private void setupQuickAmounts() {
-        if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) {
-            btnExactAmount.setText("0đ");
-            btnQuick1.setVisible(false);
-            btnQuick2.setVisible(false);
-            return;
-        }
-
-        btnExactAmount.setText("Vừa đủ");
-        btnQuick1.setVisible(true);
-        btnQuick2.setVisible(true);
-
-        long totalVal = totalAmount.longValue();
-        long step = 100_000;
-        long next1 = ((totalVal / step) + 1) * step;
-        long next2 = next1 + step;
-
-        if (next1 == totalVal) {
-            next1 = totalVal + 50_000;
-            next2 = totalVal + 100_000;
-        }
-
-        btnQuick1.setText(FormatUtils.formatCurrency(next1));
-        btnQuick2.setText(FormatUtils.formatCurrency(next2));
     }
 
     private void setupCashInput() {
@@ -662,27 +630,6 @@ public class PaymentDialogController {
             pollExecutor.shutdownNow();
             pollExecutor = null;
         }
-    }
-
-    @FXML
-    private void handleExactCash() {
-        txtCashGiven.setText(FormatUtils.formatCurrency(totalAmount));
-    }
-
-    @FXML
-    private void handleQuickAmount1() {
-        try {
-            String txt = btnQuick1.getText().replace(".", "");
-            txtCashGiven.setText(FormatUtils.formatCurrency(new BigDecimal(txt)));
-        } catch (Exception ignored) {}
-    }
-
-    @FXML
-    private void handleQuickAmount2() {
-        try {
-            String txt = btnQuick2.getText().replace(".", "");
-            txtCashGiven.setText(FormatUtils.formatCurrency(new BigDecimal(txt)));
-        } catch (Exception ignored) {}
     }
 
     @FXML
