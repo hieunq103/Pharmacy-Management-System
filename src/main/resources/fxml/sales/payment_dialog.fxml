@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
 
 <VBox prefWidth="720.0" spacing="6.0"
       styleClass="payment-dialog-root"
@@ -170,7 +171,11 @@
             <Insets top="2.0" />
         </padding>
         <Region HBox.hgrow="ALWAYS" />
-        <Button onAction="#handleCancel" minWidth="90.0" prefWidth="90.0" minHeight="34.0" prefHeight="34.0" styleClass="btn-modal-cancel" text="Quay lại" />
+        <Button onAction="#handleCancel" minHeight="34.0" prefHeight="34.0" styleClass="btn-modal-back" text="Quay lại" contentDisplay="RIGHT" graphicTextGap="8.0">
+            <graphic>
+                <SVGPath content="M 0 6 L 14 6 M 8 0 L 14 6 L 8 12" styleClass="btn-modal-back-glyph" />
+            </graphic>
+        </Button>
         <Button fx:id="btnConfirmPayment" onAction="#handleConfirmPayment" minWidth="170.0" prefWidth="170.0" minHeight="34.0" prefHeight="34.0" styleClass="btn-modal-confirm" text="Xác nhận thanh toán" />
     </HBox>
 
