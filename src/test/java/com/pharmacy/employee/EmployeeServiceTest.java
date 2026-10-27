@@ -56,11 +56,11 @@ class EmployeeServiceTest {
         long manager = service.getEmployeesPage(1, 7, null, null, "Quản lý", null, null).getTotalElements();
         assertEquals(staff + manager, service.getEmployeesPage(1, 7, null, null, "Nhân viên,Quản lý", null, null).getTotalElements());
 
-        long active = service.getEmployeesPage(1, 7, null, null, null, null, "Active").getTotalElements();
-        long disabled = service.getEmployeesPage(1, 7, null, null, null, null, "Disabled").getTotalElements();
-        assertEquals(active + disabled, service.getEmployeesPage(1, 7, null, null, null, null, "Active,Disabled").getTotalElements());
+        long active = service.getEmployeesPage(1, 7, null, null, null, null, "Hoạt động").getTotalElements();
+        long disabled = service.getEmployeesPage(1, 7, null, null, null, null, "Ngưng hoạt động").getTotalElements();
+        assertEquals(active + disabled, service.getEmployeesPage(1, 7, null, null, null, null, "Hoạt động,Ngưng hoạt động").getTotalElements());
         assertEquals(service.getEmployeesPage(1, 7, null, "Nam", "Nhân viên", null, null).getTotalElements(),
-                service.getEmployeesPage(1, 7, null, "Nam", "Nhân viên", null, "Active,Disabled").getTotalElements());
+                service.getEmployeesPage(1, 7, null, "Nam", "Nhân viên", null, "Hoạt động,Ngưng hoạt động").getTotalElements());
     }
 
     @Test

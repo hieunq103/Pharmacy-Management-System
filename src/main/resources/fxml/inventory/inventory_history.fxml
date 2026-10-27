@@ -51,7 +51,7 @@
         <!-- Nút quay về màn hình kho -->
         <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-icon-back">
             <graphic>
-                <SVGPath content="M 12 6 L 0 6 M 5 0 L 0 6 L 5 12" styleClass="btn-icon-glyph" />
+                <SVGPath content="M 0 8 L 18 8 M 11 1 L 18 8 L 11 15" styleClass="btn-icon-glyph" />
             </graphic>
             <tooltip>
                 <Tooltip text="Quay về" />

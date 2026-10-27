@@ -214,7 +214,7 @@ public class EmployeeRepository {
             }
 
             List<Account.Status> accStatuses = parseMultiFilter(accountStatus).stream()
-                    .map(a -> "Active".equalsIgnoreCase(a) ? Account.Status.ACTIVE : Account.Status.DISABLED)
+                    .map(a -> ("Hoạt động".equalsIgnoreCase(a) || "Active".equalsIgnoreCase(a)) ? Account.Status.ACTIVE : Account.Status.DISABLED)
                     .distinct()
                     .toList();
             if (!accStatuses.isEmpty()) {

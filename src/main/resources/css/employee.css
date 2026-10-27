@@ -216,12 +216,12 @@
 /* Badge trạng thái tài khoản */
 .status-badge {
     -fx-background-radius: 16px;
-    -fx-padding: 2 8;
+    -fx-padding: 2 6;
     -fx-alignment: CENTER;
     -fx-spacing: 4px;
-    -fx-pref-width: 90px;
-    -fx-min-width: 90px;
-    -fx-max-width: 90px;
+    -fx-pref-width: 138px;
+    -fx-min-width: 138px;
+    -fx-max-width: 138px;
     -fx-pref-height: 30px;
     -fx-min-height: 30px;
     -fx-max-height: 30px;

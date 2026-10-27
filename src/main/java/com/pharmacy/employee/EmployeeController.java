@@ -119,7 +119,7 @@ public class EmployeeController implements Initializable {
             currentPage = 1;
             loadEmployeeData();
         });
-        TableFilterHelper.setupMultiSelectColumnFilter(colAccountStatus, "Tài khoản", new String[]{"Active", "Disabled"}, "statusAcount", activeFilters, () -> {
+        TableFilterHelper.setupMultiSelectColumnFilter(colAccountStatus, "Tài khoản", new String[]{"Hoạt động", "Ngưng hoạt động"}, "statusAcount", activeFilters, () -> {
             currentPage = 1;
             loadEmployeeData();
         });
@@ -324,7 +324,7 @@ public class EmployeeController implements Initializable {
                 badge.setMouseTransparent(true);
 
                 Circle dot = new Circle(4);
-                Label lbl = new Label(isActive ? "Active" : "Disabled");
+                Label lbl = new Label(isActive ? "Hoạt động" : "Ngưng hoạt động");
                 lbl.getStyleClass().add("pill-text");
 
                 if (isActive) {

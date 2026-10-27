@@ -53,12 +53,12 @@
         <columns>
             <TableColumn fx:id="colCode" minWidth="95.0" prefWidth="105.0" resizable="true" sortable="false" text="Mã NV" />
             <TableColumn fx:id="colName" minWidth="175.0" prefWidth="195.0" resizable="true" sortable="false" text="Tên" />
-            <TableColumn fx:id="colGender" minWidth="110.0" prefWidth="120.0" resizable="true" sortable="false" text="Giới tính" />
+            <TableColumn fx:id="colGender" minWidth="110.0" prefWidth="115.0" resizable="true" sortable="false" text="Giới tính" />
             <TableColumn fx:id="colPhone" minWidth="120.0" prefWidth="130.0" resizable="true" sortable="false" text="SĐT" />
             <TableColumn fx:id="colCccd" minWidth="140.0" prefWidth="155.0" text="CCCD" />
-            <TableColumn fx:id="colRole" minWidth="135.0" prefWidth="150.0" resizable="true" sortable="false" text="Vai trò" />
-            <TableColumn fx:id="colStatus" minWidth="120.0" prefWidth="130.0" resizable="true" sortable="false" text="Nhân sự" />
-            <TableColumn fx:id="colAccountStatus" minWidth="130.0" prefWidth="140.0" resizable="true" sortable="false" text="Tài khoản" />
+            <TableColumn fx:id="colRole" minWidth="135.0" prefWidth="145.0" resizable="true" sortable="false" text="Vai trò" />
+            <TableColumn fx:id="colStatus" minWidth="110.0" prefWidth="115.0" resizable="true" sortable="false" text="Nhân sự" />
+            <TableColumn fx:id="colAccountStatus" minWidth="155.0" prefWidth="160.0" resizable="true" sortable="false" text="Tài khoản" />
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />

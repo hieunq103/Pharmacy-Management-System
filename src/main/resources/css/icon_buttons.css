@@ -1,6 +1,6 @@
 /* Nút biểu tượng hình vuông bo góc dùng chung:
    - .btn-icon-close   : nút X (nền đỏ, dấu X trắng) đóng cửa sổ chi tiết
-   - .btn-icon-back    : nút quay về trang trước (nền trắng, viền xám, mũi tên xám)
+   - .btn-icon-back    : nút quay về trang trước (nền xanh đậm, mũi tên trắng)
    - .btn-icon-history : nút mở Lịch sử bán hàng ở trang Bán hàng (nền xanh nhạt, biểu tượng xanh) */
 .btn-icon-close,
 .btn-icon-back {
@@ -39,23 +39,20 @@
 
 /* ---------- Nút quay về ---------- */
 .btn-icon-back {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
-    -fx-border-width: 1px;
+    -fx-background-color: #1E40AF;
 }
 
 .btn-icon-back:hover {
-    -fx-background-color: #F1F5F9;
-    -fx-border-color: #94A3B8;
+    -fx-background-color: #1E3A8A;
 }
 
 .btn-icon-back:pressed {
-    -fx-background-color: #E2E8F0;
+    -fx-background-color: #172554;
 }
 
 .btn-icon-back .btn-icon-glyph {
-    -fx-stroke: #475569;
-    -fx-stroke-width: 2;
+    -fx-stroke: #FFFFFF;
+    -fx-stroke-width: 2.5;
     -fx-stroke-line-cap: round;
     -fx-stroke-line-join: round;
 }
