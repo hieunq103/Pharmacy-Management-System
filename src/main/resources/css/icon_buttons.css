@@ -1,6 +1,7 @@
 /* Nút biểu tượng hình vuông bo góc dùng chung:
-   - .btn-icon-close : nút X (nền đỏ, dấu X trắng) đóng cửa sổ chi tiết
-   - .btn-icon-back  : nút quay về trang trước (nền trắng, viền xám, mũi tên xám) */
+   - .btn-icon-close   : nút X (nền đỏ, dấu X trắng) đóng cửa sổ chi tiết
+   - .btn-icon-back    : nút quay về trang trước (nền trắng, viền xám, mũi tên xám)
+   - .btn-icon-history : nút mở Lịch sử bán hàng ở trang Bán hàng (nền xanh nhạt, biểu tượng xanh) */
 .btn-icon-close,
 .btn-icon-back {
     -fx-min-width: 40px;
@@ -57,4 +58,36 @@
     -fx-stroke-width: 2;
     -fx-stroke-line-cap: round;
     -fx-stroke-line-join: round;
+}
+
+/* ---------- Nút Lịch sử bán hàng (biểu tượng đồng hồ quay ngược) ---------- */
+.btn-icon-history {
+    -fx-min-width: 44px;
+    -fx-min-height: 44px;
+    -fx-pref-width: 44px;
+    -fx-pref-height: 44px;
+    -fx-max-width: 44px;
+    -fx-max-height: 44px;
+    -fx-padding: 0;
+    -fx-background-color: #EFF6FF;
+    -fx-background-radius: 10px;
+    -fx-border-color: #BFDBFE;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 10px;
+    -fx-cursor: hand;
+}
+
+.btn-icon-history:hover {
+    -fx-background-color: #DBEAFE;
+    -fx-border-color: #93C5FD;
+}
+
+.btn-icon-history:pressed {
+    -fx-background-color: #BFDBFE;
+}
+
+.btn-icon-history .btn-icon-history-glyph {
+    -fx-fill: #0066FF;
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
 }

@@ -34,7 +34,7 @@
             <Label styleClass="field-label" style="-fx-font-size: 12px;" text="Danh sách thuốc mua" />
         </HBox>
         <ScrollPane fx:id="scrollDialogCart" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
-                    minHeight="120.0" prefHeight="124.0" maxHeight="125.0" styleClass="dialog-cart-scrollpane">
+                    minHeight="120.0" prefHeight="150.0" styleClass="dialog-cart-scrollpane">
             <VBox fx:id="boxDialogCartItems" spacing="4.0" styleClass="dialog-cart-list">
                 <!-- Render động các dòng thuốc -->
             </VBox>

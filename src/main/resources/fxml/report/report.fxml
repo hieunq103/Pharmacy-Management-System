@@ -9,6 +9,7 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -24,11 +25,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
+<StackPane stylesheets="@../../css/report.css, @../../css/inventory.css, @../../css/period_filter.css"
+           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.pharmacy.report.ReportController">
 <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
-            styleClass="report-scroll-pane"
-            stylesheets="@../../css/report.css, @../../css/inventory.css, @../../css/period_filter.css"
-            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.pharmacy.report.ReportController">
+            styleClass="report-scroll-pane">
 
     <content>
         <VBox spacing="10.0" styleClass="report-root">
@@ -246,3 +247,11 @@
         </VBox>
     </content>
 </ScrollPane>
+
+<!-- Lớp phủ "Đang tải" khi lấy số liệu báo cáo (chỉ hiện nếu tải lâu hơn ~150 ms để tránh nháy) -->
+<VBox fx:id="loadingOverlay" alignment="CENTER" spacing="12.0" styleClass="report-loading-overlay"
+      visible="false" managed="false">
+    <ProgressIndicator fx:id="loadingSpinner" prefWidth="54.0" prefHeight="54.0" styleClass="report-loading-spinner" />
+    <Label styleClass="report-loading-text" text="Đang tải báo cáo..." />
+</VBox>
+</StackPane>

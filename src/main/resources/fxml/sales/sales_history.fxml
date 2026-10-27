@@ -25,34 +25,10 @@
         <Insets bottom="10.0" left="20.0" right="20.0" top="8.0" />
     </padding>
 
-    <!-- HEADER: Tiêu đề + Bộ lọc & Ô tìm kiếm + Nút quay về (bên phải) -->
+    <!-- HÀNG 1: Tiêu đề + Nút quay về (bên phải) -->
     <HBox alignment="CENTER_LEFT" spacing="14.0">
-        <VBox alignment="CENTER_LEFT" spacing="2.0">
-            <Label styleClass="history-main-title" text="Lịch sử bán hàng" />
-        </VBox>
-
+        <Label styleClass="history-main-title" text="Lịch sử bán hàng" />
         <Region HBox.hgrow="ALWAYS" />
-
-        <!-- Cụm công cụ: Ô tìm kiếm nhanh + Bộ lọc -->
-        <HBox alignment="CENTER_RIGHT" spacing="12.0">
-            <!-- Ô tìm kiếm nhanh theo mã đơn, SĐT, tên thu ngân -->
-            <TextField fx:id="txtSearch" prefWidth="240.0"
-                       promptText="Tìm theo mã đơn, SĐT khách..."
-                       styleClass="search-input" />
-
-            <!-- Bộ lọc kỳ thời gian giống trang Báo cáo: Theo ngày (mặc định hôm nay) hoặc Theo tháng -->
-            <HBox alignment="CENTER_LEFT" spacing="8.0">
-                <Button fx:id="btnFilterDay" onAction="#handleSelectDayMode" styleClass="period-pill-btn, active" text="Theo ngày" />
-                <DatePicker fx:id="dpFilterDate" prefWidth="135.0" promptText="dd/MM/yyyy" styleClass="date-filter-picker" onAction="#handleFilterDate" />
-            </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="8.0">
-                <Button fx:id="btnFilterMonth" onAction="#handleSelectMonthMode" styleClass="period-pill-btn" text="Theo tháng" />
-                <TextField fx:id="txtFilterYear" prefWidth="70.0" alignment="CENTER" promptText="Năm" styleClass="year-text-input" onAction="#handleYearAction" />
-                <ComboBox fx:id="cbFilterMonth" prefWidth="110.0" promptText="Tháng" styleClass="combo-filter-box" onAction="#handleMonthChanged" />
-            </HBox>
-
-        </HBox>
-        <!-- Nút quay về màn hình bán hàng -->
         <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-icon-back">
             <graphic>
                 <SVGPath content="M 12 6 L 0 6 M 5 0 L 0 6 L 5 12" styleClass="btn-icon-glyph" />
@@ -61,6 +37,27 @@
                 <Tooltip text="Quay về" />
             </tooltip>
         </Button>
+    </HBox>
+
+    <!-- HÀNG 2: Ô tìm kiếm nhanh theo mã đơn, SĐT khách, tên thu ngân (sát bên trái) -->
+    <HBox alignment="CENTER_LEFT">
+        <TextField fx:id="txtSearch" prefWidth="360.0"
+                   promptText="Tìm theo mã đơn, SĐT khách, thu ngân..."
+                   styleClass="search-input" />
+    </HBox>
+
+    <!-- HÀNG 3: Bộ lọc kỳ thời gian giống trang Báo cáo — Theo ngày (trái) / Theo tháng (phải) -->
+    <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="filter-card">
+        <HBox alignment="CENTER_LEFT" spacing="8.0">
+            <Button fx:id="btnFilterDay" onAction="#handleSelectDayMode" styleClass="period-pill-btn, active" text="Theo ngày" />
+            <DatePicker fx:id="dpFilterDate" prefWidth="135.0" promptText="dd/MM/yyyy" styleClass="date-filter-picker" onAction="#handleFilterDate" />
+        </HBox>
+        <Region HBox.hgrow="ALWAYS" />
+        <HBox alignment="CENTER_RIGHT" spacing="8.0">
+            <Button fx:id="btnFilterMonth" onAction="#handleSelectMonthMode" styleClass="period-pill-btn" text="Theo tháng" />
+            <TextField fx:id="txtFilterYear" prefWidth="70.0" alignment="CENTER" promptText="Năm" styleClass="year-text-input" onAction="#handleYearAction" />
+            <ComboBox fx:id="cbFilterMonth" prefWidth="110.0" promptText="Tháng" styleClass="combo-filter-box" onAction="#handleMonthChanged" />
+        </HBox>
     </HBox>
 
     <!-- KHU VỰC BẢNG LỊCH SỬ ĐƠN HÀNG -->
@@ -82,6 +79,9 @@
                 <columnResizePolicy>
                     <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
                 </columnResizePolicy>
+                <placeholder>
+                    <Region />
+                </placeholder>
             </TableView>
         </HBox>
 

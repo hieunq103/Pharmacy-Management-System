@@ -160,6 +160,37 @@ public class PaymentDialogController {
         for (CartItem item : currentOrder.getItems()) {
             boxDialogCartItems.getChildren().add(createDialogCartItemRow(item));
         }
+        fitCartListToVisibleRows();
+    }
+
+    /** Số dòng thuốc hiển thị đầy đủ trong hộp thoại thanh toán; nhiều hơn thì cuộn. */
+    private static final int VISIBLE_CART_ROWS = 3;
+
+    /**
+     * Đặt chiều cao vùng danh sách vừa khít {@value #VISIBLE_CART_ROWS} dòng đầu tiên (tính theo chiều cao
+     * thực tế sau khi dựng giao diện, nên đúng với mọi cỡ chữ / độ phân giải màn hình).
+     */
+    private void fitCartListToVisibleRows() {
+        if (scrollDialogCart == null) return;
+        javafx.application.Platform.runLater(() -> {
+            boxDialogCartItems.applyCss();
+            boxDialogCartItems.layout();
+            var rows = boxDialogCartItems.getChildren();
+            int count = Math.min(VISIBLE_CART_ROWS, rows.size());
+            if (count == 0) return;
+            double height = boxDialogCartItems.snappedTopInset() + boxDialogCartItems.snappedBottomInset()
+                    + boxDialogCartItems.getSpacing() * (count - 1);
+            for (int i = 0; i < count; i++) {
+                height += rows.get(i).prefHeight(boxDialogCartItems.getWidth()
+                        - boxDialogCartItems.snappedLeftInset() - boxDialogCartItems.snappedRightInset());
+            }
+            // Cộng phần viền/đệm của ScrollPane để không lộ thanh cuộn khi chỉ có <= 3 thuốc
+            height += scrollDialogCart.snappedTopInset() + scrollDialogCart.snappedBottomInset() + 2;
+            scrollDialogCart.setMinHeight(height);
+            scrollDialogCart.setPrefHeight(height);
+            scrollDialogCart.setMaxHeight(height);
+            adjustWindowSize();
+        });
     }
 
     /**

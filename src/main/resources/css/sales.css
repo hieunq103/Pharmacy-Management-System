@@ -299,6 +299,7 @@
     -fx-font-size: 12px;
     -fx-font-weight: bold;
     -fx-text-fill: #334155;
+    -fx-padding: 0;
     -fx-min-width: 26px;
     -fx-min-height: 26px;
     -fx-max-width: 26px;

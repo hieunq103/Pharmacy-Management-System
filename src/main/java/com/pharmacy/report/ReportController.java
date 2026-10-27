@@ -95,6 +95,12 @@ public class ReportController {
     @FXML private Label lblMedTableTitle;
     @FXML private HBox boxMedPagination;
     @FXML private HBox boxViewFullMonth;
+    @FXML private javafx.scene.layout.VBox loadingOverlay;
+
+    // Lớp phủ "Đang tải": đếm số tác vụ đang chạy, chỉ hiện nếu tải lâu hơn LOADING_DELAY (tránh nháy)
+    private static final javafx.util.Duration LOADING_DELAY = javafx.util.Duration.millis(150);
+    private int pendingLoads = 0;
+    private final javafx.animation.PauseTransition loadingDelay = new javafx.animation.PauseTransition(LOADING_DELAY);
 
     // Trạng thái lọc thời gian hiện tại
     private enum PeriodMode { DAY, MONTH }
@@ -465,6 +471,34 @@ public class ReportController {
 
     // ==================== LOAD DỮ LIỆU BẤT ĐỒNG BỘ ====================
 
+    /** Theo dõi một tác vụ tải số liệu để bật/tắt lớp phủ "Đang tải báo cáo...". */
+    private void trackLoading(Task<?> task) {
+        pendingLoads++;
+        if (pendingLoads == 1 && loadingOverlay != null && !loadingOverlay.isVisible()) {
+            loadingDelay.setOnFinished(e -> {
+                if (pendingLoads > 0) {
+                    loadingOverlay.setVisible(true);
+                    loadingOverlay.setManaged(true);
+                }
+            });
+            loadingDelay.playFromStart();
+        }
+        task.stateProperty().addListener((obs, oldState, state) -> {
+            if (state == javafx.concurrent.Worker.State.SUCCEEDED
+                    || state == javafx.concurrent.Worker.State.FAILED
+                    || state == javafx.concurrent.Worker.State.CANCELLED) {
+                pendingLoads = Math.max(0, pendingLoads - 1);
+                if (pendingLoads == 0) {
+                    loadingDelay.stop();
+                    if (loadingOverlay != null) {
+                        loadingOverlay.setVisible(false);
+                        loadingOverlay.setManaged(false);
+                    }
+                }
+            }
+        });
+    }
+
     /** Tải lại số liệu theo bộ lọc hiện tại (khi quay lại trang Báo cáo đã được nạp sẵn). */
     public void refresh() {
         loadAllData();
@@ -573,6 +607,7 @@ public class ReportController {
             currentChartTask.cancel();
         }
         currentChartTask = loadTask;
+        trackLoading(loadTask);
         executor.submit(loadTask);
     }
 
@@ -623,6 +658,7 @@ public class ReportController {
             currentMedTask.cancel();
         }
         currentMedTask = medTask;
+        trackLoading(medTask);
         executor.submit(medTask);
     }
 

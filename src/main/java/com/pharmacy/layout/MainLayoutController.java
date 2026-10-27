@@ -78,6 +78,9 @@ public class MainLayoutController {
     // Trang Báo cáo được nạp một lần và dùng lại (xem preloadReportView)
     private Parent reportView;
     private com.pharmacy.report.ReportController reportController;
+    private boolean reportPreloading = false;
+    // Đã bấm "Báo cáo" nhưng trang chưa nạp xong
+    private boolean reportPendingShow = false;
 
     @FXML
     public void initialize() {
@@ -266,17 +269,28 @@ public class MainLayoutController {
         setActiveButton(btnReport);
         lblHeaderTitle.setText("Báo cáo & Thống kê");
         if (reportView == null) {
-            // Chưa kịp nạp sẵn: nạp ngay (chỉ một lần) rồi giữ lại cho các lần sau
-            FXMLLoader loader = loadCenterViewWithLoader(REPORT_FXML);
-            if (loader != null) {
-                reportView = loader.getRoot();
-                reportController = loader.getController();
-            }
+            // Trang chưa nạp xong: hiện vòng tròn đang tải thay vì đứng giao diện, gắn trang vào khi nạp xong
+            reportPendingShow = true;
+            contentArea.getChildren().setAll(createLoadingPlaceholder("Đang tải báo cáo..."));
+            preloadReportView();
             return;
         }
+        reportPendingShow = false;
         contentArea.getChildren().setAll(reportView);
         // Giao diện đã có sẵn -> hiện ngay, chỉ tải lại số liệu ở luồng nền
         reportController.refresh();
+    }
+
+    /** Khung "đang tải" (vòng tròn quay + chữ) hiển thị ở vùng nội dung. */
+    private javafx.scene.Node createLoadingPlaceholder(String text) {
+        javafx.scene.control.ProgressIndicator spinner = new javafx.scene.control.ProgressIndicator();
+        spinner.setPrefSize(54, 54);
+        spinner.setStyle("-fx-progress-color: #0066FF;");
+        Label label = new Label(text);
+        label.setStyle("-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 14px; -fx-text-fill: #475569;");
+        javafx.scene.layout.VBox box = new javafx.scene.layout.VBox(12, spinner, label);
+        box.setAlignment(javafx.geometry.Pos.CENTER);
+        return box;
     }
 
     /**
@@ -286,18 +300,35 @@ public class MainLayoutController {
      * hiện ngay thay vì đứng giao diện mỗi lần mở.
      */
     private void preloadReportView() {
+        if (reportPreloading || reportView != null) return;
+        reportPreloading = true;
         Thread preload = new Thread(() -> {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(REPORT_FXML));
                 Parent view = loader.load();
                 Platform.runLater(() -> {
+                    reportPreloading = false;
                     if (reportView == null) {
                         reportView = view;
                         reportController = loader.getController();
                     }
+                    // Người dùng đã bấm "Báo cáo" trong lúc đang nạp -> hiện trang ngay
+                    if (reportPendingShow) {
+                        reportPendingShow = false;
+                        contentArea.getChildren().setAll(reportView);
+                    }
                 });
             } catch (Exception e) {
-                log.warn("Không nạp sẵn được trang Báo cáo, sẽ nạp khi mở trang: {}", e.getMessage());
+                log.error("Không nạp được trang Báo cáo: ", e);
+                Platform.runLater(() -> {
+                    reportPreloading = false;
+                    if (reportPendingShow) {
+                        reportPendingShow = false;
+                        Label error = new Label("Không tải được trang Báo cáo: " + e.getMessage());
+                        error.setStyle("-fx-font-size: 14px; -fx-text-fill: #DC2626;");
+                        contentArea.getChildren().setAll(error);
+                    }
+                });
             }
         }, "report-preload");
         preload.setDaemon(true);
@@ -421,6 +452,10 @@ public class MainLayoutController {
     }
 
     private void setActiveButton(Button activeButton) {
+        if (activeButton != btnReport) {
+            // Đã chuyển sang trang khác: không tự hiện trang Báo cáo khi nạp xong
+            reportPendingShow = false;
+        }
         Button[] allButtons = { btnDashboard, btnSales, btnInventory, btnEmployee, btnReport };
         for (Button btn : allButtons) {
             if (btn == null)

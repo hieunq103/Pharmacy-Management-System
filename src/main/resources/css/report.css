@@ -15,14 +15,6 @@
 }
 
 /* ==================== BỘ LỌC THỜI GIAN ==================== */
-.filter-card {
-    -fx-background-color: #FFFFFF;
-    -fx-background-radius: 10px;
-    -fx-border-color: #E2E8F0;
-    -fx-border-radius: 10px;
-    -fx-border-width: 1px;
-    -fx-padding: 8 14;
-}
 
 .filter-period-title {
     -fx-font-family: "Inter 18pt SemiBold";
@@ -429,5 +421,24 @@
 }
 
 .link-view-full .text {
+    -fx-font-family: "Inter 18pt SemiBold";
+}
+
+/* Lớp phủ "Đang tải báo cáo..." */
+.report-loading-overlay {
+    -fx-background-color: rgba(248, 250, 252, 0.72);
+}
+
+.report-loading-spinner {
+    -fx-progress-color: #0066FF;
+}
+
+.report-loading-text {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 14px;
+    -fx-text-fill: #475569;
+}
+
+.report-loading-text .text {
     -fx-font-family: "Inter 18pt SemiBold";
 }

@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -16,7 +17,7 @@
 <?import javafx.scene.shape.SVGPath?>
 
 <StackPane style="-fx-background-color: #F8FAFC;"
-           stylesheets="@../../css/inventory.css, @../../css/inventory_history.css, @../../css/sales.css"
+           stylesheets="@../../css/inventory.css, @../../css/inventory_history.css, @../../css/sales.css, @../../css/icon_buttons.css"
            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.pharmacy.sales.SalesController">
 
@@ -40,9 +41,16 @@
             <!-- Dropdown chọn Nhóm thuốc -->
             <ComboBox fx:id="cboCategory" minWidth="210.0" prefWidth="230.0" promptText="Tất cả nhóm thuốc" styleClass="sales-category-combo" />
 
-            <!-- Nút mở Lịch sử bán hàng -->
-            <Button fx:id="btnSalesHistory" onAction="#handleOpenSalesHistory"
-                    styleClass="btn-secondary-history" text="Lịch sử bán hàng" />
+            <!-- Nút biểu tượng mở Lịch sử bán hàng -->
+            <Button fx:id="btnSalesHistory" onAction="#handleOpenSalesHistory" styleClass="btn-icon-history">
+                <graphic>
+                    <SVGPath content="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"
+                             styleClass="btn-icon-history-glyph" />
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Lịch sử bán hàng" />
+                </tooltip>
+            </Button>
         </HBox>
 
         <!-- VÙNG HIỂN THỊ 6 THUỐC (2 CỘT x 3 HÀNG - LOẠI BỎ CUỘN HOÀN TOÀN) -->
@@ -87,8 +95,10 @@
             <Button onAction="#handleClearCurrentCart" styleClass="btn-clear-cart" text="Xóa hết" />
         </HBox>
 
-        <!-- VÙNG DANH SÁCH SẢN PHẨM TRONG GIỎ HOẶC EMPTY STATE -->
-        <StackPane VBox.vgrow="ALWAYS">
+        <!-- VÙNG DANH SÁCH SẢN PHẨM TRONG GIỎ HOẶC EMPTY STATE
+             minHeight/prefHeight nhỏ + vgrow: chỉ vùng này co giãn và cuộn khi nhiều thuốc,
+             các phần bên dưới (giảm giá, tổng tiền, nút Thanh toán) luôn giữ nguyên kích thước -->
+        <StackPane minHeight="0.0" prefHeight="120.0" VBox.vgrow="ALWAYS">
             <!-- 1. EMPTY STATE KHI CHƯA CÓ THUỐC NÀO -->
             <VBox fx:id="paneEmptyCart" alignment="CENTER" spacing="12.0">
                 <StackPane prefHeight="64.0" prefWidth="64.0" styleClass="cart-empty-circle">
@@ -108,13 +118,13 @@
         </StackPane>
 
         <!-- CẢNH BÁO THUỐC KÊ TOA (NỔI BẬT NẾU ĐƠN CÓ THUỐC KÊ TOA) -->
-        <HBox fx:id="bannerPrescriptionNotice" alignment="CENTER_LEFT" spacing="8.0" styleClass="cart-prescription-banner" visible="false" managed="false">
+        <HBox fx:id="bannerPrescriptionNotice" alignment="CENTER_LEFT" minHeight="-Infinity" spacing="8.0" styleClass="cart-prescription-banner" visible="false" managed="false">
             <Label styleClass="banner-warning-icon" text="⚠" />
             <Label styleClass="banner-warning-text" text="Có thuốc kê toa — sẽ cần xác nhận khi thanh toán" wrapText="true" HBox.hgrow="ALWAYS" />
         </HBox>
 
         <!-- PHẦN MỞ RỘNG: GIẢM GIÁ & SĐT KHÁCH HÀNG -->
-        <VBox spacing="8.0" styleClass="cart-extra-box">
+        <VBox minHeight="-Infinity" spacing="8.0" styleClass="cart-extra-box">
             <HBox alignment="CENTER_LEFT" spacing="6.0" onMouseClicked="#toggleCustomerDiscountExpand" styleClass="expand-trigger-row">
                 <Label fx:id="lblExpandIcon" styleClass="expand-icon" text="+" />
                 <Label fx:id="lblExpandTitle" styleClass="expand-label" text="Giảm giá · SĐT khách" />
@@ -140,7 +150,7 @@
         </VBox>
 
         <!-- BIỂU THỨC TÍNH TIỀN: TỔNG TIỀN HÀNG - GIẢM GIÁ = TỔNG THANH TOÁN -->
-        <VBox spacing="6.0" styleClass="cart-calc-box">
+        <VBox minHeight="-Infinity" spacing="6.0" styleClass="cart-calc-box">
             <!-- 1. Tổng tiền hàng -->
             <HBox alignment="CENTER_LEFT" styleClass="cart-summary-line">
                 <Label styleClass="cart-summary-title" text="Tổng tiền hàng" />
@@ -170,7 +180,7 @@
         </VBox>
 
         <!-- NÚT THANH TOÁN CHÍNH (ĐÃ BỎ F9) -->
-        <Button fx:id="btnCheckout" maxWidth="Infinity" onAction="#handleOpenPaymentDialog" prefHeight="48.0" styleClass="btn-sales-checkout" text="Thanh toán" />
+        <Button fx:id="btnCheckout" maxWidth="Infinity" minHeight="48.0" onAction="#handleOpenPaymentDialog" prefHeight="48.0" styleClass="btn-sales-checkout" text="Thanh toán" />
     </VBox>
     </HBox>
 
