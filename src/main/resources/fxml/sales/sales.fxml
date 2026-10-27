@@ -110,7 +110,7 @@
             </VBox>
 
             <!-- 2. DANH SÁCH CÁC MẶT HÀNG TRONG ĐƠN -->
-            <ScrollPane fx:id="scrollCartItems" fitToWidth="true" hbarPolicy="NEVER" styleClass="cart-items-scrollpane" vbarPolicy="AS_NEEDED" visible="false">
+            <ScrollPane fx:id="scrollCartItems" fitToWidth="true" hbarPolicy="NEVER" styleClass="cart-items-scrollpane" vbarPolicy="NEVER" visible="false">
                 <VBox fx:id="boxCartItems" spacing="8.0">
                     <!-- Render động từng dòng item trong giỏ -->
                 </VBox>
