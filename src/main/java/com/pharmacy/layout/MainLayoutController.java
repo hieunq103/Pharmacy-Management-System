@@ -219,28 +219,43 @@ public class MainLayoutController {
     }
 
     /**
-     * Mở Lịch sử bán hàng đã lọc sẵn theo tháng/năm (từ nút "Xem đầy đủ..." ở trang Báo cáo).
+     * Mở Lịch sử bán hàng đã lọc sẵn theo tháng/năm (từ nút "Xem đầy đủ..." ở trang Báo cáo); back -> Báo cáo.
      */
     public void navigateToSalesHistoryForMonth(int year, int month) {
-        setActiveButton(btnSales);
-        if (lblHeaderTitle != null) {
-            lblHeaderTitle.setText("Bán hàng");
-        }
-        FXMLLoader loader = loadCenterViewWithLoader("/fxml/sales/sales.fxml");
-        if (loader != null && loader.getController() instanceof com.pharmacy.sales.SalesController salesCtrl) {
-            salesCtrl.openSalesHistoryForMonth(year, month);
+        com.pharmacy.sales.SalesController salesCtrl = showSalesPage();
+        if (salesCtrl != null) {
+            salesCtrl.openSalesHistoryForMonth(year, month, () -> handleNavReport(null));
         }
     }
 
+    /** Mở Lịch sử bán hàng của một ngày (từ thẻ Doanh số/Hóa đơn hôm nay ở Tổng quan); back -> Tổng quan. */
+    public void navigateToSalesHistoryForDate(java.time.LocalDate date) {
+        com.pharmacy.sales.SalesController salesCtrl = showSalesPage();
+        if (salesCtrl != null) {
+            salesCtrl.openSalesHistoryForDate(date, () -> handleNavDashboard(null));
+        }
+    }
+
+    /** Mở Lịch sử bán hàng từ Tổng quan ("Xem tất cả" giao dịch gần đây); back -> Tổng quan. */
     public void navigateToSalesHistory() {
+        com.pharmacy.sales.SalesController salesCtrl = showSalesPage();
+        if (salesCtrl != null) {
+            salesCtrl.openSalesHistory(() -> handleNavDashboard(null));
+        }
+    }
+
+    private com.pharmacy.sales.SalesController showSalesPage() {
         setActiveButton(btnSales);
         if (lblHeaderTitle != null) {
             lblHeaderTitle.setText("Bán hàng");
         }
         FXMLLoader loader = loadCenterViewWithLoader("/fxml/sales/sales.fxml");
-        if (loader != null && loader.getController() instanceof com.pharmacy.sales.SalesController salesCtrl) {
-            salesCtrl.handleOpenSalesHistory();
-        }
+        return loader != null && loader.getController() instanceof com.pharmacy.sales.SalesController salesCtrl ? salesCtrl : null;
+    }
+
+    /** Mở trang Hồ sơ cá nhân (vd. khi Quản lý chọn chính mình trong danh sách nhân viên). */
+    public void navigateToProfile() {
+        handleNavProfile(null);
     }
 
     @FXML

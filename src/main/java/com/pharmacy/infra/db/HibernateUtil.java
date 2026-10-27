@@ -16,9 +16,15 @@ import org.hibernate.cfg.AvailableSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class HibernateUtil {
     private static final Logger log = LoggerFactory.getLogger(HibernateUtil.class);
@@ -58,6 +64,9 @@ public final class HibernateUtil {
             config.setPoolName("PharmaOS-MainPool");
             // Driver MySQL gộp các câu trong JDBC batch thành 1 câu INSERT nhiều dòng (giảm round-trip)
             config.addDataSourceProperty("rewriteBatchedStatements", "true");
+            // NOW()/CURDATE() trong SQL phải cùng múi giờ với mốc thời gian Java gửi xuống (driver quy đổi theo
+            // serverTimezone trong URL); nếu MySQL chạy múi giờ khác (vd. UTC) thì "hôm nay" sẽ bị lệch ngày.
+            config.setConnectionInitSql("SET time_zone = '" + sessionTimeZoneOffset(config.getJdbcUrl()) + "'");
 
             dataSource = new HikariDataSource(config);
 
@@ -93,6 +102,27 @@ public final class HibernateUtil {
             shutdown();
             throw new RuntimeException("Không thể khởi động Hibernate SessionFactory", e);
         }
+    }
+
+    /**
+     * Độ lệch UTC (vd. "+07:00") của múi giờ kết nối: serverTimezone/connectionTimeZone trong URL,
+     * mặc định là múi giờ của JVM.
+     */
+    static String sessionTimeZoneOffset(String jdbcUrl) {
+        ZoneId zone = ZoneId.systemDefault();
+        Matcher m = Pattern.compile("[?&](?:serverTimezone|connectionTimeZone)=([^&]+)").matcher(jdbcUrl == null ? "" : jdbcUrl);
+        if (m.find()) {
+            String id = URLDecoder.decode(m.group(1), StandardCharsets.UTF_8);
+            if (!"LOCAL".equalsIgnoreCase(id) && !"SERVER".equalsIgnoreCase(id)) {
+                try {
+                    zone = ZoneId.of(id);
+                } catch (Exception e) {
+                    log.warn("Múi giờ '{}' trong db.url không hợp lệ, dùng múi giờ hệ thống {}", id, zone);
+                }
+            }
+        }
+        String offset = zone.getRules().getOffset(Instant.now()).getId();
+        return "Z".equals(offset) ? "+00:00" : offset;
     }
 
     /**

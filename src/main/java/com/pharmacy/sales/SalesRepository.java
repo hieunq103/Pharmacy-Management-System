@@ -465,7 +465,7 @@ public class SalesRepository {
     /**
      * Doanh số và số hóa đơn hôm nay so với hôm qua — 1 câu SQL, quét theo chỉ mục created_at.
      */
-    public TodaySalesSummary getTodaySalesSummary() {
+    public TodaySalesSummary getTodaySalesSummary(Integer employeeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             LocalDate today = LocalDate.now();
             String sql = """
@@ -475,12 +475,15 @@ public class SalesRepository {
                        COUNT(CASE WHEN created_at < :todayStart THEN 1 END)
                 FROM sales_orders
                 WHERE created_at >= :yesterdayStart AND created_at < :tomorrowStart
-            """;
-            Object[] r = session.createNativeQuery(sql, Object[].class)
+            """ + (employeeId != null ? " AND employee_id = :employeeId" : "");
+            var query = session.createNativeQuery(sql, Object[].class)
                     .setParameter("todayStart", Timestamp.valueOf(today.atStartOfDay()))
                     .setParameter("yesterdayStart", Timestamp.valueOf(today.minusDays(1).atStartOfDay()))
-                    .setParameter("tomorrowStart", Timestamp.valueOf(today.plusDays(1).atStartOfDay()))
-                    .uniqueResult();
+                    .setParameter("tomorrowStart", Timestamp.valueOf(today.plusDays(1).atStartOfDay()));
+            if (employeeId != null) {
+                query.setParameter("employeeId", employeeId);
+            }
+            Object[] r = query.uniqueResult();
             return TodaySalesSummary.of(toBigDecimal(r[0]), toBigDecimal(r[2]), toLong(r[1]), toLong(r[3]));
         } catch (Exception e) {
             log.error("Lỗi khi thống kê doanh số hôm nay trong SalesRepository: ", e);
@@ -491,8 +494,8 @@ public class SalesRepository {
     /**
      * Doanh số theo từng ngày trong 7 ngày gần nhất phục vụ vẽ biểu đồ tuần
      */
-    public List<DailySalesDTO> getLast7DaysSales() {
-        return get7DaysSalesUpTo(LocalDate.now(), null);
+    public List<DailySalesDTO> getLast7DaysSales(Integer employeeId) {
+        return get7DaysSalesUpTo(LocalDate.now(), employeeId);
     }
 
     /**
@@ -563,12 +566,17 @@ public class SalesRepository {
      * Lấy LIMIT trên sales_orders trước (backward scan chỉ mục created_at), sau đó mới tổng hợp chi tiết —
      * trước đây GROUP BY toàn bộ sales_orders JOIN sales_order_items rồi mới LIMIT.
      */
-    public List<SalesOrderDTO> getRecentSalesOrders(int limit) {
+    public List<SalesOrderDTO> getRecentSalesOrders(int limit, Integer employeeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String pageIds = "SELECT so.id FROM sales_orders so ORDER BY so.created_at DESC, so.id DESC LIMIT :limit";
-            List<Object[]> rows = session.createNativeQuery(ORDER_SUMMARY_SELECT.formatted(pageIds), Object[].class)
-                    .setParameter("limit", Math.max(1, limit))
-                    .list();
+            String pageIds = "SELECT so.id FROM sales_orders so"
+                    + (employeeId != null ? " WHERE so.employee_id = :employeeId" : "")
+                    + " ORDER BY so.created_at DESC, so.id DESC LIMIT :limit";
+            var query = session.createNativeQuery(ORDER_SUMMARY_SELECT.formatted(pageIds), Object[].class)
+                    .setParameter("limit", Math.max(1, limit));
+            if (employeeId != null) {
+                query.setParameter("employeeId", employeeId);
+            }
+            List<Object[]> rows = query.list();
             List<SalesOrderDTO> list = new ArrayList<>(rows.size());
             for (Object[] r : rows) {
                 list.add(mapOrderRow(r));

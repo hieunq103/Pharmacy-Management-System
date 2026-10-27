@@ -137,12 +137,13 @@ public class SalesHistoryController implements Initializable {
     }
 
     /**
-     * Xác định quyền hạn: Cả Quản lý và Nhân viên đều chỉ xem lịch sử bán hàng của bản thân.
+     * Xác định quyền hạn: Quản lý xem lịch sử của toàn cửa hàng, Nhân viên chỉ xem đơn của bản thân.
      */
     private void setupRoleAccess() {
         if (UserSession.isLoggedIn()) {
             isManager = UserSession.getInstance().isManager();
-            filterEmployeeId = UserSession.getInstance().getEmployeeId();
+            // Cùng phạm vi với Tổng quan/Báo cáo: Quản lý xem toàn cửa hàng, Nhân viên chỉ xem đơn của mình
+            filterEmployeeId = UserSession.scopeEmployeeId(null);
         } else {
             // Mặc định an toàn nếu chưa đăng nhập (môi trường dev/test)
             isManager = true;
@@ -204,6 +205,21 @@ public class SalesHistoryController implements Initializable {
         try {
             if (txtFilterYear != null) txtFilterYear.setText(String.valueOf(year));
             if (cbFilterMonth != null) cbFilterMonth.setValue("Tháng " + month);
+        } finally {
+            updatingControls = false;
+        }
+        updateFilterButtonStyles();
+        currentPage = 1;
+        loadSalesHistoryData();
+    }
+
+    /** Mở lịch sử bán hàng của một ngày (dùng khi bấm thẻ Doanh số/Hóa đơn hôm nay ở Tổng quan). */
+    public void showDate(LocalDate date) {
+        selectedDate = date;
+        monthMode = false;
+        updatingControls = true;
+        try {
+            if (dpFilterDate != null) dpFilterDate.setValue(date);
         } finally {
             updatingControls = false;
         }

@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.pharmacy.common.UserSession;
+import com.pharmacy.layout.MainLayoutController;
 import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.DrawerHelper;
@@ -577,6 +578,11 @@ public class EmployeeController implements Initializable {
     private void showEmployeeDetail(Employee emp) {
         if (emp == null || emp.getId() == null) {
             showSimpleAlert(Alert.AlertType.WARNING, "Cảnh báo", "Vui lòng chọn nhân viên cần xem chi tiết.");
+            return;
+        }
+        // Chọn chính mình -> mở Hồ sơ cá nhân thay cho hồ sơ chi tiết nhân viên
+        if (emp.getId().equals(UserSession.currentEmployeeId()) && MainLayoutController.getInstance() != null) {
+            MainLayoutController.getInstance().navigateToProfile();
             return;
         }
 

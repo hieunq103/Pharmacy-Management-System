@@ -22,42 +22,41 @@
             <Insets bottom="10.0" left="20.0" right="20.0" top="8.0" />
         </padding>
 
-        <!-- Header: Thống kê & (Ô tìm kiếm + Nút chức năng) -->
-        <HBox alignment="CENTER_LEFT" spacing="14.0">
-            <VBox spacing="4.0">
-                <HBox spacing="6.0" alignment="CENTER_LEFT">
-                    <Label styleClass="stat-label-primary" text="Tổng loại thuốc:" />
-                    <Label fx:id="lblTotalMedicines" styleClass="stat-label-primary" text="0" />
-                </HBox>
-                <HBox spacing="6.0" alignment="CENTER_LEFT">
-                    <Label styleClass="stat-label-primary" text="Còn hàng:" />
-                    <Label fx:id="lblInStockMedicines" styleClass="stat-label-primary" text="0" />
-                </HBox>
-            </VBox>
+        <!-- Header hàng 1: Thống kê -->
+        <VBox spacing="4.0">
+            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                <Label styleClass="stat-label-primary" text="Tổng loại thuốc:" />
+                <Label fx:id="lblTotalMedicines" styleClass="stat-label-primary" text="0" />
+            </HBox>
+            <HBox spacing="6.0" alignment="CENTER_LEFT">
+                <Label styleClass="stat-label-primary" text="Còn hàng:" />
+                <Label fx:id="lblInStockMedicines" styleClass="stat-label-primary" text="0" />
+            </HBox>
+        </VBox>
+
+        <!-- Header hàng 2: Nút chức năng (sát trái) + Ô tìm kiếm (sát phải) -->
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <!-- Nút Nhập Kho -->
+            <Button fx:id="btnImport" mnemonicParsing="false"
+                    styleClass="btn-primary-import"
+                    text="+ Nhập Kho" />
+
+            <!-- Nút Xuất Kho -->
+            <Button fx:id="btnExport" mnemonicParsing="false"
+                    styleClass="btn-secondary-export"
+                    text="Xuất Kho" />
+
+            <!-- Nút Lịch sử Nhập / Xuất -->
+            <Button fx:id="btnHistory" mnemonicParsing="false"
+                    styleClass="btn-secondary-history"
+                    text="Lịch sử xuất nhập kho" />
 
             <Region HBox.hgrow="ALWAYS" />
 
-            <HBox alignment="CENTER_RIGHT" spacing="12.0">
-                <!-- Ô tìm kiếm -->
-                <TextField fx:id="txtSearch" prefWidth="280.0"
-                           promptText="Tìm theo mã, tên thuốc..."
-                           styleClass="search-input" />
-
-                <!-- Nút Nhập Kho -->
-                <Button fx:id="btnImport" mnemonicParsing="false"
-                        styleClass="btn-primary-import"
-                        text="+ Nhập Kho" />
-
-                <!-- Nút Xuất Kho -->
-                <Button fx:id="btnExport" mnemonicParsing="false"
-                        styleClass="btn-secondary-export"
-                        text="Xuất Kho" />
-
-                <!-- Nút Lịch sử Nhập / Xuất -->
-                <Button fx:id="btnHistory" mnemonicParsing="false"
-                        styleClass="btn-secondary-history"
-                        text="Lịch sử xuất nhập kho" />
-            </HBox>
+            <!-- Ô tìm kiếm -->
+            <TextField fx:id="txtSearch" prefWidth="320.0"
+                       promptText="Tìm theo mã, tên thuốc..."
+                       styleClass="search-input" />
         </HBox>
 
         <!-- Center: Bảng kép (Dual-table: Bảng dữ liệu cuộn ngang + Cột thao tác ghim cố định nổi bên phải) -->

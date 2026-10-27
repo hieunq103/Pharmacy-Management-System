@@ -95,12 +95,12 @@ public class SalesServiceImpl implements SalesService {
 
     @Override
     public TodaySalesSummary getTodaySalesSummary() {
-        return salesRepository.getTodaySalesSummary();
+        return salesRepository.getTodaySalesSummary(UserSession.scopeEmployeeId(null));
     }
 
     @Override
     public List<DailySalesDTO> get7DaysSales() {
-        return salesRepository.getLast7DaysSales();
+        return salesRepository.getLast7DaysSales(UserSession.scopeEmployeeId(null));
     }
 
     @Override
@@ -110,6 +110,6 @@ public class SalesServiceImpl implements SalesService {
 
     @Override
     public List<SalesOrderDTO> getRecentSalesOrders(int limit) {
-        return salesRepository.getRecentSalesOrders(limit);
+        return salesRepository.getRecentSalesOrders(limit, UserSession.scopeEmployeeId(null));
     }
 }

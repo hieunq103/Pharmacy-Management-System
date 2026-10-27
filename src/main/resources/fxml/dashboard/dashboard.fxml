@@ -41,7 +41,7 @@
                 </rowConstraints>
 
                 <!-- THẺ 1: DOANH SỐ HÔM NAY -->
-                <VBox spacing="6.0" styleClass="dashboard-stat-card" GridPane.columnIndex="0">
+                <VBox onMouseClicked="#handleOpenTodaySalesHistory" spacing="6.0" styleClass="dashboard-stat-card, dashboard-stat-card-link" GridPane.columnIndex="0">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Doanh số hôm nay" />
                         <Region HBox.hgrow="ALWAYS" />
@@ -54,7 +54,7 @@
                 </VBox>
 
                 <!-- THẺ 2: HÓA ĐƠN HÔM NAY -->
-                <VBox spacing="6.0" styleClass="dashboard-stat-card" GridPane.columnIndex="1">
+                <VBox onMouseClicked="#handleOpenTodaySalesHistory" spacing="6.0" styleClass="dashboard-stat-card, dashboard-stat-card-link" GridPane.columnIndex="1">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Hóa đơn hôm nay" />
                         <Region HBox.hgrow="ALWAYS" />

@@ -28,6 +28,7 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -351,6 +352,14 @@ public class DashboardController implements Initializable {
             } else {
                 MainLayoutController.getInstance().navigateToInventoryWithFilter(new String[]{"Sắp hết hàng", "Hết hàng"}, null);
             }
+        }
+    }
+
+    /** Bấm thẻ Doanh số/Hóa đơn hôm nay -> Lịch sử bán hàng lọc đúng ngày hôm nay. */
+    @FXML
+    private void handleOpenTodaySalesHistory(javafx.scene.input.MouseEvent event) {
+        if (MainLayoutController.getInstance() != null) {
+            MainLayoutController.getInstance().navigateToSalesHistoryForDate(LocalDate.now());
         }
     }
 

@@ -27,6 +27,7 @@ import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -41,6 +42,8 @@ public class SalesController implements Initializable {
     // Màn hình chính và Lịch sử bán hàng
     @FXML private HBox viewSalesMain;
     @FXML private StackPane viewSalesHistory;
+    /** Hành động của nút back trong Lịch sử bán hàng; null = quay lại trang Bán hàng. */
+    private Runnable historyBackAction;
 
     private Parent historyRootNode;
     private SalesHistoryController historyController;
@@ -816,6 +819,12 @@ public class SalesController implements Initializable {
 
     @FXML
     public void handleOpenSalesHistory() {
+        // Mở từ nút lịch sử của trang Bán hàng -> nút back quay lại trang Bán hàng
+        historyBackAction = null;
+        showSalesHistoryView();
+    }
+
+    private void showSalesHistoryView() {
         ensureHistoryViewLoaded();
         if (viewSalesMain != null) {
             viewSalesMain.setVisible(false);
@@ -830,15 +839,39 @@ public class SalesController implements Initializable {
         }
     }
 
+    /**
+     * Mở Lịch sử bán hàng từ trang khác; onBack là hành động của nút back (quay về trang đã mở lịch sử).
+     */
+    public void openSalesHistory(Runnable onBack) {
+        historyBackAction = onBack;
+        showSalesHistoryView();
+    }
+
+    /** Mở Lịch sử bán hàng với bộ lọc Theo ngày của ngày chỉ định. */
+    public void openSalesHistoryForDate(LocalDate date, Runnable onBack) {
+        historyBackAction = onBack;
+        showSalesHistoryView();
+        if (historyController != null) {
+            historyController.showDate(date);
+        }
+    }
+
     /** Mở Lịch sử bán hàng với bộ lọc Theo tháng của tháng/năm chỉ định. */
-    public void openSalesHistoryForMonth(int year, int month) {
-        handleOpenSalesHistory();
+    public void openSalesHistoryForMonth(int year, int month, Runnable onBack) {
+        historyBackAction = onBack;
+        showSalesHistoryView();
         if (historyController != null) {
             historyController.showMonth(year, month);
         }
     }
 
     public void handleCloseSalesHistory() {
+        if (historyBackAction != null) {
+            Runnable back = historyBackAction;
+            historyBackAction = null;
+            back.run();
+            return;
+        }
         if (viewSalesHistory != null) {
             viewSalesHistory.setVisible(false);
             viewSalesHistory.setManaged(false);
