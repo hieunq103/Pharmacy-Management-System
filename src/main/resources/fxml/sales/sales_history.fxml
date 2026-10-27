@@ -8,7 +8,6 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
@@ -29,13 +28,10 @@
     <HBox alignment="CENTER_LEFT" spacing="14.0">
         <Label styleClass="history-main-title" text="Lịch sử bán hàng" />
         <Region HBox.hgrow="ALWAYS" />
-        <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-icon-back">
+        <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-back" text="Quay lại">
             <graphic>
-                <SVGPath content="M 0 8 L 18 8 M 11 1 L 18 8 L 11 15" styleClass="btn-icon-glyph" />
+                <SVGPath content="M 0 7 L 14 7 M 8 1 L 14 7 L 8 13" styleClass="btn-back-glyph" />
             </graphic>
-            <tooltip>
-                <Tooltip text="Quay về" />
-            </tooltip>
         </Button>
     </HBox>
 

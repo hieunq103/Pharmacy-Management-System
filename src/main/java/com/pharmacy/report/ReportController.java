@@ -849,14 +849,14 @@ public class ReportController {
         }
     }
 
-    /** Tab Báo cáo doanh số vừa khít màn hình (không cuộn dọc); tab thuốc đã bán được cuộn như bình thường. */
+    /**
+     * Tab Báo cáo doanh số vừa khít màn hình (biểu đồ co giãn, không cuộn); tab thuốc đã bán cuộn bằng chuột.
+     * Thanh cuộn dọc luôn ẩn (FXML) để bề rộng trang không đổi khi chuyển tab -> bộ lọc, thẻ, tab giữ nguyên vị trí.
+     */
     private void applyScrollForTab(Tab tab) {
         if (reportScrollPane == null) return;
         boolean revenue = tab == tabRevenue;
         reportScrollPane.setFitToHeight(revenue);
-        reportScrollPane.setVbarPolicy(revenue
-                ? javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER
-                : javafx.scene.control.ScrollPane.ScrollBarPolicy.AS_NEEDED);
         if (revenue) {
             reportScrollPane.setVvalue(0);
         }

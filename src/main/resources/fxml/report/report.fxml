@@ -27,7 +27,7 @@
 <StackPane stylesheets="@../../css/report.css, @../../css/inventory.css, @../../css/period_filter.css"
            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.pharmacy.report.ReportController">
-<ScrollPane fx:id="reportScrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+<ScrollPane fx:id="reportScrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER"
             styleClass="report-scroll-pane">
 
     <content>
@@ -37,7 +37,7 @@
             </padding>
 
             <!-- ==================== HÀNG 1: BỘ LỌC THỜI GIAN ==================== -->
-            <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="filter-card">
+            <HBox alignment="CENTER_LEFT" minHeight="-Infinity" spacing="12.0" styleClass="filter-card">
                 <!-- Ô 1: BỘ LỌC THEO NGÀY (GIỮ NGUYÊN BÊN TRÁI) -->
                 <HBox alignment="CENTER_LEFT" spacing="8.0">
                     <Button fx:id="btnFilterDay" onAction="#handleSelectDayMode" styleClass="period-pill-btn, active" text="Theo ngày" />
@@ -55,7 +55,7 @@
             </HBox>
 
             <!-- ==================== HÀNG 2: 5 THẺ THỐNG KÊ (STAT CARDS) ==================== -->
-            <GridPane hgap="12.0" vgap="12.0">
+            <GridPane hgap="12.0" minHeight="-Infinity" vgap="12.0">
                 <columnConstraints>
                     <ColumnConstraints percentWidth="20.0" hgrow="ALWAYS" />
                     <ColumnConstraints percentWidth="20.0" hgrow="ALWAYS" />
