@@ -2,7 +2,6 @@ package com.pharmacy.report;
 
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormatUtils;
-import com.pharmacy.common.PaginationHelper;
 import com.pharmacy.common.UserSession;
 import com.pharmacy.report.dto.ReportSummaryDTO;
 import com.pharmacy.report.dto.RevenueTimelineDTO;
@@ -22,7 +21,6 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +79,6 @@ public class ReportController {
     @FXML private BarChart<String, Number> barChartMedicines;
     @FXML private CategoryAxis chartMedXAxis;
     @FXML private NumberAxis chartMedYAxis;
-    @FXML private TextField txtSearchMedicine;
     @FXML private TableView<SoldMedicineDTO> tblSoldMedicines;
     @FXML private TableColumn<SoldMedicineDTO, String> colMedIndex;
     @FXML private TableColumn<SoldMedicineDTO, String> colMedCode;
@@ -90,11 +87,9 @@ public class ReportController {
     @FXML private TableColumn<SoldMedicineDTO, String> colMedUnit;
     @FXML private TableColumn<SoldMedicineDTO, String> colMedQtySold;
     @FXML private TableColumn<SoldMedicineDTO, String> colMedRevenue;
-    @FXML private HBox paginationBox;
-    @FXML private Label lblRecordRange;
     @FXML private Label lblMedTableTitle;
-    @FXML private HBox boxMedPagination;
-    @FXML private HBox boxViewFullMonth;
+    @FXML private Button btnViewFull;
+    @FXML private javafx.scene.control.ScrollPane reportScrollPane;
     @FXML private javafx.scene.layout.VBox loadingOverlay;
 
     // Lớp phủ "Đang tải": đếm số tác vụ đang chạy, chỉ hiện nếu tải lâu hơn LOADING_DELAY (tránh nháy)
@@ -109,22 +104,20 @@ public class ReportController {
     private int selectedYear = LocalDate.now().getYear();
     private int selectedMonth = LocalDate.now().getMonthValue();
 
-    // Trạng thái phân trang bảng thuốc
-    private int currentPage = 1;
-    private static final int PAGE_SIZE = 7;
-    private final ObservableList<SoldMedicineDTO> filteredSoldMedicines = FXCollections.observableArrayList();
-    private final ObservableList<SoldMedicineDTO> pageSoldMedicines = FXCollections.observableArrayList();
+    // Bảng thuốc chỉ hiện top N thuốc bán chạy của kỳ đang chọn
+    private final ObservableList<SoldMedicineDTO> topSoldMedicines = FXCollections.observableArrayList();
 
     // Cờ kiểm soát lazy loading cho tab thuốc đã bán
     private boolean medicinesLoadedForCurrentPeriod = false;
 
     private final ObservableList<SoldMedicineDTO> masterSoldMedicines = FXCollections.observableArrayList();
 
-    // Chế độ Theo tháng: bảng chỉ hiện top N thuốc bán chạy, kèm link "Xem đầy đủ..." sang Lịch sử bán hàng
-    private static final int TOP_MONTH_LIMIT = 5;
-    private boolean medTopMode = false;
-    private int medTopYear;
-    private int medTopMonth;
+    // Top N thuốc bán chạy (theo ngày hoặc theo tháng), kèm nút "Xem đầy đủ" sang Lịch sử bán hàng của kỳ đó
+    private static final int TOP_LIMIT = 5;
+    private PeriodMode medPeriodMode = PeriodMode.DAY;
+    private LocalDate medPeriodDate = LocalDate.now();
+    private int medPeriodYear;
+    private int medPeriodMonth;
 
     public ReportController() {
         this.reportService = new ReportServiceImpl();
@@ -141,7 +134,6 @@ public class ReportController {
         setupChartAxes();
         initTableColumns();
         initFilterControls();
-        initSearchListener();
         initTabSelectionListener();
 
         // Nạp dữ liệu trong lượt render tiếp theo để giao diện hiển thị ngay tức thì mà không giật/xoay
@@ -229,7 +221,7 @@ public class ReportController {
                 if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                     setText(null);
                 } else {
-                    int index = (currentPage - 1) * PAGE_SIZE + getIndex() + 1;
+                    int index = getIndex() + 1;
                     setText(String.valueOf(index));
                 }
             }
@@ -263,7 +255,7 @@ public class ReportController {
         emptyPlaceholder.setStyle("-fx-font-family: 'Inter 18pt'; -fx-font-size: 14px; -fx-text-fill: #64748B;");
         tblSoldMedicines.setPlaceholder(emptyPlaceholder);
 
-        tblSoldMedicines.setItems(pageSoldMedicines);
+        tblSoldMedicines.setItems(topSoldMedicines);
     }
 
 
@@ -302,15 +294,11 @@ public class ReportController {
         datePicker.setPromptText("dd/MM/yyyy");
     }
 
-    private void initSearchListener() {
-        if (txtSearchMedicine != null) {
-            txtSearchMedicine.textProperty().addListener((obs, oldVal, newVal) -> filterSoldMedicines(newVal));
-        }
-    }
-
     private void initTabSelectionListener() {
         if (tabPaneReport != null) {
+            applyScrollForTab(tabPaneReport.getSelectionModel().getSelectedItem());
             tabPaneReport.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
+                applyScrollForTab(newTab);
                 if (newTab == tabMedicines) {
                     Platform.runLater(() -> adjustSingleChartGap(barChartMedicines));
                     if (!medicinesLoadedForCurrentPeriod) {
@@ -516,11 +504,9 @@ public class ReportController {
         }
     }
 
+    /** Cùng phạm vi với Tổng quan / Lịch sử bán hàng: Quản lý xem toàn cửa hàng, Nhân viên chỉ xem của mình. */
     private Integer getCurrentEmployeeId() {
-        if (UserSession.isLoggedIn()) {
-            return UserSession.getInstance().getEmployeeId();
-        }
-        return null;
+        return UserSession.scopeEmployeeId(null);
     }
 
     private void loadChartsAndSummaryData() {
@@ -635,8 +621,7 @@ public class ReportController {
                 medicinesLoadedForCurrentPeriod = true;
                 List<SoldMedicineDTO> soldMedicines = getValue();
                 masterSoldMedicines.setAll(soldMedicines != null ? soldMedicines : List.of());
-                applyMedicineTableMode(mode == PeriodMode.MONTH, targetYear, targetMonth);
-                filterSoldMedicines(txtSearchMedicine != null ? txtSearchMedicine.getText() : null);
+                applyMedicineTablePeriod(mode, targetDate, targetYear, targetMonth);
 
                 if (masterSoldMedicines.isEmpty()) {
                     String periodText = (mode == PeriodMode.DAY)
@@ -834,95 +819,46 @@ public class ReportController {
     }
 
     /**
-     * Theo ngày: bảng đầy đủ có tìm kiếm + phân trang.
-     * Theo tháng: chỉ top 5 thuốc bán chạy nhất (dữ liệu đã sắp theo số lượng bán giảm dần),
-     * ẩn tìm kiếm/phân trang và hiện link "Xem đầy đủ..." mở Lịch sử bán hàng của tháng đó.
+     * Bảng chỉ hiện top 5 thuốc bán chạy nhất của ngày/tháng đang chọn (dữ liệu đã sắp theo số lượng bán giảm dần);
+     * nút "Xem đầy đủ" mở Lịch sử bán hàng lọc đúng ngày/tháng đó.
      */
-    private void applyMedicineTableMode(boolean topMode, int year, int month) {
-        medTopMode = topMode;
-        medTopYear = year;
-        medTopMonth = month;
+    private void applyMedicineTablePeriod(PeriodMode mode, LocalDate date, int year, int month) {
+        medPeriodMode = mode;
+        medPeriodDate = date;
+        medPeriodYear = year;
+        medPeriodMonth = month;
         if (lblMedTableTitle != null) {
-            lblMedTableTitle.setText(topMode
-                    ? "Top " + TOP_MONTH_LIMIT + " thuốc bán chạy nhất tháng " + month + "/" + year
-                    : "Bảng chi tiết sản lượng từng mặt hàng thuốc");
+            lblMedTableTitle.setText(mode == PeriodMode.DAY
+                    ? "Top " + TOP_LIMIT + " thuốc bán chạy nhất ngày " + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    : "Top " + TOP_LIMIT + " thuốc bán chạy nhất tháng " + month + "/" + year);
         }
-        if (tblSoldMedicines != null) {
-            // Top 5: thu gọn bảng vừa đủ 5 dòng thay vì chiều cao của trang 7 dòng
-            tblSoldMedicines.setPrefHeight(topMode ? 335 : 425);
-        }
-        setShown(txtSearchMedicine, !topMode);
-        setShown(boxMedPagination, !topMode);
-        setShown(boxViewFullMonth, topMode && !masterSoldMedicines.isEmpty());
-    }
-
-    private static void setShown(Node node, boolean shown) {
-        if (node != null) {
-            node.setVisible(shown);
-            node.setManaged(shown);
+        topSoldMedicines.setAll(masterSoldMedicines.subList(0, Math.min(TOP_LIMIT, masterSoldMedicines.size())));
+        if (btnViewFull != null) {
+            btnViewFull.setDisable(masterSoldMedicines.isEmpty());
         }
     }
 
     @FXML
-    private void handleViewFullMonth(ActionEvent event) {
+    private void handleViewFull(ActionEvent event) {
         com.pharmacy.layout.MainLayoutController layout = com.pharmacy.layout.MainLayoutController.getInstance();
-        if (layout != null) {
-            layout.navigateToSalesHistoryForMonth(medTopYear, medTopMonth);
-        }
-    }
-
-    private void filterSoldMedicines(String keyword) {
-        if (medTopMode) {
-            currentPage = 1;
-            pageSoldMedicines.setAll(masterSoldMedicines.subList(0, Math.min(TOP_MONTH_LIMIT, masterSoldMedicines.size())));
-            return;
-        }
-        if (keyword == null || keyword.isBlank()) {
-            filteredSoldMedicines.setAll(masterSoldMedicines);
+        if (layout == null) return;
+        if (medPeriodMode == PeriodMode.DAY) {
+            layout.navigateToSalesHistoryForDate(medPeriodDate, layout::navigateToReport);
         } else {
-            String lower = keyword.trim().toLowerCase();
-            List<SoldMedicineDTO> matches = masterSoldMedicines.stream()
-                    .filter(med ->
-                            (med.getMedicineCode() != null && med.getMedicineCode().toLowerCase().contains(lower)) ||
-                            (med.getMedicineName() != null && med.getMedicineName().toLowerCase().contains(lower)) ||
-                            (med.getCategoryName() != null && med.getCategoryName().toLowerCase().contains(lower))
-                    )
-                    .toList();
-            filteredSoldMedicines.setAll(matches);
+            layout.navigateToSalesHistoryForMonth(medPeriodYear, medPeriodMonth);
         }
-        currentPage = 1;
-        renderPagination();
     }
 
-    private void renderPagination() {
-        int totalRecords = filteredSoldMedicines.size();
-        int totalPages = (int) Math.ceil((double) totalRecords / PAGE_SIZE);
-        if (totalPages <= 0) totalPages = 1;
-        if (currentPage > totalPages) currentPage = totalPages;
-        if (currentPage < 1) currentPage = 1;
-
-        int fromIndex = (currentPage - 1) * PAGE_SIZE;
-        int toIndex = Math.min(fromIndex + PAGE_SIZE, totalRecords);
-
-        if (fromIndex < totalRecords) {
-            pageSoldMedicines.setAll(filteredSoldMedicines.subList(fromIndex, toIndex));
-        } else {
-            pageSoldMedicines.clear();
+    /** Tab Báo cáo doanh số vừa khít màn hình (không cuộn dọc); tab thuốc đã bán được cuộn như bình thường. */
+    private void applyScrollForTab(Tab tab) {
+        if (reportScrollPane == null) return;
+        boolean revenue = tab == tabRevenue;
+        reportScrollPane.setFitToHeight(revenue);
+        reportScrollPane.setVbarPolicy(revenue
+                ? javafx.scene.control.ScrollPane.ScrollBarPolicy.NEVER
+                : javafx.scene.control.ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        if (revenue) {
+            reportScrollPane.setVvalue(0);
         }
-
-        PaginationHelper.render(
-                paginationBox,
-                lblRecordRange,
-                currentPage,
-                totalPages,
-                totalRecords,
-                PAGE_SIZE,
-                this::goToPage
-        );
-    }
-
-    private void goToPage(int page) {
-        this.currentPage = page;
-        renderPagination();
     }
 }

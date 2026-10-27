@@ -228,12 +228,23 @@ public class MainLayoutController {
         }
     }
 
-    /** Mở Lịch sử bán hàng của một ngày (từ thẻ Doanh số/Hóa đơn hôm nay ở Tổng quan); back -> Tổng quan. */
-    public void navigateToSalesHistoryForDate(java.time.LocalDate date) {
+    /**
+     * Mở Lịch sử bán hàng của một ngày (thẻ hôm nay ở Tổng quan, nút "Xem đầy đủ" ở Báo cáo);
+     * onBack là trang nút back quay về.
+     */
+    public void navigateToSalesHistoryForDate(java.time.LocalDate date, Runnable onBack) {
         com.pharmacy.sales.SalesController salesCtrl = showSalesPage();
         if (salesCtrl != null) {
-            salesCtrl.openSalesHistoryForDate(date, () -> handleNavDashboard(null));
+            salesCtrl.openSalesHistoryForDate(date, onBack);
         }
+    }
+
+    public void navigateToDashboard() {
+        handleNavDashboard(null);
+    }
+
+    public void navigateToReport() {
+        handleNavReport(null);
     }
 
     /** Mở Lịch sử bán hàng từ Tổng quan ("Xem tất cả" giao dịch gần đây); back -> Tổng quan. */

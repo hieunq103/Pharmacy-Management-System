@@ -359,7 +359,8 @@ public class DashboardController implements Initializable {
     @FXML
     private void handleOpenTodaySalesHistory(javafx.scene.input.MouseEvent event) {
         if (MainLayoutController.getInstance() != null) {
-            MainLayoutController.getInstance().navigateToSalesHistoryForDate(LocalDate.now());
+            MainLayoutController layout = MainLayoutController.getInstance();
+            layout.navigateToSalesHistoryForDate(LocalDate.now(), layout::navigateToDashboard);
         }
     }
 
