@@ -74,6 +74,11 @@ public class MainLayoutController {
     @FXML
     private Label lblHeaderSubtitle;
 
+    private static final String REPORT_FXML = "/fxml/report/report.fxml";
+    // Trang Báo cáo được nạp một lần và dùng lại (xem preloadReportView)
+    private Parent reportView;
+    private com.pharmacy.report.ReportController reportController;
+
     @FXML
     public void initialize() {
         instance = this;
@@ -88,6 +93,7 @@ public class MainLayoutController {
         } else {
             handleNavDashboard(null);
         }
+        Platform.runLater(this::preloadReportView);
     }
 
     private void initUserInfoAndPermissions() {
@@ -259,7 +265,43 @@ public class MainLayoutController {
     private void handleNavReport(ActionEvent event) {
         setActiveButton(btnReport);
         lblHeaderTitle.setText("Báo cáo & Thống kê");
-        loadCenterView("/fxml/report/report.fxml");
+        if (reportView == null) {
+            // Chưa kịp nạp sẵn: nạp ngay (chỉ một lần) rồi giữ lại cho các lần sau
+            FXMLLoader loader = loadCenterViewWithLoader(REPORT_FXML);
+            if (loader != null) {
+                reportView = loader.getRoot();
+                reportController = loader.getController();
+            }
+            return;
+        }
+        contentArea.getChildren().setAll(reportView);
+        // Giao diện đã có sẵn -> hiện ngay, chỉ tải lại số liệu ở luồng nền
+        reportController.refresh();
+    }
+
+    /**
+     * Nạp sẵn trang Báo cáo ở luồng nền ngay sau khi vào hệ thống.
+     * Trang này nặng (2 biểu đồ, TabPane, bảng): nạp FXML mất ~0,3–1,4 s trên luồng giao diện,
+     * trong khi các truy vấn số liệu chỉ mất vài chục ms. Nạp một lần và dùng lại giúp bấm "Báo cáo"
+     * hiện ngay thay vì đứng giao diện mỗi lần mở.
+     */
+    private void preloadReportView() {
+        Thread preload = new Thread(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(REPORT_FXML));
+                Parent view = loader.load();
+                Platform.runLater(() -> {
+                    if (reportView == null) {
+                        reportView = view;
+                        reportController = loader.getController();
+                    }
+                });
+            } catch (Exception e) {
+                log.warn("Không nạp sẵn được trang Báo cáo, sẽ nạp khi mở trang: {}", e.getMessage());
+            }
+        }, "report-preload");
+        preload.setDaemon(true);
+        preload.start();
     }
 
     @FXML

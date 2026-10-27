@@ -76,7 +76,7 @@
     </VBox>
 
     <!-- ==================== CỘT PHẢI: GIỎ HÀNG VÀ THANH TOÁN (TERMINAL PANEL) ==================== -->
-    <VBox prefWidth="410.0" minWidth="380.0" maxWidth="430.0" spacing="12.0" styleClass="pos-cart-panel">
+    <VBox prefWidth="500.0" minWidth="460.0" maxWidth="540.0" spacing="12.0" styleClass="pos-cart-panel">
         <padding>
             <Insets bottom="16.0" left="16.0" right="16.0" top="14.0" />
         </padding>

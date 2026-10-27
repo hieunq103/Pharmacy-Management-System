@@ -553,7 +553,7 @@ public class SalesController implements Initializable {
 
         if (!isEmpty) {
             for (CartItem item : activeOrder.getItems()) {
-                HBox row = createCartItemRow(item);
+                VBox row = createCartItemRow(item);
                 boxCartItems.getChildren().add(row);
             }
         }
@@ -561,13 +561,14 @@ public class SalesController implements Initializable {
         updateCartSummary();
     }
 
-    private HBox createCartItemRow(CartItem item) {
-        HBox row = new HBox(8);
-        row.setAlignment(Pos.CENTER_LEFT);
+    /**
+     * Một dòng sản phẩm trong giỏ, chia 2 hàng để không bị cắt chữ khi tên thuốc dài:
+     * - Hàng 1: [Mã] Tên thuốc (xuống dòng nếu dài) ............ [Kê toa] [✕]
+     * - Hàng 2: Đơn giá / Đơn vị ............ [-] [SL] [+]   Thành tiền
+     */
+    private VBox createCartItemRow(CartItem item) {
+        VBox row = new VBox(8);
         row.getStyleClass().add("cart-item-row");
-
-        VBox infoBox = new VBox(2);
-        HBox.setHgrow(infoBox, Priority.ALWAYS);
 
         HBox nameRow = new HBox(6);
         nameRow.setAlignment(Pos.CENTER_LEFT);
@@ -582,6 +583,7 @@ public class SalesController implements Initializable {
         Label lblName = new Label(item.getMedicineName());
         lblName.getStyleClass().add("cart-item-name");
         lblName.setWrapText(true);
+        lblName.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(lblName, Priority.ALWAYS);
         nameRow.getChildren().add(lblName);
 
@@ -594,12 +596,13 @@ public class SalesController implements Initializable {
 
         Label lblUnitPrice = new Label(FormatUtils.formatCurrency(item.getSellPrice()) + " / " + item.getUnit());
         lblUnitPrice.getStyleClass().add("cart-item-unit-price");
+        lblUnitPrice.setMinWidth(Region.USE_PREF_SIZE);
 
-        infoBox.getChildren().addAll(nameRow, lblUnitPrice);
-
-        // Hàng tiền của món
+        // Thành tiền của món (không bao giờ bị cắt thành "145.0...")
         Label lblTotal = new Label(FormatUtils.formatCurrency(item.getLineTotal()));
         lblTotal.getStyleClass().add("cart-item-total");
+        lblTotal.setMinWidth(Region.USE_PREF_SIZE);
+        lblTotal.setAlignment(Pos.CENTER_RIGHT);
 
         // Bộ nút tăng/giảm [-] [txtQty] [+]
         HBox qtyBox = new HBox(4);
@@ -621,8 +624,9 @@ public class SalesController implements Initializable {
         // Hỗ trợ nhập trực tiếp số thuốc cần mua (số nguyên dương)
         TextField txtQty = new TextField(String.valueOf(item.getQuantity()));
         txtQty.getStyleClass().add("txt-qty-input");
-        txtQty.setPrefWidth(42);
-        txtQty.setMaxWidth(48);
+        txtQty.setMinWidth(48);
+        txtQty.setPrefWidth(52);
+        txtQty.setMaxWidth(60);
         txtQty.setPrefHeight(26);
         txtQty.setAlignment(Pos.CENTER);
 
@@ -692,9 +696,21 @@ public class SalesController implements Initializable {
             renderMedicineCards();
         });
 
+        btnMinus.setMinWidth(Region.USE_PREF_SIZE);
+        btnPlus.setMinWidth(Region.USE_PREF_SIZE);
+        btnDelete.setMinWidth(Region.USE_PREF_SIZE);
         qtyBox.getChildren().addAll(btnMinus, txtQty, btnPlus);
+        qtyBox.setMinWidth(Region.USE_PREF_SIZE);
 
-        row.getChildren().addAll(infoBox, lblTotal, qtyBox, btnDelete);
+        // Tên thuốc đã giãn hết chiều ngang (Hgrow) nên nút ✕ luôn nằm sát mép phải
+        nameRow.getChildren().add(btnDelete);
+
+        Region priceSpacer = new Region();
+        HBox.setHgrow(priceSpacer, Priority.ALWAYS);
+        HBox priceRow = new HBox(12, lblUnitPrice, priceSpacer, qtyBox, lblTotal);
+        priceRow.setAlignment(Pos.CENTER_LEFT);
+
+        row.getChildren().addAll(nameRow, priceRow);
         return row;
     }
 

@@ -189,16 +189,20 @@ public class EmployeeRepository {
                 params.put("keyword", "%" + cleanKw + "%");
             }
 
-            if (gender != null && !gender.isBlank() && !"Tất cả".equalsIgnoreCase(gender)) {
-                whereClause.append(" AND e.gender = :gender ");
-                params.put("gender", gender.trim());
+            // Giới tính, Vai trò, Tài khoản: hỗ trợ chọn nhiều giá trị (phân tách bằng dấu phẩy, ví dụ "Nam,Nữ")
+            List<String> genders = parseMultiFilter(gender);
+            if (!genders.isEmpty()) {
+                whereClause.append(" AND e.gender IN (:genders) ");
+                params.put("genders", genders);
             }
 
-            if (role != null && !role.isBlank() && !"Tất cả".equalsIgnoreCase(role)) {
-                String roleCode = ("Quản lý".equalsIgnoreCase(role) || "MANAGER".equalsIgnoreCase(role)) ? "MANAGER"
-                        : "STAFF";
-                whereClause.append(" AND r.code = :roleCode ");
-                params.put("roleCode", roleCode);
+            List<String> roleCodes = parseMultiFilter(role).stream()
+                    .map(r -> ("Quản lý".equalsIgnoreCase(r) || "MANAGER".equalsIgnoreCase(r)) ? "MANAGER" : "STAFF")
+                    .distinct()
+                    .toList();
+            if (!roleCodes.isEmpty()) {
+                whereClause.append(" AND r.code IN (:roleCodes) ");
+                params.put("roleCodes", roleCodes);
             }
 
             if (status != null && !status.isBlank() && !"Tất cả".equalsIgnoreCase(status)) {
@@ -209,15 +213,16 @@ public class EmployeeRepository {
                 params.put("empStatus", empStatus);
             }
 
-            if (accountStatus != null && !accountStatus.isBlank() && !"Tất cả".equalsIgnoreCase(accountStatus)) {
-                Account.Status accStatus = "Active".equalsIgnoreCase(accountStatus) ? Account.Status.ACTIVE
-                        : Account.Status.DISABLED;
-                whereClause.append(" AND a.status = :accStatus ");
-                params.put("accStatus", accStatus);
+            List<Account.Status> accStatuses = parseMultiFilter(accountStatus).stream()
+                    .map(a -> "Active".equalsIgnoreCase(a) ? Account.Status.ACTIVE : Account.Status.DISABLED)
+                    .distinct()
+                    .toList();
+            if (!accStatuses.isEmpty()) {
+                whereClause.append(" AND a.status IN (:accStatuses) ");
+                params.put("accStatuses", accStatuses);
             }
 
-            boolean needAccountJoin = (role != null && !role.isBlank() && !"Tất cả".equalsIgnoreCase(role))
-                    || (accountStatus != null && !accountStatus.isBlank() && !"Tất cả".equalsIgnoreCase(accountStatus));
+            boolean needAccountJoin = !roleCodes.isEmpty() || !accStatuses.isEmpty();
 
             // 1. Query COUNT
             String countHql = needAccountJoin
@@ -250,6 +255,16 @@ public class EmployeeRepository {
         }
     }
 
+
+    /** Tách bộ lọc đa chọn "A,B" thành danh sách; rỗng nghĩa là không lọc ("Tất cả"). */
+    private static List<String> parseMultiFilter(String raw) {
+        if (raw == null || raw.isBlank()) return List.of();
+        return java.util.Arrays.stream(raw.split(","))
+                .map(String::trim)
+                .filter(v -> !v.isEmpty() && !"Tất cả".equalsIgnoreCase(v))
+                .distinct()
+                .toList();
+    }
 
     public boolean addEmployeeWithAccount(Employee emp, String roleDisplayOrCode, String initialPasswordHash) {
         String roleCode = roleDisplayOrCode;

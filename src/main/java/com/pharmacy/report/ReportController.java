@@ -465,6 +465,11 @@ public class ReportController {
 
     // ==================== LOAD DỮ LIỆU BẤT ĐỒNG BỘ ====================
 
+    /** Tải lại số liệu theo bộ lọc hiện tại (khi quay lại trang Báo cáo đã được nạp sẵn). */
+    public void refresh() {
+        loadAllData();
+    }
+
     private void loadAllData() {
         medicinesLoadedForCurrentPeriod = false;
 

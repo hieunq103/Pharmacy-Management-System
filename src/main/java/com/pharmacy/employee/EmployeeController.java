@@ -107,11 +107,11 @@ public class EmployeeController implements Initializable {
             });
         }
 
-        TableFilterHelper.setupColumnFilter(colGender, "Giới tính", new String[]{"Tất cả", "Nam", "Nữ", "Khác"}, "gender", activeFilters, () -> {
+        TableFilterHelper.setupMultiSelectColumnFilter(colGender, "Giới tính", new String[]{"Nam", "Nữ", "Khác"}, "gender", activeFilters, () -> {
             currentPage = 1;
             loadEmployeeData();
         });
-        TableFilterHelper.setupColumnFilter(colRole, "Vai trò", new String[]{"Tất cả", "Nhân viên", "Quản lý"}, "role", activeFilters, () -> {
+        TableFilterHelper.setupMultiSelectColumnFilter(colRole, "Vai trò", new String[]{"Nhân viên", "Quản lý"}, "role", activeFilters, () -> {
             currentPage = 1;
             loadEmployeeData();
         });
@@ -119,7 +119,7 @@ public class EmployeeController implements Initializable {
             currentPage = 1;
             loadEmployeeData();
         });
-        TableFilterHelper.setupColumnFilter(colAccountStatus, "Tài khoản", new String[]{"Tất cả", "Active", "Disabled"}, "statusAcount", activeFilters, () -> {
+        TableFilterHelper.setupMultiSelectColumnFilter(colAccountStatus, "Tài khoản", new String[]{"Active", "Disabled"}, "statusAcount", activeFilters, () -> {
             currentPage = 1;
             loadEmployeeData();
         });

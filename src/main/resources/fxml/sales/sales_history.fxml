@@ -25,17 +25,8 @@
         <Insets bottom="10.0" left="20.0" right="20.0" top="8.0" />
     </padding>
 
-    <!-- HEADER: Nút quay về + Tiêu đề + Bộ lọc & Ô tìm kiếm -->
+    <!-- HEADER: Tiêu đề + Bộ lọc & Ô tìm kiếm + Nút quay về (bên phải) -->
     <HBox alignment="CENTER_LEFT" spacing="14.0">
-        <!-- Nút quay về màn hình bán hàng -->
-        <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-icon-back">
-            <graphic>
-                <SVGPath content="M 12 6 L 0 6 M 5 0 L 0 6 L 5 12" styleClass="btn-icon-glyph" />
-            </graphic>
-            <tooltip>
-                <Tooltip text="Quay về" />
-            </tooltip>
-        </Button>
         <VBox alignment="CENTER_LEFT" spacing="2.0">
             <Label styleClass="history-main-title" text="Lịch sử bán hàng" />
         </VBox>
@@ -61,6 +52,15 @@
             </HBox>
 
         </HBox>
+        <!-- Nút quay về màn hình bán hàng -->
+        <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-icon-back">
+            <graphic>
+                <SVGPath content="M 12 6 L 0 6 M 5 0 L 0 6 L 5 12" styleClass="btn-icon-glyph" />
+            </graphic>
+            <tooltip>
+                <Tooltip text="Quay về" />
+            </tooltip>
+        </Button>
     </HBox>
 
     <!-- KHU VỰC BẢNG LỊCH SỬ ĐƠN HÀNG -->

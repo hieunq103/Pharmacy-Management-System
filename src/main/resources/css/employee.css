@@ -486,10 +486,10 @@
     -fx-padding: 7 14;
     -fx-background-radius: 6px;
     -fx-background-color: transparent;
-    -fx-min-width: 100px;
-    -fx-pref-width: 100px;
-    -fx-max-width: 100px;
+    -fx-min-width: 160px;
+    -fx-pref-width: 160px;
     -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
 }
 
 .filter-context-menu .custom-filter-menu-item:hover .filter-item-label {
@@ -500,6 +500,35 @@
     -fx-background-color: #EFF6FF;
     -fx-text-fill: #0066FF;
     -fx-font-family: "Inter 18pt SemiBold";
+}
+
+/* Ô tích của bộ lọc đa chọn (Giới tính, Vai trò, Tài khoản) — giống bộ lọc ở trang Kho thuốc */
+.filter-checkbox {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #334155;
+    -fx-cursor: hand;
+}
+
+.filter-checkbox:hover {
+    -fx-text-fill: #0F172A;
+}
+
+.filter-checkbox .box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-border-width: 1.5px;
+}
+
+.filter-checkbox:selected .box {
+    -fx-background-color: #0066FF;
+    -fx-border-color: #0066FF;
+}
+
+.filter-checkbox:selected .mark {
+    -fx-background-color: #FFFFFF;
 }
 
 /* ==========================================================================

@@ -153,3 +153,31 @@
     -fx-text-fill: #DC2626;
     -fx-font-size: 11px;
 }
+/* ==================== DANH SÁCH THẢ XUỐNG (Giới tính, Trạng thái làm việc, Vai trò, Trạng thái tài khoản) ====================
+   Mục đang chọn: nền xanh, chữ trắng; rê chuột qua mục khác: cũng nền xanh, chữ trắng */
+
+.combo-box-popup .list-view {
+    -fx-background-color: #FFFFFF;
+    -fx-background-insets: 0;
+    -fx-border-color: #94A3B8;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 0;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.20), 6, 0, 0, 2);
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #18181B;
+    -fx-padding: 7px 12px;
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 14px;
+}
+
+.combo-box-popup .list-view .list-cell:filled:hover,
+.combo-box-popup .list-view .list-cell:filled:selected,
+.combo-box-popup .list-view .list-cell:filled:selected:hover {
+    -fx-background-color: #0096D6;
+    -fx-text-fill: #FFFFFF;
+}

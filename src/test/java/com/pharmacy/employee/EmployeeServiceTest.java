@@ -41,6 +41,28 @@ class EmployeeServiceTest {
         assertTrue(service.getEmployeeSummary().total() >= page.getTotalElements());
     }
 
+    /** Bộ lọc đa chọn (Giới tính, Vai trò, Tài khoản): chọn nhiều giá trị = hợp các kết quả chọn riêng lẻ. */
+    @Test
+    void multiSelectFilters() {
+        DbTestSupport.loginAsManager();
+        long all = service.getEmployeesPage(1, 7, null, null, null, null, null).getTotalElements();
+        long nam = service.getEmployeesPage(1, 7, null, "Nam", null, null, null).getTotalElements();
+        long nu = service.getEmployeesPage(1, 7, null, "Nữ", null, null, null).getTotalElements();
+        long khac = service.getEmployeesPage(1, 7, null, "Khác", null, null, null).getTotalElements();
+        assertEquals(nam + nu, service.getEmployeesPage(1, 7, null, "Nam,Nữ", null, null, null).getTotalElements());
+        assertEquals(all, nam + nu + khac);
+
+        long staff = service.getEmployeesPage(1, 7, null, null, "Nhân viên", null, null).getTotalElements();
+        long manager = service.getEmployeesPage(1, 7, null, null, "Quản lý", null, null).getTotalElements();
+        assertEquals(staff + manager, service.getEmployeesPage(1, 7, null, null, "Nhân viên,Quản lý", null, null).getTotalElements());
+
+        long active = service.getEmployeesPage(1, 7, null, null, null, null, "Active").getTotalElements();
+        long disabled = service.getEmployeesPage(1, 7, null, null, null, null, "Disabled").getTotalElements();
+        assertEquals(active + disabled, service.getEmployeesPage(1, 7, null, null, null, null, "Active,Disabled").getTotalElements());
+        assertEquals(service.getEmployeesPage(1, 7, null, "Nam", "Nhân viên", null, null).getTotalElements(),
+                service.getEmployeesPage(1, 7, null, "Nam", "Nhân viên", null, "Active,Disabled").getTotalElements());
+    }
+
     @Test
     void staffCannotUseEmployeeModule() {
         var staff = DbTestSupport.loginAs(DbTestSupport.STAFF_USERNAME);
