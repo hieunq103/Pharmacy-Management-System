@@ -349,10 +349,6 @@ public class SearchableMedicinePicker extends VBox {
         return selectedMedicine.get();
     }
 
-    public TextField getSearchField() {
-        return txtSearch;
-    }
-
     /**
      * Chuyển đổi chuỗi tiếng Việt có dấu thành không dấu để hỗ trợ tìm kiếm linh hoạt
      */

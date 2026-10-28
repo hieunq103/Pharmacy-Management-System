@@ -448,11 +448,11 @@ public class EmployeeDetailController {
                 }
 
                 clearAllErrors();
-                showAlert(Alert.AlertType.INFORMATION, "Cập nhật hồ sơ thành công!");
+                DialogUtils.showSuccess(getWindow(), "Thông báo", "Cập nhật hồ sơ thành công!");
                 populateData();
                 setEditMode(false);
             } else {
-                showAlert(Alert.AlertType.WARNING, "Không thể cập nhật. Bản ghi không tồn tại hoặc không có thay đổi.");
+                DialogUtils.showWarning(getWindow(), "Cảnh báo", "Không thể cập nhật. Bản ghi không tồn tại hoặc không có thay đổi.");
             }
         });
 
@@ -470,7 +470,7 @@ public class EmployeeDetailController {
             } else if (msg != null && (msg.contains("Duplicate entry") || msg.contains("ConstraintViolationException"))) {
                 showFieldError(txtPhone, lblErrPhone, "Số điện thoại hoặc CCCD đã bị trùng lặp trong hệ thống.");
             } else {
-                showAlert(Alert.AlertType.ERROR, msg != null && !msg.isBlank() ? msg : "Có lỗi xảy ra khi lưu dữ liệu.");
+                DialogUtils.showError(getWindow(), "Lỗi", msg != null && !msg.isBlank() ? msg : "Có lỗi xảy ra khi lưu dữ liệu.");
             }
         });
 
@@ -520,17 +520,6 @@ public class EmployeeDetailController {
         }
         if (field != null) {
             field.getStyleClass().removeAll("form-input-error");
-        }
-    }
-
-    private void showAlert(Alert.AlertType type, String message) {
-        Window owner = getWindow();
-        if (type == Alert.AlertType.ERROR) {
-            DialogUtils.showError(owner, "Lỗi", message);
-        } else if (type == Alert.AlertType.WARNING) {
-            DialogUtils.showWarning(owner, "Cảnh báo", message);
-        } else {
-            DialogUtils.showSuccess(owner, "Thông báo", message);
         }
     }
 

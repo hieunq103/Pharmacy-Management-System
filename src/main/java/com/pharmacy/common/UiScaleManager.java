@@ -13,10 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import java.util.function.Consumer;
 
 /**
  * Trình quản lý Tỉ lệ hiển thị và Tự động co giãn giao diện (Responsive UI Auto-Scale Manager).
@@ -29,7 +26,6 @@ public final class UiScaleManager {
     private static final UiScaleManager INSTANCE = new UiScaleManager();
 
     private double currentScale = 1.0;
-    private final List<Consumer<Double>> listeners = new ArrayList<>();
     private File dynamicCssFile = null;
     private final PauseTransition resizeDebounce = new PauseTransition(Duration.millis(50));
 
@@ -44,21 +40,6 @@ public final class UiScaleManager {
 
     public static UiScaleManager getInstance() {
         return INSTANCE;
-    }
-
-    public double getScale() {
-        return currentScale;
-    }
-
-    public int getScalePercent() {
-        return (int) Math.round(currentScale * 100.0);
-    }
-
-    public void addScaleListener(Consumer<Double> listener) {
-        if (listener != null) {
-            listeners.add(listener);
-            listener.accept(currentScale);
-        }
     }
 
     /**
@@ -174,9 +155,6 @@ public final class UiScaleManager {
     public void setScale(double scale, Scene scene) {
         this.currentScale = Math.round(scale * 100.0) / 100.0;
         applyScale(this.currentScale, scene);
-        for (Consumer<Double> listener : listeners) {
-            listener.accept(this.currentScale);
-        }
     }
 
     private void applyScale(double scale, Scene scene) {

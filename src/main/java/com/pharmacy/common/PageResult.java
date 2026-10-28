@@ -12,13 +12,11 @@ public class PageResult<T> {
     private final long totalElements;
     private final int totalPages;
     private final int currentPage;
-    private final int pageSize;
 
     public PageResult(List<T> items, long totalElements, int currentPage, int pageSize) {
         this.items = items != null ? items : Collections.emptyList();
         this.totalElements = totalElements;
         this.currentPage = currentPage;
-        this.pageSize = pageSize;
         this.totalPages = pageSize > 0 ? (int) Math.ceil((double) totalElements / pageSize) : 0;
     }
 
@@ -30,19 +28,7 @@ public class PageResult<T> {
         return items;
     }
 
-    public List<T> items() {
-        return items;
-    }
-
-    public List<T> content() {
-        return items;
-    }
-
     public long getTotalElements() {
-        return totalElements;
-    }
-
-    public long totalElements() {
         return totalElements;
     }
 
@@ -50,31 +36,7 @@ public class PageResult<T> {
         return totalPages;
     }
 
-    public int totalPages() {
-        return totalPages;
-    }
-
     public int getCurrentPage() {
         return currentPage;
-    }
-
-    public int currentPage() {
-        return currentPage;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public int pageSize() {
-        return pageSize;
-    }
-
-    public boolean hasPrevious() {
-        return currentPage > 1;
-    }
-
-    public boolean hasNext() {
-        return currentPage < totalPages;
     }
 }

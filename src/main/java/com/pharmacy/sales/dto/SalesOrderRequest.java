@@ -34,58 +34,31 @@ public class SalesOrderRequest {
     public String getCustomerPhone() { return customerPhone; }
     public void setCustomerPhone(String customerPhone) { this.customerPhone = customerPhone; }
 
-    public BigDecimal getDiscount() { 
-        if (discount == null || discount.compareTo(BigDecimal.ZERO) < 0) {
-            return BigDecimal.ZERO;
-        }
-        BigDecimal sub = getSubtotal();
-        if (discount.compareTo(sub) > 0) {
-            return sub;
-        }
-        return discount; 
+    public BigDecimal getDiscount() {
+        return CartTotals.clampDiscount(discount, getSubtotal());
     }
 
-    public void setDiscount(BigDecimal discount) { 
-        if (discount == null || discount.compareTo(BigDecimal.ZERO) <= 0) {
-            this.discount = BigDecimal.ZERO;
-        } else {
-            BigDecimal sub = getSubtotal();
-            if (discount.compareTo(sub) > 0) {
-                this.discount = sub;
-            } else {
-                this.discount = discount;
-            }
-        }
+    public void setDiscount(BigDecimal discount) {
+        this.discount = CartTotals.clampDiscount(discount, getSubtotal());
     }
 
     public String getPaymentMethod() { return paymentMethod != null ? paymentMethod : "CASH"; }
     public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
 
     public boolean isPrescriptionConfirmed() { return prescriptionConfirmed; }
-    public void setPrescriptionConfirmed(boolean prescriptionConfirmed) { this.prescriptionConfirmed = prescriptionConfirmed; }
 
-    public List<CartItem> items() { return items; }
     public List<CartItem> getItems() { return items; }
     public void setItems(List<CartItem> items) { this.items = items; }
 
     public BigDecimal getSubtotal() {
-        if (items == null || items.isEmpty()) return BigDecimal.ZERO;
-        BigDecimal sum = BigDecimal.ZERO;
-        for (CartItem item : items) {
-            sum = sum.add(item.getLineTotal());
-        }
-        return sum;
+        return CartTotals.subtotal(items);
     }
 
     public BigDecimal getTotalAmount() {
-        BigDecimal sub = getSubtotal();
-        BigDecimal disc = getDiscount();
-        BigDecimal total = sub.subtract(disc);
-        return total.compareTo(BigDecimal.ZERO) > 0 ? total : BigDecimal.ZERO;
+        return CartTotals.total(getSubtotal(), getDiscount());
     }
 
     public boolean hasPrescriptionItem() {
-        if (items == null) return false;
-        return items.stream().anyMatch(CartItem::isRequiresPrescription);
+        return CartTotals.hasPrescriptionItem(items);
     }
 }

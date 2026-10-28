@@ -35,7 +35,6 @@ public class PaymentDialogController {
     private static final Logger log = LoggerFactory.getLogger(PaymentDialogController.class);
 
     @FXML private Label lblDialogOrderCode;
-    @FXML private Label lblItemCountBadge;
     @FXML private ScrollPane scrollDialogCart;
     @FXML private VBox boxDialogCartItems;
 
@@ -44,7 +43,6 @@ public class PaymentDialogController {
     @FXML private Label lblTotalAmount;
     @FXML private HBox boxPrescriptionWarning;
     @FXML private CheckBox chkPrescriptionConfirmed;
-    @FXML private Label lblPrescriptionHint;
 
     @FXML private Button btnMethodCash;
     @FXML private Button btnMethodTransfer;
@@ -62,8 +60,6 @@ public class PaymentDialogController {
     @FXML private Label lblAccountName;
     @FXML private Label lblTransferAmount;
     @FXML private Label lblTransferContent;
-    @FXML private Label lblStatusPulse;
-    @FXML private Label lblTransferStatus;
 
     @FXML private Button btnConfirmPayment;
 
@@ -116,10 +112,6 @@ public class PaymentDialogController {
             if (currentOrder != null && currentOrder.hasPrescriptionItem()) {
                 boolean confirmed = Boolean.TRUE.equals(isChecked);
                 btnConfirmPayment.setDisable(!confirmed);
-                if (lblPrescriptionHint != null) {
-                    lblPrescriptionHint.setVisible(!confirmed);
-                    lblPrescriptionHint.setManaged(!confirmed);
-                }
             }
         });
 
@@ -227,82 +219,7 @@ public class PaymentDialogController {
         lblUnit.getStyleClass().add("dialog-cart-unit");
         infoBox.getChildren().addAll(nameRow, lblUnit);
 
-        // Nút trừ [-]
-        Button btnMinus = new Button("-");
-        btnMinus.getStyleClass().add("btn-qty-control");
-        btnMinus.setOnAction(e -> {
-            if (item.getQuantity() > 1) {
-                item.setQuantity(item.getQuantity() - 1);
-            } else {
-                currentOrder.removeItem(item);
-            }
-            refreshDialogCartAndTotals();
-        });
-
-        // Ô nhập trực tiếp số lượng thuốc (số nguyên dương)
-        TextField txtQty = new TextField(String.valueOf(item.getQuantity()));
-        txtQty.getStyleClass().add("txt-qty-input");
-        txtQty.setPrefWidth(42);
-        txtQty.setMaxWidth(48);
-        txtQty.setPrefHeight(26);
-        txtQty.setAlignment(Pos.CENTER);
-
-        // Lọc chỉ cho phép nhập số
-        txtQty.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null && !newVal.matches("\\d*")) {
-                txtQty.setText(newVal.replaceAll("[^0-9]", ""));
-            }
-        });
-
-        Runnable commitQty = () -> {
-            String text = txtQty.getText() != null ? txtQty.getText().trim() : "";
-            if (text.isEmpty() || "0".equals(text)) {
-                txtQty.setText(String.valueOf(item.getQuantity()));
-                return;
-            }
-            try {
-                int newQty = Integer.parseInt(text);
-                if (newQty <= 0) newQty = 1;
-                if (newQty > item.getMaxStock()) {
-                    DialogUtils.showWarning("Vượt quá tồn kho", "Số lượng trong kho chỉ còn " + item.getMaxStock() + ".");
-                    newQty = item.getMaxStock();
-                }
-                if (newQty != item.getQuantity()) {
-                    item.setQuantity(newQty);
-                    refreshDialogCartAndTotals();
-                } else {
-                    txtQty.setText(String.valueOf(newQty));
-                }
-            } catch (Exception ex) {
-                txtQty.setText(String.valueOf(item.getQuantity()));
-            }
-        };
-
-        txtQty.setOnAction(e -> commitQty.run());
-        txtQty.setOnMouseClicked(e -> txtQty.selectAll());
-        txtQty.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
-            if (isFocused) {
-                Platform.runLater(txtQty::selectAll);
-            } else {
-                commitQty.run();
-            }
-        });
-
-        // Nút cộng [+]
-        Button btnPlus = new Button("+");
-        btnPlus.getStyleClass().add("btn-qty-control");
-        btnPlus.setOnAction(e -> {
-            if (item.getQuantity() + 1 > item.getMaxStock()) {
-                DialogUtils.showWarning("Hết tồn kho", "Số lượng trong kho chỉ còn " + item.getMaxStock() + ".");
-                return;
-            }
-            item.setQuantity(item.getQuantity() + 1);
-            refreshDialogCartAndTotals();
-        });
-
-        HBox qtyBox = new HBox(4);
-        qtyBox.setAlignment(Pos.CENTER);
-        qtyBox.getChildren().addAll(btnMinus, txtQty, btnPlus);
+        HBox qtyBox = CartQuantityControl.create(item, currentOrder, 42, this::refreshDialogCartAndTotals);
 
         // Thành tiền từng mặt hàng
         Label lblLineTotal = new Label(FormatUtils.formatCurrency(item.getLineTotal()) + "đ");
@@ -354,14 +271,9 @@ public class PaymentDialogController {
             if (lblDialogDiscount != null) lblDialogDiscount.setText("0đ");
             if (lblTotalAmount != null) lblTotalAmount.setText("0đ");
             if (lblTransferAmount != null) lblTransferAmount.setText("0đ");
-            if (lblItemCountBadge != null) lblItemCountBadge.setText("0 sản phẩm");
             if (boxPrescriptionWarning != null) {
                 boxPrescriptionWarning.setVisible(false);
                 boxPrescriptionWarning.setManaged(false);
-            }
-            if (lblPrescriptionHint != null) {
-                lblPrescriptionHint.setVisible(false);
-                lblPrescriptionHint.setManaged(false);
             }
             btnConfirmPayment.setDisable(true);
             return;
@@ -389,9 +301,6 @@ public class PaymentDialogController {
         if (lblTransferAmount != null) {
             lblTransferAmount.setText(formattedTotal);
         }
-        if (lblItemCountBadge != null) {
-            lblItemCountBadge.setText(currentOrder.getItemCount() + " sản phẩm (" + currentOrder.getItems().size() + " loại)");
-        }
 
         boolean hasPrescription = currentOrder.hasPrescriptionItem();
         if (hasPrescription) {
@@ -399,18 +308,9 @@ public class PaymentDialogController {
             boxPrescriptionWarning.setManaged(true);
             boolean confirmed = chkPrescriptionConfirmed.isSelected();
             btnConfirmPayment.setDisable(!confirmed);
-            if (lblPrescriptionHint != null) {
-                lblPrescriptionHint.setVisible(!confirmed);
-                lblPrescriptionHint.setManaged(!confirmed);
-                lblPrescriptionHint.setText("Cần xác nhận đã kiểm tra đơn thuốc");
-            }
         } else {
             boxPrescriptionWarning.setVisible(false);
             boxPrescriptionWarning.setManaged(false);
-            if (lblPrescriptionHint != null) {
-                lblPrescriptionHint.setVisible(false);
-                lblPrescriptionHint.setManaged(false);
-            }
             btnConfirmPayment.setDisable(false);
         }
     }
@@ -552,13 +452,6 @@ public class PaymentDialogController {
         stopPolling();
         if (isPaymentReceived) return;
 
-        if (lblTransferStatus != null) {
-            lblTransferStatus.setText("Đang chờ chuyển khoản...");
-            lblTransferStatus.setStyle("-fx-text-fill: #475569;");
-        }
-        if (lblStatusPulse != null) {
-            lblStatusPulse.setStyle("-fx-text-fill: #0066FF;");
-        }
 
         pollExecutor = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread t = new Thread(r, "Payment-Polling-Thread");
@@ -573,13 +466,6 @@ public class PaymentDialogController {
                     stopPolling();
                     return;
                 }
-
-                // Toggle animation pulse nhẹ trên giao diện
-                Platform.runLater(() -> {
-                    if (lblStatusPulse != null) {
-                        lblStatusPulse.setOpacity(lblStatusPulse.getOpacity() > 0.5 ? 0.3 : 1.0);
-                    }
-                });
 
                 if (PaymentConfig.isSepayConfigured()) {
                     SepayService.PaymentResult result = SepayService.checkOrderPayment(orderCode, totalAmount);
@@ -603,26 +489,12 @@ public class PaymentDialogController {
         if (boxSuccessOverlay != null) {
             boxSuccessOverlay.setVisible(true);
         }
-        if (lblTransferStatus != null) {
-            lblTransferStatus.setText("✓ Đã nhận " + FormatUtils.formatCurrency(paidAmount) + "đ thành công!");
-            lblTransferStatus.setStyle("-fx-text-fill: #16A34A; -fx-font-weight: bold;");
-        }
-        if (lblStatusPulse != null) {
-            lblStatusPulse.setOpacity(1.0);
-            lblStatusPulse.setStyle("-fx-text-fill: #16A34A;");
-        }
 
         btnConfirmPayment.setDisable(false);
         btnConfirmPayment.setText("Xác nhận hoàn tất đơn");
         btnConfirmPayment.setStyle("-fx-background-color: #16A34A; -fx-text-fill: #FFFFFF;");
         btnConfirmPayment.requestFocus();
 
-        if (lblPrescriptionHint != null) {
-            lblPrescriptionHint.setText("✓ Tiền đã vào tài khoản, vui lòng bấm Xác nhận hoàn tất");
-            lblPrescriptionHint.setStyle("-fx-text-fill: #16A34A; -fx-font-weight: bold;");
-            lblPrescriptionHint.setVisible(true);
-            lblPrescriptionHint.setManaged(true);
-        }
     }
 
     private void stopPolling() {

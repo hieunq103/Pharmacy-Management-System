@@ -287,10 +287,6 @@ public class SearchableStringPicker extends VBox {
         return txtInput.textProperty();
     }
 
-    public TextField getInputField() {
-        return txtInput;
-    }
-
     private void applySelection(String value) {
         isUpdatingText = true;
         debounceTimer.stop();

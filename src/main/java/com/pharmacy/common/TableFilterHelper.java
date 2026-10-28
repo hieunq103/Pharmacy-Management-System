@@ -73,8 +73,6 @@ public final class TableFilterHelper {
             menu.hide();
         };
 
-        column.getProperties().put("tableFilterHelper_setter", filterSetter);
-
         for (String opt : options) {
             Label lblOpt = new Label(opt);
             lblOpt.setMaxWidth(Double.MAX_VALUE);
@@ -108,20 +106,6 @@ public final class TableFilterHelper {
         headerBox.setAlignment(Pos.CENTER_LEFT);
         column.setText(null);
         column.setGraphic(headerBox);
-    }
-
-    /**
-     * Kích hoạt bộ lọc trên cột theo lập trình
-     */
-    public static void setFilter(TableColumn<?, ?> column, String value) {
-        if (column == null)
-            return;
-        Object setter = column.getProperties().get("tableFilterHelper_setter");
-        if (setter instanceof java.util.function.Consumer<?> consumer) {
-            @SuppressWarnings("unchecked")
-            java.util.function.Consumer<String> stringConsumer = (java.util.function.Consumer<String>) consumer;
-            stringConsumer.accept(value);
-        }
     }
 
     /**

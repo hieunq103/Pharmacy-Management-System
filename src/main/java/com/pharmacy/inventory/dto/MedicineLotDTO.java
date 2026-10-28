@@ -17,7 +17,6 @@ public class MedicineLotDTO {
     private Integer quantityIn;
     private Integer quantityRemaining;
     private LocalDateTime transactionAt;
-    private String transactionType;
     private String supplierName;
     private String manufacturer;
     private String note;
@@ -112,14 +111,6 @@ public class MedicineLotDTO {
         this.transactionAt = transactionAt;
     }
 
-    public String getTransactionType() {
-        return transactionType;
-    }
-
-    public void setTransactionType(String transactionType) {
-        this.transactionType = transactionType;
-    }
-
     public String getSupplierName() {
         return supplierName != null && !supplierName.isBlank() ? supplierName : "—";
     }
@@ -168,29 +159,11 @@ public class MedicineLotDTO {
         return expiryDate != null ? com.pharmacy.common.FormatUtils.formatDate(expiryDate) : "—";
     }
 
-    public String getFormattedTransactionDate() {
-        if (transactionAt != null) {
-            return com.pharmacy.common.FormatUtils.formatDate(transactionAt.toLocalDate());
-        }
-        return "—";
-    }
-
     public String getFormattedImportPrice() {
         if (importPrice != null) {
             return com.pharmacy.common.FormatUtils.formatCurrency(importPrice) + " đ";
         }
         return "0 đ";
-    }
-
-    public BigDecimal getTotalRemainingValue() {
-        if (importPrice == null || getQuantityRemaining() <= 0) {
-            return BigDecimal.ZERO;
-        }
-        return importPrice.multiply(BigDecimal.valueOf(getQuantityRemaining()));
-    }
-
-    public String getFormattedTotalValue() {
-        return com.pharmacy.common.FormatUtils.formatCurrency(getTotalRemainingValue()) + " đ";
     }
 
     public String getManufacturer() {

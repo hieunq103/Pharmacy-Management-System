@@ -1,8 +1,6 @@
 package com.pharmacy.infra.db;
 
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,18 +18,10 @@ public final class DatabaseHealthChecker {
         return thread;
     });
 
-    // Thuộc tính theo dõi trạng thái
-    private static final BooleanProperty connected = new SimpleBooleanProperty(true);
+    // Trạng thái lần kiểm tra trước (chỉ đọc/ghi trên luồng giám sát)
+    private static volatile boolean connected = true;
 
     private DatabaseHealthChecker() {
-    }
-
-    public static BooleanProperty connectedProperty() {
-        return connected;
-    }
-
-    public static boolean isConnected() {
-        return connected.get();
     }
 
     /**
@@ -44,14 +34,12 @@ public final class DatabaseHealthChecker {
     public static void startMonitoring(int intervalSeconds, Consumer<Boolean> onStatusChange) {
         scheduler.scheduleWithFixedDelay(() -> {
             boolean alive = HibernateUtil.isDatabaseAlive();
-            if (alive != connected.get()) {
+            if (alive != connected) {
+                connected = alive;
                 log.warn("Trạng thái kết nối CSDL thay đổi: {}", alive ? "ONLINE" : "DISCONNECTED");
-                Platform.runLater(() -> {
-                    connected.set(alive);
-                    if (onStatusChange != null) {
-                        onStatusChange.accept(alive);
-                    }
-                });
+                if (onStatusChange != null) {
+                    Platform.runLater(() -> onStatusChange.accept(alive));
+                }
             }
         }, 2, intervalSeconds, TimeUnit.SECONDS);
     }

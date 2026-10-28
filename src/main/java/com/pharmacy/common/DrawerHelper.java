@@ -113,11 +113,4 @@ public class DrawerHelper {
         parallel.play();
     }
 
-    public boolean isOpen() {
-        return overlayRegion != null && overlayRegion.isVisible();
-    }
-
-    public StackPane getAppRootPane() {
-        return appRootPane;
-    }
 }

@@ -56,10 +56,6 @@ public final class FormatUtils {
         }
     }
 
-    public static DecimalFormat getCurrencyFormatter() {
-        return CURRENCY_FORMATTER;
-    }
-
     public static String getInitials(String fullName) {
         if (fullName == null || fullName.trim().isEmpty()) return "NV";
         String[] parts = fullName.trim().split("\\s+");

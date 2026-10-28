@@ -194,41 +194,10 @@ public class MainLayoutController {
         }
     }
 
-    public void navigateToInventoryHistory() {
-        if (UserSession.isLoggedIn() && !UserSession.getInstance().isManager()) {
-            log.warn("Nhân viên không có quyền truy cập lịch sử xuất nhập kho! Điều hướng về Bán hàng.");
-            handleNavSales(null);
-            return;
-        }
-        setActiveButton(btnInventory);
-        if (lblHeaderTitle != null) {
-            lblHeaderTitle.setText("Kho thuốc");
-        }
-        FXMLLoader loader = loadCenterViewWithLoader("/fxml/inventory/inventory.fxml");
-        if (loader != null && loader.getController() instanceof com.pharmacy.inventory.InventoryController invCtrl) {
-            invCtrl.showHistoryView();
-        }
-    }
-
-    public void navigateToSales() {
-        setActiveButton(btnSales);
-        if (lblHeaderTitle != null) {
-            lblHeaderTitle.setText("Bán hàng");
-        }
-        loadCenterView("/fxml/sales/sales.fxml");
-    }
-
     /**
-     * Mở Lịch sử bán hàng đã lọc sẵn theo tháng/năm (từ nút "Xem đầy đủ..." ở trang Báo cáo); back -> Báo cáo.
+     * Mở Lịch sử bán hàng lọc theo tháng/năm (nút "Xem đầy đủ" ở Báo cáo, "Lịch sử bán" ở Tổng quan);
+     * onBack là trang nút back quay về.
      */
-    public void navigateToSalesHistoryForMonth(int year, int month) {
-        com.pharmacy.sales.SalesController salesCtrl = showSalesPage();
-        if (salesCtrl != null) {
-            salesCtrl.openSalesHistoryForMonth(year, month, () -> handleNavReport(null));
-        }
-    }
-
-    /** Mở Lịch sử bán hàng lọc theo tháng/năm; onBack là trang nút back quay về. */
     public void navigateToSalesHistoryForMonth(int year, int month, Runnable onBack) {
         com.pharmacy.sales.SalesController salesCtrl = showSalesPage();
         if (salesCtrl != null) {

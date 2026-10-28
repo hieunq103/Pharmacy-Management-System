@@ -1,7 +1,6 @@
 package com.pharmacy.inventory.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 public class MedicineInventoryDTO {
 
@@ -15,12 +14,9 @@ public class MedicineInventoryDTO {
     private String unit;
     private BigDecimal sellPrice;
 
-    private String nearestLotNumber;
-    private LocalDate nearestExpiryDate;
     private Integer totalQuantity;
 
     private InventoryStatus status;
-    private Integer minStockThreshold;
 
     private StockStatus stockStatus;
     private ExpiryStatus expiryStatus;
@@ -68,8 +64,7 @@ public class MedicineInventoryDTO {
 
     public MedicineInventoryDTO(Integer medicineId, String medicineCode, String medicineName,
                                 String categoryName, Boolean requiresPrescription, String unit,
-                                BigDecimal sellPrice, String nearestLotNumber,
-                                LocalDate nearestExpiryDate, Integer totalQuantity,
+                                BigDecimal sellPrice, Integer totalQuantity,
                                 InventoryStatus status) {
         this.medicineId = medicineId;
         this.medicineCode = medicineCode;
@@ -78,8 +73,6 @@ public class MedicineInventoryDTO {
         this.requiresPrescription = requiresPrescription;
         this.unit = unit;
         this.sellPrice = sellPrice;
-        this.nearestLotNumber = nearestLotNumber;
-        this.nearestExpiryDate = nearestExpiryDate;
         this.totalQuantity = totalQuantity != null ? totalQuantity : 0;
         this.status = status;
     }
@@ -111,20 +104,11 @@ public class MedicineInventoryDTO {
     public BigDecimal getSellPrice() { return sellPrice; }
     public void setSellPrice(BigDecimal sellPrice) { this.sellPrice = sellPrice; }
 
-    public String getNearestLotNumber() { return nearestLotNumber; }
-    public void setNearestLotNumber(String nearestLotNumber) { this.nearestLotNumber = nearestLotNumber; }
-
-    public LocalDate getNearestExpiryDate() { return nearestExpiryDate; }
-    public void setNearestExpiryDate(LocalDate nearestExpiryDate) { this.nearestExpiryDate = nearestExpiryDate; }
-
     public Integer getTotalQuantity() { return totalQuantity; }
     public void setTotalQuantity(Integer totalQuantity) { this.totalQuantity = totalQuantity; }
 
     public InventoryStatus getStatus() { return status; }
     public void setStatus(InventoryStatus status) { this.status = status; }
-
-    public Integer getMinStockThreshold() { return minStockThreshold; }
-    public void setMinStockThreshold(Integer minStockThreshold) { this.minStockThreshold = minStockThreshold; }
 
     public StockStatus getStockStatus() { return stockStatus; }
     public void setStockStatus(StockStatus stockStatus) { this.stockStatus = stockStatus; }

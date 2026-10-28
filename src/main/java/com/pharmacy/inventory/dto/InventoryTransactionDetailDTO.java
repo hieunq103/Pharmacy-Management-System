@@ -1,18 +1,16 @@
 package com.pharmacy.inventory.dto;
 
+import com.pharmacy.common.FormatUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 /**
  * DTO đại diện cho một dòng chi tiết thuốc trong giao dịch xuất hoặc nhập kho (Detail record).
  */
 public class InventoryTransactionDetailDTO {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private Long id;
-    private Long transactionId;
     private Integer medicineId;
     private String medicineCode;
     private String medicineName;
@@ -29,14 +27,13 @@ public class InventoryTransactionDetailDTO {
     public InventoryTransactionDetailDTO() {
     }
 
-    public InventoryTransactionDetailDTO(Long id, Long transactionId, Integer medicineId,
+    public InventoryTransactionDetailDTO(Long id, Integer medicineId,
                                         String medicineCode, String medicineName,
                                         String categoryName, String unit, String manufacturer,
                                         String lotNumber, LocalDate expiryDate,
                                         int quantity, BigDecimal unitPrice, BigDecimal totalPrice,
                                         String reason) {
         this.id = id;
-        this.transactionId = transactionId;
         this.medicineId = medicineId;
         this.medicineCode = medicineCode;
         this.medicineName = medicineName;
@@ -53,7 +50,7 @@ public class InventoryTransactionDetailDTO {
 
     public String getFormattedExpiryDate() {
         if (expiryDate == null) return "N/A";
-        return expiryDate.format(DATE_FORMATTER);
+        return expiryDate.format(FormatUtils.DATE_FORMATTER);
     }
 
     // Getters and Setters
@@ -63,14 +60,6 @@ public class InventoryTransactionDetailDTO {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getTransactionId() {
-        return transactionId;
-    }
-
-    public void setTransactionId(Long transactionId) {
-        this.transactionId = transactionId;
     }
 
     public Integer getMedicineId() {
@@ -157,10 +146,6 @@ public class InventoryTransactionDetailDTO {
         if (totalPrice != null) return totalPrice;
         if (unitPrice != null) return unitPrice.multiply(BigDecimal.valueOf(quantity));
         return BigDecimal.ZERO;
-    }
-
-    public void setTotalPrice(BigDecimal totalPrice) {
-        this.totalPrice = totalPrice;
     }
 
     public String getReason() {

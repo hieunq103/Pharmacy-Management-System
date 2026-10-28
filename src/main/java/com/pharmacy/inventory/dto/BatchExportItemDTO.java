@@ -4,14 +4,12 @@ import com.pharmacy.common.FormatUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 /**
  * DTO đại diện cho một mặt hàng thuốc/lô thuốc trong danh sách lập phiếu xuất kho hàng loạt.
  */
 public class BatchExportItemDTO {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private int medicineId;
     private String medicineCode;
@@ -56,7 +54,7 @@ public class BatchExportItemDTO {
     }
 
     public String getFormattedExpiryDate() {
-        return expiryDate != null ? expiryDate.format(DATE_FORMATTER) : "";
+        return expiryDate != null ? expiryDate.format(FormatUtils.DATE_FORMATTER) : "";
     }
 
     public String getFormattedImportPrice() {

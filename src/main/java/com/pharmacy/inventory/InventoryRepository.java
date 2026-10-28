@@ -1,5 +1,6 @@
 package com.pharmacy.inventory;
 
+import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.PageResult;
 import com.pharmacy.infra.db.HibernateUtil;
@@ -23,7 +24,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +37,6 @@ import static com.pharmacy.inventory.InventorySql.*;
 public class InventoryRepository {
 
     private static final Logger log = LoggerFactory.getLogger(InventoryRepository.class);
-    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     /** lowStockMedicines/nearExpiryMedicines đếm theo thuốc, khớp bộ lọc Tồn kho/Hạn dùng của trang Kho thuốc. */
     public record InventorySummary(long totalMedicines, long inStockMedicines, long lowStockMedicines, long nearExpiryMedicines) {}
@@ -106,10 +105,10 @@ public class InventoryRepository {
                 if (expDate == null) {
                     subtitle = "Cận hạn sử dụng";
                 } else if (expDate.isBefore(today)) {
-                    subtitle = "Đã hết hạn " + expDate.format(DATE_FMT);
+                    subtitle = "Đã hết hạn " + expDate.format(FormatUtils.DATE_FORMATTER);
                 } else {
                     long daysLeft = ChronoUnit.DAYS.between(today, expDate);
-                    subtitle = "Hết hạn " + expDate.format(DATE_FMT) + (daysLeft == 0 ? " (Hôm nay)" : " (Còn " + daysLeft + " ngày)");
+                    subtitle = "Hết hạn " + expDate.format(FormatUtils.DATE_FORMATTER) + (daysLeft == 0 ? " (Hôm nay)" : " (Còn " + daysLeft + " ngày)");
                 }
                 alerts.add(new InventoryAlertDTO(toInt(r[0]), title, subtitle, toInt(r[4]), toStr(r[5]),
                         InventoryAlertDTO.AlertType.EXPIRY));
@@ -283,13 +282,10 @@ public class InventoryRepository {
         dto.setSellPrice(toBigDecimal(row[6]));
         dto.setActiveIngredient(toStr(row[7]));
         dto.setManufacturer(toStr(row[8]));
-        dto.setNearestLotNumber(toStr(row[9]));
-        dto.setNearestExpiryDate(toLocalDate(row[10]));
 
-        int qty = toInt(row[11]);
+        int qty = toInt(row[9]);
         dto.setTotalQuantity(qty);
-        int minStock = toInt(row[14]);
-        dto.setMinStockThreshold(minStock);
+        int minStock = toInt(row[12]);
         int threshold = minStock > 0 ? minStock : AppConstants.DEFAULT_LOW_STOCK_THRESHOLD;
 
         if (qty == 0) {
@@ -299,7 +295,7 @@ public class InventoryRepository {
         } else {
             dto.setStockStatus(MedicineInventoryDTO.StockStatus.NORMAL);
         }
-        dto.setExpiryStatus(expiryStatus(toInt(row[12]), toInt(row[13])));
+        dto.setExpiryStatus(expiryStatus(toInt(row[10]), toInt(row[11])));
 
         // Trạng thái tổng hợp tương thích ngược (Legacy InventoryStatus)
         if (dto.getStockStatus() == MedicineInventoryDTO.StockStatus.OUT_OF_STOCK) {
@@ -377,7 +373,6 @@ public class InventoryRepository {
                 dto.setQuantityIn(toInt(row[5]));
                 dto.setQuantityRemaining(toInt(row[6]));
                 dto.setTransactionAt(toLocalDateTime(row[7]));
-                dto.setTransactionType(row[8] != null ? row[8].toString() : "");
                 dto.setSupplierName(toStr(row[9]));
                 dto.setNote(toStr(row[10]));
                 dto.setManufacturer(toStr(row[11]));
@@ -741,7 +736,7 @@ public class InventoryRepository {
             for (Object[] row : query.list()) {
                 result.add(new InventoryTransactionDTO(
                         toLongObj(row[0]), toStr(row[1]), toLocalDateTime(row[2]), toInteger(row[4]), toStr(row[5]),
-                        toInteger(row[6]), toStr(row[7]), toInt(row[8]), toInt(row[9]), toBigDecimal(row[10]), toStr(row[3])));
+                        toStr(row[7]), toInt(row[8]), toInt(row[9]), toBigDecimal(row[10]), toStr(row[3])));
             }
             return result;
         } catch (Exception e) {
@@ -803,7 +798,7 @@ public class InventoryRepository {
                 String type = toStr(row[1]);
                 InventoryTransactionDTO dto = new InventoryTransactionDTO(
                         toLongObj(row[0]), type, toLocalDateTime(row[2]), toInteger(row[4]), toStr(row[5]),
-                        null, null, toInt(row[6]), toInt(row[7]), toBigDecimal(row[8]), toStr(row[3]));
+                        null, toInt(row[6]), toInt(row[7]), toBigDecimal(row[8]), toStr(row[3]));
                 if ("EXPORT_DISPOSAL".equalsIgnoreCase(type)) {
                     dto.setExportTypeLabel("Xuất hủy hàng hỏng/hết hạn");
                 } else if ("EXPORT_SALE".equalsIgnoreCase(type)) {
@@ -888,7 +883,7 @@ public class InventoryRepository {
             List<InventoryTransactionDetailDTO> list = new ArrayList<>(rows.size());
             for (Object[] row : rows) {
                 list.add(new InventoryTransactionDetailDTO(
-                        toLongObj(row[0]), toLongObj(row[1]), toInteger(row[2]), toStr(row[3]), toStr(row[4]),
+                        toLongObj(row[0]), toInteger(row[2]), toStr(row[3]), toStr(row[4]),
                         toStr(row[5]), toStr(row[6]), toStr(row[7]), toStr(row[8]), toLocalDate(row[9]),
                         toInt(row[10]), toBigDecimal(row[11]), toBigDecimal(row[12]), toStr(row[13])));
             }

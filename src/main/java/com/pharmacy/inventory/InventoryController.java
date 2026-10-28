@@ -18,6 +18,7 @@ import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.PageResult;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -620,7 +621,7 @@ public class InventoryController implements Initializable {
 
         } catch (Exception ex) {
             log.error("Lỗi khi mở cửa sổ chi tiết lô hàng: ", ex);
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể mở chi tiết lô hàng: " + ex.getMessage());
+            DialogUtils.showError("Lỗi", "Không thể mở chi tiết lô hàng: " + ex.getMessage());
         }
     }
 
@@ -639,7 +640,7 @@ public class InventoryController implements Initializable {
         loadSummaryCounts();
     }
 
-    public void showHistoryView() {
+    private void showHistoryView() {
         ensureHistoryViewLoaded();
         if (viewMedicineInventory != null) {
             viewMedicineInventory.setVisible(false);
@@ -771,7 +772,7 @@ public class InventoryController implements Initializable {
         String rawPrice = draft.getSellPriceStr() != null ? draft.getSellPriceStr().trim() : "0";
 
         if (newName.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Cảnh báo", "Tên thuốc không được để trống!");
+            DialogUtils.showWarning("Cảnh báo", "Tên thuốc không được để trống!");
             return;
         }
 
@@ -788,11 +789,11 @@ public class InventoryController implements Initializable {
         try {
             newPrice = new BigDecimal(rawPrice);
             if (newPrice.compareTo(BigDecimal.ZERO) < 0) {
-                showAlert(Alert.AlertType.WARNING, "Cảnh báo", "Giá bán không được âm!");
+                DialogUtils.showWarning("Cảnh báo", "Giá bán không được âm!");
                 return;
             }
         } catch (Exception e) {
-            showAlert(Alert.AlertType.WARNING, "Cảnh báo", "Giá bán không hợp lệ (ví dụ: 150000)!");
+            DialogUtils.showWarning("Cảnh báo", "Giá bán không hợp lệ (ví dụ: 150000)!");
             return;
         }
 
@@ -826,29 +827,19 @@ public class InventoryController implements Initializable {
                 }
                 log.info("Cập nhật thành công thuốc ID={}", dto.getMedicineId());
             } else {
-                showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể lưu cập nhật thuốc xuống cơ sở dữ liệu!");
+                DialogUtils.showError("Lỗi", "Không thể lưu cập nhật thuốc xuống cơ sở dữ liệu!");
             }
         });
 
         saveTask.setOnFailed(e -> {
             Throwable ex = saveTask.getException();
             log.error("Lỗi khi cập nhật thuốc: ", ex);
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Đã xảy ra lỗi khi lưu thông tin thuốc: " + (ex != null ? ex.getMessage() : ""));
+            DialogUtils.showError("Lỗi", "Đã xảy ra lỗi khi lưu thông tin thuốc: " + (ex != null ? ex.getMessage() : ""));
         });
 
         Thread th = new Thread(saveTask);
         th.setDaemon(true);
         th.start();
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String content) {
-        if (type == Alert.AlertType.ERROR) {
-            com.pharmacy.common.DialogUtils.showError(title, content);
-        } else if (type == Alert.AlertType.WARNING) {
-            com.pharmacy.common.DialogUtils.showWarning(title, content);
-        } else {
-            com.pharmacy.common.DialogUtils.showInfo(title, content);
-        }
     }
 
     public void loadInventoryData() {

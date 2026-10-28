@@ -52,7 +52,6 @@ public class SalesOrderDTO {
     public void setCode(String code) { this.code = code; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
     public Integer getEmployeeId() { return employeeId; }
     public void setEmployeeId(Integer employeeId) { this.employeeId = employeeId; }
@@ -61,7 +60,6 @@ public class SalesOrderDTO {
     public void setEmployeeName(String employeeName) { this.employeeName = employeeName; }
 
     public String getEmployeeCode() { return employeeCode; }
-    public void setEmployeeCode(String employeeCode) { this.employeeCode = employeeCode; }
 
     public String getCustomerPhone() { return customerPhone; }
     public void setCustomerPhone(String customerPhone) { this.customerPhone = customerPhone; }
@@ -73,7 +71,6 @@ public class SalesOrderDTO {
     public void setTotalQuantity(int totalQuantity) { this.totalQuantity = totalQuantity; }
 
     public BigDecimal getSubtotal() { return subtotal; }
-    public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
 
     public BigDecimal getDiscount() { return discount; }
     public void setDiscount(BigDecimal discount) { this.discount = discount; }

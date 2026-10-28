@@ -24,28 +24,12 @@ public class CartOrder {
     public ObservableList<CartItem> getItems() { return items; }
     public String getCustomerPhone() { return customerPhone; }
     public void setCustomerPhone(String customerPhone) { this.customerPhone = customerPhone; }
-    public BigDecimal getDiscount() { 
-        if (discount == null || discount.compareTo(BigDecimal.ZERO) < 0) {
-            return BigDecimal.ZERO;
-        }
-        BigDecimal sub = getSubtotal();
-        if (discount.compareTo(sub) > 0) {
-            return sub;
-        }
-        return discount; 
+    public BigDecimal getDiscount() {
+        return CartTotals.clampDiscount(discount, getSubtotal());
     }
 
-    public void setDiscount(BigDecimal discount) { 
-        if (discount == null || discount.compareTo(BigDecimal.ZERO) <= 0) {
-            this.discount = BigDecimal.ZERO;
-        } else {
-            BigDecimal sub = getSubtotal();
-            if (discount.compareTo(sub) > 0) {
-                this.discount = sub;
-            } else {
-                this.discount = discount;
-            }
-        }
+    public void setDiscount(BigDecimal discount) {
+        this.discount = CartTotals.clampDiscount(discount, getSubtotal());
     }
 
     public int getItemCount() {
@@ -53,22 +37,15 @@ public class CartOrder {
     }
 
     public BigDecimal getSubtotal() {
-        BigDecimal sum = BigDecimal.ZERO;
-        for (CartItem item : items) {
-            sum = sum.add(item.getLineTotal());
-        }
-        return sum;
+        return CartTotals.subtotal(items);
     }
 
     public BigDecimal getTotalAmount() {
-        BigDecimal sub = getSubtotal();
-        BigDecimal disc = getDiscount();
-        BigDecimal total = sub.subtract(disc);
-        return total.compareTo(BigDecimal.ZERO) > 0 ? total : BigDecimal.ZERO;
+        return CartTotals.total(getSubtotal(), getDiscount());
     }
 
     public boolean hasPrescriptionItem() {
-        return items.stream().anyMatch(CartItem::isRequiresPrescription);
+        return CartTotals.hasPrescriptionItem(items);
     }
 
     public void addItem(CartItem newItem) {

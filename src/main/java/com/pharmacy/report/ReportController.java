@@ -49,7 +49,6 @@ public class ReportController {
 
 
     // Filter Controls
-    @FXML private Label lblFilterPeriodTitle;
     @FXML private Button btnFilterDay;
     @FXML private DatePicker dpSelectedDate;
     @FXML private Button btnFilterMonth;
@@ -283,9 +282,6 @@ public class ReportController {
         }
 
         updateFilterButtonStyles(true);
-        if (lblFilterPeriodTitle != null) {
-            lblFilterPeriodTitle.setText("Hôm nay (" + selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ")");
-        }
     }
 
     private void setupDatePickerFormat(DatePicker datePicker) {
@@ -318,13 +314,6 @@ public class ReportController {
     public void handleSelectDayMode(ActionEvent event) {
         currentMode = PeriodMode.DAY;
         updateFilterButtonStyles(true);
-        if (lblFilterPeriodTitle != null) {
-            if (selectedDate.equals(LocalDate.now())) {
-                lblFilterPeriodTitle.setText("Hôm nay (" + selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ")");
-            } else {
-                lblFilterPeriodTitle.setText("Ngày " + selectedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-            }
-        }
         loadAllData();
     }
 
@@ -342,13 +331,6 @@ public class ReportController {
         selectedDate = date;
         updateFilterButtonStyles(true);
 
-        if (lblFilterPeriodTitle != null) {
-            if (date.equals(LocalDate.now())) {
-                lblFilterPeriodTitle.setText("Hôm nay (" + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ")");
-            } else {
-                lblFilterPeriodTitle.setText("Ngày " + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-            }
-        }
 
         loadAllData();
     }
@@ -358,9 +340,6 @@ public class ReportController {
         currentMode = PeriodMode.MONTH;
         syncMonthYearFromInputs();
         updateFilterButtonStyles(false);
-        if (lblFilterPeriodTitle != null) {
-            lblFilterPeriodTitle.setText("Tháng " + selectedMonth + "/" + selectedYear);
-        }
         loadAllData();
     }
 
@@ -382,9 +361,6 @@ public class ReportController {
                     if (modeChanged) {
                         currentMode = PeriodMode.MONTH;
                         updateFilterButtonStyles(false);
-                    }
-                    if (lblFilterPeriodTitle != null) {
-                        lblFilterPeriodTitle.setText("Tháng " + selectedMonth + "/" + selectedYear);
                     }
                     if (yearChanged || modeChanged || event != null) {
                         loadAllData();
@@ -408,9 +384,6 @@ public class ReportController {
                 selectedMonth = Integer.parseInt(val);
             } catch (NumberFormatException ignored) {}
             if (currentMode == PeriodMode.MONTH) {
-                if (lblFilterPeriodTitle != null) {
-                    lblFilterPeriodTitle.setText("Tháng " + selectedMonth + "/" + selectedYear);
-                }
                 loadAllData();
             }
         }
@@ -440,11 +413,6 @@ public class ReportController {
         }
     }
 
-
-    @FXML
-    public void handleRefresh(ActionEvent event) {
-        loadAllData();
-    }
 
     private void updateFilterButtonStyles(boolean isDay) {
         if (btnFilterDay != null) {
@@ -533,9 +501,8 @@ public class ReportController {
                     revTimeline = reportService.get7DaysRevenueTimelineUpTo(targetDate, empId);
                     medTimeline = reportService.get7DaysMedicineTimelineUpTo(targetDate, empId);
 
-                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                    revChartTitle = "Biểu đồ doanh số 7 ngày (tính đến " + targetDate.format(dtf) + ")";
-                    medChartTitle = "Biểu đồ sản lượng thuốc đã bán 7 ngày (tính đến " + targetDate.format(dtf) + ")";
+                    revChartTitle = "Biểu đồ doanh số 7 ngày (tính đến " + targetDate.format(FormatUtils.DATE_FORMATTER) + ")";
+                    medChartTitle = "Biểu đồ sản lượng thuốc đã bán 7 ngày (tính đến " + targetDate.format(FormatUtils.DATE_FORMATTER) + ")";
                 } else {
                     // Chế độ Tháng: Thống kê cho tháng được chọn trong năm đó
                     LocalDate firstDay = LocalDate.of(targetYear, targetMonth, 1);
@@ -625,7 +592,7 @@ public class ReportController {
 
                 if (masterSoldMedicines.isEmpty()) {
                     String periodText = (mode == PeriodMode.DAY)
-                            ? ("ngày " + targetDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                            ? ("ngày " + targetDate.format(FormatUtils.DATE_FORMATTER))
                             : ("Tháng " + targetMonth + "/" + targetYear);
                     Label emptyPlaceholder = new Label("Không có dữ liệu thuốc đã bán trong " + periodText);
                     emptyPlaceholder.setStyle("-fx-font-family: 'Inter 18pt'; -fx-font-size: 14px; -fx-text-fill: #64748B;");
@@ -829,7 +796,7 @@ public class ReportController {
         medPeriodMonth = month;
         if (lblMedTableTitle != null) {
             lblMedTableTitle.setText(mode == PeriodMode.DAY
-                    ? "Top " + TOP_LIMIT + " thuốc bán chạy nhất ngày " + date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    ? "Top " + TOP_LIMIT + " thuốc bán chạy nhất ngày " + date.format(FormatUtils.DATE_FORMATTER)
                     : "Top " + TOP_LIMIT + " thuốc bán chạy nhất tháng " + month + "/" + year);
         }
         topSoldMedicines.setAll(masterSoldMedicines.subList(0, Math.min(TOP_LIMIT, masterSoldMedicines.size())));
@@ -845,7 +812,7 @@ public class ReportController {
         if (medPeriodMode == PeriodMode.DAY) {
             layout.navigateToSalesHistoryForDate(medPeriodDate, layout::navigateToReport);
         } else {
-            layout.navigateToSalesHistoryForMonth(medPeriodYear, medPeriodMonth);
+            layout.navigateToSalesHistoryForMonth(medPeriodYear, medPeriodMonth, layout::navigateToReport);
         }
     }
 

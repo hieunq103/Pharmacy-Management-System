@@ -36,10 +36,6 @@ public class InventoryAlertDTO {
         return subtitle;
     }
 
-    public int getRemainingQuantity() {
-        return remainingQuantity;
-    }
-
     public String getUnit() {
         return unit;
     }

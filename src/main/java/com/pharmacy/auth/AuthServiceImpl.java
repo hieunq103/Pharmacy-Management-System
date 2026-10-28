@@ -10,7 +10,6 @@ import com.pharmacy.infra.security.PasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
 
 public class AuthServiceImpl implements AuthService {
 
@@ -81,18 +80,5 @@ public class AuthServiceImpl implements AuthService {
             log.info("Nhân viên [{}] đã đăng xuất", UserSession.getInstance().getEmployeeName());
         }
         UserSession.invalidate();
-    }
-
-    @Override
-    public Optional<Account> getCurrentUser() {
-        if (UserSession.isLoggedIn()) {
-            return Optional.ofNullable(UserSession.getInstance().getAccount());
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    public boolean isAuthenticated() {
-        return UserSession.isLoggedIn();
     }
 }

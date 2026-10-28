@@ -612,82 +612,7 @@ public class SalesController implements Initializable {
         lblTotal.setAlignment(Pos.CENTER_RIGHT);
 
         // Bộ nút tăng/giảm [-] [txtQty] [+]
-        HBox qtyBox = new HBox(4);
-        qtyBox.setAlignment(Pos.CENTER);
-
-        Button btnMinus = new Button("-");
-        btnMinus.getStyleClass().add("btn-qty-control");
-        btnMinus.setOnAction(e -> {
-            if (item.getQuantity() > 1) {
-                item.setQuantity(item.getQuantity() - 1);
-            } else {
-                activeOrder.removeItem(item);
-            }
-            recalculateDiscount();
-            renderCartItems();
-            renderMedicineCards();
-        });
-
-        // Hỗ trợ nhập trực tiếp số thuốc cần mua (số nguyên dương)
-        TextField txtQty = new TextField(String.valueOf(item.getQuantity()));
-        txtQty.getStyleClass().add("txt-qty-input");
-        txtQty.setMinWidth(48);
-        txtQty.setPrefWidth(52);
-        txtQty.setMaxWidth(60);
-        txtQty.setPrefHeight(26);
-        txtQty.setAlignment(Pos.CENTER);
-
-        // Chỉ cho phép nhập số
-        txtQty.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null && !newVal.matches("\\d*")) {
-                txtQty.setText(newVal.replaceAll("[^0-9]", ""));
-            }
-        });
-
-        Runnable commitQty = () -> {
-            String text = txtQty.getText() != null ? txtQty.getText().trim() : "";
-            if (text.isEmpty() || "0".equals(text)) {
-                txtQty.setText(String.valueOf(item.getQuantity()));
-                return;
-            }
-            try {
-                int newQty = Integer.parseInt(text);
-                if (newQty <= 0) newQty = 1;
-                if (newQty > item.getMaxStock()) {
-                    DialogUtils.showWarning("Vượt quá tồn kho", "Số lượng trong kho chỉ còn " + item.getMaxStock() + ".");
-                    newQty = item.getMaxStock();
-                }
-                if (newQty != item.getQuantity()) {
-                    item.setQuantity(newQty);
-                    recalculateDiscount();
-                    renderCartItems();
-                    renderMedicineCards();
-                } else {
-                    txtQty.setText(String.valueOf(newQty));
-                }
-            } catch (Exception ex) {
-                txtQty.setText(String.valueOf(item.getQuantity()));
-            }
-        };
-
-        txtQty.setOnAction(e -> commitQty.run());
-        txtQty.setOnMouseClicked(e -> txtQty.selectAll());
-        txtQty.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
-            if (isFocused) {
-                javafx.application.Platform.runLater(txtQty::selectAll);
-            } else {
-                commitQty.run();
-            }
-        });
-
-        Button btnPlus = new Button("+");
-        btnPlus.getStyleClass().add("btn-qty-control");
-        btnPlus.setOnAction(e -> {
-            if (item.getQuantity() + 1 > item.getMaxStock()) {
-                DialogUtils.showWarning("Hết tồn kho", "Số lượng trong kho chỉ còn " + item.getMaxStock() + ".");
-                return;
-            }
-            item.setQuantity(item.getQuantity() + 1);
+        HBox qtyBox = CartQuantityControl.create(item, activeOrder, 52, () -> {
             recalculateDiscount();
             renderCartItems();
             renderMedicineCards();
@@ -703,11 +628,7 @@ public class SalesController implements Initializable {
             renderMedicineCards();
         });
 
-        btnMinus.setMinWidth(Region.USE_PREF_SIZE);
-        btnPlus.setMinWidth(Region.USE_PREF_SIZE);
         btnDelete.setMinWidth(Region.USE_PREF_SIZE);
-        qtyBox.getChildren().addAll(btnMinus, txtQty, btnPlus);
-        qtyBox.setMinWidth(Region.USE_PREF_SIZE);
 
         // Tên thuốc đã giãn hết chiều ngang (Hgrow) nên nút ✕ luôn nằm sát mép phải
         nameRow.getChildren().add(btnDelete);

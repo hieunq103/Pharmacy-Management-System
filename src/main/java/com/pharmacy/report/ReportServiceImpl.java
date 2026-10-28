@@ -22,7 +22,6 @@ import java.util.List;
 public class ReportServiceImpl implements ReportService {
 
     private static final DateTimeFormatter SHORT_FMT = DateTimeFormatter.ofPattern("dd/MM");
-    private static final DateTimeFormatter FULL_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final SalesService salesService;
     private final ReportRepository repository;
@@ -68,7 +67,7 @@ public class ReportServiceImpl implements ReportService {
     public List<RevenueTimelineDTO> get7DaysRevenueTimelineUpTo(LocalDate endDate, Integer employeeId) {
         return getCached7DaysSales(endDate, employeeId).stream()
                 .map(d -> new RevenueTimelineDTO(d.getDate().format(SHORT_FMT), d.getAmount(), d.getOrderCount(),
-                        "Ngày " + d.getDate().format(FULL_FMT) + ": " + FormatUtils.formatCurrency(d.getAmount()) + " VNĐ"))
+                        "Ngày " + d.getDate().format(FormatUtils.DATE_FORMATTER) + ": " + FormatUtils.formatCurrency(d.getAmount()) + " VNĐ"))
                 .toList();
     }
 
@@ -81,7 +80,7 @@ public class ReportServiceImpl implements ReportService {
     public List<MedicineTimelineDTO> get7DaysMedicineTimelineUpTo(LocalDate endDate, Integer employeeId) {
         return getCached7DaysSales(endDate, employeeId).stream()
                 .map(d -> new MedicineTimelineDTO(d.getDate().format(SHORT_FMT), d.getTotalQuantity(),
-                        "Ngày " + d.getDate().format(FULL_FMT) + ": " + String.format("%,d", d.getTotalQuantity()) + " sản phẩm"))
+                        "Ngày " + d.getDate().format(FormatUtils.DATE_FORMATTER) + ": " + String.format("%,d", d.getTotalQuantity()) + " sản phẩm"))
                 .toList();
     }
 

@@ -10,7 +10,6 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -177,10 +176,10 @@ public class EmployeeController implements Initializable {
         currentLoadTask.setOnSucceeded(e -> {
             PageResult<Employee> result = currentLoadTask.getValue();
             if (result != null) {
-                totalRecords = result.totalElements();
-                totalPages = result.totalPages();
-                currentPage = result.currentPage();
-                pageData.setAll(result.content());
+                totalRecords = result.getTotalElements();
+                totalPages = result.getTotalPages();
+                currentPage = result.getCurrentPage();
+                pageData.setAll(result.getItems());
 
                 // Cập nhật thông tin phạm vi bản ghi
                 if (lblRecordRange != null) {
@@ -423,21 +422,6 @@ public class EmployeeController implements Initializable {
         showGlobalDrawer();
     }
 
-    private ScrollBar cachedEmployeeHBar = null;
-
-    private ScrollBar getEmployeeHorizontalScrollBar() {
-        if (cachedEmployeeHBar == null || cachedEmployeeHBar.getScene() == null) {
-            for (Node n : tableEmployee.lookupAll(".scroll-bar")) {
-                if (n instanceof ScrollBar sb && sb.getOrientation() == Orientation.HORIZONTAL) {
-                    cachedEmployeeHBar = sb;
-                    break;
-                }
-            }
-        }
-        return cachedEmployeeHBar;
-    }
-
-
     private void handleActionClick(Employee emp, Button btnTarget) {
         if (emp == null) return;
 
@@ -458,7 +442,7 @@ public class EmployeeController implements Initializable {
         // =========================================================================
         itemToggleAcc.setOnAction(e -> {
             if (acc == null || acc.getId() == null) {
-                showSimpleAlert(Alert.AlertType.ERROR, "Lỗi", "Không tìm thấy thông tin tài khoản.");
+                DialogUtils.showError("Lỗi", "Không tìm thấy thông tin tài khoản.");
                 return;
             }
 
@@ -491,7 +475,7 @@ public class EmployeeController implements Initializable {
                     task.setOnSucceeded(ev -> {
                         boolean success = task.getValue();
                         if (success) {
-                            showSimpleAlert(Alert.AlertType.INFORMATION, "Thông báo", toggleLabel + " thành công!");
+                            DialogUtils.showInfo("Thông báo", toggleLabel + " thành công!");
 
                             // ----- CÁCH 1: CẬP NHẬT TRỰC TIẾP TRÊN RAM VÀ REFRESH BẢNG -----
                             if (isAccountDisabled) {
@@ -505,13 +489,13 @@ public class EmployeeController implements Initializable {
                             // ---------------------------------------------------------------
 
                         } else {
-                            showSimpleAlert(Alert.AlertType.ERROR, "Thông báo", toggleLabel + " thất bại.");
+                            DialogUtils.showError("Thông báo", toggleLabel + " thất bại.");
                         }
                     });
 
                     task.setOnFailed(ev -> {
                         Throwable ex = task.getException();
-                        showSimpleAlert(Alert.AlertType.ERROR, "Lỗi hệ thống", ex.getMessage() != null ? ex.getMessage() : "Có lỗi xảy ra.");
+                        DialogUtils.showError("Lỗi hệ thống", ex.getMessage() != null ? ex.getMessage() : "Có lỗi xảy ra.");
                     });
 
                     new Thread(task).start();
@@ -553,7 +537,7 @@ public class EmployeeController implements Initializable {
                         // ---------------------------------------------------------------
 
                     } else {
-                        showSimpleAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể cập nhật trạng thái nhân viên.");
+                        DialogUtils.showError("Lỗi", "Không thể cập nhật trạng thái nhân viên.");
                     }
                 }
             });
@@ -577,7 +561,7 @@ public class EmployeeController implements Initializable {
 
     private void showEmployeeDetail(Employee emp) {
         if (emp == null || emp.getId() == null) {
-            showSimpleAlert(Alert.AlertType.WARNING, "Cảnh báo", "Vui lòng chọn nhân viên cần xem chi tiết.");
+            DialogUtils.showWarning("Cảnh báo", "Vui lòng chọn nhân viên cần xem chi tiết.");
             return;
         }
         // Chọn chính mình -> mở Hồ sơ cá nhân thay cho hồ sơ chi tiết nhân viên
@@ -588,7 +572,7 @@ public class EmployeeController implements Initializable {
 
         Optional<Employee> empDetailOpt = employeeService.findByIdWithDetails(emp.getId());
         if (empDetailOpt.isEmpty()) {
-            showSimpleAlert(Alert.AlertType.ERROR, "Lỗi", "Không tìm thấy dữ liệu nhân viên.");
+            DialogUtils.showError("Lỗi", "Không tìm thấy dữ liệu nhân viên.");
             return;
         }
         Employee fullEmployee = empDetailOpt.get();
@@ -618,20 +602,7 @@ public class EmployeeController implements Initializable {
 
         } catch (Exception ex) {
             log.error("Lỗi khi mở màn hình chi tiết nhân viên: ", ex);
-            showSimpleAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể mở trang chi tiết: " + ex.getMessage());
-        }
-    }
-
-    private void showSimpleAlert(Alert.AlertType type, String title, String content) {
-        javafx.stage.Window owner = tableEmployee != null && tableEmployee.getScene() != null
-                ? tableEmployee.getScene().getWindow()
-                : com.pharmacy.common.DialogUtils.getActiveWindow();
-        if (type == Alert.AlertType.ERROR) {
-            com.pharmacy.common.DialogUtils.showError(owner, title, content);
-        } else if (type == Alert.AlertType.WARNING) {
-            com.pharmacy.common.DialogUtils.showWarning(owner, title, content);
-        } else {
-            com.pharmacy.common.DialogUtils.showInfo(owner, title, content);
+            DialogUtils.showError("Lỗi", "Không thể mở trang chi tiết: " + ex.getMessage());
         }
     }
 

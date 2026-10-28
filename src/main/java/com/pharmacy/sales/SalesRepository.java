@@ -4,6 +4,7 @@ import com.pharmacy.common.PageResult;
 import com.pharmacy.infra.db.HibernateUtil;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.sales.dto.CartItem;
+import com.pharmacy.sales.dto.CartTotals;
 import com.pharmacy.sales.dto.DailySalesDTO;
 import com.pharmacy.sales.dto.SalesOrderDTO;
 import com.pharmacy.sales.dto.SalesOrderDetailDTO;
@@ -139,9 +140,9 @@ public class SalesRepository {
      * đúng với số lượng mà {@link #createSalesOrder(SalesOrderRequest)} cho phép trừ kho.
      */
     private static MedicineInventoryDTO mapSalesMedicineRow(Object[] row) {
-        int sellableQty = Math.max(0, toInt(row[15]));
-        int expiredCount = toInt(row[12]);
-        int nearExpiredCount = toInt(row[13]);
+        int sellableQty = Math.max(0, toInt(row[13]));
+        int expiredCount = toInt(row[10]);
+        int nearExpiredCount = toInt(row[11]);
 
         MedicineInventoryDTO.InventoryStatus status = MedicineInventoryDTO.InventoryStatus.NORMAL;
         if (sellableQty == 0) {
@@ -154,7 +155,7 @@ public class SalesRepository {
 
         MedicineInventoryDTO dto = new MedicineInventoryDTO(
                 toInteger(row[0]), toStr(row[1]), toStr(row[2]), toStr(row[3]), toBoolean(row[4]), toStr(row[5]),
-                toBigDecimal(row[6]), toStr(row[9]), toLocalDate(row[10]), sellableQty, status);
+                toBigDecimal(row[6]), sellableQty, status);
         dto.setActiveIngredient(toStr(row[7]));
         dto.setManufacturer(toStr(row[8]));
         return dto;
@@ -190,7 +191,7 @@ public class SalesRepository {
      * </ul>
      */
     public String createSalesOrder(SalesOrderRequest req) {
-        if (req == null || req.items() == null || req.items().isEmpty()) {
+        if (req == null || req.getItems() == null || req.getItems().isEmpty()) {
             throw new IllegalArgumentException("Đơn hàng rỗng, không có sản phẩm nào để thanh toán.");
         }
         if (req.getEmployeeId() == null) {
@@ -203,7 +204,7 @@ public class SalesRepository {
                 // Gộp số lượng theo thuốc (giữ thứ tự trong giỏ)
                 Map<Integer, Integer> qtyByMedicine = new LinkedHashMap<>();
                 Map<Integer, CartItem> cartByMedicine = new HashMap<>();
-                for (CartItem item : req.items()) {
+                for (CartItem item : req.getItems()) {
                     if (item.getMedicineId() == null || item.getQuantity() <= 0) {
                         throw new IllegalArgumentException("Số lượng của thuốc '" + item.getMedicineName() + "' phải lớn hơn 0.");
                     }
@@ -246,8 +247,8 @@ public class SalesRepository {
                     }
                 }
 
-                BigDecimal discount = req.getDiscount() != null ? req.getDiscount().max(BigDecimal.ZERO).min(subtotal) : BigDecimal.ZERO;
-                BigDecimal totalAmount = subtotal.subtract(discount);
+                BigDecimal discount = CartTotals.clampDiscount(req.getDiscount(), subtotal);
+                BigDecimal totalAmount = CartTotals.total(subtotal, discount);
                 String phone = hasText(req.getCustomerPhone()) ? req.getCustomerPhone().trim() : null;
 
                 // 2. Hóa đơn
@@ -463,31 +464,27 @@ public class SalesRepository {
     }
 
     /**
-     * Doanh số và số hóa đơn hôm nay so với hôm qua — 1 câu SQL, quét theo chỉ mục created_at.
+     * Doanh số và số hóa đơn hôm nay — quét theo chỉ mục created_at.
      */
     public TodaySalesSummary getTodaySalesSummary(Integer employeeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             LocalDate today = LocalDate.now();
             String sql = """
-                SELECT COALESCE(SUM(CASE WHEN created_at >= :todayStart THEN total_amount END), 0),
-                       COUNT(CASE WHEN created_at >= :todayStart THEN 1 END),
-                       COALESCE(SUM(CASE WHEN created_at < :todayStart THEN total_amount END), 0),
-                       COUNT(CASE WHEN created_at < :todayStart THEN 1 END)
+                SELECT COALESCE(SUM(total_amount), 0), COUNT(*)
                 FROM sales_orders
-                WHERE created_at >= :yesterdayStart AND created_at < :tomorrowStart
+                WHERE created_at >= :todayStart AND created_at < :tomorrowStart
             """ + (employeeId != null ? " AND employee_id = :employeeId" : "");
             var query = session.createNativeQuery(sql, Object[].class)
                     .setParameter("todayStart", Timestamp.valueOf(today.atStartOfDay()))
-                    .setParameter("yesterdayStart", Timestamp.valueOf(today.minusDays(1).atStartOfDay()))
                     .setParameter("tomorrowStart", Timestamp.valueOf(today.plusDays(1).atStartOfDay()));
             if (employeeId != null) {
                 query.setParameter("employeeId", employeeId);
             }
             Object[] r = query.uniqueResult();
-            return TodaySalesSummary.of(toBigDecimal(r[0]), toBigDecimal(r[2]), toLong(r[1]), toLong(r[3]));
+            return new TodaySalesSummary(toBigDecimal(r[0]), toLong(r[1]));
         } catch (Exception e) {
             log.error("Lỗi khi thống kê doanh số hôm nay trong SalesRepository: ", e);
-            return TodaySalesSummary.of(BigDecimal.ZERO, BigDecimal.ZERO, 0L, 0L);
+            return TodaySalesSummary.EMPTY;
         }
     }
 

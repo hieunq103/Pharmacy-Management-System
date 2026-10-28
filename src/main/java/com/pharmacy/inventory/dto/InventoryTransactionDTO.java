@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 public class InventoryTransactionDTO {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     private Long id;
@@ -18,7 +17,6 @@ public class InventoryTransactionDTO {
     private LocalDateTime transactionAt;
     private Integer employeeId;
     private String employeeName;
-    private Integer supplierId;
     private String supplierName;
     private int itemCount;
     private int totalQuantity;
@@ -31,7 +29,7 @@ public class InventoryTransactionDTO {
 
     public InventoryTransactionDTO(Long id, String type, LocalDateTime transactionAt,
                                   Integer employeeId, String employeeName,
-                                  Integer supplierId, String supplierName,
+                                  String supplierName,
                                   int itemCount, int totalQuantity, BigDecimal totalAmount,
                                   String note) {
         this.id = id;
@@ -39,7 +37,6 @@ public class InventoryTransactionDTO {
         this.transactionAt = transactionAt;
         this.employeeId = employeeId;
         this.employeeName = employeeName;
-        this.supplierId = supplierId;
         this.supplierName = supplierName;
         this.itemCount = itemCount;
         this.totalQuantity = totalQuantity;
@@ -51,11 +48,6 @@ public class InventoryTransactionDTO {
     public String getFormattedDateTime() {
         if (transactionAt == null) return "N/A";
         return transactionAt.format(DATE_TIME_FORMATTER);
-    }
-
-    public String getFormattedDate() {
-        if (transactionAt == null) return "N/A";
-        return transactionAt.format(DATE_FORMATTER);
     }
 
     public String getFormattedTime() {
@@ -86,10 +78,6 @@ public class InventoryTransactionDTO {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public LocalDateTime getTransactionAt() {
         return transactionAt;
     }
@@ -112,14 +100,6 @@ public class InventoryTransactionDTO {
 
     public void setEmployeeName(String employeeName) {
         this.employeeName = employeeName;
-    }
-
-    public Integer getSupplierId() {
-        return supplierId;
-    }
-
-    public void setSupplierId(Integer supplierId) {
-        this.supplierId = supplierId;
     }
 
     public String getSupplierName() {

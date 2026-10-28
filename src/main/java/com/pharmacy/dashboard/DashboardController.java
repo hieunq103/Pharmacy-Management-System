@@ -229,19 +229,19 @@ public class DashboardController implements Initializable {
         if (stats == null) return;
 
         if (lblTodayRevenue != null) {
-            lblTodayRevenue.setText(stats.getFormattedTodayRevenue());
+            lblTodayRevenue.setText(FormatUtils.formatCurrency(stats.todaySales().revenue()) + "đ");
         }
 
         if (lblTodayOrders != null) {
-            lblTodayOrders.setText(String.valueOf(stats.getTodayOrderCount()));
+            lblTodayOrders.setText(String.valueOf(stats.todaySales().orderCount()));
         }
 
         if (lblLowStockCount != null) {
-            lblLowStockCount.setText(String.valueOf(stats.getLowStockCount()));
+            lblLowStockCount.setText(String.valueOf(stats.lowStockCount()));
         }
 
         if (lblNearExpiryCount != null) {
-            lblNearExpiryCount.setText(String.valueOf(stats.getNearExpiryCount()));
+            lblNearExpiryCount.setText(String.valueOf(stats.nearExpiryCount()));
         }
     }
 

@@ -26,17 +26,10 @@ public class DashboardServiceTest {
         // 1. Kiểm tra 4 chỉ số thống kê
         DashboardStatsDTO stats = service.getStats();
         assertNotNull(stats, "Thống kê tổng quan không được null");
-        assertNotNull(stats.getTodayRevenue());
-        assertNotNull(stats.getYesterdayRevenue());
-        assertTrue(stats.getTodayOrderCount() >= 0);
-        assertTrue(stats.getLowStockCount() >= 0);
-        assertTrue(stats.getNearExpiryCount() >= 0);
-
-        System.out.println("Doanh số hôm nay: " + stats.getFormattedTodayRevenue());
-        System.out.println("Tăng trưởng: " + stats.getRevenueGrowthText());
-        System.out.println("Hóa đơn hôm nay: " + stats.getTodayOrderCount() + " (" + stats.getOrderGrowthText() + ")");
-        System.out.println("Sắp hết hàng: " + stats.getLowStockCount());
-        System.out.println("Cận hạn sử dụng: " + stats.getNearExpiryCount());
+        assertTrue(stats.todaySales().revenue().signum() >= 0);
+        assertTrue(stats.todaySales().orderCount() >= 0);
+        assertTrue(stats.lowStockCount() >= 0);
+        assertTrue(stats.nearExpiryCount() >= 0);
 
         // 2. Kiểm tra doanh số 7 ngày gần nhất
         List<DailySalesDTO> weeklySales = service.getLast7DaysSales();

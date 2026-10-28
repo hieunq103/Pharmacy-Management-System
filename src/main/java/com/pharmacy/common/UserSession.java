@@ -29,10 +29,6 @@ public final class UserSession {
         return current != null && current.account != null;
     }
 
-    public static boolean isAuthenticated() {
-        return isLoggedIn();
-    }
-
     public static void requireAuthenticated() {
         if (!isLoggedIn()) {
             throw new SecurityException("Phiên làm việc không tồn tại hoặc đã hết hạn. Yêu cầu đăng nhập.");
