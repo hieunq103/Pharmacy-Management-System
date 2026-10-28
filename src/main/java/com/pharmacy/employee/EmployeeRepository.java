@@ -21,27 +21,29 @@ public class EmployeeRepository {
         return findConflict("code", code, null, "mã nhân viên").isPresent();
     }
 
-    // Sinh mã nhân viên tiếp theo theo định dạng PMSxxxx
+    // Mã nhân viên dự kiến cho màn hình thêm mới (chỉ xem, không giữ chỗ); mã thật được cấp khi lưu
     public String generateNextEmployeeCode() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String sql = "SELECT code FROM employees WHERE code LIKE 'PMS%' ORDER BY LENGTH(code) DESC, code DESC LIMIT 1";
-            Object result = session.createNativeQuery(sql, String.class).uniqueResult();
-            int nextNumber = 1;
-            if (result != null) {
-                String code = result.toString().trim();
-                if (code.startsWith("PMS")) {
-                    try {
-                        String numPart = code.substring(3);
-                        nextNumber = Integer.parseInt(numPart) + 1;
-                    } catch (NumberFormatException ignored) {
-                    }
-                }
-            }
-            return String.format("PMS%04d", nextNumber);
+            Number last = (Number) session.createNativeQuery(
+                    "SELECT current_number FROM code_sequences WHERE name = 'EMPLOYEE'", Object.class).uniqueResult();
+            return formatEmployeeCode((last != null ? last.longValue() : 0) + 1);
         } catch (Exception e) {
             log.error("Lỗi khi sinh mã nhân viên tiếp theo: ", e);
             throw new RuntimeException("Lỗi truy vấn cơ sở dữ liệu khi sinh mã nhân viên.", e);
         }
+    }
+
+    // Cấp mã thật trong giao dịch đang mở: khóa dòng bộ đếm đến khi commit nên hai người lưu cùng lúc xếp hàng
+    private static String allocateEmployeeCode(Session session) {
+        session.createNativeMutationQuery(
+                "UPDATE code_sequences SET current_number = LAST_INSERT_ID(current_number + 1) WHERE name = 'EMPLOYEE'")
+                .executeUpdate();
+        Number allocated = (Number) session.createNativeQuery("SELECT LAST_INSERT_ID()", Object.class).uniqueResult();
+        return formatEmployeeCode(allocated.longValue());
+    }
+
+    private static String formatEmployeeCode(long number) {
+        return String.format("PMS%04d", number);
     }
 
     // Nhân viên khác (kể cả đã nghỉ) đang dùng số điện thoại này
@@ -263,7 +265,7 @@ public class EmployeeRepository {
                     return false;
                 }
                 if (emp.getCode() == null || emp.getCode().isBlank()) {
-                    emp.setCode(generateNextEmployeeCode());
+                    emp.setCode(allocateEmployeeCode(session));
                 }
                 session.persist(emp);
 

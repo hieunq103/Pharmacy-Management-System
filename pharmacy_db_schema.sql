@@ -1,5 +1,5 @@
 -- =============================================================================
--- CSDL HỆ THỐNG QUẢN LÝ NHÀ THUỐC (PHARMAOS) - FINAL CONSOLIDATED SCHEMA (V1 - V5)
+-- CSDL HỆ THỐNG QUẢN LÝ NHÀ THUỐC (PHARMAOS) - FINAL CONSOLIDATED SCHEMA (V1 - V6)
 -- Dùng để import trực tiếp vào MySQL / MySQL Workbench để Reverse Engineer sinh mô hình ERD
 -- =============================================================================
 
@@ -221,6 +221,15 @@ CREATE TABLE `sales_order_items` (
     CONSTRAINT `fk_so_items_medicines` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT `fk_so_items_lot_medicine` FOREIGN KEY (`inventory_lot_id`, `medicine_id`) REFERENCES `inventory_lots` (`id`, `medicine_id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT `chk_so_items_values` CHECK (`quantity` > 0 AND `unit_price` >= 0 AND `line_total` >= 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------------------------------
+-- 13. BỘ ĐẾM CẤP MÃ NGHIỆP VỤ (CODE_SEQUENCES) - V6
+-- -----------------------------------------------------------------------------
+DROP TABLE IF EXISTS `code_sequences`;
+CREATE TABLE `code_sequences` (
+    `name` VARCHAR(30) NOT NULL PRIMARY KEY,
+    `current_number` BIGINT NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

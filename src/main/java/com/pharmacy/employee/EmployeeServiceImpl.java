@@ -60,10 +60,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             return false;
         }
         validateEmployee(employee.getFullName(), employee.getPhone(), employee.getNationalId(), employee.getDob());
-        if (employee.getCode() == null || employee.getCode().isBlank()) {
-            employee.setCode(generateNextEmployeeCode());
-        }
-        if (employeeRepository.existsByCode(employee.getCode())) {
+        if (employee.getCode() != null && !employee.getCode().isBlank()
+                && employeeRepository.existsByCode(employee.getCode())) {
             throw new IllegalArgumentException("Mã nhân viên này đã tồn tại trong hệ thống.");
         }
         employeeRepository.findByNationalId(employee.getNationalId(), null).ifPresent(c -> {
