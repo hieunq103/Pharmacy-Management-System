@@ -124,11 +124,9 @@
                             <Button fx:id="btnAlertTabExpiry" onAction="#handleTabExpiryAlerts" styleClass="pill-tab-btn, pill-tab-active" text="Hạn dùng" />
                             <Button fx:id="btnAlertTabStock" onAction="#handleTabStockAlerts" styleClass="pill-tab-btn" text="Tồn kho" />
                         </HBox>
-                        <Region HBox.hgrow="ALWAYS" />
-                        <Button onAction="#handleNavInventory" styleClass="link-action" text="Xem kho →" />
                     </HBox>
-                    <!-- Danh sách các cảnh báo kho: Bọc trong ScrollPane chống giật khung -->
-                    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="alert-scroll-pane" VBox.vgrow="ALWAYS">
+                    <!-- Danh sách cảnh báo kho: tối đa 4 thuốc + link xem tất cả, không cuộn -->
+                    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER" styleClass="alert-scroll-pane" VBox.vgrow="ALWAYS">
                         <VBox fx:id="boxInventoryAlerts" spacing="6.0" styleClass="alert-items-container" />
                     </ScrollPane>
                 </VBox>

@@ -139,15 +139,18 @@ public class DashboardController implements Initializable {
         }
     }
 
+    /** Mỗi tab Cảnh báo kho chỉ hiện 4 thuốc, phía dưới là link xem tất cả trong Kho thuốc (không cần cuộn). */
+    private static final int ALERT_LIMIT = 4;
+
     private void renderAlertsUI() {
         if (boxInventoryAlerts == null) return;
         boxInventoryAlerts.getChildren().clear();
 
         List<InventoryAlertDTO> displayList;
         if (currentAlertTab == AlertTab.EXPIRY) {
-            displayList = rawAlerts.stream().filter(InventoryAlertDTO::isExpiryAlert).limit(5).toList();
+            displayList = rawAlerts.stream().filter(InventoryAlertDTO::isExpiryAlert).limit(ALERT_LIMIT).toList();
         } else {
-            displayList = rawAlerts.stream().filter(a -> !a.isExpiryAlert()).limit(5).toList();
+            displayList = rawAlerts.stream().filter(a -> !a.isExpiryAlert()).limit(ALERT_LIMIT).toList();
         }
 
         if (displayList.isEmpty()) {
