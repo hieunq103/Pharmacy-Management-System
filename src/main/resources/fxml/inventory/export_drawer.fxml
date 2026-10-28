@@ -131,13 +131,13 @@
                             <TableColumn fx:id="colIndex" styleClass="lot-col-left" minWidth="60.0" prefWidth="65.0" resizable="false" sortable="false" text="STT" />
                             <TableColumn fx:id="colCode" styleClass="lot-col-left" minWidth="95.0" prefWidth="105.0" resizable="true" sortable="false" text="Mã thuốc" />
                             <TableColumn fx:id="colName" styleClass="lot-col-left" minWidth="190.0" prefWidth="220.0" resizable="true" sortable="false" text="Tên thuốc" />
-                            <TableColumn fx:id="colCategory" styleClass="lot-col-left" minWidth="150.0" prefWidth="180.0" resizable="true" sortable="false" text="Nhóm thuốc" />
-                            <TableColumn fx:id="colLot" styleClass="lot-col-left" minWidth="120.0" prefWidth="135.0" resizable="true" sortable="false" text="Số lô" />
+                            <TableColumn fx:id="colCategory" styleClass="lot-col-left" minWidth="280.0" prefWidth="290.0" resizable="true" sortable="false" text="Nhóm thuốc" />
+                            <TableColumn fx:id="colLot" styleClass="lot-col-left" minWidth="210.0" prefWidth="220.0" resizable="true" sortable="false" text="Số lô" />
                             <TableColumn fx:id="colExpiry" styleClass="lot-col-left" minWidth="135.0" prefWidth="150.0" resizable="true" sortable="false" text="Hạn sử dụng" />
                             <TableColumn fx:id="colUnit" styleClass="lot-col-left" minWidth="75.0" prefWidth="85.0" resizable="true" sortable="false" text="Đơn vị" />
                             <TableColumn fx:id="colStock" styleClass="lot-col-left" minWidth="95.0" prefWidth="105.0" resizable="true" sortable="false" text="Tồn trong lô" />
                             <TableColumn fx:id="colQuantity" styleClass="lot-col-left" minWidth="95.0" prefWidth="105.0" resizable="true" sortable="false" text="SL xuất" />
-                            <TableColumn fx:id="colReason" styleClass="lot-col-left" minWidth="280.0" prefWidth="320.0" resizable="true" sortable="false" text="Lý do xuất" />
+                            <TableColumn fx:id="colReason" styleClass="lot-col-left" minWidth="420.0" prefWidth="460.0" resizable="true" sortable="false" text="Lý do xuất" />
                             <TableColumn fx:id="colAction" styleClass="lot-col-center" minWidth="90.0" prefWidth="100.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="Thao tác" />
                         </columns>
                         <columnResizePolicy>

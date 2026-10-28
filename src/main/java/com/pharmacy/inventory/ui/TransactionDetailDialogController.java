@@ -158,7 +158,7 @@ public class TransactionDetailDialogController implements Initializable {
         setupLeftAlignedCell(colTotalPrice);
 
         colReason.setCellValueFactory(new PropertyValueFactory<>("reason"));
-        setupLeftAlignedCell(colReason);
+        colReason.setCellFactory(com.pharmacy.common.WrappingTextCell.forColumn());
     }
 
     private <T> void setupLeftAlignedCell(TableColumn<InventoryTransactionDetailDTO, T> column) {
@@ -201,7 +201,7 @@ public class TransactionDetailDialogController implements Initializable {
             colReason.setVisible(false);
 
         } else {
-            lblDialogTitle.setText("Chi tiết Phiếu Xuất Kho / Xuất Hủy Dược Phẩm");
+            lblDialogTitle.setText("Chi tiết Phiếu Xuất Kho");
 
             lblPartnerLabel.setText("Hình thức xuất:");
             lblPartnerValue.setText(tx.getExportTypeLabel() != null ? tx.getExportTypeLabel() : "Xuất kho");

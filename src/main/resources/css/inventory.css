@@ -958,3 +958,9 @@
 .import-items-table .scroll-bar:horizontal .thumb:hover {
     -fx-background-color: #94A3B8 !important;
 }
+
+/* Ô bảng tự xuống dòng (WrappingTextCell), vd. cột Lý do xuất */
+.wrapping-cell-text {
+    -fx-text-fill: #334155;
+    -fx-line-spacing: 1px;
+}

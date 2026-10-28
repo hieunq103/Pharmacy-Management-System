@@ -638,22 +638,7 @@ public class ExportDialogController implements Initializable {
 
         // Cột Lý do xuất riêng - Căn trái
         colReason.setCellValueFactory(new PropertyValueFactory<>("reason"));
-        colReason.setCellFactory(col -> new TableCell<BatchExportItemDTO, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                    setTooltip(null);
-                } else {
-                    setText(item);
-                    setAlignment(Pos.CENTER_LEFT);
-                    setStyle("-fx-text-fill: #334155;");
-                    setTooltip(new Tooltip(item));
-                }
-            }
-        });
+        colReason.setCellFactory(com.pharmacy.common.WrappingTextCell.forColumn());
 
         // Cột Thao tác - Nút Xóa căn giữa
         colAction.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
