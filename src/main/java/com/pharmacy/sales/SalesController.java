@@ -41,7 +41,7 @@ public class SalesController implements Initializable {
 
     // Màn hình chính và Lịch sử bán hàng
     @FXML private HBox viewSalesMain;
-    private static final double LINE_TOTAL_WIDTH = 104;
+    private static final double LINE_TOTAL_WIDTH = 86;
     @FXML private StackPane viewSalesHistory;
     /** Hành động của nút back trong Lịch sử bán hàng; null = quay lại trang Bán hàng. */
     private Runnable historyBackAction;
@@ -714,7 +714,7 @@ public class SalesController implements Initializable {
 
         Region priceSpacer = new Region();
         HBox.setHgrow(priceSpacer, Priority.ALWAYS);
-        HBox priceRow = new HBox(12, lblUnitPrice, priceSpacer, qtyBox, lblTotal);
+        HBox priceRow = new HBox(8, lblUnitPrice, priceSpacer, qtyBox, lblTotal);
         priceRow.setAlignment(Pos.CENTER_LEFT);
 
         row.getChildren().addAll(nameRow, priceRow);
