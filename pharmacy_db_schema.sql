@@ -223,4 +223,12 @@ CREATE TABLE `sales_order_items` (
     CONSTRAINT `chk_so_items_values` CHECK (`quantity` > 0 AND `unit_price` >= 0 AND `line_total` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- -----------------------------------------------------------------------------
+-- 13. BỘ ĐẾM CẤP MÃ NHÂN VIÊN THEO THÁNG (CODE_SEQUENCES) - name: EMPLOYEE-YYMM
+-- -----------------------------------------------------------------------------
+CREATE TABLE `code_sequences` (
+    `name` VARCHAR(30) NOT NULL PRIMARY KEY,
+    `current_number` BIGINT NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;

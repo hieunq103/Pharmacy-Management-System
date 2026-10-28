@@ -192,6 +192,11 @@ CREATE TABLE IF NOT EXISTS `sales_order_items` (
     CONSTRAINT `chk_so_items_values` CHECK (`quantity` > 0 AND `unit_price` >= 0 AND `line_total` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `code_sequences` (
+    `name` VARCHAR(30) NOT NULL PRIMARY KEY,
+    `current_number` BIGINT NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO `roles` (`code`, `name`) VALUES ('MANAGER', 'Quản lý cửa hàng'), ('STAFF', 'Nhân viên bán thuốc');

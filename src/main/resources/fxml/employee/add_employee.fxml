@@ -29,7 +29,7 @@
 
             <!-- Mã nhân viên (Tự động sinh - Khóa chết) -->
             <VBox spacing="6">
-                <Label text="Mã nhân viên (Tự động sinh)" styleClass="form-label"/>
+                <Label text="Mã nhân viên (Tự động cấp khi lưu)" styleClass="form-label"/>
                 <TextField fx:id="txtEmployeeCode" editable="false" focusTraversable="false" mouseTransparent="true" promptText="Đang tải..." styleClass="form-input" style="-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-font-family: 'Inter 18pt SemiBold';"/>
                 <Label text="Mã nhân viên được sinh tự động theo chuẩn PMSxxxx và khóa cố định" style="-fx-font-size: 11px; -fx-text-fill: #94A3B8;"/>
             </VBox>

@@ -4,6 +4,8 @@ import com.pharmacy.account.Account;
 import com.pharmacy.account.Role;
 import com.pharmacy.infra.db.HibernateUtil;
 import org.hibernate.Session;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,27 +23,44 @@ public class EmployeeRepository {
         return findConflict("code", code, null, "mã nhân viên").isPresent();
     }
 
-    // Sinh mã nhân viên tiếp theo theo định dạng PMSxxxx
+    // Mã nhân viên dự kiến cho màn hình thêm mới (chỉ xem, không giữ chỗ); mã thật được cấp khi lưu
     public String generateNextEmployeeCode() {
+        String prefix = employeeCodePrefix();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String sql = "SELECT code FROM employees WHERE code LIKE 'PMS%' ORDER BY LENGTH(code) DESC, code DESC LIMIT 1";
-            Object result = session.createNativeQuery(sql, String.class).uniqueResult();
-            int nextNumber = 1;
-            if (result != null) {
-                String code = result.toString().trim();
-                if (code.startsWith("PMS")) {
-                    try {
-                        String numPart = code.substring(3);
-                        nextNumber = Integer.parseInt(numPart) + 1;
-                    } catch (NumberFormatException ignored) {
-                    }
-                }
-            }
-            return String.format("PMS%04d", nextNumber);
+            Number last = (Number) session.createNativeQuery(
+                    "SELECT current_number FROM code_sequences WHERE name = :name", Object.class)
+                    .setParameter("name", sequenceName(prefix)).uniqueResult();
+            return formatEmployeeCode(prefix, (last != null ? last.longValue() : 0) + 1);
         } catch (Exception e) {
             log.error("Lỗi khi sinh mã nhân viên tiếp theo: ", e);
             throw new RuntimeException("Lỗi truy vấn cơ sở dữ liệu khi sinh mã nhân viên.", e);
         }
+    }
+
+    // Cấp mã thật trong giao dịch đang mở: khóa dòng bộ đếm của tháng đến khi commit nên hai người lưu cùng lúc xếp hàng
+    private static String allocateEmployeeCode(Session session) {
+        String prefix = employeeCodePrefix();
+        session.createNativeMutationQuery(
+                "INSERT INTO code_sequences (name, current_number) VALUES (:name, LAST_INSERT_ID(1)) "
+                        + "ON DUPLICATE KEY UPDATE current_number = LAST_INSERT_ID(current_number + 1)")
+                .setParameter("name", sequenceName(prefix))
+                .executeUpdate();
+        Number allocated = (Number) session.createNativeQuery("SELECT LAST_INSERT_ID()", Object.class).uniqueResult();
+        return formatEmployeeCode(prefix, allocated.longValue());
+    }
+
+    // PMS + YYMM của tháng hiện tại, ví dụ PMS2610
+    private static String employeeCodePrefix() {
+        return "PMS" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyMM"));
+    }
+
+    private static String sequenceName(String prefix) {
+        return "EMPLOYEE-" + prefix.substring(3);
+    }
+
+    // Số thứ tự trong tháng có tối thiểu 3 chữ số: PMS2610001
+    private static String formatEmployeeCode(String prefix, long number) {
+        return prefix + String.format("%03d", number);
     }
 
     // Nhân viên khác (kể cả đã nghỉ) đang dùng số điện thoại này
@@ -263,7 +282,7 @@ public class EmployeeRepository {
                     return false;
                 }
                 if (emp.getCode() == null || emp.getCode().isBlank()) {
-                    emp.setCode(generateNextEmployeeCode());
+                    emp.setCode(allocateEmployeeCode(session));
                 }
                 session.persist(emp);
 
