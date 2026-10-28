@@ -135,7 +135,10 @@ public class AddEmployeeController implements Initializable {
         if (!isValid) return;
 
         Employee newEmp = new Employee();
-        // Không gửi mã đang hiển thị: mã thật được cấp khi lưu để nhiều quản lý thêm cùng lúc không trùng nhau
+        String code = txtEmployeeCode != null ? txtEmployeeCode.getText().trim() : "";
+        if (!code.isEmpty()) {
+            newEmp.setCode(code);
+        }
         newEmp.setFullName(name);
         newEmp.setDob(birthDate);
         newEmp.setGender(gender);

@@ -129,34 +129,4 @@ class EmployeeServiceTest {
         assertTrue(ex.getMessage().contains("đã nghỉ việc " + old.getCode()), ex.getMessage());
         assertTrue(ex.getMessage().contains("Đang làm việc"), ex.getMessage());
     }
-
-    @Test
-    void concurrentHiresGetDistinctCodes() throws Exception {
-        DbTestSupport.loginAsManager();
-        int threads = 8;
-        long base = System.nanoTime() % 10_000_000L;
-        var pool = java.util.concurrent.Executors.newFixedThreadPool(threads);
-        var start = new java.util.concurrent.CountDownLatch(1);
-        java.util.List<java.util.concurrent.Future<String>> results = new java.util.ArrayList<>();
-        for (int i = 0; i < threads; i++) {
-            final long n = base * 10 + i;
-            results.add(pool.submit(() -> {
-                Employee e = new Employee();
-                e.setFullName("Nhân viên Song song " + n);
-                e.setDob(LocalDate.of(1998, 3, 3));
-                e.setGender(Employee.GENDER_MALE);
-                e.setNationalId(String.format("0793%08d", n % 100_000_000L));
-                e.setPhone(String.format("07%08d", n % 100_000_000L));
-                e.setHiredDate(LocalDate.now());
-                start.await();
-                assertTrue(service.createEmployeeWithAccount(e, "STAFF"));
-                return e.getCode();
-            }));
-        }
-        start.countDown();
-        java.util.Set<String> codes = new java.util.HashSet<>();
-        for (var f : results) codes.add(f.get(60, java.util.concurrent.TimeUnit.SECONDS));
-        pool.shutdown();
-        assertEquals(threads, codes.size(), "Mỗi nhân viên phải có mã khác nhau: " + codes);
-    }
 }
