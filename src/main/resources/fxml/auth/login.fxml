@@ -61,7 +61,7 @@
                         <HBox alignment="CENTER_LEFT" prefHeight="44.0" spacing="10.0" style="-fx-background-color: #ffffff; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 0 12;">
                            <children>
                               <SVGPath content="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#94a3b8" scaleX="0.8" scaleY="0.8" />
-                              <TextField fx:id="txtUsername" onAction="#handleLogin" promptText="Nhập tên đăng nhập (Mã NV: PMS...)" style="-fx-font-family: 'Inter 18pt'; -fx-background-color: transparent; -fx-text-fill: #0f172a; -fx-prompt-text-fill: #94a3b8; -fx-font-size: 15px;" HBox.hgrow="ALWAYS" />
+                              <TextField fx:id="txtUsername" onAction="#handleLogin" promptText="Nhập tên đăng nhập" style="-fx-font-family: 'Inter 18pt'; -fx-background-color: transparent; -fx-text-fill: #0f172a; -fx-prompt-text-fill: #94a3b8; -fx-font-size: 15px;" HBox.hgrow="ALWAYS" />
                            </children>
                         </HBox>
                      </children>
