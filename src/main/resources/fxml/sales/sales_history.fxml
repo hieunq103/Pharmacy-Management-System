@@ -62,7 +62,7 @@
             <TableView fx:id="tableSalesOrders" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, history-master-table, table-scrollable-data">
                 <columns>
                     <TableColumn fx:id="colIndex" minWidth="65.0" prefWidth="70.0" text="STT" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                    <TableColumn fx:id="colCode" minWidth="150.0" prefWidth="160.0" text="Mã đơn hàng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                    <TableColumn fx:id="colCode" minWidth="240.0" prefWidth="250.0" text="Mã đơn hàng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
                     <TableColumn fx:id="colDateTime" minWidth="160.0" prefWidth="175.0" text="Thời gian bán" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
                     <TableColumn fx:id="colEmployee" minWidth="180.0" prefWidth="220.0" text="Thu ngân" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
                     <TableColumn fx:id="colCustomerPhone" minWidth="130.0" prefWidth="150.0" text="SĐT khách hàng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />

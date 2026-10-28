@@ -839,14 +839,6 @@ public class SalesController implements Initializable {
         }
     }
 
-    /**
-     * Mở Lịch sử bán hàng từ trang khác; onBack là hành động của nút back (quay về trang đã mở lịch sử).
-     */
-    public void openSalesHistory(Runnable onBack) {
-        historyBackAction = onBack;
-        showSalesHistoryView();
-    }
-
     /** Mở Lịch sử bán hàng với bộ lọc Theo ngày của ngày chỉ định. */
     public void openSalesHistoryForDate(LocalDate date, Runnable onBack) {
         historyBackAction = onBack;

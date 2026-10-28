@@ -385,8 +385,11 @@ public class DashboardController implements Initializable {
 
     @FXML
     private void handleNavSalesHistory(ActionEvent event) {
-        if (MainLayoutController.getInstance() != null) {
-            MainLayoutController.getInstance().navigateToSalesHistory();
+        MainLayoutController layout = MainLayoutController.getInstance();
+        if (layout != null) {
+            // Nút "Lịch sử bán": mở Lịch sử bán hàng lọc theo tháng hiện tại, back -> Tổng quan
+            LocalDate today = LocalDate.now();
+            layout.navigateToSalesHistoryForMonth(today.getYear(), today.getMonthValue(), layout::navigateToDashboard);
         }
     }
 }

@@ -137,7 +137,7 @@
                 <HBox alignment="CENTER_LEFT">
                     <Label styleClass="card-header-title" text="Giao dịch gần đây" />
                     <Region HBox.hgrow="ALWAYS" />
-                    <Button onAction="#handleNavSalesHistory" styleClass="btn-view-full" text="Xem đầy đủ">
+                    <Button onAction="#handleNavSalesHistory" styleClass="btn-view-full" text="Lịch sử bán">
                         <graphic>
                             <SVGPath content="M 0 5 L 10 5 M 6 1 L 10 5 L 6 9" styleClass="btn-view-full-glyph" />
                         </graphic>

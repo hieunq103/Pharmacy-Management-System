@@ -228,6 +228,14 @@ public class MainLayoutController {
         }
     }
 
+    /** Mở Lịch sử bán hàng lọc theo tháng/năm; onBack là trang nút back quay về. */
+    public void navigateToSalesHistoryForMonth(int year, int month, Runnable onBack) {
+        com.pharmacy.sales.SalesController salesCtrl = showSalesPage();
+        if (salesCtrl != null) {
+            salesCtrl.openSalesHistoryForMonth(year, month, onBack);
+        }
+    }
+
     /**
      * Mở Lịch sử bán hàng của một ngày (thẻ hôm nay ở Tổng quan, nút "Xem đầy đủ" ở Báo cáo);
      * onBack là trang nút back quay về.
@@ -245,14 +253,6 @@ public class MainLayoutController {
 
     public void navigateToReport() {
         handleNavReport(null);
-    }
-
-    /** Mở Lịch sử bán hàng từ Tổng quan ("Xem tất cả" giao dịch gần đây); back -> Tổng quan. */
-    public void navigateToSalesHistory() {
-        com.pharmacy.sales.SalesController salesCtrl = showSalesPage();
-        if (salesCtrl != null) {
-            salesCtrl.openSalesHistory(() -> handleNavDashboard(null));
-        }
     }
 
     private com.pharmacy.sales.SalesController showSalesPage() {

@@ -97,7 +97,7 @@
                 <TableColumn fx:id="colIndex" minWidth="60.0" prefWidth="65.0" text="STT" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
                 <TableColumn fx:id="colMedCode" minWidth="110.0" prefWidth="120.0" text="Mã thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
                 <TableColumn fx:id="colMedName" minWidth="240.0" prefWidth="300.0" text="Tên thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colCategory" minWidth="140.0" prefWidth="180.0" text="Nhóm thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colCategory" minWidth="280.0" prefWidth="300.0" text="Nhóm thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
                 <TableColumn fx:id="colLotNumber" minWidth="120.0" prefWidth="140.0" text="Số lô xuất" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
                 <TableColumn fx:id="colExpiryDate" minWidth="110.0" prefWidth="125.0" text="Hạn dùng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
                 <TableColumn fx:id="colUnit" minWidth="75.0" prefWidth="85.0" text="Đơn vị" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
