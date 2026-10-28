@@ -206,6 +206,7 @@ public class ImportDialogController implements Initializable {
                     setGraphic(null);
                 } else {
                     Label lbl = new Label(item);
+                    lbl.setMinWidth(Label.USE_PREF_SIZE);
                     lbl.setStyle(PENDING_CODE.equals(item)
                             ? "-fx-font-size: 11px; -fx-font-family: 'Inter 18pt Regular'; -fx-background-color: #F1F5F9; -fx-text-fill: #64748B; -fx-background-radius: 4px; -fx-padding: 2 6;"
                             : "-fx-font-size: 11px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-background-radius: 4px; -fx-padding: 2 6;");
@@ -417,6 +418,79 @@ public class ImportDialogController implements Initializable {
         resetItemInputForm();
     }
 
+    // Kết quả nhập kho: bảng mã thuốc + tên thuốc của cả phiếu (cuộn được khi nhiều dòng), thuốc mới có nhãn "Mới"
+    private static void showImportResult(javafx.stage.Window owner, List<BatchImportItemDTO> items) {
+        long newCount = items.stream().filter(BatchImportItemDTO::isNewMedicine).count();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        DialogUtils.configure(alert, owner);
+        alert.setTitle("Nhập kho thành công");
+        alert.setHeaderText("Đã lập phiếu nhập kho thành công cho " + items.size() + " mặt hàng thuốc"
+                + (newCount > 0 ? "\nTrong đó " + newCount + " thuốc mới đã được cấp mã" : ""));
+
+        TableView<BatchImportItemDTO> table = new TableView<>(FXCollections.observableArrayList(items));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        table.setPlaceholder(new Label(""));
+
+        TableColumn<BatchImportItemDTO, BatchImportItemDTO> codeCol = new TableColumn<>("Mã thuốc");
+        codeCol.setSortable(false);
+        codeCol.setMinWidth(130);
+        codeCol.setPrefWidth(130);
+        codeCol.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue()));
+        codeCol.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(BatchImportItemDTO item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                    setText(null);
+                    return;
+                }
+                Label code = new Label(item.getMedicineCode());
+                code.setStyle("-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0066FF;");
+                HBox box = new HBox(6, code);
+                box.setAlignment(Pos.CENTER_LEFT);
+                if (item.isNewMedicine()) {
+                    Label badge = new Label("Mới");
+                    badge.setMinWidth(Label.USE_PREF_SIZE);
+                    badge.setStyle("-fx-font-size: 10.5px; -fx-background-color: #DCFCE7; -fx-text-fill: #15803D; -fx-background-radius: 4px; -fx-padding: 1 5;");
+                    box.getChildren().add(badge);
+                }
+                setGraphic(box);
+                setText(null);
+            }
+        });
+
+        TableColumn<BatchImportItemDTO, String> nameCol = new TableColumn<>("Tên thuốc");
+        nameCol.setSortable(false);
+        nameCol.setPrefWidth(240);
+        nameCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getMedicineName()));
+
+        TableColumn<BatchImportItemDTO, String> lotCol = new TableColumn<>("Số lô");
+        lotCol.setSortable(false);
+        lotCol.setPrefWidth(120);
+        lotCol.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getLotNumber()));
+
+        TableColumn<BatchImportItemDTO, String> qtyCol = new TableColumn<>("Số lượng");
+        qtyCol.setSortable(false);
+        qtyCol.setPrefWidth(100);
+        qtyCol.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getQuantityIn() + " " + (c.getValue().getUnit() != null ? c.getValue().getUnit() : "")));
+
+        for (TableColumn<BatchImportItemDTO, String> col : List.of(nameCol, lotCol, qtyCol)) {
+            col.setStyle("-fx-alignment: CENTER-LEFT;");
+        }
+        table.getColumns().setAll(List.of(codeCol, nameCol, lotCol, qtyCol));
+        table.setFixedCellSize(34);
+        // Tối đa 8 dòng, nhiều hơn thì cuộn trong bảng
+        table.setPrefHeight(36 + 34 * Math.min(Math.max(items.size(), 1), 8) + 4);
+        table.setPrefWidth(620);
+
+        alert.getDialogPane().setContent(table);
+        alert.getDialogPane().setPrefWidth(660);
+        alert.setResizable(true);
+        alert.showAndWait();
+    }
+
     private void resetItemInputForm() {
         medicinePicker.clear();
         currentlySelectedMedicine = null;
@@ -504,18 +578,8 @@ public class ImportDialogController implements Initializable {
 
             boolean success = Boolean.TRUE.equals(importTask.getValue());
             if (success) {
-                int count = itemList.size();
-                StringBuilder message = new StringBuilder("Đã lập phiếu nhập kho thành công cho " + count + " mặt hàng thuốc!");
-                List<BatchImportItemDTO> created = itemList.stream().filter(BatchImportItemDTO::isNewMedicine).toList();
-                if (!created.isEmpty()) {
-                    message.append("\n\nMã thuốc mới đã cấp:");
-                    created.forEach(it -> message.append("\n• ").append(it.getMedicineCode()).append(" – ").append(it.getMedicineName()));
-                }
-                DialogUtils.showInfo(
-                        btnCancel != null && btnCancel.getScene() != null ? btnCancel.getScene().getWindow() : null,
-                        "Nhập kho thành công",
-                        message.toString()
-                );
+                showImportResult(btnCancel != null && btnCancel.getScene() != null ? btnCancel.getScene().getWindow() : null,
+                        List.copyOf(itemList));
 
                 if (onSuccessCallback != null) {
                     onSuccessCallback.run();
