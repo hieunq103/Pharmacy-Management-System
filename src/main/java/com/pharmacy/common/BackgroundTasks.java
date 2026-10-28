@@ -5,7 +5,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-// Bộ chạy nền dùng chung: tối đa 4 luồng daemon, luồng rảnh tự kết thúc nên không tích tụ theo thời gian
 public final class BackgroundTasks {
 
     private static final int MAX_THREADS = 4;

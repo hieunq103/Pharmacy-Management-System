@@ -2,7 +2,7 @@ package com.pharmacy.employee;
 
 public record EmployeeConflict(String code, String fullName, Employee.Status status) {
 
-    // Nhân viên đã nghỉ vẫn giữ SĐT/CCCD trong hồ sơ cũ: hướng dẫn khôi phục hoặc sửa hồ sơ cũ
+    // Nhân viên đã nghỉ vẫn giữ SĐT/CCCD trong hồ sơ cũ
     public String message(String fieldLabel) {
         String who = code + " - " + fullName;
         if (status == Employee.Status.INACTIVE) {
