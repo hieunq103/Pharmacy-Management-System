@@ -29,9 +29,9 @@ public interface InventoryService {
 
     String getNextMedicineCode();
 
-    List<com.pharmacy.inventory.dto.InventoryTransactionDTO> getImportTransactions(String keyword, java.time.LocalDate fromDate, java.time.LocalDate toDate);
+    com.pharmacy.common.PageResult<com.pharmacy.inventory.dto.InventoryTransactionDTO> getImportTransactions(String keyword, java.time.LocalDate fromDate, java.time.LocalDate toDate, int page, int size);
 
-    List<com.pharmacy.inventory.dto.InventoryTransactionDTO> getExportTransactions(String keyword, java.time.LocalDate fromDate, java.time.LocalDate toDate);
+    com.pharmacy.common.PageResult<com.pharmacy.inventory.dto.InventoryTransactionDTO> getExportTransactions(String keyword, java.time.LocalDate fromDate, java.time.LocalDate toDate, int page, int size);
 
     List<com.pharmacy.inventory.dto.InventoryTransactionDetailDTO> getTransactionDetails(Long transactionId, String type);
 

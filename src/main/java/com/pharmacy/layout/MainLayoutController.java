@@ -3,6 +3,7 @@ package com.pharmacy.layout;
 import com.pharmacy.account.Account;
 import com.pharmacy.auth.AuthService;
 import com.pharmacy.auth.AuthServiceImpl;
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.UiScaleManager;
@@ -273,7 +274,7 @@ public class MainLayoutController {
         if (reportPreloading || reportView != null)
             return;
         reportPreloading = true;
-        Thread preload = new Thread(() -> {
+        BackgroundTasks.run(() -> {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(REPORT_FXML));
                 Parent view = loader.load();
@@ -301,9 +302,7 @@ public class MainLayoutController {
                     }
                 });
             }
-        }, "report-preload");
-        preload.setDaemon(true);
-        preload.start();
+        });
     }
 
     @FXML

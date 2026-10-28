@@ -1,5 +1,6 @@
 package com.pharmacy.profile;
 
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.TogglePasswordField;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -207,9 +208,7 @@ public class ChangePasswordDialog extends Dialog<ButtonType> {
             txtCurrentPassword.requestFocus();
         });
 
-        Thread thread = new Thread(task, "change-password-thread");
-        thread.setDaemon(true);
-        thread.start();
+        BackgroundTasks.run(task);
     }
 
     private void showError(String message) {

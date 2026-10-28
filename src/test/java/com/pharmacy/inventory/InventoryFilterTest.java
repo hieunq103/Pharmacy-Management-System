@@ -94,13 +94,13 @@ public class InventoryFilterTest {
 
     @Test
     void testInventoryHistory() {
-        List<InventoryTransactionDTO> imports = repo.getImportTransactions(null, null, null);
+        List<InventoryTransactionDTO> imports = repo.getImportTransactions(null, null, null, 1, 50).getItems();
         assertFalse(imports.isEmpty(), "Phải có ít nhất 1 giao dịch nhập kho");
         InventoryTransactionDTO firstImport = imports.get(0);
         List<InventoryTransactionDetailDTO> details = repo.getTransactionDetails(firstImport.getId(), "IMPORT");
         assertEquals(firstImport.getItemCount(), details.size(), "Số dòng chi tiết phải khớp số mặt hàng tổng hợp");
 
-        List<InventoryTransactionDTO> exports = repo.getExportTransactions(null, null, null);
+        List<InventoryTransactionDTO> exports = repo.getExportTransactions(null, null, null, 1, 200).getItems();
         assertFalse(exports.isEmpty(), "Phải có giao dịch xuất bán từ dữ liệu seed");
         InventoryTransactionDTO sale = exports.stream().filter(t -> "EXPORT_SALE".equals(t.getType())).findFirst().orElseThrow();
         assertEquals(sale.getItemCount(), repo.getTransactionDetails(sale.getId(), "EXPORT_SALE").size());
@@ -122,7 +122,7 @@ public class InventoryFilterTest {
 
         assertTrue(service.importBatchStock("Công ty Test " + suffix, null, "Phiếu test " + suffix, items));
 
-        List<InventoryTransactionDTO> imports = repo.getImportTransactions("Phiếu test " + suffix, null, null);
+        List<InventoryTransactionDTO> imports = repo.getImportTransactions("Phiếu test " + suffix, null, null, 1, 10).getItems();
         assertEquals(1, imports.size());
         assertEquals(3, imports.get(0).getItemCount());
         assertEquals(100, imports.get(0).getTotalQuantity());
@@ -161,8 +161,8 @@ public class InventoryFilterTest {
     @Test
     void testHistorySearch() {
         for (String kw : new String[]{"a", "aug", "para", "vit", "1", "", "pnk"}) {
-            assertNotNull(repo.getImportTransactions(kw, null, null));
-            assertNotNull(repo.getExportTransactions(kw, null, null));
+            assertNotNull(repo.getImportTransactions(kw, null, null, 1, 7).getItems());
+            assertNotNull(repo.getExportTransactions(kw, null, null, 1, 7).getItems());
         }
     }
 
@@ -173,5 +173,21 @@ public class InventoryFilterTest {
                 repo.getInventoryPageResult(1, 7, null, "Sắp hết hàng,Hết hàng", null).getTotalElements());
         assertEquals(summary.nearExpiryMedicines(),
                 repo.getInventoryPageResult(1, 7, null, null, "Có lô cận hạn").getTotalElements());
+    }
+
+    @Test
+    void testHistoryServerSidePaging() {
+        var all = repo.getExportTransactions(null, null, null, 1, 100_000);
+        var p1 = repo.getExportTransactions(null, null, null, 1, 3);
+        var p2 = repo.getExportTransactions(null, null, null, 2, 3);
+        assertEquals(all.getItems().size(), all.getTotalElements());
+        assertEquals(all.getTotalElements(), p1.getTotalElements());
+        assertEquals(all.getItems().subList(0, Math.min(3, all.getItems().size())).stream().map(InventoryTransactionDTO::getId).toList(),
+                p1.getItems().stream().map(InventoryTransactionDTO::getId).toList());
+        if (all.getItems().size() > 3) {
+            assertEquals(all.getItems().get(3).getId(), p2.getItems().get(0).getId());
+        }
+        var imports = repo.getImportTransactions(null, null, null, 1, 100_000);
+        assertEquals(imports.getItems().size(), imports.getTotalElements());
     }
 }

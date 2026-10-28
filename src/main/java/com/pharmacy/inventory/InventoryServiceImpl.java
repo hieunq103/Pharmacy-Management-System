@@ -89,13 +89,15 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public List<InventoryTransactionDTO> getImportTransactions(String keyword, LocalDate fromDate, LocalDate toDate) {
-        return inventoryRepository.getImportTransactions(keyword, fromDate, toDate);
+    public PageResult<InventoryTransactionDTO> getImportTransactions(String keyword, LocalDate fromDate, LocalDate toDate,
+                                                                     int page, int size) {
+        return inventoryRepository.getImportTransactions(keyword, fromDate, toDate, page, size);
     }
 
     @Override
-    public List<InventoryTransactionDTO> getExportTransactions(String keyword, LocalDate fromDate, LocalDate toDate) {
-        return inventoryRepository.getExportTransactions(keyword, fromDate, toDate);
+    public PageResult<InventoryTransactionDTO> getExportTransactions(String keyword, LocalDate fromDate, LocalDate toDate,
+                                                                     int page, int size) {
+        return inventoryRepository.getExportTransactions(keyword, fromDate, toDate, page, size);
     }
 
     @Override

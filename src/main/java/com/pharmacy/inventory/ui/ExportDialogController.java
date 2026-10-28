@@ -1,5 +1,6 @@
 package com.pharmacy.inventory.ui;
 
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.UserSession;
@@ -692,9 +693,7 @@ public class ExportDialogController implements Initializable {
             updateAllRowsAvailableDisplay();
         });
 
-        Thread th = new Thread(task);
-        th.setDaemon(true);
-        th.start();
+        BackgroundTasks.run(task);
     }
 
     @FXML
@@ -911,9 +910,7 @@ public class ExportDialogController implements Initializable {
             showGeneralError(msg);
         });
 
-        Thread th = new Thread(exportTask);
-        th.setDaemon(true);
-        th.start();
+        BackgroundTasks.run(exportTask);
     }
 
     private void showControlError(Control input, Label errLabel, String msg) {

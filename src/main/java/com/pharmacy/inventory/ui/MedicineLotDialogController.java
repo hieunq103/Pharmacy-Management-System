@@ -1,5 +1,6 @@
 package com.pharmacy.inventory.ui;
 
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.PaginationHelper;
@@ -573,8 +574,6 @@ public class MedicineLotDialogController implements Initializable {
             log.error("Lỗi khi tải dữ liệu lô hàng của thuốc ID {}: ", medicineId, ex);
         });
 
-        Thread th = new Thread(task);
-        th.setDaemon(true);
-        th.start();
+        BackgroundTasks.run(task);
     }
 }

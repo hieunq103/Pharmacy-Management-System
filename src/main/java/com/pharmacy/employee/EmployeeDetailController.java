@@ -1,5 +1,6 @@
 package com.pharmacy.employee;
 
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.account.Account;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -467,9 +468,7 @@ public class EmployeeDetailController {
             }
         });
 
-        Thread th = new Thread(saveTask);
-        th.setDaemon(true);
-        th.start();
+        BackgroundTasks.run(saveTask);
     }
 
     private void setupAutoClearError(TextField field, Label errLabel) {

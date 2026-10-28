@@ -1,5 +1,6 @@
 package com.pharmacy.inventory.ui;
 
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.UserSession;
@@ -280,9 +281,7 @@ public class ImportDialogController implements Initializable {
             }
         };
 
-        Thread th = new Thread(loadAuxTask);
-        th.setDaemon(true);
-        th.start();
+        BackgroundTasks.run(loadAuxTask);
     }
 
     @FXML
@@ -544,7 +543,7 @@ public class ImportDialogController implements Initializable {
             showGeneralError("Lỗi hệ thống: " + (ex != null ? ex.getMessage() : "Không xác định"));
         });
 
-        new Thread(importTask).start();
+        BackgroundTasks.run(importTask);
     }
 
     private void showItemError(String msg) {

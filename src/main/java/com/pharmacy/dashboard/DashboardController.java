@@ -1,5 +1,6 @@
 package com.pharmacy.dashboard;
 
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.dashboard.dto.DashboardStatsDTO;
 import com.pharmacy.inventory.dto.InventoryAlertDTO;
@@ -32,8 +33,6 @@ import java.time.LocalDate;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class DashboardController implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
@@ -58,11 +57,6 @@ public class DashboardController implements Initializable {
 
     private final DashboardService dashboardService = new DashboardServiceImpl();
 
-    private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
-        Thread t = new Thread(r, "dashboard-data-loader");
-        t.setDaemon(true);
-        return t;
-    });
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -109,7 +103,7 @@ public class DashboardController implements Initializable {
         };
 
         task.setOnFailed(e -> log.error("Lỗi khi tải dữ liệu tổng quan: ", task.getException()));
-        executor.submit(task);
+        BackgroundTasks.run(task);
     }
 
     @FXML

@@ -4,6 +4,7 @@ import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.PageResult;
 import com.pharmacy.infra.db.HibernateUtil;
+import com.pharmacy.infra.db.TransactionGuards;
 import com.pharmacy.inventory.dto.BatchExportItemDTO;
 import com.pharmacy.inventory.dto.BatchImportItemDTO;
 import com.pharmacy.inventory.dto.InventoryAlertDTO;
@@ -443,7 +444,7 @@ public class InventoryRepository {
         }
         try {
             HibernateUtil.execute(session -> session.doWork(conn -> {
-                requireEmployee(conn, employeeId);
+                TransactionGuards.requireActiveEmployee(conn, employeeId);
                 Integer supplierId = hasText(supplierName) ? findOrCreateByName(conn, "suppliers", supplierName.trim()) : null;
 
                 long transactionId;
@@ -556,7 +557,7 @@ public class InventoryRepository {
         }
         try {
             HibernateUtil.execute(session -> session.doWork(conn -> {
-                requireEmployee(conn, employeeId);
+                TransactionGuards.requireActiveEmployee(conn, employeeId);
 
                 Map<Long, Integer> requested = new HashMap<>();
                 for (BatchExportItemDTO item : items) {
@@ -628,20 +629,6 @@ public class InventoryRepository {
         return result;
     }
 
-    static void requireEmployee(Connection conn, Integer employeeId) throws SQLException {
-        if (employeeId == null) {
-            throw new IllegalArgumentException("Không xác định được nhân viên thực hiện giao dịch.");
-        }
-        try (PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM employees WHERE id = ?")) {
-            ps.setInt(1, employeeId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) {
-                    throw new IllegalArgumentException("Nhân viên thực hiện giao dịch không tồn tại (ID: " + employeeId + ").");
-                }
-            }
-        }
-    }
-
     static long generatedKey(PreparedStatement ps) throws SQLException {
         try (ResultSet keys = ps.getGeneratedKeys()) {
             if (!keys.next()) throw new SQLException("Không lấy được khóa vừa sinh.");
@@ -661,15 +648,64 @@ public class InventoryRepository {
         return t.getMessage() != null ? t.getMessage() : e.getMessage();
     }
 
-    // Lấy danh sách lịch sử giao dịch nhập kho
-    public List<InventoryTransactionDTO> getImportTransactions(String keyword, LocalDate fromDate, LocalDate toDate) {
+    private static final String IMPORT_KEYWORD_FILTER = """
+             AND (
+                e.full_name LIKE :kw
+                OR s.name LIKE :kw
+                OR it.note LIKE :kw
+                OR it.id IN (
+                    SELECT il_sub.transaction_id FROM inventory_lots il_sub
+                    JOIN medicines m_sub ON il_sub.medicine_id = m_sub.id
+                    WHERE m_sub.name LIKE :kw OR m_sub.code LIKE :kw OR il_sub.lot_number LIKE :kw
+                )
+             )
+            """;
+
+    private static final String EXPORT_KEYWORD_FILTER = """
+             AND (
+                e.full_name LIKE :kw
+                OR it.note LIKE :kw
+                OR it.id IN (
+                    SELECT idi_sub.transaction_id FROM inventory_disposal_items idi_sub
+                    JOIN inventory_lots il_sub ON idi_sub.inventory_lot_id = il_sub.id
+                    JOIN medicines m_sub ON il_sub.medicine_id = m_sub.id
+                    WHERE m_sub.name LIKE :kw OR m_sub.code LIKE :kw OR il_sub.lot_number LIKE :kw OR idi_sub.reason LIKE :kw
+                )
+                OR it.sales_order_id IN (
+                    SELECT soi_sub.sales_order_id FROM sales_order_items soi_sub
+                    JOIN medicines m_sub2 ON soi_sub.medicine_id = m_sub2.id
+                    WHERE m_sub2.name LIKE :kw OR m_sub2.code LIKE :kw
+                )
+             )
+            """;
+
+    // Lấy 1 trang lịch sử nhập kho (phân trang trong SQL, LATERAL chỉ tính cho các phiếu của trang)
+    public PageResult<InventoryTransactionDTO> getImportTransactions(String keyword, LocalDate fromDate, LocalDate toDate,
+                                                                     int page, int size) {
+        int validPage = Math.max(1, page);
+        int validSize = Math.max(1, size);
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            StringBuilder sql = new StringBuilder("""
+            boolean hasKeyword = hasText(keyword);
+            StringBuilder from = new StringBuilder("""
+                FROM inventory_transactions it
+                LEFT JOIN employees e ON it.employee_id = e.id
+                LEFT JOIN suppliers s ON it.supplier_id = s.id
+                WHERE it.type = 'IMPORT'
+            """);
+            if (hasKeyword) from.append(IMPORT_KEYWORD_FILTER);
+            appendDateRange(from, fromDate, toDate);
+
+            long total = countHistory(session, from.toString(), hasKeyword ? keyword : null, fromDate, toDate);
+            if (total == 0) {
+                return PageResult.empty(validPage, validSize);
+            }
+            String sql = """
                 SELECT it.id, it.type, it.transaction_at, it.note,
                        e.id AS employee_id, e.full_name AS employee_name,
                        s.id AS supplier_id, s.name AS supplier_name,
                        agg.item_count, agg.total_quantity, agg.total_amount
-                FROM inventory_transactions it
+                FROM (SELECT it.id %s ORDER BY it.transaction_at DESC, it.id DESC LIMIT :limit OFFSET :offset) page_ids
+                JOIN inventory_transactions it ON it.id = page_ids.id
                 LEFT JOIN employees e ON it.employee_id = e.id
                 LEFT JOIN suppliers s ON it.supplier_id = s.id
                 LEFT JOIN LATERAL (
@@ -678,28 +714,11 @@ public class InventoryRepository {
                            COALESCE(SUM(il.quantity_in * il.import_price), 0) AS total_amount
                     FROM inventory_lots il WHERE il.transaction_id = it.id
                 ) agg ON TRUE
-                WHERE it.type = 'IMPORT'
-            """);
-            boolean hasKeyword = hasText(keyword);
-            if (hasKeyword) {
-                sql.append("""
-                     AND (
-                        e.full_name LIKE :kw
-                        OR s.name LIKE :kw
-                        OR it.note LIKE :kw
-                        OR it.id IN (
-                            SELECT il_sub.transaction_id FROM inventory_lots il_sub
-                            JOIN medicines m_sub ON il_sub.medicine_id = m_sub.id
-                            WHERE m_sub.name LIKE :kw OR m_sub.code LIKE :kw OR il_sub.lot_number LIKE :kw
-                        )
-                     )
-                """);
-            }
-            appendDateRange(sql, fromDate, toDate);
-            sql.append(" ORDER BY it.transaction_at DESC, it.id DESC ");
-
-            NativeQuery<Object[]> query = session.createNativeQuery(sql.toString(), Object[].class);
+                ORDER BY it.transaction_at DESC, it.id DESC
+            """.formatted(from);
+            NativeQuery<Object[]> query = session.createNativeQuery(sql, Object[].class);
             bindHistoryParams(query, hasKeyword ? keyword : null, fromDate, toDate);
+            bindPage(query, validPage, validSize);
 
             List<InventoryTransactionDTO> result = new ArrayList<>();
             for (Object[] row : query.list()) {
@@ -707,21 +726,38 @@ public class InventoryRepository {
                         toLongObj(row[0]), toStr(row[1]), toLocalDateTime(row[2]), toInteger(row[4]), toStr(row[5]),
                         toStr(row[7]), toInt(row[8]), toInt(row[9]), toBigDecimal(row[10]), toStr(row[3])));
             }
-            return result;
+            return new PageResult<>(result, total, validPage, validSize);
         } catch (Exception e) {
             log.error("Lỗi khi lấy lịch sử Nhập kho: ", e);
-            return Collections.emptyList();
+            return PageResult.empty(validPage, validSize);
         }
     }
 
-    // Lấy danh sách lịch sử giao dịch xuất kho
-    public List<InventoryTransactionDTO> getExportTransactions(String keyword, LocalDate fromDate, LocalDate toDate) {
+    // Lấy 1 trang lịch sử xuất kho (phân trang trong SQL, LATERAL chỉ tính cho các phiếu của trang)
+    public PageResult<InventoryTransactionDTO> getExportTransactions(String keyword, LocalDate fromDate, LocalDate toDate,
+                                                                     int page, int size) {
+        int validPage = Math.max(1, page);
+        int validSize = Math.max(1, size);
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            StringBuilder sql = new StringBuilder("""
+            boolean hasKeyword = hasText(keyword);
+            StringBuilder from = new StringBuilder("""
+                FROM inventory_transactions it
+                LEFT JOIN employees e ON it.employee_id = e.id
+                WHERE it.type IN ('EXPORT_SALE', 'EXPORT_DISPOSAL')
+            """);
+            if (hasKeyword) from.append(EXPORT_KEYWORD_FILTER);
+            appendDateRange(from, fromDate, toDate);
+
+            long total = countHistory(session, from.toString(), hasKeyword ? keyword : null, fromDate, toDate);
+            if (total == 0) {
+                return PageResult.empty(validPage, validSize);
+            }
+            String sql = """
                 SELECT it.id, it.type, it.transaction_at, it.note,
                        e.id AS employee_id, e.full_name AS employee_name,
                        COALESCE(agg.item_count, 0), COALESCE(agg.total_quantity, 0), COALESCE(agg.total_amount, 0)
-                FROM inventory_transactions it
+                FROM (SELECT it.id %s ORDER BY it.transaction_at DESC, it.id DESC LIMIT :limit OFFSET :offset) page_ids
+                JOIN inventory_transactions it ON it.id = page_ids.id
                 LEFT JOIN employees e ON it.employee_id = e.id
                 LEFT JOIN LATERAL (
                     SELECT COUNT(*) AS item_count, SUM(idi.quantity) AS total_quantity, 0 AS total_amount
@@ -732,33 +768,11 @@ public class InventoryRepository {
                     FROM sales_order_items soi
                     WHERE it.type = 'EXPORT_SALE' AND soi.sales_order_id = it.sales_order_id
                 ) agg ON agg.item_count > 0
-                WHERE it.type IN ('EXPORT_SALE', 'EXPORT_DISPOSAL')
-            """);
-            boolean hasKeyword = hasText(keyword);
-            if (hasKeyword) {
-                sql.append("""
-                     AND (
-                        e.full_name LIKE :kw
-                        OR it.note LIKE :kw
-                        OR it.id IN (
-                            SELECT idi_sub.transaction_id FROM inventory_disposal_items idi_sub
-                            JOIN inventory_lots il_sub ON idi_sub.inventory_lot_id = il_sub.id
-                            JOIN medicines m_sub ON il_sub.medicine_id = m_sub.id
-                            WHERE m_sub.name LIKE :kw OR m_sub.code LIKE :kw OR il_sub.lot_number LIKE :kw OR idi_sub.reason LIKE :kw
-                        )
-                        OR it.sales_order_id IN (
-                            SELECT soi_sub.sales_order_id FROM sales_order_items soi_sub
-                            JOIN medicines m_sub2 ON soi_sub.medicine_id = m_sub2.id
-                            WHERE m_sub2.name LIKE :kw OR m_sub2.code LIKE :kw
-                        )
-                     )
-                """);
-            }
-            appendDateRange(sql, fromDate, toDate);
-            sql.append(" ORDER BY it.transaction_at DESC, it.id DESC ");
-
-            NativeQuery<Object[]> query = session.createNativeQuery(sql.toString(), Object[].class);
+                ORDER BY it.transaction_at DESC, it.id DESC
+            """.formatted(from);
+            NativeQuery<Object[]> query = session.createNativeQuery(sql, Object[].class);
             bindHistoryParams(query, hasKeyword ? keyword : null, fromDate, toDate);
+            bindPage(query, validPage, validSize);
 
             List<InventoryTransactionDTO> result = new ArrayList<>();
             for (Object[] row : query.list()) {
@@ -775,11 +789,22 @@ public class InventoryRepository {
                 }
                 result.add(dto);
             }
-            return result;
+            return new PageResult<>(result, total, validPage, validSize);
         } catch (Exception e) {
             log.error("Lỗi khi lấy lịch sử Xuất kho: ", e);
-            return Collections.emptyList();
+            return PageResult.empty(validPage, validSize);
         }
+    }
+
+    private static long countHistory(Session session, String fromClause, String keyword, LocalDate fromDate, LocalDate toDate) {
+        NativeQuery<Long> count = session.createNativeQuery("SELECT COUNT(*) " + fromClause, Long.class);
+        bindHistoryParams(count, keyword, fromDate, toDate);
+        return toLong(count.uniqueResult());
+    }
+
+    private static void bindPage(NativeQuery<?> query, int page, int size) {
+        query.setParameter("limit", size);
+        query.setParameter("offset", (page - 1) * size);
     }
 
     // Thêm điều kiện lọc theo khoảng ngày vào câu lệnh SQL

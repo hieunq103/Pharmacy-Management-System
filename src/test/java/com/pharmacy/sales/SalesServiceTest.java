@@ -123,6 +123,26 @@ public class SalesServiceTest {
     }
 
     @Test
+    void testCheckoutRejectedWhenAccountLockedMidSession() {
+        MedicineInventoryDTO med = anyInStock();
+        var staff = DbTestSupport.loginAs(DbTestSupport.STAFF_USERNAME);
+        setAccountStatus(staff.getId(), "DISABLED");
+        try {
+            RuntimeException ex = assertThrows(RuntimeException.class,
+                    () -> salesService.checkout(request(cartItem(med, 1, med.getSellPrice()))));
+            assertTrue(ex.getMessage().contains("đã bị khóa"), ex.getMessage());
+        } finally {
+            setAccountStatus(staff.getId(), "ACTIVE");
+        }
+    }
+
+    private static void setAccountStatus(Integer accountId, String status) {
+        com.pharmacy.infra.db.HibernateUtil.execute(session -> session
+                .createNativeMutationQuery("UPDATE accounts SET status = :st WHERE id = :id")
+                .setParameter("st", status).setParameter("id", accountId).executeUpdate());
+    }
+
+    @Test
     void testCheckoutRequiresLogin() {
         MedicineInventoryDTO med = anyInStock();
         DbTestSupport.logout();

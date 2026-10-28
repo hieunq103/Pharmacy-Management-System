@@ -1,5 +1,6 @@
 package com.pharmacy.report;
 
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.UserSession;
@@ -29,18 +30,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ReportController {
     private static final Logger log = LoggerFactory.getLogger(ReportController.class);
     private final ReportService reportService;
 
-    private final ExecutorService executor = Executors.newFixedThreadPool(2, r -> {
-        Thread t = new Thread(r, "report-data-loader");
-        t.setDaemon(true);
-        return t;
-    });
 
     private Task<?> currentChartTask;
     private Task<?> currentMedTask;
@@ -527,7 +521,7 @@ public class ReportController {
         }
         currentChartTask = loadTask;
         trackLoading(loadTask);
-        executor.submit(loadTask);
+        BackgroundTasks.run(loadTask);
     }
 
     private void loadMedicinesData() {
@@ -577,7 +571,7 @@ public class ReportController {
         }
         currentMedTask = medTask;
         trackLoading(medTask);
-        executor.submit(medTask);
+        BackgroundTasks.run(medTask);
     }
 
     private void updateStatCards(ReportSummaryDTO summary) {

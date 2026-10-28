@@ -66,12 +66,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employeeRepository.existsByCode(employee.getCode())) {
             throw new IllegalArgumentException("Mã nhân viên này đã tồn tại trong hệ thống.");
         }
-        if (employeeRepository.existsByNationalId(employee.getNationalId())) {
-            throw new IllegalArgumentException("Căn cước công dân này đã tồn tại trong hệ thống.");
-        }
-        if (employeeRepository.existsByPhone(employee.getPhone())) {
-            throw new IllegalArgumentException("Số điện thoại này đã được sử dụng trong hệ thống.");
-        }
+        employeeRepository.findByNationalId(employee.getNationalId(), null).ifPresent(c -> {
+            throw new IllegalArgumentException(c.message("Căn cước công dân"));
+        });
+        employeeRepository.findByPhone(employee.getPhone(), null).ifPresent(c -> {
+            throw new IllegalArgumentException(c.message("Số điện thoại"));
+        });
 
         String hashedPassword = PasswordEncoder.hash(AuthServiceImpl.defaultPassword());
         return employeeRepository.addEmployeeWithAccount(employee, role.trim(), hashedPassword);
@@ -172,12 +172,12 @@ public class EmployeeServiceImpl implements EmployeeService {
                 normalizedRole
         );
 
-        if (employeeRepository.existsByNationalIdAndNotId(sanitizedRequest.nationalId(), sanitizedRequest.employeeId())) {
-            throw new IllegalArgumentException("Căn cước công dân này đã thuộc về nhân viên khác.");
-        }
-        if (employeeRepository.existsByPhoneAndNotId(sanitizedRequest.phone(), sanitizedRequest.employeeId())) {
-            throw new IllegalArgumentException("Số điện thoại này đã thuộc về nhân viên khác.");
-        }
+        employeeRepository.findByNationalId(sanitizedRequest.nationalId(), sanitizedRequest.employeeId()).ifPresent(c -> {
+            throw new IllegalArgumentException(c.message("Căn cước công dân"));
+        });
+        employeeRepository.findByPhone(sanitizedRequest.phone(), sanitizedRequest.employeeId()).ifPresent(c -> {
+            throw new IllegalArgumentException(c.message("Số điện thoại"));
+        });
 
         return employeeRepository.updateEmployeeByManager(sanitizedRequest);
     }

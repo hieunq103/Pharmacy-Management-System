@@ -16,8 +16,8 @@ class ProfileServiceImplTest {
         String savedName, savedPhone, savedAddress;
 
         @Override
-        public boolean existsByPhoneAndNotId(String phone, Integer currentEmployeeId) {
-            return false;
+        public java.util.Optional<com.pharmacy.employee.EmployeeConflict> findByPhone(String phone, Integer excludeId) {
+            return java.util.Optional.empty();
         }
 
         @Override

@@ -96,4 +96,37 @@ class EmployeeServiceTest {
         assertThrows(IllegalArgumentException.class, () -> service.createEmployeeWithAccount(e, "STAFF"),
                 "Trùng CCCD/SĐT phải bị chặn");
     }
+
+    @Test
+    void duplicateWithResignedEmployeeShowsWhoAndHowToResolve() {
+        DbTestSupport.loginAsManager();
+        long n = System.nanoTime() % 100_000_000L;
+        Employee old = new Employee();
+        old.setFullName("Nhân viên Cũ " + n);
+        old.setDob(LocalDate.of(1995, 5, 5));
+        old.setGender(Employee.GENDER_MALE);
+        old.setNationalId(String.format("0791%08d", n));
+        old.setPhone(String.format("08%08d", n));
+        old.setHiredDate(LocalDate.now());
+        assertTrue(service.createEmployeeWithAccount(old, "STAFF"));
+        Integer oldId = new EmployeeRepository().findByPhone(old.getPhone(), null).map(c -> {
+            assertEquals(old.getCode(), c.code());
+            return com.pharmacy.infra.db.HibernateUtil.executeWithResult(s -> s
+                    .createSelectionQuery("SELECT e.id FROM Employee e WHERE e.code = :c", Integer.class)
+                    .setParameter("c", c.code()).getSingleResult());
+        }).orElseThrow();
+        assertTrue(service.markAsInactive(oldId));
+
+        Employee newcomer = new Employee();
+        newcomer.setFullName("Nhân viên Mới " + n);
+        newcomer.setDob(LocalDate.of(2000, 1, 1));
+        newcomer.setGender(Employee.GENDER_FEMALE);
+        newcomer.setNationalId(String.format("0792%08d", n));
+        newcomer.setPhone(old.getPhone());
+        newcomer.setHiredDate(LocalDate.now());
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> service.createEmployeeWithAccount(newcomer, "STAFF"));
+        assertTrue(ex.getMessage().contains("đã nghỉ việc " + old.getCode()), ex.getMessage());
+        assertTrue(ex.getMessage().contains("Đang làm việc"), ex.getMessage());
+    }
 }

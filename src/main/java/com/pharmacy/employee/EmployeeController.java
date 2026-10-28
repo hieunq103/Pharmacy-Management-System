@@ -1,5 +1,6 @@
 package com.pharmacy.employee;
 
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.account.Account;
 import com.pharmacy.common.PageResult;
 import javafx.application.Platform;
@@ -26,8 +27,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import com.pharmacy.common.UserSession;
 import com.pharmacy.layout.MainLayoutController;
@@ -71,11 +70,6 @@ public class EmployeeController implements Initializable {
     private long totalRecords = 0;
     private Task<PageResult<Employee>> currentLoadTask;
 
-    private final ExecutorService loadExecutor = Executors.newSingleThreadExecutor(r -> {
-        Thread t = new Thread(r, "emp-load-worker");
-        t.setDaemon(true);
-        return t;
-    });
 
     private final EmployeeService employeeService = new EmployeeServiceImpl();
     private final Map<String, String> activeFilters = new HashMap<>();
@@ -162,15 +156,17 @@ public class EmployeeController implements Initializable {
             currentLoadTask.cancel();
         }
 
-        currentLoadTask = new Task<>() {
+        Task<PageResult<Employee>> task = new Task<>() {
             @Override
             protected PageResult<Employee> call() {
                 return employeeService.getEmployeesPage(currentPage, pageSize, keyword, gender, role, status, accountStatus);
             }
         };
+        currentLoadTask = task;
 
-        currentLoadTask.setOnSucceeded(e -> {
-            PageResult<Employee> result = currentLoadTask.getValue();
+        task.setOnSucceeded(e -> {
+            if (task != currentLoadTask) return;
+            PageResult<Employee> result = task.getValue();
             if (result != null) {
                 totalRecords = result.getTotalElements();
                 totalPages = result.getTotalPages();
@@ -191,12 +187,12 @@ public class EmployeeController implements Initializable {
             }
         });
 
-        currentLoadTask.setOnFailed(e -> {
-            Throwable ex = currentLoadTask.getException();
+        task.setOnFailed(e -> {
+            Throwable ex = task.getException();
             log.error("Lỗi nạp dữ liệu nhân viên: ", ex);
         });
 
-        loadExecutor.submit(currentLoadTask);
+        BackgroundTasks.run(task);
     }
 
     private void renderPagination() {
@@ -392,9 +388,7 @@ public class EmployeeController implements Initializable {
             log.error("Lỗi nạp thống kê nhân viên: ", ex);
         });
 
-        Thread th = new Thread(task);
-        th.setDaemon(true);
-        th.start();
+        BackgroundTasks.run(task);
     }
 
     private StackPane createStatusDot(Color centerColor, Color haloColor) {
@@ -487,7 +481,7 @@ public class EmployeeController implements Initializable {
                         DialogUtils.showError("Lỗi hệ thống", ex.getMessage() != null ? ex.getMessage() : "Có lỗi xảy ra.");
                     });
 
-                    new Thread(task).start();
+                    BackgroundTasks.run(task);
                 }
             });
         });

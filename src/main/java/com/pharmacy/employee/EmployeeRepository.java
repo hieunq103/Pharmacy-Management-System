@@ -18,7 +18,7 @@ public class EmployeeRepository {
 
     // Kiểm tra mã nhân viên đã tồn tại chưa
     public boolean existsByCode(String code) {
-        return existsByField("code", code, null, "mã nhân viên");
+        return findConflict("code", code, null, "mã nhân viên").isPresent();
     }
 
     // Sinh mã nhân viên tiếp theo theo định dạng PMSxxxx
@@ -44,38 +44,27 @@ public class EmployeeRepository {
         }
     }
 
-    // Kiểm tra số điện thoại đã tồn tại ở nhân viên khác chưa
-    public boolean existsByPhoneAndNotId(String phone, Integer currentEmployeeId) {
-        return existsByField("phone", phone, currentEmployeeId, "số điện thoại");
+    // Nhân viên khác (kể cả đã nghỉ) đang dùng số điện thoại này
+    public Optional<EmployeeConflict> findByPhone(String phone, Integer excludeId) {
+        return findConflict("phone", phone, excludeId, "số điện thoại");
     }
 
-    // Kiểm tra số điện thoại đã tồn tại trong hệ thống chưa
-    public boolean existsByPhone(String phone) {
-        return existsByField("phone", phone, null, "số điện thoại");
+    // Nhân viên khác (kể cả đã nghỉ) đang dùng CCCD này
+    public Optional<EmployeeConflict> findByNationalId(String nationalId, Integer excludeId) {
+        return findConflict("nationalId", nationalId, excludeId, "CCCD");
     }
 
-    // Kiểm tra căn cước công dân đã tồn tại trong hệ thống chưa
-    public boolean existsByNationalId(String nationalId) {
-        return existsByField("nationalId", nationalId, null, "CCCD");
-    }
-
-    // Kiểm tra căn cước công dân đã tồn tại ở nhân viên khác chưa
-    public boolean existsByNationalIdAndNotId(String nationalId, Integer employeeId) {
-        if (employeeId == null) return false;
-        return existsByField("nationalId", nationalId, employeeId, "CCCD");
-    }
-
-    // Đếm số lượng nhân viên theo trường dữ liệu chỉ định
-    private boolean existsByField(String field, String value, Integer excludeId, String label) {
-        if (value == null || value.isBlank()) return false;
+    // Tìm nhân viên có trường dữ liệu trùng giá trị (bỏ qua excludeId)
+    private Optional<EmployeeConflict> findConflict(String field, String value, Integer excludeId, String label) {
+        if (value == null || value.isBlank()) return Optional.empty();
         try {
             return HibernateUtil.executeWithResult(session -> {
-                String hql = "SELECT COUNT(e.id) FROM Employee e WHERE e." + field + " = :value"
+                String hql = "SELECT new com.pharmacy.employee.EmployeeConflict(e.code, e.fullName, e.status) "
+                        + "FROM Employee e WHERE e." + field + " = :value"
                         + (excludeId != null ? " AND e.id <> :id" : "");
-                var query = session.createSelectionQuery(hql, Long.class).setParameter("value", value.trim());
+                var query = session.createSelectionQuery(hql, EmployeeConflict.class).setParameter("value", value.trim());
                 if (excludeId != null) query.setParameter("id", excludeId);
-                Long count = query.getSingleResult();
-                return count != null && count > 0;
+                return query.setMaxResults(1).uniqueResultOptional();
             });
         } catch (Exception e) {
             log.error("Lỗi khi kiểm tra trùng {} [{}]: ", label, value, e);

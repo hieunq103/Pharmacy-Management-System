@@ -3,8 +3,6 @@ package com.pharmacy.common;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.slf4j.Logger;
@@ -36,48 +34,37 @@ public final class UiScaleManager {
         return INSTANCE;
     }
 
-    public void install(Scene scene) {
-        if (scene == null) return;
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            boolean isShortcut = event.isShortcutDown() || event.isControlDown() || event.isMetaDown();
-            if (!isShortcut) return;
+    private static final String INSTALLED_KEY = "pharma.uiScaleInstalled";
 
-            KeyCode code = event.getCode();
-            if (code == KeyCode.EQUALS || code == KeyCode.PLUS || code == KeyCode.ADD) {
-                zoomIn(scene);
-                event.consume();
-            } else if (code == KeyCode.MINUS || code == KeyCode.SUBTRACT) {
-                zoomOut(scene);
-                event.consume();
-            } else if (code == KeyCode.DIGIT0 || code == KeyCode.NUMPAD0) {
-                resetZoom(scene);
-                event.consume();
-            }
-        });
+    // Mỗi Scene/Stage chỉ gắn listener 1 lần; listener trên Stage không giữ Scene cũ (tránh giữ giao diện phiên trước)
+    public void install(Scene scene) {
+        if (scene == null || scene.getProperties().putIfAbsent(INSTALLED_KEY, Boolean.TRUE) != null) return;
+
         scene.widthProperty().addListener((obs, oldW, newW) -> handleResize(scene));
         scene.heightProperty().addListener((obs, oldH, newH) -> handleResize(scene));
         scene.windowProperty().addListener((obs, oldWin, newWin) -> {
             if (newWin instanceof Stage stage) {
-                setupStageListener(stage, scene);
+                setupStageListener(stage);
             }
         });
         if (scene.getWindow() instanceof Stage stage) {
-            setupStageListener(stage, scene);
+            setupStageListener(stage);
         }
 
+        applyScale(currentScale, scene);
         Platform.runLater(() -> autoScaleScene(scene));
     }
 
-    private void setupStageListener(Stage stage, Scene scene) {
-        if (stage == null) return;
+    private void setupStageListener(Stage stage) {
+        if (stage == null || stage.getProperties().putIfAbsent(INSTALLED_KEY, Boolean.TRUE) != null) return;
 
-        stage.widthProperty().addListener((obs, oldW, newW) -> handleResize(scene));
-        stage.heightProperty().addListener((obs, oldH, newH) -> handleResize(scene));
-        stage.maximizedProperty().addListener((obs, oldM, newM) -> handleResize(scene));
-        stage.fullScreenProperty().addListener((obs, oldF, newF) -> handleResize(scene));
+        stage.widthProperty().addListener((obs, oldW, newW) -> handleResize(stage.getScene()));
+        stage.heightProperty().addListener((obs, oldH, newH) -> handleResize(stage.getScene()));
+        stage.maximizedProperty().addListener((obs, oldM, newM) -> handleResize(stage.getScene()));
+        stage.fullScreenProperty().addListener((obs, oldF, newF) -> handleResize(stage.getScene()));
         stage.showingProperty().addListener((obs, oldS, isShowing) -> {
             if (isShowing) {
-                Platform.runLater(() -> autoScaleScene(scene));
+                Platform.runLater(() -> autoScaleScene(stage.getScene()));
             }
         });
     }
@@ -109,20 +96,6 @@ public final class UiScaleManager {
         if (Math.abs(calculatedScale - currentScale) >= 0.02) {
             setScale(calculatedScale, scene);
         }
-    }
-
-    public void zoomIn(Scene scene) {
-        double newScale = Math.min(2.2, currentScale + 0.15);
-        setScale(newScale, scene);
-    }
-
-    public void zoomOut(Scene scene) {
-        double newScale = Math.max(0.85, currentScale - 0.15);
-        setScale(newScale, scene);
-    }
-
-    public void resetZoom(Scene scene) {
-        autoScaleScene(scene);
     }
 
     public void setScale(double scale, Scene scene) {

@@ -1,5 +1,6 @@
 package com.pharmacy.profile;
 
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.account.Account;
 import com.pharmacy.common.UserSession;
 import com.pharmacy.employee.Employee;
@@ -274,7 +275,7 @@ public class ProfileController {
             }
         });
 
-        new Thread(saveTask).start();
+        BackgroundTasks.run(saveTask);
     }
 
     @FXML

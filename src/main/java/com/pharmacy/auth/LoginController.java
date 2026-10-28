@@ -1,5 +1,6 @@
 package com.pharmacy.auth;
 
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.account.Account;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormValidator;
@@ -28,17 +29,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class LoginController {
     private static final Logger log = LoggerFactory.getLogger(LoginController.class);
 
-    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(r -> {
-        Thread t = new Thread(r);
-        t.setDaemon(true);
-        return t;
-    });
 
     @FXML
     private StackPane heroPane;
@@ -171,7 +165,7 @@ public class LoginController {
             }
         });
 
-        EXECUTOR.submit(loginTask);
+        BackgroundTasks.run(loginTask);
     }
 
     private boolean promptForcedPasswordChange(Account account) {

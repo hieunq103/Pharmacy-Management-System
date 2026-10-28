@@ -1,5 +1,6 @@
 package com.pharmacy.inventory;
 
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.inventory.ui.ExportDialogController;
 import com.pharmacy.inventory.ui.ImportDialogController;
@@ -39,8 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.DrawerHelper;
@@ -87,11 +86,6 @@ public class InventoryController implements Initializable {
     private int totalPages = 1;
     private long totalRecords = 0;
     private Task<PageResult<MedicineInventoryDTO>> currentLoadTask;
-    private final ExecutorService loadExecutor = Executors.newSingleThreadExecutor(r -> {
-        Thread t = new Thread(r, "inv-load-worker");
-        t.setDaemon(true);
-        return t;
-    });
 
     private final DrawerHelper drawerHelper = new DrawerHelper();
     private Parent importDrawerRoot;
@@ -575,12 +569,6 @@ public class InventoryController implements Initializable {
 
             Scene scene = new Scene(root);
 
-            scene.setOnKeyPressed(event -> {
-                if (event.getCode() == KeyCode.ESCAPE) {
-                    dialogStage.close();
-                }
-            });
-
             dialogStage.setScene(scene);
             dialogStage.setResizable(true);
             dialogStage.setWidth(1150);
@@ -806,9 +794,7 @@ public class InventoryController implements Initializable {
             DialogUtils.showError("Lỗi", "Đã xảy ra lỗi khi lưu thông tin thuốc: " + (ex != null ? ex.getMessage() : ""));
         });
 
-        Thread th = new Thread(saveTask);
-        th.setDaemon(true);
-        th.start();
+        BackgroundTasks.run(saveTask);
     }
 
     public void loadInventoryData() {
@@ -823,15 +809,17 @@ public class InventoryController implements Initializable {
             currentLoadTask.cancel();
         }
 
-        currentLoadTask = new Task<>() {
+        Task<PageResult<MedicineInventoryDTO>> task = new Task<>() {
             @Override
             protected PageResult<MedicineInventoryDTO> call() {
                 return inventoryService.getInventoryPage(currentPage, pageSize, keyword, stockFilter, expiryFilter);
             }
         };
+        currentLoadTask = task;
 
-        currentLoadTask.setOnSucceeded(e -> {
-            PageResult<MedicineInventoryDTO> result = currentLoadTask.getValue();
+        task.setOnSucceeded(e -> {
+            if (task != currentLoadTask) return;
+            PageResult<MedicineInventoryDTO> result = task.getValue();
             if (result != null) {
                 pageData.setAll(result.getItems());
                 totalPages = result.getTotalPages();
@@ -840,12 +828,12 @@ public class InventoryController implements Initializable {
             }
         });
 
-        currentLoadTask.setOnFailed(e -> {
-            Throwable ex = currentLoadTask.getException();
+        task.setOnFailed(e -> {
+            Throwable ex = task.getException();
             log.error("Lỗi khi tải dữ liệu kho: ", ex);
         });
 
-        loadExecutor.submit(currentLoadTask);
+        BackgroundTasks.run(task);
     }
 
     private void loadSummaryCounts() {
@@ -862,9 +850,7 @@ public class InventoryController implements Initializable {
                 if (lblInStockMedicines != null) lblInStockMedicines.setText(String.valueOf(summary.inStockMedicines()));
             }
         });
-        Thread th = new Thread(summaryTask);
-        th.setDaemon(true);
-        th.start();
+        BackgroundTasks.run(summaryTask);
     }
 
     private void renderPagination() {

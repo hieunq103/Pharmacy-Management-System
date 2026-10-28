@@ -2,6 +2,7 @@ package com.pharmacy.sales;
 
 import com.pharmacy.common.PageResult;
 import com.pharmacy.infra.db.HibernateUtil;
+import com.pharmacy.infra.db.TransactionGuards;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.sales.dto.CartItem;
 import com.pharmacy.sales.dto.CartTotals;
@@ -175,6 +176,8 @@ public class SalesRepository {
 
         try {
             HibernateUtil.execute(session -> session.doWork(conn -> {
+                TransactionGuards.requireActiveEmployee(conn, req.getEmployeeId());
+
                 Map<Integer, Integer> qtyByMedicine = new LinkedHashMap<>();
                 Map<Integer, CartItem> cartByMedicine = new HashMap<>();
                 for (CartItem item : req.getItems()) {

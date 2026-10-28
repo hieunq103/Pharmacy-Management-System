@@ -1,5 +1,6 @@
 package com.pharmacy.employee;
 
+import com.pharmacy.common.BackgroundTasks;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -64,9 +65,7 @@ public class AddEmployeeController implements Initializable {
                 txtEmployeeCode.setText(task.getValue());
             }
         });
-        Thread t = new Thread(task);
-        t.setDaemon(true);
-        t.start();
+        BackgroundTasks.run(task);
     }
 
     public void setOnCloseCallback(Runnable onCloseCallback) {

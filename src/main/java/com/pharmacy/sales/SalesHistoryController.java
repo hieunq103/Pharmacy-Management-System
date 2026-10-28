@@ -1,5 +1,6 @@
 package com.pharmacy.sales;
 
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.DebounceUtil;
 import com.pharmacy.common.FormatUtils;
@@ -30,7 +31,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -44,8 +44,6 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class SalesHistoryController implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(SalesHistoryController.class);
@@ -94,11 +92,6 @@ public class SalesHistoryController implements Initializable {
     private Integer filterEmployeeId = null;
     private boolean isManager = true;
 
-    private final ExecutorService historyExecutor = Executors.newSingleThreadExecutor(r -> {
-        Thread t = new Thread(r, "sales-history-loader");
-        t.setDaemon(true);
-        return t;
-    });
 
     private Task<PageResult<SalesOrderDTO>> runningTask;
 
@@ -396,15 +389,17 @@ public class SalesHistoryController implements Initializable {
         final int page = currentPage;
         final int size = pageSize;
 
-        runningTask = new Task<>() {
+        Task<PageResult<SalesOrderDTO>> task = new Task<>() {
             @Override
             protected PageResult<SalesOrderDTO> call() {
                 return salesService.getSalesHistory(fromDate, toDate, empId, keyword, page, size);
             }
         };
+        runningTask = task;
 
-        runningTask.setOnSucceeded(e -> {
-            PageResult<SalesOrderDTO> result = runningTask.getValue();
+        task.setOnSucceeded(e -> {
+            if (task != runningTask) return;
+            PageResult<SalesOrderDTO> result = task.getValue();
             pageData.clear();
             if (result != null && result.getItems() != null) {
                 pageData.addAll(result.getItems());
@@ -423,11 +418,11 @@ public class SalesHistoryController implements Initializable {
             Platform.runLater(() -> TableSyncHelper.resetScrollToTop(tableSalesOrders, null));
         });
 
-        runningTask.setOnFailed(e -> {
-            log.error("Lỗi khi tải lịch sử bán hàng: ", runningTask.getException());
+        task.setOnFailed(e -> {
+            log.error("Lỗi khi tải lịch sử bán hàng: ", task.getException());
         });
 
-        historyExecutor.submit(runningTask);
+        BackgroundTasks.run(task);
     }
 
     private void renderPagination() {
@@ -472,11 +467,6 @@ public class SalesHistoryController implements Initializable {
             dialogStage.setTitle("Chi tiết đơn hàng - " + order.getCode());
 
             Scene scene = new Scene(root);
-            scene.setOnKeyPressed(event -> {
-                if (event.getCode() == KeyCode.ESCAPE) {
-                    dialogStage.close();
-                }
-            });
 
             dialogStage.setScene(scene);
             dialogStage.setResizable(true);

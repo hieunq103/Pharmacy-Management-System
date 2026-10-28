@@ -1,5 +1,6 @@
 package com.pharmacy.sales;
 
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.DebounceUtil;
 import com.pharmacy.common.DialogUtils;
@@ -9,7 +10,6 @@ import com.pharmacy.common.PaginationHelper;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.sales.dto.CartItem;
 import com.pharmacy.sales.dto.CartOrder;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,8 +18,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -32,8 +30,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class SalesController implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(SalesController.class);
@@ -86,11 +82,6 @@ public class SalesController implements Initializable {
 
     private List<MedicineInventoryDTO> allLoadedMedicines = new ArrayList<>();
 
-    private final ExecutorService salesExecutor = Executors.newSingleThreadExecutor(r -> {
-        Thread t = new Thread(r, "pos-sales-worker");
-        t.setDaemon(true);
-        return t;
-    });
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -125,23 +116,6 @@ public class SalesController implements Initializable {
                 }
             });
         }
-
-        Platform.runLater(() -> {
-            if (txtSearch != null && txtSearch.getScene() != null) {
-                txtSearch.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-                    if (event.getCode() == KeyCode.F2) {
-                        txtSearch.requestFocus();
-                        txtSearch.selectAll();
-                        event.consume();
-                    } else if (event.getCode() == KeyCode.F9) {
-                        if (btnCheckout != null && !btnCheckout.isDisable()) {
-                            handleOpenPaymentDialog();
-                            event.consume();
-                        }
-                    }
-                });
-            }
-        });
     }
 
     private void setupExtraFieldsListeners() {
@@ -257,7 +231,7 @@ public class SalesController implements Initializable {
             }
         });
 
-        salesExecutor.submit(task);
+        BackgroundTasks.run(task);
 
         cboCategory.valueProperty().addListener((obs, oldVal, newVal) -> {
             currentCategory = newVal != null ? newVal : "Tất cả nhóm thuốc";
@@ -300,7 +274,7 @@ public class SalesController implements Initializable {
             log.error("Lỗi khi tải trang thuốc bán hàng: ", task.getException());
         });
 
-        salesExecutor.submit(task);
+        BackgroundTasks.run(task);
     }
 
     private void renderPagination() {

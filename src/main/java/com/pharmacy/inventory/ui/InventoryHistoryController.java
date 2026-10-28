@@ -1,5 +1,7 @@
 package com.pharmacy.inventory.ui;
 
+import com.pharmacy.common.BackgroundTasks;
+import com.pharmacy.common.PageResult;
 import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.PaginationHelper;
@@ -22,7 +24,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -32,11 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class InventoryHistoryController implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(InventoryHistoryController.class);
@@ -80,14 +77,12 @@ public class InventoryHistoryController implements Initializable {
     @FXML private Label lblExportRecordRange;
 
     private final ObservableList<InventoryTransactionDTO> importPageData = FXCollections.observableArrayList();
-    private final List<InventoryTransactionDTO> importMasterList = new ArrayList<>();
     private int importCurrentPage = 1;
     private final int importPageSize = AppConstants.DEFAULT_PAGE_SIZE;
     private int importTotalPages = 1;
     private long importTotalRecords = 0;
 
     private final ObservableList<InventoryTransactionDTO> exportPageData = FXCollections.observableArrayList();
-    private final List<InventoryTransactionDTO> exportMasterList = new ArrayList<>();
     private int exportCurrentPage = 1;
     private final int exportPageSize = AppConstants.DEFAULT_PAGE_SIZE;
     private int exportTotalPages = 1;
@@ -96,11 +91,6 @@ public class InventoryHistoryController implements Initializable {
     private boolean isImportDirty = false;
     private boolean isExportDirty = false;
 
-    private final ExecutorService historyExecutor = Executors.newSingleThreadExecutor(r -> {
-        Thread t = new Thread(r, "history-load-worker");
-        t.setDaemon(true);
-        return t;
-    });
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -338,8 +328,8 @@ public class InventoryHistoryController implements Initializable {
         loadFilteredData();
     }
 
-    private Task<List<InventoryTransactionDTO>> runningImportTask;
-    private Task<List<InventoryTransactionDTO>> runningExportTask;
+    private Task<PageResult<InventoryTransactionDTO>> runningImportTask;
+    private Task<PageResult<InventoryTransactionDTO>> runningExportTask;
 
     public void loadFilteredData() {
         boolean isExportTabActive = historyTabPane != null && historyTabPane.getSelectionModel().getSelectedItem() == tabExport;
@@ -366,32 +356,33 @@ public class InventoryHistoryController implements Initializable {
         }
 
         LocalDate filterDate = isDateFiltered ? appliedFilterDate : null;
+        int page = importCurrentPage;
 
-        runningImportTask = new Task<>() {
+        Task<PageResult<InventoryTransactionDTO>> task = new Task<>() {
             @Override
-            protected List<InventoryTransactionDTO> call() {
-                return inventoryService.getImportTransactions(null, filterDate, filterDate);
+            protected PageResult<InventoryTransactionDTO> call() {
+                return inventoryService.getImportTransactions(null, filterDate, filterDate, page, importPageSize);
             }
         };
+        runningImportTask = task;
 
-        runningImportTask.setOnSucceeded(e -> {
-            List<InventoryTransactionDTO> list = runningImportTask.getValue();
-            importMasterList.clear();
-            if (list != null) {
-                importMasterList.addAll(list);
-            }
-            importTotalRecords = importMasterList.size();
-            importTotalPages = (int) Math.max(1, Math.ceil((double) importTotalRecords / importPageSize));
-            if (importCurrentPage > importTotalPages) importCurrentPage = importTotalPages;
-            if (importCurrentPage < 1) importCurrentPage = 1;
-            renderImportPagination();
+        task.setOnSucceeded(e -> {
+            if (task != runningImportTask) return;
+            PageResult<InventoryTransactionDTO> result = task.getValue();
+            importTotalRecords = result.getTotalElements();
+            importTotalPages = Math.max(1, result.getTotalPages());
+            importPageData.setAll(result.getItems());
+            TableSyncHelper.resetScrollToTop(tableImport, null);
+            PaginationHelper.render(importPaginationBox, lblImportRecordRange, importCurrentPage, importTotalPages,
+                    importTotalRecords, importPageSize, p -> {
+                        importCurrentPage = p;
+                        loadImportData();
+                    });
         });
 
-        runningImportTask.setOnFailed(e -> {
-            log.error("Lỗi khi tải lịch sử Nhập kho: ", runningImportTask.getException());
-        });
+        task.setOnFailed(e -> log.error("Lỗi khi tải lịch sử Nhập kho: ", task.getException()));
 
-        historyExecutor.submit(runningImportTask);
+        BackgroundTasks.run(task);
     }
 
     private void loadExportData() {
@@ -400,90 +391,33 @@ public class InventoryHistoryController implements Initializable {
         }
 
         LocalDate filterDate = isDateFiltered ? appliedFilterDate : null;
+        int page = exportCurrentPage;
 
-        runningExportTask = new Task<>() {
+        Task<PageResult<InventoryTransactionDTO>> task = new Task<>() {
             @Override
-            protected List<InventoryTransactionDTO> call() {
-                return inventoryService.getExportTransactions(null, filterDate, filterDate);
+            protected PageResult<InventoryTransactionDTO> call() {
+                return inventoryService.getExportTransactions(null, filterDate, filterDate, page, exportPageSize);
             }
         };
+        runningExportTask = task;
 
-        runningExportTask.setOnSucceeded(e -> {
-            List<InventoryTransactionDTO> list = runningExportTask.getValue();
-            exportMasterList.clear();
-            if (list != null) {
-                exportMasterList.addAll(list);
-            }
-            exportTotalRecords = exportMasterList.size();
-            exportTotalPages = (int) Math.max(1, Math.ceil((double) exportTotalRecords / exportPageSize));
-            if (exportCurrentPage > exportTotalPages) exportCurrentPage = exportTotalPages;
-            if (exportCurrentPage < 1) exportCurrentPage = 1;
-            renderExportPagination();
+        task.setOnSucceeded(e -> {
+            if (task != runningExportTask) return;
+            PageResult<InventoryTransactionDTO> result = task.getValue();
+            exportTotalRecords = result.getTotalElements();
+            exportTotalPages = Math.max(1, result.getTotalPages());
+            exportPageData.setAll(result.getItems());
+            TableSyncHelper.resetScrollToTop(tableExport, null);
+            PaginationHelper.render(exportPaginationBox, lblExportRecordRange, exportCurrentPage, exportTotalPages,
+                    exportTotalRecords, exportPageSize, p -> {
+                        exportCurrentPage = p;
+                        loadExportData();
+                    });
         });
 
-        runningExportTask.setOnFailed(e -> {
-            log.error("Lỗi khi tải lịch sử Xuất kho: ", runningExportTask.getException());
-        });
+        task.setOnFailed(e -> log.error("Lỗi khi tải lịch sử Xuất kho: ", task.getException()));
 
-        historyExecutor.submit(runningExportTask);
-    }
-
-    private void renderImportPagination() {
-        int fromIndex = (importCurrentPage - 1) * importPageSize;
-        int toIndex = (int) Math.min(fromIndex + importPageSize, importTotalRecords);
-
-        List<InventoryTransactionDTO> pageSlice;
-        if (fromIndex < importTotalRecords) {
-            pageSlice = importMasterList.subList(fromIndex, toIndex);
-        } else {
-            pageSlice = List.of();
-        }
-
-        importPageData.setAll(pageSlice);
-        TableSyncHelper.resetScrollToTop(tableImport, null);
-
-        PaginationHelper.render(
-                importPaginationBox,
-                lblImportRecordRange,
-                importCurrentPage,
-                importTotalPages,
-                importTotalRecords,
-                importPageSize,
-                page -> {
-                    importCurrentPage = page;
-                    TableSyncHelper.resetScrollToTop(tableImport, null);
-                    renderImportPagination();
-                }
-        );
-    }
-
-    private void renderExportPagination() {
-        int fromIndex = (exportCurrentPage - 1) * exportPageSize;
-        int toIndex = (int) Math.min(fromIndex + exportPageSize, exportTotalRecords);
-
-        List<InventoryTransactionDTO> pageSlice;
-        if (fromIndex < exportTotalRecords) {
-            pageSlice = exportMasterList.subList(fromIndex, toIndex);
-        } else {
-            pageSlice = List.of();
-        }
-
-        exportPageData.setAll(pageSlice);
-        TableSyncHelper.resetScrollToTop(tableExport, null);
-
-        PaginationHelper.render(
-                exportPaginationBox,
-                lblExportRecordRange,
-                exportCurrentPage,
-                exportTotalPages,
-                exportTotalRecords,
-                exportPageSize,
-                page -> {
-                    exportCurrentPage = page;
-                    TableSyncHelper.resetScrollToTop(tableExport, null);
-                    renderExportPagination();
-                }
-        );
+        BackgroundTasks.run(task);
     }
 
     @FXML
@@ -511,12 +445,6 @@ public class InventoryHistoryController implements Initializable {
             dialogStage.setTitle("IMPORT".equalsIgnoreCase(tx.getType()) ? "Chi tiết phiếu nhập kho" : "Chi tiết phiếu xuất kho");
 
             Scene scene = new Scene(root);
-
-            scene.setOnKeyPressed(event -> {
-                if (event.getCode() == KeyCode.ESCAPE) {
-                    dialogStage.close();
-                }
-            });
 
             dialogStage.setScene(scene);
             dialogStage.setResizable(true);

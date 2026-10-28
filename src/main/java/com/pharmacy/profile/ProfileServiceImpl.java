@@ -56,10 +56,10 @@ public class ProfileServiceImpl implements ProfileService {
 
         log.info("Bắt đầu cập nhật hồ sơ cá nhân cho nhân viên ID: {}", request.employeeId());
 
-        if (employeeRepository.existsByPhoneAndNotId(request.phone(), request.employeeId())) {
-            log.warn("Cập nhật thất bại: Số điện thoại {} đã được sử dụng bởi nhân viên khác.", request.phone());
-            throw new IllegalArgumentException("Số điện thoại này đã được sử dụng bởi nhân viên khác.");
-        }
+        employeeRepository.findByPhone(request.phone(), request.employeeId()).ifPresent(c -> {
+            log.warn("Cập nhật thất bại: Số điện thoại {} đã được sử dụng bởi nhân viên {}.", request.phone(), c.code());
+            throw new IllegalArgumentException(c.message("Số điện thoại"));
+        });
 
         boolean success = employeeRepository.updateOwnProfile(request.employeeId(),
                 request.fullName().trim(), request.phone().trim(), request.address().trim());

@@ -29,13 +29,13 @@ class EmployeeServiceSelfEditTest {
         }
 
         @Override
-        public boolean existsByNationalIdAndNotId(String nationalId, Integer id) {
-            return false;
+        public java.util.Optional<EmployeeConflict> findByNationalId(String nationalId, Integer id) {
+            return java.util.Optional.empty();
         }
 
         @Override
-        public boolean existsByPhoneAndNotId(String phone, Integer id) {
-            return false;
+        public java.util.Optional<EmployeeConflict> findByPhone(String phone, Integer id) {
+            return java.util.Optional.empty();
         }
 
         @Override

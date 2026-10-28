@@ -1,5 +1,6 @@
 package com.pharmacy.inventory.ui;
 
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.PaginationHelper;
 import com.pharmacy.inventory.InventoryService;
@@ -233,7 +234,7 @@ public class TransactionDetailDialogController implements Initializable {
             log.error("Lỗi khi tải chi tiết phiếu ID {}: ", tx.getId(), task.getException());
         });
 
-        new Thread(task).start();
+        BackgroundTasks.run(task);
     }
 
     private void renderPagination() {
