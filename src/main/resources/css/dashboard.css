@@ -57,24 +57,6 @@
     -fx-text-fill: #0F172A;
 }
 
-.stat-subtext-positive {
-    -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
-    -fx-font-size: 12px;
-    -fx-text-fill: #16A34A;
-}
-
-.stat-subtext-primary {
-    -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
-    -fx-font-size: 12px;
-    -fx-text-fill: #0066FF;
-}
-
-.stat-subtext-warning {
-    -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
-    -fx-font-size: 12px;
-    -fx-text-fill: #D97706;
-}
-
 .stat-subtext-danger {
     -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
     -fx-font-size: 12px;

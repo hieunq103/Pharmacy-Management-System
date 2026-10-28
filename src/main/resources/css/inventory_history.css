@@ -37,26 +37,6 @@
     -fx-text-fill: #1E293B;
 }
 
-.btn-filter-action {
-    -fx-background-color: #F1F5F9;
-    -fx-text-fill: #475569;
-    -fx-font-family: "Inter 18pt Medium";
-    -fx-font-size: 13px;
-    -fx-background-radius: 6px;
-    -fx-border-radius: 6px;
-    -fx-padding: 7 12;
-    -fx-cursor: hand;
-    -fx-border-color: #E2E8F0;
-    -fx-border-width: 1px;
-}
-
-.btn-filter-action:hover {
-    -fx-background-color: #E2E8F0;
-    -fx-text-fill: #1E293B;
-}
-
-
-
 /* Nút phễu lọc theo ngày: Mặc định chưa lọc (Màu xám) */
 .btn-funnel-filter {
     -fx-background-color: #F1F5F9;
@@ -174,63 +154,6 @@
     -fx-text-fill: #0066FF;
 }
 
-/* SPLITPANE & SECTIONS */
-.history-splitpane {
-    -fx-background-color: transparent;
-    -fx-box-border: transparent;
-    -fx-padding: 0;
-}
-
-.history-splitpane > .split-pane-divider {
-    -fx-background-color: #E2E8F0;
-    -fx-padding: 3px;
-}
-
-.pane-section-box {
-    -fx-background-color: #FFFFFF;
-    -fx-background-radius: 10px;
-    -fx-border-color: #E2E8F0;
-    -fx-border-radius: 10px;
-    -fx-border-width: 1px;
-    -fx-padding: 10 12;
-}
-
-.detail-section-box {
-    -fx-background-color: #FAFBFD;
-}
-
-.section-badge-title {
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 12px;
-    -fx-text-fill: #1E293B;
-    -fx-letter-spacing: 0.5px;
-}
-
-.detail-title-highlight {
-    -fx-text-fill: #0066FF;
-}
-
-.badge-counter {
-    -fx-background-color: #EFF6FF;
-    -fx-text-fill: #0066FF;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 11px;
-    -fx-padding: 2 8;
-    -fx-background-radius: 12px;
-}
-
-.detail-summary-badge {
-    -fx-background-color: #F1F5F9;
-    -fx-text-fill: #475569;
-    -fx-font-family: "Inter 18pt Medium";
-    -fx-font-size: 12px;
-    -fx-padding: 3 10;
-    -fx-background-radius: 6px;
-    -fx-border-color: #CBD5E1;
-    -fx-border-width: 1px;
-    -fx-border-radius: 6px;
-}
-
 .hint-select-label {
     -fx-font-size: 12px;
     -fx-text-fill: #94A3B8;
@@ -258,15 +181,6 @@
     -fx-padding: 2 6;
 }
 
-.code-pill-export {
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 12px;
-    -fx-text-fill: #D97706;
-    -fx-background-color: #FEF3C7;
-    -fx-background-radius: 4px;
-    -fx-padding: 2 6;
-}
-
 /* Căn trái toàn bộ các cột và tiêu đề của bảng lịch sử kho & bảng chi tiết */
 .history-master-table .column-header .label,
 .history-detail-table .column-header .label,
@@ -278,62 +192,5 @@
 .history-master-table .table-cell,
 .history-detail-table .table-cell {
     -fx-alignment: CENTER_LEFT !important;
-}
-
-/* Badges cho phân quyền và trạng thái trong lịch sử bán hàng */
-.badge-pill {
-    -fx-background-radius: 12px;
-    -fx-padding: 3 10;
-    -fx-alignment: CENTER;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 11px;
-}
-
-.badge-blue {
-    -fx-background-color: #EFF6FF;
-    -fx-text-fill: #1D4ED8;
-    -fx-border-color: #BFDBFE;
-    -fx-border-radius: 12px;
-    -fx-border-width: 1px;
-}
-
-.badge-green {
-    -fx-background-color: #ECFDF5;
-    -fx-text-fill: #047857;
-    -fx-border-color: #A7F3D0;
-    -fx-border-radius: 12px;
-    -fx-border-width: 1px;
-}
-
-.badge-purple {
-    -fx-background-color: #F5F3FF;
-    -fx-text-fill: #6D28D9;
-    -fx-border-color: #DDD6FE;
-    -fx-border-radius: 12px;
-    -fx-border-width: 1px;
-}
-
-/* Nút Lịch sử bán hàng trên màn hình bán hàng */
-.btn-sales-history {
-    -fx-background-color: #EFF6FF;
-    -fx-text-fill: #0066FF;
-    -fx-border-color: #BFDBFE;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-border-width: 1px;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 13px;
-    -fx-padding: 6 14;
-    -fx-cursor: hand;
-}
-
-.btn-sales-history:hover {
-    -fx-background-color: #DBEAFE;
-    -fx-border-color: #93C5FD;
-    -fx-text-fill: #0052CC;
-}
-
-.btn-sales-history:pressed {
-    -fx-background-color: #BFDBFE;
 }
 

@@ -291,22 +291,6 @@
    PAGINATION
    ========================================================================== */
 
-.pagination-combobox {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #E2E8F0;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 13px;
-    -fx-text-fill: #334155;
-    -fx-padding: 0 4;
-    -fx-cursor: hand;
-}
-
-.pagination-combobox .list-cell {
-    -fx-text-fill: #334155;
-}
-
 .page-btn {
     -fx-background-color: #FFFFFF;
     -fx-border-color: #E2E8F0;

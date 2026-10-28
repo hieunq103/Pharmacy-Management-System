@@ -21,13 +21,8 @@
     -fx-background-color: -fx-bg;
 }
 
-/* Chữ thường */
-.font-regular, .text-regular, .regular {
-    -fx-font-family: "Inter 18pt";
-}
-
 /* Chữ đậm */
-.font-semibold, .font-bold, .text-bold, .bold, .lbl-bold, .btn-bold {
+.bold {
     -fx-font-family: "Inter 18pt SemiBold";
 }
 

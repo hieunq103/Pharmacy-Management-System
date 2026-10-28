@@ -512,40 +512,6 @@
    TABLE ACTION BUTTONS
    ========================================================================== */
 
-.btn-action-edit {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
-    -fx-padding: 5 12;
-    -fx-cursor: hand;
-    -fx-text-fill: #0066FF;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 13px;
-}
-
-.btn-action-edit:hover {
-    -fx-background-color: #EFF6FF;
-    -fx-border-color: #93C5FD;
-}
-
-.btn-action-detail {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
-    -fx-padding: 5 12;
-    -fx-cursor: hand;
-    -fx-text-fill: #475569;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 13px;
-}
-
-.btn-action-detail:hover {
-    -fx-background-color: #F8FAFC;
-    -fx-border-color: #94A3B8;
-}
-
 /* ==========================================================================
    PAGINATION STYLING (ĐỒNG BỘ NÚT BẤM VÀ BADGE TRANG NHÂN VIÊN)
    ========================================================================== */
@@ -807,10 +773,6 @@
     -fx-background-color: #64748B;
 }
 
-.row-editing {
-    -fx-background-color: #F0F7FF !important;
-}
-
 /* ==========================================================================
    MEDICINE LOT DETAILS MODAL / DIALOG
    ========================================================================== */
@@ -843,23 +805,6 @@
     -fx-text-fill: #0F172A;
 }
 
-/* Nút X đóng Modal */
-.btn-close-modal {
-    -fx-background-color: #F1F5F9;
-    -fx-text-fill: #64748B;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 14px;
-    -fx-background-radius: 8px;
-    -fx-padding: 6 12;
-    -fx-cursor: hand;
-    -fx-border-color: transparent;
-}
-
-.btn-close-modal:hover {
-    -fx-background-color: #FEE2E2;
-    -fx-text-fill: #EF4444;
-}
-
 /* Card chi tiết thông tin thuốc */
 .lot-info-card {
     -fx-background-color: #F8FAFC;
@@ -887,53 +832,6 @@
     -fx-text-fill: #0066FF;
 }
 
-/* 4 Thẻ thống kê tóm tắt nhanh */
-.lot-stat-card {
-    -fx-background-color: #F8FAFC;
-    -fx-border-color: #E2E8F0;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-padding: 8 14;
-    -fx-min-width: 120px;
-}
-
-.lot-stat-card-warning {
-    -fx-background-color: #FFFBEB;
-    -fx-border-color: #FDE68A;
-}
-
-.lot-stat-card-danger {
-    -fx-background-color: #FEF2F2;
-    -fx-border-color: #FECACA;
-}
-
-.lot-stat-title {
-    -fx-font-family: "Inter 18pt";
-    -fx-font-size: 11.5px;
-    -fx-text-fill: #64748B;
-}
-
-.lot-stat-value {
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 17px;
-}
-
-.lot-stat-value-primary {
-    -fx-text-fill: #0F172A;
-}
-
-.lot-stat-value-info {
-    -fx-text-fill: #0066FF;
-}
-
-.lot-stat-value-warning {
-    -fx-text-fill: #D97706;
-}
-
-.lot-stat-value-danger {
-    -fx-text-fill: #DC2626;
-}
-
 /* Bộ lọc ComboBox */
 .lot-filter-combo {
     -fx-background-color: #FFFFFF;
@@ -948,27 +846,6 @@
 
 .lot-filter-combo:focused {
     -fx-border-color: #0066FF;
-}
-
-/* Badge tổng giá trị tồn kho */
-.lot-summary-badge {
-    -fx-background-color: #EFF6FF;
-    -fx-border-color: #DBEAFE;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-padding: 8 14;
-}
-
-.lot-summary-label {
-    -fx-font-family: "Inter 18pt";
-    -fx-font-size: 13px;
-    -fx-text-fill: #1E40AF;
-}
-
-.lot-summary-val {
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 14px;
-    -fx-text-fill: #0066FF;
 }
 
 /* Badges trạng thái cho từng lô hàng */
@@ -1019,216 +896,6 @@
    MODAL DIALOGS (NHẬP KHO & XUẤT KHO) & SEARCHABLE PICKER
    ========================================================================== */
 
-.inventory-modal-root {
-    -fx-background-color: #FFFFFF;
-    -fx-font-family: "Inter 18pt";
-}
-
-.modal-main-title {
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 20px;
-    -fx-text-fill: #0F172A;
-}
-
-.modal-sub-title {
-    -fx-font-size: 13px;
-    -fx-text-fill: #64748B;
-}
-
-.btn-modal-close {
-    -fx-background-color: #F1F5F9;
-    -fx-text-fill: #64748B;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 13px;
-    -fx-background-radius: 8px;
-    -fx-padding: 6 12;
-    -fx-cursor: hand;
-    -fx-border-color: transparent;
-}
-
-.btn-modal-close:hover {
-    -fx-background-color: #FEE2E2;
-    -fx-text-fill: #EF4444;
-}
-
-.import-mode-selector-box {
-    -fx-background-color: #F8FAFC;
-    -fx-border-color: #E2E8F0;
-    -fx-border-radius: 10px;
-    -fx-background-radius: 10px;
-    -fx-padding: 10 16;
-}
-
-.form-card-container {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #E2E8F0;
-    -fx-border-radius: 10px;
-    -fx-background-radius: 10px;
-    -fx-padding: 14 16;
-}
-
-.form-section-title {
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 14px;
-    -fx-text-fill: #1E293B;
-}
-
-.form-field-label {
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 12.5px;
-    -fx-text-fill: #334155;
-}
-
-.form-field-input,
-.form-field-datepicker .text-field {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-padding: 7 12;
-    -fx-font-family: "Inter 18pt";
-    -fx-font-size: 13px;
-    -fx-text-fill: #0F172A;
-}
-
-.form-field-input:focused,
-.form-field-datepicker:focused .text-field {
-    -fx-border-color: #0066FF;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.15), 4, 0, 0, 0);
-}
-
-.form-field-combo {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-padding: 2 4;
-    -fx-font-family: "Inter 18pt";
-    -fx-font-size: 13px;
-}
-
-.form-field-combo:focused {
-    -fx-border-color: #0066FF;
-}
-
-.selected-med-info-box {
-    -fx-background-color: #F8FAFC;
-    -fx-border-color: #E2E8F0;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-padding: 8 12;
-}
-
-.hint-label-fefo {
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 11.5px;
-    -fx-text-fill: #0284C7;
-}
-
-.hint-stock-label {
-    -fx-font-family: "Inter 18pt";
-    -fx-font-size: 12px;
-    -fx-text-fill: #64748B;
-}
-
-.unit-badge-label {
-    -fx-background-color: #F1F5F9;
-    -fx-border-color: #CBD5E1;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
-    -fx-padding: 6 12;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 12.5px;
-    -fx-text-fill: #334155;
-}
-
-.max-available-label {
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 12px;
-    -fx-text-fill: #D97706;
-}
-
-.import-calc-total-box {
-    -fx-background-color: #EFF6FF;
-    -fx-border-color: #BFDBFE;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-padding: 8 14;
-}
-
-.import-total-price-label {
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 16px;
-    -fx-text-fill: #0066FF;
-}
-
-.creator-info-box {
-    -fx-background-color: #F8FAFC;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
-    -fx-padding: 6 12;
-}
-
-.modal-error-label {
-    -fx-background-color: #FEE2E2;
-    -fx-text-fill: #DC2626;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 13px;
-    -fx-padding: 8 14;
-    -fx-background-radius: 6px;
-    -fx-border-color: #FCA5A5;
-    -fx-border-radius: 6px;
-}
-
-.btn-modal-cancel {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
-    -fx-border-radius: 8px;
-    -fx-background-radius: 8px;
-    -fx-padding: 8 18;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 13.5px;
-    -fx-text-fill: #475569;
-    -fx-cursor: hand;
-}
-
-.btn-modal-cancel:hover {
-    -fx-background-color: #F8FAFC;
-    -fx-border-color: #94A3B8;
-}
-
-.btn-modal-primary {
-    -fx-background-color: #0066FF;
-    -fx-text-fill: #FFFFFF;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 13.5px;
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
-    -fx-padding: 8 20;
-    -fx-cursor: hand;
-    -fx-border-width: 0;
-}
-
-.btn-modal-primary:hover {
-    -fx-background-color: #0052CC;
-}
-
-.btn-modal-danger {
-    -fx-background-color: #DC2626;
-    -fx-text-fill: #FFFFFF;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 13.5px;
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
-    -fx-padding: 8 20;
-    -fx-cursor: hand;
-    -fx-border-width: 0;
-}
-
-.btn-modal-danger:hover {
-    -fx-background-color: #B91C1C;
-}
-
 /* Searchable Medicine Picker Component */
 .medicine-picker-box:focused-within {
     -fx-border-color: #0066FF;
@@ -1258,13 +925,6 @@
 /* ==========================================================================
    BẢNG MẶT HÀNG NHẬP KHO & CĂN PHẢI TIỀN TỆ
    ========================================================================== */
-
-.lot-col-right,
-.custom-inventory-table .column-header.lot-col-right .label,
-.custom-inventory-table .table-cell.lot-col-right,
-.table-cell.lot-col-right {
-    -fx-alignment: CENTER_RIGHT;
-}
 
 /* Hiển thị thanh cuộn dọc & ngang mượt mà cho bảng nhập kho */
 .import-items-table .scroll-bar:vertical {

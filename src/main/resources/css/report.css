@@ -14,38 +14,6 @@
     -fx-font-size: 14px;
 }
 
-/* ==================== BỘ LỌC THỜI GIAN ==================== */
-
-.filter-period-title {
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 14px;
-    -fx-text-fill: #0F172A;
-}
-
-.filter-group-card {
-    -fx-background-color: #F8FAFC;
-    -fx-background-radius: 8px;
-    -fx-border-color: #E2E8F0;
-    -fx-border-radius: 8px;
-    -fx-border-width: 1px;
-    -fx-padding: 3 6;
-}
-
-.btn-filter-apply {
-    -fx-background-color: #0066FF;
-    -fx-background-radius: 6px;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 13px;
-    -fx-text-fill: #FFFFFF;
-    -fx-padding: 4 14;
-    -fx-cursor: hand;
-    -fx-pref-height: 32px;
-}
-
-.btn-filter-apply:hover {
-    -fx-background-color: #0052CC;
-}
-
 /* ==================== STAT CARDS (THẺ THỐNG KÊ) ==================== */
 .report-stat-card {
     -fx-background-color: #FFFFFF;
@@ -199,27 +167,15 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.15), 4, 0, 0, 0);
 }
 
-/* ==================== BẢNG DỮ LIỆU (TABLE VIEW) ==================== */
-.report-table {
-    -fx-background-color: transparent;
-    -fx-border-color: #CBD5E1;
-    -fx-border-width: 1px;
-    -fx-border-radius: 10px;
-    -fx-background-radius: 10px;
-}
-
-.report-table .column-header-background,
 .custom-inventory-table .column-header-background {
     -fx-background-color: #F8FAFC;
 }
 
-.report-table .column-header,
 .custom-inventory-table .column-header {
     -fx-background-color: transparent;
     -fx-padding: 10 16;
 }
 
-.report-table .column-header .label,
 .custom-inventory-table .column-header .label {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 15px;
@@ -227,7 +183,6 @@
     -fx-alignment: CENTER_LEFT;
 }
 
-.report-table .table-row-cell,
 .custom-inventory-table .table-row-cell {
     -fx-background-color: transparent;
     -fx-border-color: #E2E8F0;
@@ -235,12 +190,10 @@
     -fx-cell-size: 50px;
 }
 
-.report-table .table-row-cell:hover,
 .custom-inventory-table .table-row-cell:hover {
     -fx-background-color: #F8FAFC;
 }
 
-.report-table .table-cell,
 .custom-inventory-table .table-cell {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 14.5px;
@@ -360,45 +313,6 @@
     -fx-cursor: hand !important;
 }
 
-/* THẺ PHÂN TÍCH TÀI CHÍNH TRONG TAB DOANH SỐ */
-.analytics-mini-card {
-    -fx-background-color: #F8FAFC;
-    -fx-background-radius: 8px;
-    -fx-border-color: #E2E8F0;
-    -fx-border-radius: 8px;
-    -fx-border-width: 1px;
-    -fx-padding: 6 12;
-}
-
-.analytics-mini-title {
-    -fx-font-family: "Inter 18pt Medium";
-    -fx-font-size: 12.5px;
-    -fx-text-fill: #64748B;
-}
-
-.analytics-mini-value {
-    -fx-font-family: "Inter 18pt Bold";
-    -fx-font-size: 17px;
-    -fx-text-fill: #0F172A;
-}
-
-.btn-link-sales-history {
-    -fx-background-color: #EFF6FF;
-    -fx-background-radius: 6px;
-    -fx-border-color: #BFDBFE;
-    -fx-border-radius: 6px;
-    -fx-border-width: 1px;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 13px;
-    -fx-text-fill: #0066FF;
-    -fx-padding: 5 12;
-    -fx-cursor: hand;
-}
-
-.btn-link-sales-history:hover {
-    -fx-background-color: #DBEAFE;
-}
-
 /* CĂN GIỮA CỘT DOANH THU TRONG BẢNG CHI TIẾT SẢN LƯỢNG */
 #colMedRevenue,
 #colMedRevenue .label,
@@ -406,7 +320,6 @@
 .table-view #colMedRevenue .label {
     -fx-alignment: CENTER;
 }
-
 
 /* Lớp phủ "Đang tải báo cáo..." */
 .report-loading-overlay {
