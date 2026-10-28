@@ -1,6 +1,5 @@
 package com.pharmacy.employee;
 
-import com.pharmacy.common.BackgroundTasks;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,10 +28,12 @@ public class AddEmployeeController implements Initializable {
     private Runnable onCloseCallback;
     private Consumer<Employee> onSaveSuccessCallback;
     private final EmployeeService employeeService = new EmployeeServiceImpl();
+    // Mã thật chỉ được cấp khi xác nhận thêm (bộ đếm trong CSDL), rồi hiện cùng mật khẩu ở hộp thoại kết quả
+    private static final String PENDING_CODE = "Tự động cấp";
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loadNextEmployeeCode();
+        txtEmployeeCode.setText(PENDING_CODE);
 
         cbGender.setItems(FXCollections.observableArrayList(
                 Employee.GENDER_MALE,
@@ -51,21 +52,6 @@ public class AddEmployeeController implements Initializable {
         txtCitizenId.textProperty().addListener((obs, o, n) -> clearError(txtCitizenId, lblErrorCitizenId));
         txtPhone.textProperty().addListener((obs, o, n) -> clearError(txtPhone, lblErrorPhone));
         txtAddress.textProperty().addListener((obs, o, n) -> clearError(txtAddress, lblErrorAddress));
-    }
-
-    public void loadNextEmployeeCode() {
-        javafx.concurrent.Task<String> task = new javafx.concurrent.Task<>() {
-            @Override
-            protected String call() {
-                return employeeService.generateNextEmployeeCode();
-            }
-        };
-        task.setOnSucceeded(e -> {
-            if (txtEmployeeCode != null) {
-                txtEmployeeCode.setText(task.getValue());
-            }
-        });
-        BackgroundTasks.run(task);
     }
 
     public void setOnCloseCallback(Runnable onCloseCallback) {
@@ -188,7 +174,7 @@ public class AddEmployeeController implements Initializable {
     }
 
     public void clearForm() {
-        loadNextEmployeeCode();
+        txtEmployeeCode.setText(PENDING_CODE);
         txtFullName.clear();
         dpBirthDate.setValue(null);
         cbGender.setValue(Employee.GENDER_MALE);

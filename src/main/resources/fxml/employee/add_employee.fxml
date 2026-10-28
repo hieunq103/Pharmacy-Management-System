@@ -29,9 +29,9 @@
 
             <!-- Mã nhân viên (Tự động sinh - Khóa chết) -->
             <VBox spacing="6">
-                <Label text="Mã nhân viên (Tự động cấp khi lưu)" styleClass="form-label"/>
-                <TextField fx:id="txtEmployeeCode" editable="false" focusTraversable="false" mouseTransparent="true" promptText="Đang tải..." styleClass="form-input" style="-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-font-family: 'Inter 18pt SemiBold';"/>
-                <Label text="Mã nhân viên được sinh tự động theo chuẩn PMSxxxx và khóa cố định" style="-fx-font-size: 11px; -fx-text-fill: #94A3B8;"/>
+                <Label text="Mã nhân viên" styleClass="form-label"/>
+                <TextField fx:id="txtEmployeeCode" editable="false" focusTraversable="false" mouseTransparent="true" text="Tự động cấp" styleClass="form-input" style="-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-font-family: 'Inter 18pt SemiBold';"/>
+                <Label text="Mã nhân viên và mật khẩu được cấp sau khi xác nhận thêm nhân viên (dạng PMS + năm tháng + số thứ tự, ví dụ PMS2610001)" wrapText="true" style="-fx-font-size: 11px; -fx-text-fill: #94A3B8;"/>
             </VBox>
 
             <!-- Họ và tên -->
@@ -87,7 +87,7 @@
     <!-- Footer -->
     <HBox alignment="CENTER_RIGHT" spacing="12" style="-fx-padding: 12 20; -fx-border-color: #E2E8F0; -fx-border-width: 1 0 0 0; -fx-background-color: #F8FAFC;">
         <Button text="Hủy" onAction="#handleCancel" styleClass="btn-secondary"/>
-        <Button fx:id="btnSave" text="Lưu thông tin" onAction="#handleSave" styleClass="btn-primary-add"/>
+        <Button fx:id="btnSave" text="Xác nhận thêm nhân viên" onAction="#handleSave" styleClass="btn-primary-add"/>
     </HBox>
 
 </VBox>

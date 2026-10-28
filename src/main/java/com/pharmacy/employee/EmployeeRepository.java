@@ -24,7 +24,7 @@ public class EmployeeRepository {
         return findConflict("code", code, null, "mã nhân viên").isPresent();
     }
 
-    // Mã nhân viên dự kiến cho màn hình thêm mới (chỉ xem, không giữ chỗ); mã thật được cấp khi lưu
+    // Mã kế tiếp của tháng hiện tại (chỉ đọc, không giữ chỗ); mã thật được cấp khi lưu
     public String generateNextEmployeeCode() {
         String prefix = employeeCodePrefix(LocalDate.now());
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {

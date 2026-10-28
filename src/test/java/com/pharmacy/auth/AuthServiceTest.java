@@ -62,14 +62,6 @@ class AuthServiceTest {
     }
 
     @Test
-    void testEmployeeCodeFormatAndGeneration() {
-        String nextCode = employeeService.generateNextEmployeeCode();
-        assertNotNull(nextCode);
-        String yymm = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyMM"));
-        assertTrue(nextCode.matches("^PMS" + yymm + "\\d{3,}$"), "Mã nhân viên phải có dạng PMS + YYMM + STT: " + nextCode);
-    }
-
-    @Test
     void testFormValidatorForUsername() {
         FormValidator.ValidationResult resEmpty = FormValidator.validateLoginForm("", "");
         assertFalse(resEmpty.isValid());

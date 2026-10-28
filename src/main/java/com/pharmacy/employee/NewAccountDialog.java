@@ -42,7 +42,7 @@ public final class NewAccountDialog {
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
-        addRow(grid, 0, "Tên đăng nhập", account.username());
+        addRow(grid, 0, "Mã nhân viên\n(tên đăng nhập)", account.username());
         addRow(grid, 1, "Mật khẩu", account.temporaryPassword());
 
         Label note = new Label("Mật khẩu chỉ hiển thị một lần. Hãy sao chép và gửi cho nhân viên; "

@@ -49,11 +49,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public String generateNextEmployeeCode() {
-        return employeeRepository.generateNextEmployeeCode();
-    }
-
-    @Override
     public Optional<NewEmployeeAccount> createEmployeeWithAccount(Employee employee, String role) {
         requireManager();
         if (employee == null || role == null || role.trim().isEmpty()) {
