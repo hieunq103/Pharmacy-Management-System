@@ -33,8 +33,8 @@
         <!-- Cụm bên phải: Ô tìm kiếm + Nút Thêm -->
         <HBox alignment="CENTER_RIGHT" spacing="12.0">
             <TextField fx:id="txtSearch"
-                       promptText="Tìm theo mã NV, tên, SĐT, CCCD..."
-                       prefWidth="280.0"
+                       promptText="Tìm theo tên đăng nhập, tên, SĐT, CCCD..."
+                       prefWidth="360.0"
                        styleClass="search-input" />
 
             <Button fx:id="btnAddEmployee"
