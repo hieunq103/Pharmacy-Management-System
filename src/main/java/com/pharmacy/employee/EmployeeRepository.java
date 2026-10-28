@@ -4,8 +4,6 @@ import com.pharmacy.account.Account;
 import com.pharmacy.account.Role;
 import com.pharmacy.infra.db.HibernateUtil;
 import org.hibernate.Session;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,20 +21,30 @@ public class EmployeeRepository {
         return findConflict("code", code, null, "mã nhân viên").isPresent();
     }
 
-    // Mã nhân viên dự kiến cho màn hình thêm mới (chỉ xem, không giữ chỗ); mã thật được cấp khi lưu
+    // Sinh mã nhân viên tiếp theo theo định dạng PMSxxxx
     public String generateNextEmployeeCode() {
-        String prefix = employeeCodePrefix();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Number last = (Number) session.createNativeQuery(
-                    "SELECT current_number FROM code_sequences WHERE name = :name", Object.class)
-                    .setParameter("name", sequenceName(prefix)).uniqueResult();
-            return formatEmployeeCode(prefix, (last != null ? last.longValue() : 0) + 1);
+            String sql = "SELECT code FROM employees WHERE code LIKE 'PMS%' ORDER BY LENGTH(code) DESC, code DESC LIMIT 1";
+            Object result = session.createNativeQuery(sql, String.class).uniqueResult();
+            int nextNumber = 1;
+            if (result != null) {
+                String code = result.toString().trim();
+                if (code.startsWith("PMS")) {
+                    try {
+                        String numPart = code.substring(3);
+                        nextNumber = Integer.parseInt(numPart) + 1;
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+            return String.format("PMS%04d", nextNumber);
         } catch (Exception e) {
             log.error("Lỗi khi sinh mã nhân viên tiếp theo: ", e);
             throw new RuntimeException("Lỗi truy vấn cơ sở dữ liệu khi sinh mã nhân viên.", e);
         }
     }
 
+<<<<<<< Updated upstream
     // Tạo dòng bộ đếm của tháng trong giao dịch riêng, ngắn, để giao dịch thêm nhân viên chỉ cần UPDATE dòng đã có
     private static void ensureEmployeeSequence(String prefix) {
         HibernateUtil.execute(session -> session.createNativeMutationQuery(
@@ -73,6 +81,8 @@ public class EmployeeRepository {
         return prefix + String.format("%03d", number);
     }
 
+=======
+>>>>>>> Stashed changes
     // Nhân viên khác (kể cả đã nghỉ) đang dùng số điện thoại này
     public Optional<EmployeeConflict> findByPhone(String phone, Integer excludeId) {
         return findConflict("phone", phone, excludeId, "số điện thoại");
@@ -298,8 +308,13 @@ public class EmployeeRepository {
                     // Ném lỗi để rollback, trả mã vừa cấp lại cho bộ đếm
                     throw new IllegalArgumentException("Không tìm thấy vai trò với mã: " + code);
                 }
+<<<<<<< Updated upstream
                 if (allocatedCode != null) {
                     emp.setCode(allocatedCode);
+=======
+                if (emp.getCode() == null || emp.getCode().isBlank()) {
+                    emp.setCode(generateNextEmployeeCode());
+>>>>>>> Stashed changes
                 }
                 session.persist(emp);
 
