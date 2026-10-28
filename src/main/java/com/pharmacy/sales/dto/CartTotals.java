@@ -3,9 +3,7 @@ package com.pharmacy.sales.dto;
 import java.math.BigDecimal;
 import java.util.List;
 
-/** Quy tắc tính tiền dùng chung cho giỏ hàng ({@link CartOrder}) và yêu cầu thanh toán ({@link SalesOrderRequest}). */
 public final class CartTotals {
-
     private CartTotals() {
     }
 
@@ -19,7 +17,6 @@ public final class CartTotals {
         return sum;
     }
 
-    /** Giảm giá hợp lệ: không âm và không vượt quá tổng tiền hàng. */
     public static BigDecimal clampDiscount(BigDecimal discount, BigDecimal subtotal) {
         if (discount == null || discount.signum() <= 0) {
             return BigDecimal.ZERO;
@@ -27,7 +24,6 @@ public final class CartTotals {
         return discount.min(subtotal);
     }
 
-    /** Tổng thanh toán = tổng tiền hàng - giảm giá (không âm). */
     public static BigDecimal total(BigDecimal subtotal, BigDecimal discount) {
         return subtotal.subtract(discount).max(BigDecimal.ZERO);
     }

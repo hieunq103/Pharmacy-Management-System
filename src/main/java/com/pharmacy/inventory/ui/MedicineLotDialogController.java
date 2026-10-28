@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class MedicineLotDialogController implements Initializable {
-
     private static final Logger log = LoggerFactory.getLogger(MedicineLotDialogController.class);
 
     @FXML private Button btnClose;
@@ -91,7 +90,6 @@ public class MedicineLotDialogController implements Initializable {
         TableSyncHelper.setupTableScrollProtection(tableLots, AppConstants.DEFAULT_PAGE_SIZE);
     }
 
-    /** Nút X tròn đỏ ở góc phải: đóng cửa sổ chi tiết lô hàng. */
     @FXML
     private void handleClose() {
         if (btnClose != null && btnClose.getScene() != null
@@ -106,7 +104,6 @@ public class MedicineLotDialogController implements Initializable {
 
         if (dto == null) return;
 
-        // 1. Hiển thị thông tin thuốc cơ bản
         lblMedicineCode.setText(dto.getMedicineCode() != null ? dto.getMedicineCode() : "");
         lblMedicineName.setText(dto.getMedicineName() != null ? dto.getMedicineName() : "");
         lblActiveIngredient.setText(dto.getActiveIngredient() != null && !dto.getActiveIngredient().isBlank()
@@ -127,12 +124,10 @@ public class MedicineLotDialogController implements Initializable {
         lblPrescriptionTag.setVisible(needPrescription);
         lblPrescriptionTag.setManaged(needPrescription);
 
-        // 2. Tải danh sách lô hàng trong luồng nền
         loadLotData(dto.getMedicineId());
     }
 
     private void setupTableColumns() {
-        // Cột STT - Căn trái
         colIndex.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(
                 (currentPage - 1) * pageSize + tableLots.getItems().indexOf(cellData.getValue()) + 1
         ));
@@ -157,7 +152,6 @@ public class MedicineLotDialogController implements Initializable {
             }
         });
 
-        // Cột Số lô - Căn trái
         colLotNumber.setCellValueFactory(cell -> new ReadOnlyObjectWrapper<>(cell.getValue().getLotNumber()));
         colLotNumber.setCellFactory(col -> new TableCell<>() {
             {
@@ -180,7 +174,6 @@ public class MedicineLotDialogController implements Initializable {
             }
         });
 
-        // Cột Hạn dùng - Căn trái
         colExpiryDate.setCellValueFactory(cell -> new ReadOnlyObjectWrapper<>(cell.getValue().getExpiryDate()));
         colExpiryDate.setCellFactory(col -> new TableCell<>() {
             {
@@ -203,7 +196,6 @@ public class MedicineLotDialogController implements Initializable {
             }
         });
 
-        // Cột Trạng thái (Pill Badge) - Căn trái
         colStatus.setCellValueFactory(cell -> new ReadOnlyObjectWrapper<>(cell.getValue()));
         colStatus.setCellFactory(col -> new TableCell<>() {
             private final Label badge = new Label();
@@ -236,7 +228,6 @@ public class MedicineLotDialogController implements Initializable {
             }
         });
 
-        // Cột Số lượng nhập - Căn trái
         colQuantityIn.setCellValueFactory(cell -> {
             String unit = medicineDTO != null && medicineDTO.getUnit() != null ? " " + medicineDTO.getUnit() : "";
             return new ReadOnlyObjectWrapper<>(cell.getValue().getQuantityIn() + unit);
@@ -262,7 +253,6 @@ public class MedicineLotDialogController implements Initializable {
             }
         });
 
-        // Cột Số lượng tồn - Căn trái
         colQuantityRemaining.setCellValueFactory(cell -> {
             String unit = medicineDTO != null && medicineDTO.getUnit() != null ? " " + medicineDTO.getUnit() : "";
             return new ReadOnlyObjectWrapper<>(cell.getValue().getQuantityRemaining() + unit);
@@ -288,7 +278,6 @@ public class MedicineLotDialogController implements Initializable {
             }
         });
 
-        // Cột Giá nhập - Căn trái
         colImportPrice.setCellValueFactory(cell -> new ReadOnlyObjectWrapper<>(cell.getValue().getFormattedImportPrice()));
         colImportPrice.setCellFactory(col -> new TableCell<>() {
             {
@@ -311,7 +300,6 @@ public class MedicineLotDialogController implements Initializable {
             }
         });
 
-        // Cột Ngày nhập - Căn trái
         colTransactionDate.setCellValueFactory(cell -> new ReadOnlyObjectWrapper<>(cell.getValue().getTransactionAt()));
         colTransactionDate.setCellFactory(col -> new TableCell<>() {
             {
@@ -334,7 +322,6 @@ public class MedicineLotDialogController implements Initializable {
             }
         });
 
-        // Cột Nhà sản xuất - Căn trái
         colManufacturer.setCellValueFactory(cell -> new ReadOnlyObjectWrapper<>(
                 cell.getValue().getManufacturer() != null && !cell.getValue().getManufacturer().isBlank()
                         ? cell.getValue().getManufacturer() : "—"));
@@ -359,7 +346,6 @@ public class MedicineLotDialogController implements Initializable {
             }
         });
 
-        // Cột Nhà cung cấp - Căn trái
         Label lblSupplierTitle = new Label("Nhà cung cấp");
         lblSupplierTitle.setStyle("-fx-alignment: CENTER_LEFT;");
         colSupplier.setText(null);
@@ -394,7 +380,6 @@ public class MedicineLotDialogController implements Initializable {
     }
 
     private void setupSortableHeaders() {
-        // Cột Hạn sử dụng
         Label lblExpiryTitle = new Label("Hạn sử dụng");
         lblExpiryTitle.getStyleClass().add("label");
         lblExpirySortIcon = new Label("▴");
@@ -409,7 +394,6 @@ public class MedicineLotDialogController implements Initializable {
         colExpiryDate.setGraphic(expiryHeader);
         colExpiryDate.setSortable(false);
 
-        // Cột Ngày nhập
         Label lblTransTitle = new Label("Ngày nhập");
         lblTransTitle.getStyleClass().add("label");
         lblTransactionSortIcon = new Label("▾");
@@ -525,10 +509,8 @@ public class MedicineLotDialogController implements Initializable {
         tableLots.setItems(pageLots);
         updateSortUIAndApply();
 
-        // Lọc khi người dùng tìm kiếm theo text (Debounce)
         com.pharmacy.common.DebounceUtil.debounce(txtSearchLot, AppConstants.SEARCH_DEBOUNCE, text -> reapplyLotFilters());
 
-        // Lọc khi người dùng chọn ComboBox
         cbStatusFilter.setOnAction(e -> reapplyLotFilters());
     }
 
@@ -539,7 +521,6 @@ public class MedicineLotDialogController implements Initializable {
         filteredLots.setPredicate(lot -> {
             if (lot == null) return false;
 
-            // 1. Lọc theo từ khóa tìm kiếm (số lô, nhà sản xuất hoặc nhà cung cấp)
             if (!keyword.isEmpty()) {
                 boolean matchLot = lot.getLotNumber() != null && lot.getLotNumber().toLowerCase().contains(keyword);
                 boolean matchSupplier = lot.getSupplierName() != null && lot.getSupplierName().toLowerCase().contains(keyword);
@@ -547,7 +528,6 @@ public class MedicineLotDialogController implements Initializable {
                 if (!matchLot && !matchSupplier && !matchManufacturer) return false;
             }
 
-            // 2. Lọc theo trạng thái
             if (statusFilter != null && !statusFilter.equals("Tất cả trạng thái")) {
                 if (statusFilter.startsWith("Còn hạn") && lot.getStatus() != MedicineLotDTO.LotStatus.ACTIVE) {
                     return false;

@@ -14,7 +14,6 @@ import com.pharmacy.sales.dto.TodaySalesSummary;
 import java.util.List;
 
 public class DashboardServiceImpl implements DashboardService {
-
     private final SalesService salesService;
     private final InventoryService inventoryService;
 

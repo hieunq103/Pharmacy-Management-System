@@ -5,11 +5,7 @@ import com.pharmacy.common.FormatUtils;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * DTO đại diện cho một đơn bán hàng trong danh sách Lịch sử bán hàng.
- */
 public class SalesOrderDTO {
-
     private Long id;
     private String code;
     private LocalDateTime createdAt;
@@ -22,7 +18,7 @@ public class SalesOrderDTO {
     private BigDecimal subtotal;
     private BigDecimal discount;
     private BigDecimal totalAmount;
-    private String paymentMethod; // "CASH", "TRANSFER", "CARD"
+    private String paymentMethod;
 
     public SalesOrderDTO() {}
 
@@ -81,7 +77,6 @@ public class SalesOrderDTO {
     public String getPaymentMethod() { return paymentMethod; }
     public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
 
-    // Helpers cho TableView
     public String getFormattedTime() {
         return FormatUtils.formatDateTime(createdAt);
     }

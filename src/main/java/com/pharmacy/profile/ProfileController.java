@@ -21,7 +21,6 @@ import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.FormValidator;
 
 public class ProfileController {
-
     private static final Logger log = LoggerFactory.getLogger(ProfileController.class);
 
     public enum StatusType {
@@ -30,7 +29,7 @@ public class ProfileController {
 
     @FXML
     private Button btnBack;
-    /** Hành động của nút Quay lại; null khi mở Hồ sơ cá nhân trực tiếp (nút ẩn). */
+
     private Runnable onBack;
 
     @FXML
@@ -126,7 +125,6 @@ public class ProfileController {
     }
 
     private void setEditMode(boolean editing) {
-        // Cả Nhân viên và Quản lý chỉ được đổi Họ và tên, Số điện thoại, Địa chỉ của chính mình
         for (TextField editable : new TextField[]{txtFullName, txtPhone, txtAddress}) {
             editable.setEditable(editing);
             applyInputState(editable, editing);
@@ -356,7 +354,6 @@ public class ProfileController {
         lblStatusMessage.setText("");
     }
 
-    /** Hiện nút "Quay lại" (vd. khi mở từ danh sách Nhân viên) với hành động quay về tương ứng. */
     public void setOnBack(Runnable onBack) {
         this.onBack = onBack;
         if (btnBack != null) {

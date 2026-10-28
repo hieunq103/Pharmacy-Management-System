@@ -2,18 +2,10 @@ package com.pharmacy.inventory;
 
 import com.pharmacy.common.AppConstants;
 
-/**
- * Các mảnh SQL tổng hợp tồn kho theo lô dùng chung cho màn hình Kho, Bán hàng và Dashboard.
- * Trước đây mỗi truy vấn tự viết 5 subquery tương quan (nearest_lot, nearest_expiry, total_qty,
- * expired_count, near_expired_count) cho TỪNG thuốc; nay gom vào một chỗ và tính bằng
- * conditional aggregation trong một lần quét chỉ mục idx_inventory_lots_stock.
- */
 public final class InventorySql {
-
     private InventorySql() {
     }
 
-    /** Biểu thức ngưỡng sắp hết hàng của một thuốc (alias bảng medicines là m). */
     public static final String LOW_STOCK_THRESHOLD =
             "COALESCE(NULLIF(m.min_stock_threshold, 0), " + AppConstants.DEFAULT_LOW_STOCK_THRESHOLD + ")";
 
@@ -26,11 +18,6 @@ public final class InventorySql {
                     SUM(il.expiry_date > CURDATE() AND il.expiry_date <= %s) AS near_expired_count
             """.formatted(NEAR_EXPIRY_END);
 
-    /**
-     * Bảng dẫn xuất ls(medicine_id, total_qty, expired_count, expired_qty, near_expired_count)
-     * cho TẤT CẢ thuốc còn tồn — dùng khi cần lọc/đếm trên toàn bộ danh mục (1 lần GROUP BY thay vì N subquery).
-     * Thuốc không còn lô tồn sẽ có các cột NULL sau LEFT JOIN.
-     */
     public static final String LOT_STATS_ALL = """
             LEFT JOIN (
                 SELECT il.medicine_id,
@@ -41,10 +28,6 @@ public final class InventorySql {
             ) ls ON ls.medicine_id = m.id
             """.formatted(AGGREGATES);
 
-    /**
-     * Bảng dẫn xuất LATERAL chỉ tính cho từng dòng m.* đã được phân trang (vài dòng) —
-     * dùng chỉ mục (medicine_id, quantity_remaining, expiry_date). Yêu cầu MySQL >= 8.0.14.
-     */
     public static final String LOT_STATS_LATERAL = """
             LEFT JOIN LATERAL (
                 SELECT
@@ -54,13 +37,6 @@ public final class InventorySql {
             ) ls ON TRUE
             """.formatted(AGGREGATES);
 
-    /**
-     * Danh sách cột chuẩn cho MedicineInventoryDTO, theo đúng thứ tự mà
-     * {@link InventoryRepository#mapInventoryRow(Object[])} đọc:
-     * 0 id, 1 code, 2 name, 3 category, 4 requires_prescription, 5 unit, 6 sell_price,
-     * 7 active_ingredient, 8 manufacturer, 9 total_qty, 10 expired_count, 11 near_expired_count,
-     * 12 min_stock_threshold.
-     */
     public static final String INVENTORY_COLUMNS = """
             m.id, m.code, m.name, mc.name AS category_name, m.requires_prescription, m.unit, m.sell_price,
             m.active_ingredient, m.manufacturer,
@@ -70,7 +46,6 @@ public final class InventorySql {
             m.min_stock_threshold
             """;
 
-    /** Điều kiện tìm kiếm thuốc theo mã / tên / hoạt chất (tham số :keyword). */
     public static final String KEYWORD_FILTER =
             " AND (m.code LIKE :keyword OR m.name LIKE :keyword OR m.active_ingredient LIKE :keyword) ";
 

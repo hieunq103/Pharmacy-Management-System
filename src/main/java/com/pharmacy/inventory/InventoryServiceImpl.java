@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 public class InventoryServiceImpl implements InventoryService {
-
     private final InventoryRepository inventoryRepository;
 
     public InventoryServiceImpl() {
@@ -57,7 +56,7 @@ public class InventoryServiceImpl implements InventoryService {
         if (sellPrice == null || sellPrice.signum() < 0) {
             throw new IllegalArgumentException("Giá bán phải là số không âm.");
         }
-        // DB validation: Kiểm tra thuốc có tồn tại trong CSDL trước khi cập nhật
+
         if (!inventoryRepository.existsMedicineById(medicineId)) {
             throw new IllegalArgumentException("Thuốc không tồn tại trong hệ thống (ID: " + medicineId + ").");
         }
@@ -130,7 +129,6 @@ public class InventoryServiceImpl implements InventoryService {
         return inventoryRepository.exportBatchStock(reason, resolveEmployeeId(employeeId), note, items);
     }
 
-    /** Nhân viên thực hiện luôn là người đang đăng nhập (không tin tham số từ UI). */
     private static Integer resolveEmployeeId(Integer requested) {
         Integer current = UserSession.currentEmployeeId();
         return current != null ? current : requested;

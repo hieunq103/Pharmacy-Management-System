@@ -10,9 +10,7 @@ import com.pharmacy.infra.security.PasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class AuthServiceImpl implements AuthService {
-
     private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
     private static final String CLIENT_INFO = "JavaFX Desktop Client";
 
@@ -28,7 +26,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Account login(LoginRequest request) {
-        // Tìm tài khoản duy nhất bằng tên đăng nhập (Mã nhân viên)
         Account account = accountRepository.findByUsername(request.username())
                 .orElseThrow(() -> {
                     log.warn("Đăng nhập thất bại: Tài khoản không tồn tại [{}]", request.username());
@@ -41,7 +38,6 @@ public class AuthServiceImpl implements AuthService {
                 : "N/A";
         Integer accountId = account.getId();
 
-        // Kiểm tra mật khẩu TRƯỚC trạng thái để không tiết lộ tình trạng tài khoản cho người không biết mật khẩu
         if (!PasswordEncoder.matches(request.password(), account.getPasswordHash())) {
             log.warn("Nhân viên [{}] - Mật khẩu không chính xác", employeeName);
             accountRepository.saveLoginHistory(accountId, "FAILED", CLIENT_INFO);
@@ -57,7 +53,6 @@ public class AuthServiceImpl implements AuthService {
                     "Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
         }
 
-        // Tài khoản mới (cờ must_change_password) hoặc vẫn dùng mật khẩu khởi tạo mặc định -> bắt buộc đổi
         if (request.password().equals(defaultPassword())) {
             account.setMustChangePassword(true);
         }
@@ -69,7 +64,6 @@ public class AuthServiceImpl implements AuthService {
         return account;
     }
 
-    /** Mật khẩu khởi tạo cho tài khoản mới (cấu hình auth.defaultPassword). */
     public static String defaultPassword() {
         return AppConfig.get("auth.defaultPassword", "12345678");
     }

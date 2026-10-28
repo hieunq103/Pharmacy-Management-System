@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 
 public class SalesServiceImpl implements SalesService {
-
     private static final Set<String> PAYMENT_METHODS = Set.of("CASH", "TRANSFER", "CARD");
 
     private final SalesRepository salesRepository;
@@ -48,12 +47,11 @@ public class SalesServiceImpl implements SalesService {
     public String checkout(SalesOrderRequest request) {
         UserSession.requireAuthenticated();
         validateCheckout(request);
-        // Không tin employeeId do UI gửi lên: luôn ghi nhận người đang đăng nhập
+
         request.setEmployeeId(UserSession.currentEmployeeId());
         return salesRepository.createSalesOrder(request);
     }
 
-    /** Kiểm tra dữ liệu đơn hàng trước khi ghi CSDL (tách riêng để unit test không cần DB). */
     static void validateCheckout(SalesOrderRequest request) {
         if (request == null || request.getItems() == null || request.getItems().isEmpty()) {
             throw new IllegalArgumentException("Đơn hàng rỗng, không có sản phẩm nào để thanh toán.");

@@ -5,11 +5,7 @@ import com.pharmacy.common.FormatUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/**
- * DTO đại diện cho một mặt hàng trong chi tiết đơn bán hàng.
- */
 public class SalesOrderDetailDTO {
-
     private Long id;
     private Integer medicineId;
     private String medicineCode;
@@ -140,7 +136,6 @@ public class SalesOrderDetailDTO {
         this.lineTotal = lineTotal;
     }
 
-    // Helpers cho TableView
     public String getFormattedExpiryDate() {
         return expiryDate != null ? FormatUtils.formatDate(expiryDate) : "—";
     }

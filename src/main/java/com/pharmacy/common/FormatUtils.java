@@ -8,11 +8,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-/**
- * Tiện ích định dạng ngày tháng và tiền tệ tập trung cho toàn bộ ứng dụng.
- */
 public final class FormatUtils {
-
     private FormatUtils() {}
 
     public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -65,18 +61,12 @@ public final class FormatUtils {
         return (parts[parts.length - 2].substring(0, 1) + parts[parts.length - 1].substring(0, 1)).toUpperCase();
     }
 
-    /**
-     * Chuyển đổi chuỗi tiếng Việt có dấu thành không dấu để hỗ trợ tìm kiếm linh hoạt.
-     */
     public static String removeAccents(String s) {
         if (s == null) return "";
         String normalized = java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFD);
         return normalized.replaceAll("\\p{M}", "").toLowerCase();
     }
 
-    /**
-     * Cấu hình định dạng dd/MM/yyyy chuẩn cho DatePicker toàn hệ thống.
-     */
     public static void setupDatePicker(javafx.scene.control.DatePicker datePicker) {
         if (datePicker == null) return;
         datePicker.setConverter(new javafx.util.StringConverter<>() {

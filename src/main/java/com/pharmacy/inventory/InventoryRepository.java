@@ -35,16 +35,11 @@ import static com.pharmacy.common.SqlRows.*;
 import static com.pharmacy.inventory.InventorySql.*;
 
 public class InventoryRepository {
-
     private static final Logger log = LoggerFactory.getLogger(InventoryRepository.class);
 
-    /** lowStockMedicines/nearExpiryMedicines đếm theo thuốc, khớp bộ lọc Tồn kho/Hạn dùng của trang Kho thuốc. */
     public record InventorySummary(long totalMedicines, long inStockMedicines, long lowStockMedicines, long nearExpiryMedicines) {}
 
-    /**
-     * Thống kê tổng quan kho cho Dashboard: 1 câu SQL, 1 lần GROUP BY trên inventory_lots
-     * (trước đây là 4 subquery quét inventory_lots nhiều lần).
-     */
+    // Lấy thống kê tổng quan tồn kho cho Dashboard
     public InventorySummary getInventorySummary() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String sql = """
@@ -72,15 +67,12 @@ public class InventoryRepository {
         }
     }
 
-    /**
-     * Danh sách cảnh báo kho (lô hết hạn/cận hạn và thuốc sắp hết hàng) cho Dashboard.
-     */
+    // Lấy danh sách cảnh báo thuốc cận hạn và sắp hết hàng
     public List<InventoryAlertDTO> getInventoryAlerts(int limit) {
         List<InventoryAlertDTO> alerts = new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             LocalDate today = LocalDate.now();
 
-            // 1. Lô hết hạn & cận hạn — dùng chỉ mục idx_inventory_lots_expiry (expiry_date, quantity_remaining)
             String expirySql = """
                 SELECT m.id, m.name, il.lot_number, il.expiry_date, il.quantity_remaining, m.unit
                 FROM inventory_lots il
@@ -114,7 +106,6 @@ public class InventoryRepository {
                         InventoryAlertDTO.AlertType.EXPIRY));
             }
 
-            // 2. Thuốc tồn dưới ngưỡng tối thiểu
             String lowStockSql = """
                 SELECT m.id, m.name, COALESCE(ls.total_qty, 0) AS total_qty, m.unit, %s AS threshold
                 FROM medicines m
@@ -147,10 +138,7 @@ public class InventoryRepository {
         return alerts;
     }
 
-    /**
-     * Danh sách thuốc rút gọn cho ô chọn thuốc của drawer Nhập / Xuất kho.
-     * Chỉ lấy các cột cần hiển thị; tồn kho tính bằng 1 lần GROUP BY thay vì 3 subquery mỗi thuốc.
-     */
+    // Lấy danh sách thuốc rút gọn dùng cho bộ chọn thuốc
     public List<MedicineInventoryDTO> getMedicinesForPicker() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String sql = """
@@ -185,18 +173,14 @@ public class InventoryRepository {
         }
     }
 
-    /**
-     * Phân trang kho phía server, lọc theo mức tồn và hạn dùng (hỗ trợ đa chọn, phân tách bằng dấu phẩy).
-     * Bước 1 COUNT + lấy ID của trang dùng bảng tổng hợp lô (1 lần GROUP BY) khi có bộ lọc;
-     * bước 2 chỉ tính chi tiết lô (LATERAL) cho đúng các dòng của trang.
-     */
+    // Phân trang và tìm kiếm danh sách thuốc trong kho theo tồn kho và hạn dùng
     public PageResult<MedicineInventoryDTO> getInventoryPageResult(int page, int size, String searchKeyword, String stockFilter, String expiryFilter) {
         int validPage = Math.max(1, page);
         int validSize = Math.max(1, size);
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             boolean hasKeyword = hasText(searchKeyword);
             String filterCondition = buildFilterConditions(stockFilter, expiryFilter);
-            // Chỉ JOIN bảng tổng hợp lô khi thực sự lọc theo tồn kho / hạn dùng
+
             String statsJoin = filterCondition.isEmpty() ? "" : LOT_STATS_ALL;
             String where = " WHERE m.status = 'ACTIVE' " + (hasKeyword ? KEYWORD_FILTER : "") + filterCondition;
 
@@ -234,7 +218,7 @@ public class InventoryRepository {
         }
     }
 
-    /** Điều kiện lọc dựa trên các cột của bảng tổng hợp ls (xem {@link InventorySql#LOT_STATS_ALL}). */
+    // Xây dựng điều kiện WHERE lọc theo trạng thái tồn kho và hạn dùng
     private String buildFilterConditions(String stockFilter, String expiryFilter) {
         StringBuilder sb = new StringBuilder();
 
@@ -270,7 +254,6 @@ public class InventoryRepository {
         return sb.toString();
     }
 
-    /** Ánh xạ một dòng theo thứ tự cột {@link InventorySql#INVENTORY_COLUMNS} sang DTO màn hình Kho. */
     static MedicineInventoryDTO mapInventoryRow(Object[] row) {
         MedicineInventoryDTO dto = new MedicineInventoryDTO();
         dto.setMedicineId(toInteger(row[0]));
@@ -297,7 +280,6 @@ public class InventoryRepository {
         }
         dto.setExpiryStatus(expiryStatus(toInt(row[10]), toInt(row[11])));
 
-        // Trạng thái tổng hợp tương thích ngược (Legacy InventoryStatus)
         if (dto.getStockStatus() == MedicineInventoryDTO.StockStatus.OUT_OF_STOCK) {
             dto.setStatus(MedicineInventoryDTO.InventoryStatus.OUT_OF_STOCK);
         } else if (dto.getExpiryStatus() == MedicineInventoryDTO.ExpiryStatus.EXPIRED) {
@@ -312,15 +294,14 @@ public class InventoryRepository {
         return dto;
     }
 
+    // Xác định trạng thái hạn dùng của thuốc dựa trên số lô hết hạn và cận hạn
     private static MedicineInventoryDTO.ExpiryStatus expiryStatus(int expiredCount, int nearExpiredCount) {
         if (expiredCount > 0) return MedicineInventoryDTO.ExpiryStatus.EXPIRED;
         if (nearExpiredCount > 0) return MedicineInventoryDTO.ExpiryStatus.NEAR_EXPIRY;
         return MedicineInventoryDTO.ExpiryStatus.NORMAL;
     }
 
-    /**
-     * Cập nhật thông tin thuốc (Tên thuốc, Hoạt chất chính, Nhà sản xuất, Giá bán)
-     */
+    // Cập nhật thông tin cơ bản và giá bán của thuốc
     public boolean updateMedicine(int medicineId, String name, String activeIngredient, String manufacturer, BigDecimal sellPrice) {
         try {
             return HibernateUtil.executeWithResult(session -> session.createNativeMutationQuery("""
@@ -343,9 +324,7 @@ public class InventoryRepository {
         }
     }
 
-    /**
-     * Lấy danh sách các lô hàng của một loại thuốc theo ID (FEFO: HSD tăng dần)
-     */
+    // Lấy danh sách các lô thuốc còn tồn theo ID thuốc
     public List<MedicineLotDTO> getLotsByMedicineId(int medicineId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String sql = """
@@ -385,14 +364,17 @@ public class InventoryRepository {
         }
     }
 
+    // Lấy danh sách tên tất cả nhà cung cấp
     public List<String> getAllSupplierNames() {
         return listNames("SELECT name FROM suppliers ORDER BY name ASC", "nhà cung cấp");
     }
 
+    // Lấy danh sách tên tất cả danh mục thuốc
     public List<String> getAllCategoryNames() {
         return listNames("SELECT name FROM medicine_categories ORDER BY name ASC", "nhóm thuốc");
     }
 
+    // Truy vấn danh sách tên chuỗi từ CSDL
     private List<String> listNames(String sql, String label) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createNativeQuery(sql, String.class).list();
@@ -402,16 +384,19 @@ public class InventoryRepository {
         }
     }
 
+    // Kiểm tra tên thuốc đã tồn tại trong CSDL chưa
     public boolean existsMedicineByName(String name) {
         if (!hasText(name)) return false;
         return exists("SELECT COUNT(*) FROM medicines WHERE name = :v", name.trim());
     }
 
+    // Kiểm tra thuốc có tồn tại theo ID không
     public boolean existsMedicineById(Integer id) {
         if (id == null || id <= 0) return false;
         return exists("SELECT COUNT(*) FROM medicines WHERE id = :v", id);
     }
 
+    // Kiểm tra sự tồn tại bản ghi bằng câu lệnh COUNT
     private boolean exists(String countSql, Object value) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Long count = session.createNativeQuery(countSql, Long.class).setParameter("v", value).uniqueResult();
@@ -422,9 +407,7 @@ public class InventoryRepository {
         }
     }
 
-    /**
-     * Sinh mã thuốc tiếp theo theo định dạng MEDxxx (ví dụ: MED201) — dùng để hiển thị gợi ý trên form.
-     */
+    // Sinh mã thuốc tiếp theo theo định dạng MEDxxx
     public String getNextMedicineCode() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.doReturningWork(InventoryRepository::nextMedicineCode);
@@ -434,10 +417,12 @@ public class InventoryRepository {
         }
     }
 
+    // Lấy mã thuốc tiếp theo trong kết nối CSDL
     private static String nextMedicineCode(Connection conn) throws SQLException {
         return formatMedicineCode(lastMedicineCodeNumber(conn) + 1);
     }
 
+    // Lấy số thứ tự lớn nhất của mã thuốc hiện tại
     private static int lastMedicineCodeNumber(Connection conn) throws SQLException {
         try (Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(
@@ -446,17 +431,12 @@ public class InventoryRepository {
         }
     }
 
+    // Định dạng số nguyên thành mã thuốc MEDxxx
     private static String formatMedicineCode(int number) {
         return String.format("MED%03d", number);
     }
 
-    /**
-     * LẬP PHIẾU NHẬP KHO HÀNG LOẠT (một phiếu gồm nhiều lô thuốc) trong 1 transaction:
-     * - Tìm hoặc tạo nhà cung cấp, tạo đúng 1 inventory_transactions (IMPORT)
-     * - Thuốc mới: tạo nhóm (nếu chưa có) + thuốc; mã MEDxxx được cấp tuần tự trong cùng transaction
-     *   (trước đây mỗi thuốc mới mở session riêng để lấy mã nên 2 thuốc mới trong một phiếu bị trùng mã)
-     * - Toàn bộ lô được INSERT bằng một JDBC batch (driver gộp thành 1 câu INSERT nhiều dòng)
-     */
+    // Thực hiện giao dịch nhập kho thuốc theo lô
     public boolean importBatchStock(String supplierName, Integer employeeId, String note, List<BatchImportItemDTO> items) {
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("Danh sách mặt hàng nhập kho không được rỗng!");
@@ -506,6 +486,7 @@ public class InventoryRepository {
         }
     }
 
+    // Thêm mới thông tin thuốc chưa có trong danh mục khi nhập kho
     private int insertNewMedicine(Connection conn, BatchImportItemDTO item, Map<String, Integer> categoryCache,
                                   int[] nextCodeNumber) throws SQLException {
         Integer categoryId = null;
@@ -543,6 +524,7 @@ public class InventoryRepository {
         }
     }
 
+    // Kiểm tra mã thuốc đã tồn tại trong kết nối hiện tại chưa
     private static boolean medicineCodeExists(Connection conn, String code) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM medicines WHERE code = ? LIMIT 1")) {
             ps.setString(1, code);
@@ -552,7 +534,7 @@ public class InventoryRepository {
         }
     }
 
-    /** Tìm ID theo cột name (suppliers / medicine_categories), nếu chưa có thì tạo mới. */
+    // Tìm ID hoặc tạo mới bản ghi theo tên danh mục hoặc nhà cung cấp
     private static int findOrCreateByName(Connection conn, String table, String name) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement("SELECT id FROM " + table + " WHERE name = ? LIMIT 1")) {
             ps.setString(1, name);
@@ -567,11 +549,7 @@ public class InventoryRepository {
         }
     }
 
-    /**
-     * XUẤT HỦY HÀNG LOẠT trong 1 transaction:
-     * - Khóa toàn bộ lô liên quan bằng 1 câu SELECT ... FOR UPDATE và kiểm tra tồn
-     * - 1 inventory_transactions (EXPORT_DISPOSAL), chi tiết + trừ tồn chạy bằng JDBC batch
-     */
+    // Thực hiện giao dịch xuất hủy thuốc theo lô
     public boolean exportBatchStock(String reason, Integer employeeId, String note, List<BatchExportItemDTO> items) {
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("Danh sách mặt hàng xuất kho không được rỗng!");
@@ -580,7 +558,6 @@ public class InventoryRepository {
             HibernateUtil.execute(session -> session.doWork(conn -> {
                 requireEmployee(conn, employeeId);
 
-                // 1. Khóa và đọc tồn của tất cả lô trong phiếu (cộng dồn nếu 1 lô xuất ở nhiều dòng)
                 Map<Long, Integer> requested = new HashMap<>();
                 for (BatchExportItemDTO item : items) {
                     requested.merge(item.getLotId(), item.getExportQuantity(), Integer::sum);
@@ -598,7 +575,6 @@ public class InventoryRepository {
                     }
                 }
 
-                // 2. Giao dịch EXPORT_DISPOSAL
                 String fullNote = (reason != null ? reason : "") + (hasText(note) ? " - " + note.trim() : "");
                 long transactionId;
                 try (PreparedStatement ps = conn.prepareStatement(
@@ -610,7 +586,6 @@ public class InventoryRepository {
                     transactionId = generatedKey(ps);
                 }
 
-                // 3. Chi tiết xuất hủy + trừ tồn (batch)
                 try (PreparedStatement itemPs = conn.prepareStatement(
                         "INSERT INTO inventory_disposal_items (transaction_id, inventory_lot_id, quantity, reason) VALUES (?, ?, ?, ?)");
                      PreparedStatement lotPs = conn.prepareStatement(
@@ -638,7 +613,7 @@ public class InventoryRepository {
         }
     }
 
-    /** SELECT ... FOR UPDATE trên nhiều lô bằng 1 câu lệnh; trả về map lotId -> quantity_remaining. */
+    // Khóa và lấy số lượng tồn hiện tại của các lô thuốc để xuất kho
     private static Map<Long, Integer> lockLots(Connection conn, java.util.Collection<Long> lotIds) throws SQLException {
         String placeholders = String.join(",", Collections.nCopies(lotIds.size(), "?"));
         Map<Long, Integer> result = new HashMap<>();
@@ -653,10 +628,6 @@ public class InventoryRepository {
         return result;
     }
 
-    /**
-     * Nhân viên thực hiện giao dịch phải tồn tại. Trước đây nếu không có/không hợp lệ thì
-     * lặng lẽ gán cho nhân viên có ID nhỏ nhất -> sai lệch dữ liệu kiểm toán.
-     */
     static void requireEmployee(Connection conn, Integer employeeId) throws SQLException {
         if (employeeId == null) {
             throw new IllegalArgumentException("Không xác định được nhân viên thực hiện giao dịch.");
@@ -678,6 +649,7 @@ public class InventoryRepository {
         }
     }
 
+    // Gán giá trị số nguyên có thể null vào PreparedStatement
     private static void setNullableInt(PreparedStatement ps, int index, Integer value) throws SQLException {
         if (value == null) ps.setNull(index, Types.INTEGER);
         else ps.setInt(index, value);
@@ -689,10 +661,7 @@ public class InventoryRepository {
         return t.getMessage() != null ? t.getMessage() : e.getMessage();
     }
 
-    /**
-     * Lịch sử Nhập kho (tìm kiếm + lọc khoảng ngày). Số mặt hàng / tổng SL / tổng tiền của phiếu
-     * được tính bằng 1 LATERAL thay vì 3 subquery cho mỗi phiếu.
-     */
+    // Lấy danh sách lịch sử giao dịch nhập kho
     public List<InventoryTransactionDTO> getImportTransactions(String keyword, LocalDate fromDate, LocalDate toDate) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             StringBuilder sql = new StringBuilder("""
@@ -745,9 +714,7 @@ public class InventoryRepository {
         }
     }
 
-    /**
-     * Lịch sử Xuất kho (bán lẻ + xuất hủy), tổng hợp chi tiết bằng 1 LATERAL cho mỗi phiếu.
-     */
+    // Lấy danh sách lịch sử giao dịch xuất kho
     public List<InventoryTransactionDTO> getExportTransactions(String keyword, LocalDate fromDate, LocalDate toDate) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             StringBuilder sql = new StringBuilder("""
@@ -815,21 +782,20 @@ public class InventoryRepository {
         }
     }
 
-    /** Khoảng thời gian nửa mở [from, to + 1 ngày) — dùng được chỉ mục (type, transaction_at). */
+    // Thêm điều kiện lọc theo khoảng ngày vào câu lệnh SQL
     private static void appendDateRange(StringBuilder sql, LocalDate fromDate, LocalDate toDate) {
         if (fromDate != null) sql.append(" AND it.transaction_at >= :fromDt ");
         if (toDate != null) sql.append(" AND it.transaction_at < :toDt ");
     }
 
+    // Gán tham số tìm kiếm và khoảng ngày cho truy vấn lịch sử kho
     private static void bindHistoryParams(NativeQuery<?> query, String keyword, LocalDate fromDate, LocalDate toDate) {
         if (keyword != null) query.setParameter("kw", likeParam(keyword));
         if (fromDate != null) query.setParameter("fromDt", fromDate.atStartOfDay());
         if (toDate != null) query.setParameter("toDt", toDate.plusDays(1).atStartOfDay());
     }
 
-    /**
-     * Lấy chi tiết từng mặt hàng thuốc trong một lần Nhập hoặc Xuất kho.
-     */
+    // Lấy chi tiết các mặt hàng trong một giao dịch kho
     public List<InventoryTransactionDetailDTO> getTransactionDetails(Long transactionId, String type) {
         if (transactionId == null) return Collections.emptyList();
         String sql;

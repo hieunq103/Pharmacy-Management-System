@@ -8,7 +8,6 @@ import com.pharmacy.sales.dto.SalesOrderDTO;
 import java.util.List;
 
 public interface DashboardService {
-
     DashboardStatsDTO getStats();
 
     List<DailySalesDTO> getLast7DaysSales();

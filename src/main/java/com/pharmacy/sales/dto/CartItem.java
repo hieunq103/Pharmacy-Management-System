@@ -3,7 +3,6 @@ package com.pharmacy.sales.dto;
 import java.math.BigDecimal;
 
 public class CartItem {
-
     private final Integer medicineId;
     private final String medicineCode;
     private final String medicineName;

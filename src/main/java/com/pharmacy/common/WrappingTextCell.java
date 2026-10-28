@@ -8,12 +8,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.Tooltip;
 import javafx.util.Callback;
 
-/**
- * Ô bảng hiển thị chữ tự xuống dòng theo bề rộng cột (vd. cột "Lý do xuất"),
- * vừa trong chiều cao 1 dòng bảng (~2 dòng chữ); phần dài hơn xem qua tooltip.
- */
 public class WrappingTextCell<S> extends TableCell<S, String> {
-
     private final Label label = new Label();
 
     public WrappingTextCell(TableColumn<S, String> column) {

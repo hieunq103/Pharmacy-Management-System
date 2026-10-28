@@ -24,7 +24,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -34,7 +33,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ReportController {
-
     private static final Logger log = LoggerFactory.getLogger(ReportController.class);
     private final ReportService reportService;
 
@@ -47,33 +45,27 @@ public class ReportController {
     private Task<?> currentChartTask;
     private Task<?> currentMedTask;
 
-
-    // Filter Controls
     @FXML private Button btnFilterDay;
     @FXML private DatePicker dpSelectedDate;
     @FXML private Button btnFilterMonth;
     @FXML private TextField txtFilterYear;
     @FXML private ComboBox<String> cbFilterMonth;
 
-    // Stat Cards
     @FXML private Label lblTotalRevenue;
     @FXML private Label lblCashRevenue;
     @FXML private Label lblTransferRevenue;
     @FXML private Label lblTotalMedicinesSold;
     @FXML private Label lblTotalOrders;
 
-    // Main TabPane
     @FXML private TabPane tabPaneReport;
     @FXML private Tab tabRevenue;
     @FXML private Tab tabMedicines;
 
-    // Tab 1: Doanh số & Biểu đồ
     @FXML private Label lblChartTitle;
     @FXML private BarChart<String, Number> barChartRevenue;
     @FXML private CategoryAxis chartXAxis;
     @FXML private NumberAxis chartYAxis;
 
-    // Tab 2: Số thuốc đã bán & Biểu đồ
     @FXML private Label lblMedChartTitle;
     @FXML private BarChart<String, Number> barChartMedicines;
     @FXML private CategoryAxis chartMedXAxis;
@@ -91,27 +83,22 @@ public class ReportController {
     @FXML private javafx.scene.control.ScrollPane reportScrollPane;
     @FXML private javafx.scene.layout.VBox loadingOverlay;
 
-    // Lớp phủ "Đang tải": đếm số tác vụ đang chạy, chỉ hiện nếu tải lâu hơn LOADING_DELAY (tránh nháy)
     private static final javafx.util.Duration LOADING_DELAY = javafx.util.Duration.millis(150);
     private int pendingLoads = 0;
     private final javafx.animation.PauseTransition loadingDelay = new javafx.animation.PauseTransition(LOADING_DELAY);
 
-    // Trạng thái lọc thời gian hiện tại
     private enum PeriodMode { DAY, MONTH }
     private PeriodMode currentMode = PeriodMode.DAY;
     private LocalDate selectedDate = LocalDate.now();
     private int selectedYear = LocalDate.now().getYear();
     private int selectedMonth = LocalDate.now().getMonthValue();
 
-    // Bảng thuốc chỉ hiện top N thuốc bán chạy của kỳ đang chọn
     private final ObservableList<SoldMedicineDTO> topSoldMedicines = FXCollections.observableArrayList();
 
-    // Cờ kiểm soát lazy loading cho tab thuốc đã bán
     private boolean medicinesLoadedForCurrentPeriod = false;
 
     private final ObservableList<SoldMedicineDTO> masterSoldMedicines = FXCollections.observableArrayList();
 
-    // Top N thuốc bán chạy (theo ngày hoặc theo tháng), kèm nút "Xem đầy đủ" sang Lịch sử bán hàng của kỳ đó
     private static final int TOP_LIMIT = 5;
     private PeriodMode medPeriodMode = PeriodMode.DAY;
     private LocalDate medPeriodDate = LocalDate.now();
@@ -135,7 +122,6 @@ public class ReportController {
         initFilterControls();
         initTabSelectionListener();
 
-        // Nạp dữ liệu trong lượt render tiếp theo để giao diện hiển thị ngay tức thì mà không giật/xoay
         Platform.runLater(() -> handleSelectDayMode(null));
     }
 
@@ -195,7 +181,6 @@ public class ReportController {
     private void adjustSingleChartGap(BarChart<String, Number> chart) {
         if (chart == null || currentTimelineCount <= 0 || !chart.isVisible()) return;
 
-        // Chiều rộng cột mong muốn tương đương như hiển thị theo tháng (~26px - 30px)
         final double targetBarWidth = 28.0;
 
         double chartWidth = chart.getWidth();
@@ -205,14 +190,12 @@ public class ReportController {
         double slotWidth = plotWidth / currentTimelineCount;
         double calculatedGap = (slotWidth > targetBarWidth) ? (slotWidth - targetBarWidth) : 4.0;
 
-        // Chỉ cập nhật khi khoảng cách chênh lệch > 1px để triệt tiêu hoàn toàn vòng lặp layout (cyclic relayout)
         if (Math.abs(chart.getCategoryGap() - calculatedGap) > 1.0) {
             chart.setCategoryGap(calculatedGap);
         }
     }
 
     private void initTableColumns() {
-        // Cấu hình bảng Thuốc đã bán
         colMedIndex.setCellFactory(col -> new TableCell<SoldMedicineDTO, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -257,7 +240,6 @@ public class ReportController {
         tblSoldMedicines.setItems(topSoldMedicines);
     }
 
-
     private void initFilterControls() {
         setupDatePickerFormat(dpSelectedDate);
         if (dpSelectedDate != null) {
@@ -267,7 +249,7 @@ public class ReportController {
         if (txtFilterYear != null) {
             txtFilterYear.setText(String.valueOf(selectedYear));
             txtFilterYear.focusedProperty().addListener((obs, oldVal, newVal) -> {
-                if (!newVal) { // Lost focus
+                if (!newVal) {
                     handleYearAction(null);
                 }
             });
@@ -307,9 +289,6 @@ public class ReportController {
         }
     }
 
-
-    // ==================== CÁC NÚT BỘ LỌC THỜI GIAN ====================
-
     @FXML
     public void handleSelectDayMode(ActionEvent event) {
         currentMode = PeriodMode.DAY;
@@ -330,7 +309,6 @@ public class ReportController {
         currentMode = PeriodMode.DAY;
         selectedDate = date;
         updateFilterButtonStyles(true);
-
 
         loadAllData();
     }
@@ -413,7 +391,6 @@ public class ReportController {
         }
     }
 
-
     private void updateFilterButtonStyles(boolean isDay) {
         if (btnFilterDay != null) {
             btnFilterDay.getStyleClass().remove("active");
@@ -425,9 +402,6 @@ public class ReportController {
         }
     }
 
-    // ==================== LOAD DỮ LIỆU BẤT ĐỒNG BỘ ====================
-
-    /** Theo dõi một tác vụ tải số liệu để bật/tắt lớp phủ "Đang tải báo cáo...". */
     private void trackLoading(Task<?> task) {
         pendingLoads++;
         if (pendingLoads == 1 && loadingOverlay != null && !loadingOverlay.isVisible()) {
@@ -455,7 +429,6 @@ public class ReportController {
         });
     }
 
-    /** Tải lại số liệu theo bộ lọc hiện tại (khi quay lại trang Báo cáo đã được nạp sẵn). */
     public void refresh() {
         loadAllData();
     }
@@ -463,16 +436,13 @@ public class ReportController {
     private void loadAllData() {
         medicinesLoadedForCurrentPeriod = false;
 
-        // Ưu tiên 1: Tải nhanh dữ liệu thống kê và cả 2 biểu đồ (Doanh số & Sản lượng thuốc)
         loadChartsAndSummaryData();
 
-        // Ưu tiên 2: Nếu người dùng đang đứng ở Tab Thuốc đã bán thì nạp luôn bảng chi tiết
         if (tabPaneReport != null && tabPaneReport.getSelectionModel().getSelectedItem() == tabMedicines) {
             loadMedicinesData();
         }
     }
 
-    /** Cùng phạm vi với Tổng quan / Lịch sử bán hàng: Quản lý xem toàn cửa hàng, Nhân viên chỉ xem của mình. */
     private Integer getCurrentEmployeeId() {
         return UserSession.scopeEmployeeId(null);
     }
@@ -494,22 +464,18 @@ public class ReportController {
             @Override
             protected Void call() {
                 if (mode == PeriodMode.DAY) {
-                    // Thống kê ngày được chọn của cá nhân
                     summary = reportService.getSummary(targetDate, targetDate, empId);
 
-                    // Biểu đồ vẽ 7 ngày: ngày đó và 6 ngày gần nhất
                     revTimeline = reportService.get7DaysRevenueTimelineUpTo(targetDate, empId);
                     medTimeline = reportService.get7DaysMedicineTimelineUpTo(targetDate, empId);
 
                     revChartTitle = "Biểu đồ doanh số 7 ngày (tính đến " + targetDate.format(FormatUtils.DATE_FORMATTER) + ")";
                     medChartTitle = "Biểu đồ sản lượng thuốc đã bán 7 ngày (tính đến " + targetDate.format(FormatUtils.DATE_FORMATTER) + ")";
                 } else {
-                    // Chế độ Tháng: Thống kê cho tháng được chọn trong năm đó
                     LocalDate firstDay = LocalDate.of(targetYear, targetMonth, 1);
                     LocalDate lastDay = firstDay.with(TemporalAdjusters.lastDayOfMonth());
                     summary = reportService.getSummary(firstDay, lastDay, empId);
 
-                    // Biểu đồ vẽ đủ 12 tháng của năm đã chọn
                     revTimeline = reportService.get12MonthsRevenueTimeline(targetYear, empId);
                     medTimeline = reportService.get12MonthsMedicineTimeline(targetYear, empId);
 
@@ -613,7 +579,6 @@ public class ReportController {
         trackLoading(medTask);
         executor.submit(medTask);
     }
-
 
     private void updateStatCards(ReportSummaryDTO summary) {
         if (summary == null) summary = ReportSummaryDTO.empty();
@@ -732,10 +697,10 @@ public class ReportController {
             return point.tooltipText();
         }
         if (currentMode == PeriodMode.MONTH) {
-            return "Tháng " + point.timeLabel().replace("Thg ", "").trim() + "/" + selectedYear 
+            return "Tháng " + point.timeLabel().replace("Thg ", "").trim() + "/" + selectedYear
                     + ": " + String.format("%,d", point.quantitySold()) + " sản phẩm";
         } else {
-            return "Ngày " + point.timeLabel() + "/" + selectedDate.getYear() 
+            return "Ngày " + point.timeLabel() + "/" + selectedDate.getYear()
                     + ": " + String.format("%,d", point.quantitySold()) + " sản phẩm";
         }
     }
@@ -777,18 +742,14 @@ public class ReportController {
             return point.tooltipText();
         }
         if (currentMode == PeriodMode.MONTH) {
-            return "Tháng " + point.timeLabel().replace("Thg ", "").trim() + "/" + selectedYear 
+            return "Tháng " + point.timeLabel().replace("Thg ", "").trim() + "/" + selectedYear
                     + ": " + FormatUtils.formatCurrency(point.revenue()) + " VNĐ";
         } else {
-            return "Ngày " + point.timeLabel() + "/" + selectedDate.getYear() 
+            return "Ngày " + point.timeLabel() + "/" + selectedDate.getYear()
                     + ": " + FormatUtils.formatCurrency(point.revenue()) + " VNĐ";
         }
     }
 
-    /**
-     * Bảng chỉ hiện top 5 thuốc bán chạy nhất của ngày/tháng đang chọn (dữ liệu đã sắp theo số lượng bán giảm dần);
-     * nút "Xem đầy đủ" mở Lịch sử bán hàng lọc đúng ngày/tháng đó.
-     */
     private void applyMedicineTablePeriod(PeriodMode mode, LocalDate date, int year, int month) {
         medPeriodMode = mode;
         medPeriodDate = date;
@@ -816,10 +777,6 @@ public class ReportController {
         }
     }
 
-    /**
-     * Tab Báo cáo doanh số vừa khít màn hình (biểu đồ co giãn, không cuộn); tab thuốc đã bán cuộn bằng chuột.
-     * Thanh cuộn dọc luôn ẩn (FXML) để bề rộng trang không đổi khi chuyển tab -> bộ lọc, thẻ, tab giữ nguyên vị trí.
-     */
     private void applyScrollForTab(Tab tab) {
         if (reportScrollPane == null) return;
         boolean revenue = tab == tabRevenue;

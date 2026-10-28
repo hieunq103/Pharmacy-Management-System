@@ -43,10 +43,6 @@ public final class AppConfig {
         }
     }
 
-    /**
-     * Đọc bí mật từ biến môi trường, nếu không có thì từ file .env (không commit lên git).
-     * Trả về null nếu không cấu hình hoặc giá trị rỗng.
-     */
     public static String env(String key) {
         String val = System.getenv(key);
         if ((val == null || val.isBlank()) && dotenv != null) {

@@ -4,13 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * Chuyển đổi an toàn giá trị cột trả về từ native query (Object[]) sang kiểu Java.
- * Driver MySQL có thể trả java.sql.Date/Timestamp hoặc java.time tùy cấu hình,
- * số có thể là Long/Integer/BigInteger/BigDecimal — gom về một chỗ để tránh lặp code.
- */
 public final class SqlRows {
-
     private SqlRows() {
     }
 

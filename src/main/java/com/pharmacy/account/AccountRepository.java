@@ -8,9 +8,7 @@ import java.util.Optional;
 
 public class AccountRepository {
 
-    /**
-     * Tìm kiếm tài khoản duy nhất bằng tên đăng nhập (Mã nhân viên PMSxxxx).
-     */
+    // Tìm tài khoản theo tên đăng nhập kèm thông tin nhân viên và vai trò
     public Optional<Account> findByUsername(String username) {
         if (username == null || username.isBlank()) {
             return Optional.empty();
@@ -28,17 +26,17 @@ public class AccountRepository {
         });
     }
 
-    /**
-     * Ghi nhận lịch sử đăng nhập thành công.
-     */
+    // Ghi nhận lịch sử đăng nhập thành công
     public void recordSuccessfulLogin(Integer accountId, String clientInfo) {
         saveLoginHistory(accountId, "SUCCESS", clientInfo);
     }
 
+    // Lưu lịch sử đăng nhập vào cơ sở dữ liệu
     public void saveLoginHistory(Integer accountId, String result, String clientInfo) {
         HibernateUtil.execute(session -> saveLoginHistoryInternal(session, accountId, result, clientInfo));
     }
 
+    // Thực thi câu lệnh insert bản ghi lịch sử đăng nhập
     private void saveLoginHistoryInternal(Session session, Integer accountId, String result, String clientInfo) {
         String sql = """
         INSERT INTO login_history (account_id, login_at, result, client_info)
@@ -51,9 +49,9 @@ public class AccountRepository {
                 .executeUpdate();
     }
 
+    // Cập nhật mật khẩu mới và tắt cờ bắt buộc đổi mật khẩu
     public boolean updatePassword(Integer accountId, String newPasswordHash) {
         return HibernateUtil.executeWithResult(session -> {
-            // Đổi mật khẩu thành công thì gỡ cờ bắt buộc đổi mật khẩu lần đầu
             String hql = "UPDATE Account a SET a.passwordHash = :passwordHash, a.mustChangePassword = false WHERE a.id = :id";
             int rowsUpdated = session.createMutationQuery(hql)
                     .setParameter("passwordHash", newPasswordHash)
@@ -63,6 +61,7 @@ public class AccountRepository {
         });
     }
 
+    // Khóa tài khoản nhân viên
     public boolean lockAccount(Integer accountId) {
         if (accountId == null) return false;
         return HibernateUtil.executeWithResult(session -> {
@@ -74,6 +73,7 @@ public class AccountRepository {
         });
     }
 
+    // Mở khóa tài khoản nhân viên
     public boolean unlockAccount(Integer accountId) {
         if (accountId == null) return false;
         return HibernateUtil.executeWithResult(session -> {

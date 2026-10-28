@@ -34,14 +34,6 @@ public class SepayService {
         }
     }
 
-    /**
-     * Kiểm tra SePAY xem có giao dịch chuyển khoản nào khớp với mã đơn hàng và số
-     * tiền hay không.
-     *
-     * @param orderCode      Mã đơn hàng
-     * @param expectedAmount Số tiền cần thanh toán
-     * @return PaymentResult nếu tìm thấy giao dịch hợp lệ
-     */
     public static PaymentResult checkOrderPayment(String orderCode, BigDecimal expectedAmount) {
         if (!PaymentConfig.isSepayConfigured()) {
             return PaymentResult.notMatched();
@@ -87,7 +79,6 @@ public class SepayService {
                             continue;
                         }
 
-                        // Kiểm tra số tiền nhận vào >= số tiền đơn hàng
                         if (amountIn.compareTo(expectedAmount) < 0) {
                             continue;
                         }
@@ -95,7 +86,6 @@ public class SepayService {
                         String content = tx.path("transaction_content").asText("");
                         String normContent = content.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
 
-                        // Kiểm tra nội dung giao dịch có chứa mã đơn hàng không
                         if (normContent.contains(normCode)) {
                             String txDate = tx.path("transaction_date").asText("");
                             String refNum = tx.path("reference_number").asText("");

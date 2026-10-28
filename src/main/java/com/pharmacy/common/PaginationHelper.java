@@ -6,25 +6,9 @@ import javafx.scene.layout.HBox;
 
 import java.util.function.Consumer;
 
-/**
- * Tiện ích dựng thanh phân trang (Pagination Bar) cho các bảng TableView.
- * Tái sử dụng đồng nhất giữa Quản lý nhân viên, Kho thuốc, Bán hàng...
- */
 public final class PaginationHelper {
-
     private PaginationHelper() {}
 
-    /**
-     * Dựng thanh phân trang trong paginationBox.
-     *
-     * @param paginationBox  HBox chứa các nút phân trang
-     * @param lblRecordRange Label hiển thị dải bản ghi (ví dụ: "1 - 15"), có thể null nếu không cần
-     * @param currentPage    Trang hiện tại (1-based)
-     * @param totalPages     Tổng số trang
-     * @param totalRecords   Tổng số bản ghi
-     * @param pageSize       Số bản ghi trên mỗi trang
-     * @param onPageChange   Callback khi người dùng bấm chọn trang mới
-     */
     public static void render(
             HBox paginationBox,
             Label lblRecordRange,
@@ -40,7 +24,6 @@ public final class PaginationHelper {
         int effectiveTotalPages = totalPages <= 0 ? 1 : totalPages;
         int effectiveCurrentPage = Math.max(1, Math.min(currentPage, effectiveTotalPages));
 
-        // Cập nhật nhãn khoảng bản ghi nếu có
         if (lblRecordRange != null) {
             if (totalRecords <= 0) {
                 lblRecordRange.setText("0 - 0");
@@ -51,7 +34,6 @@ public final class PaginationHelper {
             }
         }
 
-        // Nút trang trước (<)
         Button btnPrev = new Button("<");
         btnPrev.getStyleClass().add("page-btn");
         btnPrev.setDisable(effectiveCurrentPage <= 1);
@@ -62,7 +44,6 @@ public final class PaginationHelper {
         });
         paginationBox.getChildren().add(btnPrev);
 
-        // Hiển thị danh sách nút số trang
         if (effectiveTotalPages <= 7) {
             for (int i = 1; i <= effectiveTotalPages; i++) {
                 addPageButton(paginationBox, i, effectiveCurrentPage, onPageChange);
@@ -91,7 +72,6 @@ public final class PaginationHelper {
             }
         }
 
-        // Nút trang sau (>)
         Button btnNext = new Button(">");
         btnNext.getStyleClass().add("page-btn");
         btnNext.setDisable(effectiveCurrentPage >= effectiveTotalPages);

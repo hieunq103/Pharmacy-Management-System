@@ -28,7 +28,6 @@ import java.util.Locale;
 import java.util.Optional;
 
 public class MainLayoutController {
-
     private static final Logger log = LoggerFactory.getLogger(MainLayoutController.class);
     private static MainLayoutController instance;
     private final AuthService authService;
@@ -46,7 +45,6 @@ public class MainLayoutController {
     @FXML
     private StackPane contentArea;
 
-    // Menu Buttons
     @FXML
     private Button btnDashboard;
     @FXML
@@ -60,7 +58,6 @@ public class MainLayoutController {
     @FXML
     private Button btnReport;
 
-    // Thông tin người dùng
     @FXML
     private Label lblUserAvatar;
     @FXML
@@ -68,18 +65,15 @@ public class MainLayoutController {
     @FXML
     private Label lblUserRole;
 
-    // Header
     @FXML
     private Label lblHeaderTitle;
     @FXML
     private Label lblHeaderSubtitle;
 
     private static final String REPORT_FXML = "/fxml/report/report.fxml";
-    // Trang Báo cáo được nạp một lần và dùng lại (xem preloadReportView)
     private Parent reportView;
     private com.pharmacy.report.ReportController reportController;
     private boolean reportPreloading = false;
-    // Đã bấm "Báo cáo" nhưng trang chưa nạp xong
     private boolean reportPendingShow = false;
 
     @FXML
@@ -89,8 +83,6 @@ public class MainLayoutController {
         initHeaderDate();
         initUiScaling();
 
-        // Nạp màn hình mặc định khi vừa vào:
-        // Quản lý (MANAGER) vào Tổng quan, Nhân viên (STAFF) vào Bán hàng
         if (UserSession.isLoggedIn() && !UserSession.getInstance().isManager()) {
             handleNavSales(null);
         } else {
@@ -109,7 +101,6 @@ public class MainLayoutController {
         UserSession session = UserSession.getInstance();
         Account currentAccount = session.getAccount();
 
-        // 1. Hiển thị thông tin người dùng từ UserSession (đã loại bỏ getUsername)
         String fullName = session.getEmployeeName();
         lblUserName.setText(fullName);
         lblUserAvatar.setText(getInitials(fullName));
@@ -119,10 +110,6 @@ public class MainLayoutController {
                 : "Chưa phân quyền";
         lblUserRole.setText(roleName);
 
-        // 2. Phân quyền:
-        // Quản lý (MANAGER): Xem đầy đủ tất cả các phân hệ.
-        // Nhân viên (STAFF): Không có màn hình Tổng quan, Kho thuốc và Quản lý Nhân
-        // viên.
         boolean isManager = session.isManager();
         applyNodeVisibility(btnDashboard, isManager);
         applyNodeVisibility(boxInventoryNav != null ? boxInventoryNav : btnInventory, isManager);
@@ -147,8 +134,6 @@ public class MainLayoutController {
     private String getInitials(String fullName) {
         return FormatUtils.getInitials(fullName);
     }
-
-    // ==================== ĐIỀU HƯỚNG TỪNG TAB ====================
 
     @FXML
     private void handleNavDashboard(ActionEvent event) {
@@ -194,10 +179,6 @@ public class MainLayoutController {
         }
     }
 
-    /**
-     * Mở Lịch sử bán hàng lọc theo tháng/năm (nút "Xem đầy đủ" ở Báo cáo, "Lịch sử bán" ở Tổng quan);
-     * onBack là trang nút back quay về.
-     */
     public void navigateToSalesHistoryForMonth(int year, int month, Runnable onBack) {
         com.pharmacy.sales.SalesController salesCtrl = showSalesPage();
         if (salesCtrl != null) {
@@ -205,10 +186,6 @@ public class MainLayoutController {
         }
     }
 
-    /**
-     * Mở Lịch sử bán hàng của một ngày (thẻ hôm nay ở Tổng quan, nút "Xem đầy đủ" ở Báo cáo);
-     * onBack là trang nút back quay về.
-     */
     public void navigateToSalesHistoryForDate(java.time.LocalDate date, Runnable onBack) {
         com.pharmacy.sales.SalesController salesCtrl = showSalesPage();
         if (salesCtrl != null) {
@@ -230,11 +207,11 @@ public class MainLayoutController {
             lblHeaderTitle.setText("Bán hàng");
         }
         FXMLLoader loader = loadCenterViewWithLoader("/fxml/sales/sales.fxml");
-        return loader != null && loader.getController() instanceof com.pharmacy.sales.SalesController salesCtrl ? salesCtrl : null;
+        return loader != null && loader.getController() instanceof com.pharmacy.sales.SalesController salesCtrl
+                ? salesCtrl
+                : null;
     }
 
-    /** Mở trang Hồ sơ cá nhân (vd. khi Quản lý chọn chính mình trong danh sách nhân viên). */
-    /** Mở Hồ sơ cá nhân có nút "Quay lại" về trang Nhân viên (khi Quản lý chọn chính mình trong danh sách). */
     public void navigateToProfileFromEmployees() {
         if (lblHeaderTitle != null) {
             lblHeaderTitle.setText("Thông tin cá nhân");
@@ -271,7 +248,6 @@ public class MainLayoutController {
         setActiveButton(btnReport);
         lblHeaderTitle.setText("Báo cáo & Thống kê");
         if (reportView == null) {
-            // Trang chưa nạp xong: hiện vòng tròn đang tải thay vì đứng giao diện, gắn trang vào khi nạp xong
             reportPendingShow = true;
             contentArea.getChildren().setAll(createLoadingPlaceholder("Đang tải báo cáo..."));
             preloadReportView();
@@ -279,11 +255,9 @@ public class MainLayoutController {
         }
         reportPendingShow = false;
         contentArea.getChildren().setAll(reportView);
-        // Giao diện đã có sẵn -> hiện ngay, chỉ tải lại số liệu ở luồng nền
         reportController.refresh();
     }
 
-    /** Khung "đang tải" (vòng tròn quay + chữ) hiển thị ở vùng nội dung. */
     private javafx.scene.Node createLoadingPlaceholder(String text) {
         javafx.scene.control.ProgressIndicator spinner = new javafx.scene.control.ProgressIndicator();
         spinner.setPrefSize(54, 54);
@@ -295,14 +269,9 @@ public class MainLayoutController {
         return box;
     }
 
-    /**
-     * Nạp sẵn trang Báo cáo ở luồng nền ngay sau khi vào hệ thống.
-     * Trang này nặng (2 biểu đồ, TabPane, bảng): nạp FXML mất ~0,3–1,4 s trên luồng giao diện,
-     * trong khi các truy vấn số liệu chỉ mất vài chục ms. Nạp một lần và dùng lại giúp bấm "Báo cáo"
-     * hiện ngay thay vì đứng giao diện mỗi lần mở.
-     */
     private void preloadReportView() {
-        if (reportPreloading || reportView != null) return;
+        if (reportPreloading || reportView != null)
+            return;
         reportPreloading = true;
         Thread preload = new Thread(() -> {
             try {
@@ -314,7 +283,7 @@ public class MainLayoutController {
                         reportView = view;
                         reportController = loader.getController();
                     }
-                    // Người dùng đã bấm "Báo cáo" trong lúc đang nạp -> hiện trang ngay
+
                     if (reportPendingShow) {
                         reportPendingShow = false;
                         contentArea.getChildren().setAll(reportView);
@@ -360,12 +329,9 @@ public class MainLayoutController {
         try {
             cleanupDashboardResources();
 
-            // Invalidate session hoàn toàn
             authService.logout();
 
-            // Điều hướng an toàn về màn hình đăng nhập
             forceRedirectToLogin();
-
         } catch (Exception e) {
             log.error("Lỗi phát sinh trong quá trình đăng xuất: ", e);
             showFriendlyMessage("Thông báo",
@@ -374,10 +340,6 @@ public class MainLayoutController {
         }
     }
 
-    /**
-     * Dọn dẹp tài nguyên layout, giải phóng luồng và bộ nhớ trước khi hủy giao
-     * diện.
-     */
     private void cleanupDashboardResources() {
         try {
             if (contentArea != null) {
@@ -455,7 +417,6 @@ public class MainLayoutController {
 
     private void setActiveButton(Button activeButton) {
         if (activeButton != btnReport) {
-            // Đã chuyển sang trang khác: không tự hiện trang Báo cáo khi nạp xong
             reportPendingShow = false;
         }
         Button[] allButtons = { btnDashboard, btnSales, btnInventory, btnEmployee, btnReport };

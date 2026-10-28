@@ -10,19 +10,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 
-/**
- * Bộ chỉnh số lượng [-] [ô nhập] [+] của một dòng thuốc, dùng chung cho giỏ hàng (trang Bán hàng)
- * và hộp thoại xác nhận thanh toán. Giảm về 0 thì xóa dòng; không cho vượt tồn kho bán được.
- */
 final class CartQuantityControl {
-
     private CartQuantityControl() {
     }
 
-    /**
-     * @param inputWidth chiều rộng ô nhập số lượng
-     * @param onChanged  gọi sau mỗi lần số lượng thay đổi hoặc dòng bị xóa (để vẽ lại giỏ, tính lại tiền)
-     */
     static HBox create(CartItem item, CartOrder order, double inputWidth, Runnable onChanged) {
         Button btnMinus = new Button("-");
         btnMinus.getStyleClass().add("btn-qty-control");
@@ -44,7 +35,6 @@ final class CartQuantityControl {
         txtQty.setPrefHeight(26);
         txtQty.setAlignment(Pos.CENTER);
 
-        // Chỉ cho phép nhập số nguyên dương
         txtQty.textProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null && !newVal.matches("\\d*")) {
                 txtQty.setText(newVal.replaceAll("[^0-9]", ""));
@@ -59,7 +49,7 @@ final class CartQuantityControl {
             }
             try {
                 int newQty = Integer.parseInt(text);
-                if (newQty <= 0) newQty = 1; // vd. nhập "00"
+                if (newQty <= 0) newQty = 1;
                 if (newQty > item.getMaxStock()) {
                     DialogUtils.showWarning("Vượt quá tồn kho", "Số lượng trong kho chỉ còn " + item.getMaxStock() + ".");
                     newQty = item.getMaxStock();

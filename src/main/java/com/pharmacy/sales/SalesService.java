@@ -16,14 +16,9 @@ public interface SalesService {
     PageResult<MedicineInventoryDTO> getMedicinesPage(int page, int size, String keyword, String categoryName);
     String generateNextOrderCode();
 
-    /**
-     * Thanh toán đơn hàng. Hàng đã bán không hỗ trợ hoàn/hủy.
-     * Nhân viên lập đơn lấy từ phiên đăng nhập; tổng tiền được tính lại từ giá trong CSDL.
-     */
     String checkout(SalesOrderRequest request);
     PageResult<SalesOrderDTO> getSalesHistory(LocalDate date, Integer employeeId, String keyword, int page, int size);
 
-    /** Lịch sử bán hàng trong khoảng ngày [fromDate, toDate], ví dụ cả một tháng. */
     PageResult<SalesOrderDTO> getSalesHistory(LocalDate fromDate, LocalDate toDate, Integer employeeId, String keyword, int page, int size);
     List<SalesOrderDetailDTO> getSalesOrderDetails(long orderId);
 

@@ -15,12 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * ReportService hoạt động theo mô hình Aggregator / Facade:
- * Tái sử dụng SalesService cho biểu đồ 7 ngày, kết hợp ReportRepository cho thống kê chuyên sâu.
- */
 public class ReportServiceImpl implements ReportService {
-
     private static final DateTimeFormatter SHORT_FMT = DateTimeFormatter.ofPattern("dd/MM");
 
     private final SalesService salesService;
@@ -45,7 +40,6 @@ public class ReportServiceImpl implements ReportService {
         return repository.getSoldMedicines(from, to, keyword, UserSession.scopeEmployeeId(employeeId));
     }
 
-    // Biểu đồ doanh số và sản lượng 7 ngày được vẽ cùng lúc -> dùng chung 1 lần truy vấn trong 2 giây
     private record CacheKey(LocalDate endDate, Integer employeeId) {}
     private CacheKey lastCacheKey;
     private long lastCacheTimeMs = 0;

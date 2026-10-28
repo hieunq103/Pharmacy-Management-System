@@ -19,8 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Kiểm thử phân hệ Báo cáo & Thống kê")
 class ReportServiceTest {
-
-    // Dữ liệu seed V4 có đơn bán từ tháng 1 đến tháng 9/2026
     private static final LocalDate MARCH_START = LocalDate.of(2026, 3, 1);
     private static final LocalDate MARCH_END = MARCH_START.with(TemporalAdjusters.lastDayOfMonth());
 

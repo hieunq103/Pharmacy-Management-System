@@ -4,11 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * Data Transfer Object đại diện cho thông tin một Lô hàng (Inventory Lot) của thuốc
- */
 public class MedicineLotDTO {
-
     private Long id;
     private Integer medicineId;
     private String lotNumber;
@@ -127,9 +123,6 @@ public class MedicineLotDTO {
         this.note = note;
     }
 
-    /**
-     * Xác định trạng thái của lô thuốc
-     */
     public LotStatus getStatus() {
         if (getQuantityRemaining() <= 0) {
             return LotStatus.DEPLETED;

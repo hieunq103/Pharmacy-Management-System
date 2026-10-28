@@ -39,7 +39,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class ExportDialogController implements Initializable {
-
     private static final Logger log = LoggerFactory.getLogger(ExportDialogController.class);
 
     private static final List<String> EXPORT_REASONS = List.of(
@@ -62,7 +61,6 @@ public class ExportDialogController implements Initializable {
     @FXML private Label lblMedCategory;
     @FXML private Label lblMedTotalStock;
 
-    // Container chứa các dòng lô động
     @FXML private VBox lotRowsContainer;
     @FXML private Button btnSelectAnotherLot;
 
@@ -92,52 +90,40 @@ public class ExportDialogController implements Initializable {
     private Runnable onSuccessCallback;
     private Runnable onCloseCallback;
 
-    // Danh sách các lô của thuốc đang chọn
     private final ObservableList<MedicineLotDTO> currentMedicineLots = FXCollections.observableArrayList();
 
-    // Danh sách các dòng nhập lô đang mở trong Section 2
     private final List<LotRowItem> activeLotRows = new ArrayList<>();
 
-    // Danh sách các mặt hàng đã thêm vào phiếu xuất (Table ở Section 3)
     private final ObservableList<BatchExportItemDTO> itemList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // 1. Khởi tạo Searchable Picker cho Thuốc (debounce 300ms)
         medicinePicker = new SearchableMedicinePicker("Nhập tên hoặc mã thuốc cần xuất kho...");
         medicinePickerContainer.getChildren().add(medicinePicker);
 
-        // 2. Lắng nghe khi chọn thuốc từ dropdown tìm kiếm
         medicinePicker.selectedMedicineProperty().addListener((obs, oldV, newV) -> {
             clearPickerError(medicinePicker, lblErrorMedicine);
             onMedicineSelected(newV);
         });
 
-        // 3. Hover style cho nút "+ Xuất thêm lô khác"
         if (btnSelectAnotherLot != null) {
             btnSelectAnotherLot.setOnMouseEntered(ev -> btnSelectAnotherLot.setStyle("-fx-background-color: #DBEAFE; -fx-text-fill: #1E40AF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 12px; -fx-padding: 7 14; -fx-border-color: #93C5FD; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-cursor: hand;"));
             btnSelectAnotherLot.setOnMouseExited(ev -> btnSelectAnotherLot.setStyle("-fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 12px; -fx-padding: 7 14; -fx-border-color: #BFDBFE; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-cursor: hand;"));
         }
 
-        // 4. Cấu hình bảng danh sách mặt hàng
         setupTableColumns();
         tableItems.setItems(itemList);
         tableItems.setPlaceholder(new Label("Chưa có mặt hàng nào trong phiếu xuất. Vui lòng thêm thuốc từ phần trên."));
 
-        // 5. Tên nhân viên lập phiếu
         if (UserSession.isLoggedIn()) {
             lblEmployeeName.setText(UserSession.getInstance().getEmployeeName());
         }
 
-        // 6. Hiển thị sẵn 1 dòng nhập 3 ô ngay khi mở màn hình
         addNewLotRow(false);
 
         updateSummary();
     }
 
-    /**
-     * Đại diện cho một dòng nhập gồm 3 ô (Chọn lô - Số lượng xuất - Lý do xuất) kèm nút xóa dòng
-     */
     public class LotRowItem {
         private final GridPane rowNode;
         private final ComboBox<MedicineLotDTO> cbLot;
@@ -170,7 +156,6 @@ public class ExportDialogController implements Initializable {
             col3.setPercentWidth(5.0);
             rowNode.getColumnConstraints().addAll(col0, col1, col2, col3);
 
-            // 1. Cột 0: Chọn lô
             cbLot = new ComboBox<>(currentMedicineLots);
             cbLot.setMaxWidth(Double.MAX_VALUE);
             cbLot.setPromptText("-- Chọn lô hàng xuất --");
@@ -183,7 +168,6 @@ public class ExportDialogController implements Initializable {
             lblErrorLot.setVisible(false);
             lblErrorLot.setManaged(false);
 
-            // 2. Cột 1: Số lượng
             txtQuantity = new TextField();
             txtQuantity.setPromptText("SL...");
             txtQuantity.getStyleClass().add("form-input");
@@ -195,7 +179,6 @@ public class ExportDialogController implements Initializable {
             lblErrorQuantity.setVisible(false);
             lblErrorQuantity.setManaged(false);
 
-            // 3. Cột 2: Lý do xuất (Nhập tự do, gợi ý danh sách có sẵn, tối đa 255 ký tự)
             txtReason = new TextField();
             txtReason.setPromptText("-- Nhập hoặc chọn gợi ý lý do --");
             txtReason.getStyleClass().add("form-input");
@@ -222,7 +205,6 @@ public class ExportDialogController implements Initializable {
             lblErrorReason.setVisible(false);
             lblErrorReason.setManaged(false);
 
-            // Giới hạn độ dài tối đa 255 ký tự và tự động lọc gợi ý khi gõ
             txtReason.textProperty().addListener((obs, oldV, newV) -> {
                 if (newV != null && newV.length() > 255) {
                     txtReason.setText(newV.substring(0, 255));
@@ -234,7 +216,6 @@ public class ExportDialogController implements Initializable {
                 }
             });
 
-            // Khi click hoặc focus vào ô thì mở danh sách gợi ý
             txtReason.setOnMouseClicked(e -> {
                 if (!popupReason.isShowing()) {
                     showReasonSuggestions(txtReason, popupReason, txtReason.getText() != null ? txtReason.getText() : "");
@@ -259,13 +240,11 @@ public class ExportDialogController implements Initializable {
                 }
             });
 
-            // 4. Cột 3: Nút Xóa dòng
             btnRemoveRow = new Button("✕");
             btnRemoveRow.setStyle("-fx-background-color: #FEE2E2; -fx-text-fill: #DC2626; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px; -fx-padding: 6 10; -fx-background-radius: 6px; -fx-cursor: hand;");
             btnRemoveRow.setTooltip(new Tooltip("Xóa dòng lô này"));
             btnRemoveRow.setOnAction(e -> removeLotRow(this));
 
-            // Setup ComboBox và Listener sau khi mọi Label đã được khởi tạo hoàn chỉnh
             setupLotComboBox(cbLot, this);
 
             cbLot.valueProperty().addListener((obs, oldV, newV) -> {
@@ -306,9 +285,6 @@ public class ExportDialogController implements Initializable {
         }
     }
 
-    /**
-     * Hiển thị danh sách gợi ý lý do xuất khớp với từ khóa người dùng đang nhập
-     */
     private void showReasonSuggestions(TextField field, ContextMenu menu, String keyword) {
         String kw = removeAccents(keyword).trim();
         List<String> matched = EXPORT_REASONS.stream()
@@ -341,11 +317,6 @@ public class ExportDialogController implements Initializable {
         return FormatUtils.removeAccents(s);
     }
 
-    /**
-     * Cấu hình hiển thị ComboBox Lô hàng:
-     * Định dạng chuẩn theo yêu cầu: "tên L, Còn lại: ...hộp kèm HSD"
-     * Ví dụ: "Lô LOT-BATCH-01 (Còn lại: 30 Hộp, HSD: 15/10/2028)"
-     */
     private void setupLotComboBox(ComboBox<MedicineLotDTO> combo, LotRowItem row) {
         combo.setCellFactory(lv -> new ListCell<MedicineLotDTO>() {
             @Override
@@ -389,21 +360,14 @@ public class ExportDialogController implements Initializable {
         });
     }
 
-    /**
-     * Tính tồn khả dụng còn lại của 1 lô sau khi trừ đi:
-     * 1. Số lượng đã có trong bảng xuất tổng (tableItems).
-     * 2. Số lượng đang nhập ở các dòng khác trong form.
-     */
     private int getRemainingAvailableForLot(Long lotId, int totalRemainingInLot, LotRowItem currentRow) {
         if (lotId == null) return totalRemainingInLot;
 
-        // 1. Số lượng đã có trong bảng tổng bên dưới (tableItems)
         int inTableItems = itemList.stream()
                 .filter(it -> it.getLotId() == lotId)
                 .mapToInt(BatchExportItemDTO::getExportQuantity)
                 .sum();
 
-        // 2. Số lượng đang nhập ở các dòng khác trong form
         int inOtherRows = 0;
         for (LotRowItem r : activeLotRows) {
             if (r != currentRow && r.cbLot.getValue() != null && lotId.equals(r.cbLot.getValue().getId())) {
@@ -449,19 +413,12 @@ public class ExportDialogController implements Initializable {
         return (med != null && med.getUnit() != null) ? med.getUnit() : "đơn vị";
     }
 
-    /**
-     * Đưa danh sách các dòng nhập lô về trạng thái 1 dòng duy nhất,
-     * đảm bảo luôn luôn có 3 ô nhập (Lô - Số lượng - Lý do) hiển thị trên màn hình.
-     */
     private void resetToSingleEmptyRow() {
         lotRowsContainer.getChildren().clear();
         activeLotRows.clear();
         addNewLotRow(false);
     }
 
-    /**
-     * Thêm 1 dòng 3 ô mới vào container
-     */
     private LotRowItem addNewLotRow(boolean autoSelectNextLot) {
         LotRowItem row = new LotRowItem();
         activeLotRows.add(row);
@@ -489,7 +446,6 @@ public class ExportDialogController implements Initializable {
     }
 
     private MedicineLotDTO findNextAvailableLotForNewRow() {
-        // Ưu tiên tìm lô chưa được dòng nào chọn và còn khả dụng > 0
         for (MedicineLotDTO lot : currentMedicineLots) {
             int total = lot.getQuantityRemaining() != null ? lot.getQuantityRemaining() : 0;
             int avail = getRemainingAvailableForLot(lot.getId(), total, null);
@@ -499,7 +455,7 @@ public class ExportDialogController implements Initializable {
                 return lot;
             }
         }
-        // Nếu tất cả các lô đã có dòng chọn, tìm lô nào còn khả dụng > 0
+
         for (MedicineLotDTO lot : currentMedicineLots) {
             int total = lot.getQuantityRemaining() != null ? lot.getQuantityRemaining() : 0;
             int avail = getRemainingAvailableForLot(lot.getId(), total, null);
@@ -530,9 +486,6 @@ public class ExportDialogController implements Initializable {
         }
     }
 
-    /**
-     * Bấm nút "+ Xuất thêm lô khác": thêm 3 ô mới vào bảng để điền tiếp
-     */
     @FXML
     private void handleSelectAnotherLot() {
         hideItemError();
@@ -547,12 +500,10 @@ public class ExportDialogController implements Initializable {
             return;
         }
 
-        // Add thêm 3 ô mới (1 dòng mới) vào bảng
         addNewLotRow(true);
     }
 
     private void setupTableColumns() {
-        // Cột STT - Căn trái
         colIndex.setCellValueFactory(cellData ->
                 new ReadOnlyObjectWrapper<>(tableItems.getItems().indexOf(cellData.getValue()) + 1));
         colIndex.setCellFactory(col -> new TableCell<BatchExportItemDTO, Integer>() {
@@ -570,7 +521,6 @@ public class ExportDialogController implements Initializable {
             }
         });
 
-        // Cột Mã thuốc - Căn trái, badge xanh bo góc
         colCode.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMedicineCode()));
         colCode.setCellFactory(col -> new TableCell<BatchExportItemDTO, String>() {
             @Override
@@ -589,13 +539,10 @@ public class ExportDialogController implements Initializable {
             }
         });
 
-        // Cột Tên thuốc - Căn trái
         colName.setCellValueFactory(new PropertyValueFactory<>("medicineName"));
 
-        // Cột Nhóm thuốc - Căn trái
         colCategory.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
 
-        // Cột Số lô - Căn trái
         colLot.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getLotNumber()));
         colLot.setCellFactory(col -> new TableCell<BatchExportItemDTO, String>() {
             @Override
@@ -611,16 +558,12 @@ public class ExportDialogController implements Initializable {
             }
         });
 
-        // Cột Hạn dùng - Căn trái
         colExpiry.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFormattedExpiryDate()));
 
-        // Cột Đơn vị - Căn trái
         colUnit.setCellValueFactory(new PropertyValueFactory<>("unit"));
 
-        // Cột Tồn trong lô - Căn trái
         colStock.setCellValueFactory(new PropertyValueFactory<>("stockRemaining"));
 
-        // Cột SL xuất - Căn trái, chữ đỏ đậm
         colQuantity.setCellValueFactory(new PropertyValueFactory<>("exportQuantity"));
         colQuantity.setCellFactory(col -> new TableCell<BatchExportItemDTO, Integer>() {
             @Override
@@ -636,11 +579,9 @@ public class ExportDialogController implements Initializable {
             }
         });
 
-        // Cột Lý do xuất riêng - Căn trái
         colReason.setCellValueFactory(new PropertyValueFactory<>("reason"));
         colReason.setCellFactory(com.pharmacy.common.WrappingTextCell.forColumn());
 
-        // Cột Thao tác - Nút Xóa căn giữa
         colAction.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
         colAction.setCellFactory(col -> new TableCell<BatchExportItemDTO, BatchExportItemDTO>() {
             private final Button btnDelete = new Button("✕ Xóa");
@@ -705,7 +646,6 @@ public class ExportDialogController implements Initializable {
             return;
         }
 
-        // Cập nhật card thông tin thuốc
         lblMedCode.setText(med.getMedicineCode() != null ? med.getMedicineCode() : "");
         lblMedName.setText(med.getMedicineName() != null ? med.getMedicineName() : "");
         lblMedCategory.setText(med.getCategoryName() != null ? "Nhóm: " + med.getCategoryName() : "Nhóm: —");
@@ -715,10 +655,8 @@ public class ExportDialogController implements Initializable {
         boxMedicineInfo.setVisible(true);
         boxMedicineInfo.setManaged(true);
 
-        // Reset về 1 dòng duy nhất để nạp các lô của thuốc này
         resetToSingleEmptyRow();
 
-        // Tải các lô hàng của thuốc có tồn > 0
         Task<List<MedicineLotDTO>> task = new Task<List<MedicineLotDTO>>() {
             @Override
             protected List<MedicineLotDTO> call() {
@@ -738,7 +676,6 @@ public class ExportDialogController implements Initializable {
             }
 
             if (!availableLots.isEmpty()) {
-                // Tự động gán lô đầu tiên cho dòng hiện tại
                 activeLotRows.get(0).cbLot.setValue(availableLots.get(0));
             } else {
                 activeLotRows.get(0).cbLot.setValue(null);
@@ -760,9 +697,6 @@ public class ExportDialogController implements Initializable {
         th.start();
     }
 
-    /**
-     * Thêm tất cả các dòng lô đang điền vào phiếu xuất tổng (Section 3)
-     */
     @FXML
     private void handleAddItemToList() {
         hideItemError();
@@ -777,7 +711,6 @@ public class ExportDialogController implements Initializable {
             return;
         }
 
-        // 1. Kiểm tra tính hợp lệ của từng dòng
         boolean hasError = false;
         for (LotRowItem r : activeLotRows) {
             MedicineLotDTO lot = r.cbLot.getValue();
@@ -833,14 +766,12 @@ public class ExportDialogController implements Initializable {
             return;
         }
 
-        // 2. Thêm từng dòng vào danh sách tổng
         for (LotRowItem r : activeLotRows) {
             MedicineLotDTO lot = r.cbLot.getValue();
             int qty = Integer.parseInt(r.txtQuantity.getText().trim());
             String reason = r.getReasonText();
             int total = lot.getQuantityRemaining() != null ? lot.getQuantityRemaining() : 0;
 
-            // Kiểm tra cộng dồn nếu cùng lô và cùng lý do
             BatchExportItemDTO sameLotAndReason = null;
             for (BatchExportItemDTO it : itemList) {
                 if (it.getLotId() == lot.getId() && reason.equals(it.getReason())) {
@@ -874,7 +805,6 @@ public class ExportDialogController implements Initializable {
         updateSummary();
         tableItems.refresh();
 
-        // 3. Reset trắng toàn bộ thông tin ở mục 2 về như ban đầu để người dùng nhập thuốc tiếp theo
         clearMedicineSelection();
     }
 
@@ -912,20 +842,15 @@ public class ExportDialogController implements Initializable {
         lblItemCountBadge.setText(totalItems + " mặt hàng");
     }
 
-    /**
-     * Xác nhận xuất kho đơn giản: hỏi "Bạn có đồng ý xuất kho không?"
-     */
     @FXML
     private void handleConfirmExport() {
         hideGeneralError();
 
-        // 1. Kiểm tra danh sách mặt hàng
         if (itemList.isEmpty()) {
             showGeneralError("Phiếu xuất kho chưa có mặt hàng nào. Vui lòng thêm ít nhất 1 loại thuốc vào phiếu!");
             return;
         }
 
-        // 2. Hộp thoại xác nhận tinh gọn
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         DialogUtils.configure(confirm, btnConfirmExport.getScene().getWindow());
         confirm.setTitle("Xác nhận xuất kho");
@@ -939,9 +864,6 @@ public class ExportDialogController implements Initializable {
         }
     }
 
-    /**
-     * Thực thi lệnh xuất kho vào Database và hiển thị thông báo kết quả
-     */
     private void doExecuteExport(String note) {
         Integer employeeId = UserSession.isLoggedIn() ? UserSession.getInstance().getEmployeeId() : null;
         String generalReason = "Xuất kho (" + itemList.size() + " mặt hàng)";

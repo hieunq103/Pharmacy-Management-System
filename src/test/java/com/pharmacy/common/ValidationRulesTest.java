@@ -18,9 +18,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/** Unit test các quy tắc validate / phân quyền ở tầng service — không cần CSDL. */
 class ValidationRulesTest {
-
     @AfterEach
     void tearDown() {
         UserSession.invalidate();

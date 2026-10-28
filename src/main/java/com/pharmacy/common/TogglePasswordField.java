@@ -12,7 +12,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 
 public class TogglePasswordField extends HBox {
-
     private static final String SVG_EYE_SLASH = "M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7z"
             +
             "M2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27z"
@@ -26,8 +25,6 @@ public class TogglePasswordField extends HBox {
     private final PasswordField passwordField;
     private final TextField textField;
     private final SVGPath iconEye;
-
-    // Bổ sung: Constructor rỗng cho FXML loader
     public TogglePasswordField() {
         this("");
     }
@@ -45,8 +42,6 @@ public class TogglePasswordField extends HBox {
         textField.setPromptText(promptText);
         textField.setVisible(false);
         textField.setManaged(false);
-
-        // Ràng buộc dữ liệu 2 chiều
         passwordField.textProperty().bindBidirectional(textField.textProperty());
 
         String inputStyle = "-fx-font-family: 'Inter 18pt'; -fx-background-color: transparent; -fx-text-fill: #0f172a; -fx-prompt-text-fill: #94a3b8; -fx-font-size: 15px;";
@@ -58,8 +53,6 @@ public class TogglePasswordField extends HBox {
         StackPane.setAlignment(passwordField, Pos.CENTER_LEFT);
         StackPane.setAlignment(textField, Pos.CENTER_LEFT);
         HBox.setHgrow(stackInput, Priority.ALWAYS);
-
-        // Mặc định mắt gạch chéo vì mật khẩu đang che
         iconEye = new SVGPath();
         iconEye.setContent(SVG_EYE_SLASH);
         iconEye.setFill(Color.valueOf("#94a3b8"));

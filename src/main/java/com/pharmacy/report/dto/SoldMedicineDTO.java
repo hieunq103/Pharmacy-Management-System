@@ -12,7 +12,7 @@ public class SoldMedicineDTO {
     private final long quantitySold;
     private final BigDecimal totalRevenue;
 
-    public SoldMedicineDTO(Integer medicineId, String medicineCode, String medicineName, 
+    public SoldMedicineDTO(Integer medicineId, String medicineCode, String medicineName,
                            String categoryName, String unit, long quantitySold, BigDecimal totalRevenue) {
         this.medicineId = medicineId;
         this.medicineCode = medicineCode;

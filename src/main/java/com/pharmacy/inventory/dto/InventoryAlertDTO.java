@@ -1,7 +1,6 @@
 package com.pharmacy.inventory.dto;
 
 public class InventoryAlertDTO {
-
     public enum AlertType {
         EXPIRY,
         LOW_STOCK

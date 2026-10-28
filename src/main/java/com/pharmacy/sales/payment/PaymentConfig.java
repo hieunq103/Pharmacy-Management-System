@@ -50,7 +50,6 @@ public class PaymentConfig {
                 } catch (NumberFormatException ignored) {
                 }
 
-                // Ghi đè qua biến môi trường hoặc file .env (bắt buộc với SEPAY_API_TOKEN — không commit token)
                 bankId = envOr("PAYMENT_BANK_ID", bankId);
                 accountNo = envOr("PAYMENT_ACCOUNT_NO", accountNo);
                 accountName = envOr("PAYMENT_ACCOUNT_NAME", accountName);

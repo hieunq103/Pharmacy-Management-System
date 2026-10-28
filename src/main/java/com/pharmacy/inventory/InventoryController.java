@@ -48,7 +48,6 @@ import com.pharmacy.common.TableFilterHelper;
 import com.pharmacy.common.TableSyncHelper;
 
 public class InventoryController implements Initializable {
-
     private static final Logger log = LoggerFactory.getLogger(InventoryController.class);
 
     @FXML private VBox viewMedicineInventory;
@@ -61,7 +60,6 @@ public class InventoryController implements Initializable {
     @FXML private Button btnExport;
     @FXML private Button btnHistory;
 
-    // Bảng thông tin chính (Cho phép cuộn ngang)
     @FXML private TableView<MedicineInventoryDTO> inventoryTable;
     @FXML private TableColumn<MedicineInventoryDTO, String> colCode;
     @FXML private TableColumn<MedicineInventoryDTO, MedicineInventoryDTO> colName;
@@ -73,11 +71,9 @@ public class InventoryController implements Initializable {
     @FXML private TableColumn<MedicineInventoryDTO, MedicineInventoryDTO.StockStatus> colStockStatus;
     @FXML private TableColumn<MedicineInventoryDTO, MedicineInventoryDTO.ExpiryStatus> colExpiryStatus;
 
-    // Bảng cột thao tác nổi (Ghim cố định bên phải như trang Nhân viên)
     @FXML private TableView<MedicineInventoryDTO> tableActionSticky;
     @FXML private TableColumn<MedicineInventoryDTO, MedicineInventoryDTO> colAction;
 
-    // Điều hướng phân trang theo phong cách trang Nhân viên
     @FXML private HBox paginationBox;
     @FXML private Label lblRecordRange;
 
@@ -97,18 +93,15 @@ public class InventoryController implements Initializable {
         return t;
     });
 
-    // Drawer helper cho Nhập/Xuất kho
     private final DrawerHelper drawerHelper = new DrawerHelper();
     private Parent importDrawerRoot;
     private ImportDialogController importController;
     private Parent exportDrawerRoot;
     private ExportDialogController exportController;
 
-    // View lịch sử xuất nhập kho được lazy-load
     private InventoryHistoryController historyController;
     private Parent historyRootNode;
 
-    // Quản lý chỉnh sửa trực tiếp trên từng hàng (Inline editing)
     public static class EditDraft {
         private String name;
         private String activeIngredient;
@@ -140,12 +133,10 @@ public class InventoryController implements Initializable {
         setupTableColumns();
         setupStickyTable();
 
-        // Tự động điều chỉnh chiều cao 7 dòng lấp đầy 100% bảng khi phóng to màn hình (không còn khoảng trắng)
         TableSyncHelper.enableAutoRowHeight(inventoryTable, tableActionSticky, AppConstants.DEFAULT_PAGE_SIZE);
 
         inventoryTable.setItems(pageData);
 
-        // Nhấp đúp chuột vào hàng để mở nhanh chi tiết lô hàng
         inventoryTable.setRowFactory(tv -> {
             TableRow<MedicineInventoryDTO> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -158,8 +149,6 @@ public class InventoryController implements Initializable {
             return row;
         });
 
-        // 2. Thiết lập tam giác lọc đa chọn (Multi-select Checkbox) độc lập cho 2 cột Tồn kho và Hạn dùng
-        // Chỉ chứa đúng các trạng thái thực tế của dữ liệu, không sinh nhãn gộp nhân tạo
         TableFilterHelper.setupMultiSelectColumnFilter(colStockStatus, "Tồn kho", new String[]{"Sắp hết hàng", "Hết hàng", "Bình thường"}, "stockStatus", activeFilters, () -> {
             currentPage = 1;
             loadInventoryData();
@@ -175,9 +164,6 @@ public class InventoryController implements Initializable {
         loadSummaryCounts();
     }
 
-    /**
-     * Áp dụng bộ lọc cho kho thuốc từ các màn hình khác (Ví dụ: Dashboard điều hướng sang)
-     */
     public void applyFilters(String[] stockFilters, String[] expiryFilters) {
         if (stockFilters != null && stockFilters.length > 0) {
             TableFilterHelper.setMultiFilter(colStockStatus, stockFilters);
@@ -188,11 +174,9 @@ public class InventoryController implements Initializable {
     }
 
     private void setupTableColumns() {
-        // 1. Các cột cơ bản
         colCode.setCellValueFactory(new PropertyValueFactory<>("medicineCode"));
         colCategory.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
 
-        // 2. Cột Tên thuốc (Hỗ trợ sửa inline khi ở chế độ Edit)
         colName.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
         colName.setCellFactory(param -> new TableCell<MedicineInventoryDTO, MedicineInventoryDTO>() {
             private final Label lblName = new Label();
@@ -249,7 +233,6 @@ public class InventoryController implements Initializable {
             }
         });
 
-        // 3. Cột Hoạt chất chính (Hỗ trợ sửa inline)
         colActiveIngredient.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
         colActiveIngredient.setCellFactory(param -> new TableCell<MedicineInventoryDTO, MedicineInventoryDTO>() {
             private final Label lblText = new Label();
@@ -295,7 +278,6 @@ public class InventoryController implements Initializable {
             }
         });
 
-        // 4. Cột Nhà sản xuất (Hỗ trợ sửa inline)
         colManufacturer.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
         colManufacturer.setCellFactory(param -> new TableCell<MedicineInventoryDTO, MedicineInventoryDTO>() {
             private final Label lblText = new Label();
@@ -341,7 +323,6 @@ public class InventoryController implements Initializable {
             }
         });
 
-        // 5. Cột Số lượng (Nối Số lượng + Đơn vị)
         colQuantity.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
         colQuantity.setCellFactory(param -> new TableCell<MedicineInventoryDTO, MedicineInventoryDTO>() {
             @Override
@@ -358,7 +339,6 @@ public class InventoryController implements Initializable {
             }
         });
 
-        // 6. Cột Giá bán (Hỗ trợ sửa inline, format VNĐ)
         colPrice.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
         colPrice.setCellFactory(param -> new TableCell<MedicineInventoryDTO, MedicineInventoryDTO>() {
             private final Label lblText = new Label();
@@ -405,7 +385,6 @@ public class InventoryController implements Initializable {
             }
         });
 
-        // 7. Cột Tồn kho (Dùng Label badge: Bình thường, Sắp hết hàng, Hết hàng)
         colStockStatus.setCellValueFactory(new PropertyValueFactory<>("stockStatus"));
         colStockStatus.setCellFactory(param -> new TableCell<MedicineInventoryDTO, MedicineInventoryDTO.StockStatus>() {
             private final Label badge = new Label();
@@ -444,7 +423,6 @@ public class InventoryController implements Initializable {
             }
         });
 
-        // 8. Cột Hạn dùng (Dùng Label badge: Còn hạn, Có lô cận hạn, Có lô hết hạn)
         colExpiryStatus.setCellValueFactory(new PropertyValueFactory<>("expiryStatus"));
         colExpiryStatus.setCellFactory(param -> new TableCell<MedicineInventoryDTO, MedicineInventoryDTO.ExpiryStatus>() {
             private final Label badge = new Label();
@@ -483,7 +461,6 @@ public class InventoryController implements Initializable {
             }
         });
 
-        // 8. Cột Thao tác trên bảng Sticky nổi (Nút 3 chấm ⋮ mở menu, chuyển sang Lưu/Hủy khi đang sửa)
         colAction.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
         colAction.setCellFactory(param -> new TableCell<MedicineInventoryDTO, MedicineInventoryDTO>() {
             private final Button btnMore = new Button("⋮");
@@ -533,12 +510,7 @@ public class InventoryController implements Initializable {
         });
     }
 
-    /**
-     * Cấu hình bảng ghim thao tác (Sticky Action Table) đồng bộ với bảng chính
-     * (Tương tự kiến trúc Dual-Table của module Nhân viên)
-     */
     private void setupStickyTable() {
-        // Thiết lập đồng bộ cuộn 2 chiều tuyệt đối: cuộn dọc mượt mà, không bao giờ xê dịch lệch hàng
         TableSyncHelper.setupDualTableSync(inventoryTable, tableActionSticky);
 
         Platform.runLater(() -> {
@@ -550,8 +522,6 @@ public class InventoryController implements Initializable {
             }
         });
     }
-
-
 
     private void setupEvents() {
         btnImport.setOnAction(e -> showImportDrawer());
@@ -604,7 +574,7 @@ public class InventoryController implements Initializable {
             dialogStage.setTitle("Chi tiết các lô hàng - " + dto.getMedicineName());
 
             Scene scene = new Scene(root);
-            // Nhấn ESC để đóng dialog
+
             scene.setOnKeyPressed(event -> {
                 if (event.getCode() == KeyCode.ESCAPE) {
                     dialogStage.close();
@@ -618,7 +588,6 @@ public class InventoryController implements Initializable {
             dialogStage.setMinWidth(1050);
             dialogStage.setMinHeight(580);
             dialogStage.showAndWait();
-
         } catch (Exception ex) {
             log.error("Lỗi khi mở cửa sổ chi tiết lô hàng: ", ex);
             DialogUtils.showError("Lỗi", "Không thể mở chi tiết lô hàng: " + ex.getMessage());
@@ -686,7 +655,7 @@ public class InventoryController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/inventory/import_drawer.fxml"));
             importDrawerRoot = loader.load();
             importController = loader.getController();
-            // Danh sách thuốc được nạp ngay trong showImportDrawer() -> không truy vấn 2 lần ở lần mở đầu tiên
+
             importController.initData(List.of(), inventoryService.getRepository(), this::onStockUpdated);
             importController.setOnCloseCallback(drawerHelper::close);
 
@@ -702,7 +671,7 @@ public class InventoryController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/inventory/export_drawer.fxml"));
             exportDrawerRoot = loader.load();
             exportController = loader.getController();
-            // Danh sách thuốc được nạp ngay trong showExportDrawer()
+
             exportController.initData(List.of(), inventoryService.getRepository(), null, this::onStockUpdated);
             exportController.setOnCloseCallback(drawerHelper::close);
 

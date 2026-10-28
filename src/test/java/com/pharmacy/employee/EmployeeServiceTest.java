@@ -10,9 +10,7 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/** Integration test phân hệ Nhân viên (cần MySQL). */
 class EmployeeServiceTest {
-
     private final EmployeeService service = new EmployeeServiceImpl();
 
     @BeforeAll
@@ -41,7 +39,6 @@ class EmployeeServiceTest {
         assertTrue(service.getEmployeeSummary().total() >= page.getTotalElements());
     }
 
-    /** Bộ lọc đa chọn (Giới tính, Vai trò, Tài khoản): chọn nhiều giá trị = hợp các kết quả chọn riêng lẻ. */
     @Test
     void multiSelectFilters() {
         DbTestSupport.loginAsManager();

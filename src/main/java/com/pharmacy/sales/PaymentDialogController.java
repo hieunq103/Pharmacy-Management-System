@@ -66,7 +66,7 @@ public class PaymentDialogController {
     private final SalesService salesService = new SalesServiceImpl();
     private CartOrder currentOrder;
     private BigDecimal totalAmount = BigDecimal.ZERO;
-    private String selectedMethod = "CASH"; // "CASH" or "TRANSFER"
+    private String selectedMethod = "CASH";
     private String orderCode;
     private Consumer<String> onSuccessCallback;
 
@@ -81,7 +81,6 @@ public class PaymentDialogController {
         this.totalAmount = order != null ? order.getTotalAmount() : BigDecimal.ZERO;
         this.isPaymentReceived = false;
 
-        // Sinh trước mã hóa đơn cho đơn này
         try {
             this.orderCode = salesService.generateNextOrderCode();
         } catch (Exception e) {
@@ -115,14 +114,12 @@ public class PaymentDialogController {
             }
         });
 
-        // Nạp danh sách mặt hàng và cập nhật tổng tiền
         renderDialogCartItems();
         updateTotalsAndStatus();
 
         setupCashInput();
         selectCash();
 
-        // Gắn listener đóng cửa sổ để giải phóng thread và căn chỉnh kích thước
         Platform.runLater(() -> {
             adjustWindowSize();
             if (lblTotalAmount.getScene() != null && lblTotalAmount.getScene().getWindow() != null) {
@@ -131,9 +128,6 @@ public class PaymentDialogController {
         });
     }
 
-    /**
-     * Render danh sách thuốc đang trong giỏ hàng tại dialog xác nhận thanh toán
-     */
     private void renderDialogCartItems() {
         if (boxDialogCartItems == null) return;
         boxDialogCartItems.getChildren().clear();
@@ -151,13 +145,8 @@ public class PaymentDialogController {
         fitCartListToVisibleRows();
     }
 
-    /** Số dòng thuốc hiển thị đầy đủ trong hộp thoại thanh toán; nhiều hơn thì cuộn. */
     private static final int VISIBLE_CART_ROWS = 3;
 
-    /**
-     * Đặt chiều cao vùng danh sách vừa khít {@value #VISIBLE_CART_ROWS} dòng đầu tiên (tính theo chiều cao
-     * thực tế sau khi dựng giao diện, nên đúng với mọi cỡ chữ / độ phân giải màn hình).
-     */
     private void fitCartListToVisibleRows() {
         if (scrollDialogCart == null) return;
         javafx.application.Platform.runLater(() -> {
@@ -172,7 +161,7 @@ public class PaymentDialogController {
                 height += rows.get(i).prefHeight(boxDialogCartItems.getWidth()
                         - boxDialogCartItems.snappedLeftInset() - boxDialogCartItems.snappedRightInset());
             }
-            // Cộng phần viền/đệm của ScrollPane để không lộ thanh cuộn khi chỉ có <= 3 thuốc
+
             height += scrollDialogCart.snappedTopInset() + scrollDialogCart.snappedBottomInset() + 2;
             scrollDialogCart.setMinHeight(height);
             scrollDialogCart.setPrefHeight(height);
@@ -181,9 +170,6 @@ public class PaymentDialogController {
         });
     }
 
-    /**
-     * Tạo từng dòng hiển thị thuốc trong dialog thanh toán với đầy đủ thao tác thêm bớt/nhập số lượng
-     */
     private HBox createDialogCartItemRow(CartItem item) {
         HBox row = new HBox(8);
         row.setAlignment(Pos.CENTER_LEFT);
@@ -221,13 +207,11 @@ public class PaymentDialogController {
 
         HBox qtyBox = CartQuantityControl.create(item, currentOrder, 42, this::refreshDialogCartAndTotals);
 
-        // Thành tiền từng mặt hàng
         Label lblLineTotal = new Label(FormatUtils.formatCurrency(item.getLineTotal()) + "đ");
         lblLineTotal.getStyleClass().add("dialog-cart-total");
         lblLineTotal.setMinWidth(85);
         lblLineTotal.setAlignment(Pos.CENTER_RIGHT);
 
-        // Nút xóa [✕]
         Button btnDelete = new Button("✕");
         btnDelete.getStyleClass().add("btn-remove-item");
         btnDelete.setOnAction(e -> {
@@ -239,9 +223,6 @@ public class PaymentDialogController {
         return row;
     }
 
-    /**
-     * Làm mới toàn bộ danh sách giỏ hàng, tổng tiền hàng, giảm giá và phương thức thanh toán
-     */
     private void refreshDialogCartAndTotals() {
         renderDialogCartItems();
         updateTotalsAndStatus();
@@ -257,7 +238,6 @@ public class PaymentDialogController {
             }
         }
 
-        // Tái tạo lại mã QR nếu đang chọn chuyển khoản
         if ("TRANSFER".equals(selectedMethod)) {
             cachedQrImage = null;
             loadVietQrCode();
@@ -452,7 +432,6 @@ public class PaymentDialogController {
         stopPolling();
         if (isPaymentReceived) return;
 
-
         pollExecutor = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread t = new Thread(r, "Payment-Polling-Thread");
             t.setDaemon(true);
@@ -494,7 +473,6 @@ public class PaymentDialogController {
         btnConfirmPayment.setText("Xác nhận hoàn tất đơn");
         btnConfirmPayment.setStyle("-fx-background-color: #16A34A; -fx-text-fill: #FFFFFF;");
         btnConfirmPayment.requestFocus();
-
     }
 
     private void stopPolling() {
@@ -524,7 +502,6 @@ public class PaymentDialogController {
             return;
         }
 
-        // Kiểm tra tiền đưa nếu chọn Tiền mặt
         if ("CASH".equals(selectedMethod)) {
             String cashText = txtCashGiven.getText().replaceAll("[^0-9]", "");
             BigDecimal cash = cashText.isEmpty() ? BigDecimal.ZERO : new BigDecimal(cashText);

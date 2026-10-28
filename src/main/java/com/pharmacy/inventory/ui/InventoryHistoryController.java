@@ -39,29 +39,23 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class InventoryHistoryController implements Initializable {
-
     private static final Logger log = LoggerFactory.getLogger(InventoryHistoryController.class);
 
     private final InventoryService inventoryService = new InventoryServiceImpl();
 
-    // Callback quay lại danh sách kho thuốc
     private Runnable onBackToInventory;
 
-    // Header & Filter controls
     @FXML private DatePicker dpFilterDate;
     @FXML private Button btnFilterDate;
     @FXML private Tooltip tooltipFilter;
 
-    // Quản lý trạng thái lọc theo ngày (Toggle Filter: xám = tất cả, xanh = lọc ngày đó)
     private boolean isDateFiltered = false;
     private LocalDate appliedFilterDate = null;
 
-    // Tabs
     @FXML private TabPane historyTabPane;
     @FXML private Tab tabImport;
     @FXML private Tab tabExport;
 
-    // Tab Nhập kho controls
     @FXML private TableView<InventoryTransactionDTO> tableImport;
     @FXML private TableColumn<InventoryTransactionDTO, String> colImportIndex;
     @FXML private TableColumn<InventoryTransactionDTO, String> colImportDateTime;
@@ -74,7 +68,6 @@ public class InventoryHistoryController implements Initializable {
     @FXML private HBox importPaginationBox;
     @FXML private Label lblImportRecordRange;
 
-    // Tab Xuất kho controls
     @FXML private TableView<InventoryTransactionDTO> tableExport;
     @FXML private TableColumn<InventoryTransactionDTO, String> colExportIndex;
     @FXML private TableColumn<InventoryTransactionDTO, String> colExportDateTime;
@@ -86,7 +79,6 @@ public class InventoryHistoryController implements Initializable {
     @FXML private HBox exportPaginationBox;
     @FXML private Label lblExportRecordRange;
 
-    // Dữ liệu phân trang cho Nhập kho
     private final ObservableList<InventoryTransactionDTO> importPageData = FXCollections.observableArrayList();
     private final List<InventoryTransactionDTO> importMasterList = new ArrayList<>();
     private int importCurrentPage = 1;
@@ -94,7 +86,6 @@ public class InventoryHistoryController implements Initializable {
     private int importTotalPages = 1;
     private long importTotalRecords = 0;
 
-    // Dữ liệu phân trang cho Xuất kho
     private final ObservableList<InventoryTransactionDTO> exportPageData = FXCollections.observableArrayList();
     private final List<InventoryTransactionDTO> exportMasterList = new ArrayList<>();
     private int exportCurrentPage = 1;
@@ -102,7 +93,6 @@ public class InventoryHistoryController implements Initializable {
     private int exportTotalPages = 1;
     private long exportTotalRecords = 0;
 
-    // Quản lý lazy load cho 2 tab để tránh tải thừa dữ liệu
     private boolean isImportDirty = false;
     private boolean isExportDirty = false;
 
@@ -120,11 +110,9 @@ public class InventoryHistoryController implements Initializable {
         tableImport.setItems(importPageData);
         tableExport.setItems(exportPageData);
 
-        // 1. Tự động căn chỉnh chiều cao dòng lấp đầy 7 dòng không để lại khoảng trắng phía dưới
         TableSyncHelper.enableAutoRowHeight(tableImport, null, AppConstants.DEFAULT_PAGE_SIZE);
         TableSyncHelper.enableAutoRowHeight(tableExport, null, AppConstants.DEFAULT_PAGE_SIZE);
 
-        // 2. Chặn lỗi vuốt trôi hàng của VirtualFlow (khắc phục lỗi vuốt lên chuyển trang chỉ còn 1 dòng)
         TableSyncHelper.setupTableScrollProtection(tableImport, AppConstants.DEFAULT_PAGE_SIZE);
         TableSyncHelper.setupTableScrollProtection(tableExport, AppConstants.DEFAULT_PAGE_SIZE);
 
@@ -192,7 +180,6 @@ public class InventoryHistoryController implements Initializable {
         colImportNote.setCellValueFactory(new PropertyValueFactory<>("note"));
         setupLeftAlignedCell(colImportNote);
 
-        // Nhấp đúp chuột 2 lần vào hàng để mở chi tiết
         tableImport.setRowFactory(tv -> {
             TableRow<InventoryTransactionDTO> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -231,7 +218,6 @@ public class InventoryHistoryController implements Initializable {
         colExportNote.setCellValueFactory(new PropertyValueFactory<>("note"));
         setupLeftAlignedCell(colExportNote);
 
-        // Nhấp đúp chuột 2 lần vào hàng để mở chi tiết
         tableExport.setRowFactory(tv -> {
             TableRow<InventoryTransactionDTO> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -263,10 +249,8 @@ public class InventoryHistoryController implements Initializable {
         if (dpFilterDate != null) {
             FormatUtils.setupDatePicker(dpFilterDate);
 
-            // Khi gõ ngày và nhấn Enter trong ô ngày -> kích hoạt áp dụng lọc ngay
             dpFilterDate.getEditor().setOnAction(e -> applyDateFilter());
 
-            // Khi người dùng xóa trắng ô ngày trong editor -> hủy lọc về màu xám nếu đang lọc
             dpFilterDate.getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal == null || newVal.trim().isEmpty()) {
                     if (isDateFiltered) {
@@ -293,16 +277,12 @@ public class InventoryHistoryController implements Initializable {
         }
 
         if (isDateFiltered) {
-            // Đang lọc màu xanh:
-            // Nếu người dùng chọn/nhập sang một ngày khác -> áp dụng lọc cho ngày mới (vẫn giữ màu xanh)
             if (currentPickerDate != null && !currentPickerDate.equals(appliedFilterDate)) {
                 applyDateFilter();
             } else {
-                // Nếu bấm lại phễu khi đang lọc cùng ngày đó -> HỦY LỌC -> chuyển về màu xám, xem tất cả ngày
                 clearDateFilter();
             }
         } else {
-            // Đang màu xám -> bấm phễu để kích hoạt lọc màu xanh
             applyDateFilter();
         }
     }
@@ -321,7 +301,6 @@ public class InventoryHistoryController implements Initializable {
             }
         }
 
-        // Nếu người dùng chưa chọn ngày nào mà bấm phễu lọc -> mặc định lấy ngày hiện tại
         if (targetDate == null) {
             targetDate = LocalDate.now();
             dpFilterDate.setValue(targetDate);
@@ -330,7 +309,6 @@ public class InventoryHistoryController implements Initializable {
         isDateFiltered = true;
         appliedFilterDate = targetDate;
 
-        // Chuyển phễu sang màu xanh
         if (btnFilterDate != null && !btnFilterDate.getStyleClass().contains("active")) {
             btnFilterDate.getStyleClass().add("active");
         }
@@ -350,7 +328,6 @@ public class InventoryHistoryController implements Initializable {
             dpFilterDate.getEditor().clear();
         }
 
-        // Chuyển phễu về màu xám
         if (btnFilterDate != null) {
             btnFilterDate.getStyleClass().remove("active");
         }
@@ -364,9 +341,6 @@ public class InventoryHistoryController implements Initializable {
     private Task<List<InventoryTransactionDTO>> runningImportTask;
     private Task<List<InventoryTransactionDTO>> runningExportTask;
 
-    /**
-     * Tải dữ liệu chỉ cho tab đang hoạt động để tối ưu hiệu năng (tránh spam 2 query cùng lúc).
-     */
     public void loadFilteredData() {
         boolean isExportTabActive = historyTabPane != null && historyTabPane.getSelectionModel().getSelectedItem() == tabExport;
         if (isExportTabActive) {
@@ -519,9 +493,6 @@ public class InventoryHistoryController implements Initializable {
         }
     }
 
-    /**
-     * Mở popup chi tiết của lần xuất / nhập kho tương tự như popup chi tiết lô hàng của thuốc.
-     */
     public void showTransactionDetailDialog(InventoryTransactionDTO tx) {
         if (tx == null) return;
 
@@ -540,7 +511,7 @@ public class InventoryHistoryController implements Initializable {
             dialogStage.setTitle("IMPORT".equalsIgnoreCase(tx.getType()) ? "Chi tiết phiếu nhập kho" : "Chi tiết phiếu xuất kho");
 
             Scene scene = new Scene(root);
-            // ESC key để đóng
+
             scene.setOnKeyPressed(event -> {
                 if (event.getCode() == KeyCode.ESCAPE) {
                     dialogStage.close();
@@ -554,7 +525,6 @@ public class InventoryHistoryController implements Initializable {
             dialogStage.setMinWidth(1000);
             dialogStage.setMinHeight(550);
             dialogStage.showAndWait();
-
         } catch (IOException ex) {
             log.error("Lỗi khi mở popup chi tiết giao dịch kho: ", ex);
         }

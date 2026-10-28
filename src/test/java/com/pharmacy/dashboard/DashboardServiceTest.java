@@ -13,7 +13,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DashboardServiceTest {
-
     @BeforeAll
     static void requireDb() {
         DbTestSupport.assumeDatabase();
@@ -23,7 +22,6 @@ public class DashboardServiceTest {
     void testDashboardDataRetrieval() {
         DashboardService service = new DashboardServiceImpl();
 
-        // 1. Kiểm tra 4 chỉ số thống kê
         DashboardStatsDTO stats = service.getStats();
         assertNotNull(stats, "Thống kê tổng quan không được null");
         assertTrue(stats.todaySales().revenue().signum() >= 0);
@@ -31,7 +29,6 @@ public class DashboardServiceTest {
         assertTrue(stats.lowStockCount() >= 0);
         assertTrue(stats.nearExpiryCount() >= 0);
 
-        // 2. Kiểm tra doanh số 7 ngày gần nhất
         List<DailySalesDTO> weeklySales = service.getLast7DaysSales();
         assertNotNull(weeklySales, "Doanh số 7 ngày không được null");
         assertEquals(7, weeklySales.size(), "Phải có đúng 7 ngày");
@@ -42,7 +39,6 @@ public class DashboardServiceTest {
             assertNotNull(d.getAmount());
         }
 
-        // 3. Kiểm tra cảnh báo kho
         List<InventoryAlertDTO> alerts = service.getInventoryAlerts(4);
         assertNotNull(alerts, "Danh sách cảnh báo kho không được null");
         System.out.println("=== CẢNH BÁO KHO (" + alerts.size() + ") ===");
@@ -52,7 +48,6 @@ public class DashboardServiceTest {
             assertNotNull(a.getQuantityBadgeText());
         }
 
-        // 4. Kiểm tra giao dịch gần đây (tái sử dụng SalesOrderDTO)
         List<SalesOrderDTO> recentTx = service.getRecentTransactions(5);
         assertNotNull(recentTx, "Giao dịch gần đây không được null");
         System.out.println("=== GIAO DỊCH GẦN ĐÂY (" + recentTx.size() + ") ===");

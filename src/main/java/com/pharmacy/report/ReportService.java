@@ -8,10 +8,6 @@ import com.pharmacy.report.dto.SoldMedicineDTO;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Báo cáo doanh số / sản lượng. Tham số employeeId = null nghĩa là toàn cửa hàng;
- * tài khoản Nhân viên luôn bị giới hạn về dữ liệu của chính mình.
- */
 public interface ReportService {
     ReportSummaryDTO getSummary(LocalDate from, LocalDate to, Integer employeeId);
 

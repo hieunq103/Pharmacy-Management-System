@@ -3,7 +3,6 @@ package com.pharmacy.inventory.dto;
 import java.math.BigDecimal;
 
 public class MedicineInventoryDTO {
-
     private Integer medicineId;
     private String medicineCode;
     private String medicineName;

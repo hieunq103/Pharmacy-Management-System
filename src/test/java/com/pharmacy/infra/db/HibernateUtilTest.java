@@ -8,7 +8,6 @@ import java.time.ZoneId;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HibernateUtilTest {
-
     @Test
     void sessionTimeZoneFollowsServerTimezoneInUrl() {
         assertEquals("+07:00", HibernateUtil.sessionTimeZoneOffset(

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeService {
-
     PageResult<Employee> getEmployeesPage(int page, int size, String keyword, String gender, String role, String status, String accountStatus);
     EmployeeRepository.EmployeeSummary getEmployeeSummary();
     Optional<Employee> findByIdWithDetails(Integer id);

@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class EmployeeDetailController {
-
     private static final Logger log = LoggerFactory.getLogger(EmployeeDetailController.class);
 
     @FXML private Button btnClose;
@@ -183,18 +182,15 @@ public class EmployeeDetailController {
         setEditableSafe(txtEmpId, false);
         setEditableSafe(txtHiredDate, false);
 
-        // Họ tên, SĐT, địa chỉ: luôn sửa được (kể cả hồ sơ của chính mình)
         setEditableSafe(txtFullName, editing);
         setEditableSafe(txtPhone, editing);
         setEditableSafe(txtAddress, editing);
 
-        // Ngày sinh, CCCD, giới tính: chỉ Quản lý sửa cho người KHÁC; hồ sơ của chính mình thì khóa
         boolean canEditIdentity = editing && !isEditingSelf();
         setEditableSafe(txtDob, canEditIdentity);
         setEditableSafe(txtNationalId, canEditIdentity);
         toggleField(txtGender, cbGender, canEditIdentity);
 
-        // Quản lý khi xem/sửa CHÍNH MÌNH thì KHÔNG được sửa vai trò, trạng thái làm việc hay trạng thái tài khoản
         boolean canManageRoleAndStatus = editing && !isEditingSelf();
         toggleField(txtEmpStatus, cbEmpStatus, canManageRoleAndStatus);
         toggleField(txtRole, cbRole, canManageRoleAndStatus);
@@ -295,7 +291,6 @@ public class EmployeeDetailController {
                 ? cbGender.getValue()
                 : ((txtGender != null && txtGender.getText() != null) ? txtGender.getText().trim() : "");
         if (isEditingSelf()) {
-            // Hồ sơ của chính mình: chỉ Họ tên, SĐT, địa chỉ được đổi; giữ nguyên CCCD và giới tính hiện tại
             nationalId = employee.getNationalId() != null ? employee.getNationalId() : "";
             gender = employee.getGender();
         }
@@ -305,7 +300,6 @@ public class EmployeeDetailController {
         String roleName;
 
         if (isEditingSelf()) {
-            // Khi quản lý tự sửa chính mình: giữ nguyên trạng thái nhân sự, vai trò và trạng thái tài khoản
             empStatus = (employee.getStatus() == Employee.Status.INACTIVE) ? "Đã nghỉ việc" : "Đang làm việc";
             Account acc = employee.getAccount();
             accountStatus = (acc != null && acc.getStatus() == Account.Status.DISABLED) ? "Đang bị khóa" : "Đang hoạt động";
@@ -437,7 +431,6 @@ public class EmployeeDetailController {
                         }
                     }
                 } else if (UserSession.isLoggedIn() && UserSession.getInstance().getEmployee() != null) {
-                    // Cập nhật đồng bộ thông tin session của quản lý đang đăng nhập
                     Employee sessionEmp = UserSession.getInstance().getEmployee();
                     sessionEmp.setFullName(request.fullName());
                     sessionEmp.setNationalId(request.nationalId());
@@ -533,7 +526,6 @@ public class EmployeeDetailController {
         return DialogUtils.getActiveWindow();
     }
 
-    /** Nút X tròn đỏ ở góc phải: thoát khỏi trang hồ sơ chi tiết, quay về danh sách nhân viên. */
     @FXML
     private void handleClose() {
         if (onBackCallback != null) {

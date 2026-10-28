@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "employees")
 public class Employee implements Serializable {
-
     public static final String GENDER_MALE = "Nam";
     public static final String GENDER_FEMALE = "Nữ";
     public static final String GENDER_OTHER = "Khác";

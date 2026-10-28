@@ -47,22 +47,13 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * Controller quản lý lịch sử bán hàng.
- * - Phân quyền: Quản lý xem toàn hệ thống, Nhân viên chỉ xem đơn của chính mình.
- * - Lọc Theo ngày (mặc định hôm nay) hoặc Theo tháng (giống trang Báo cáo).
- * - Bấm vào từng dòng để mở xem chi tiết đơn hàng.
- */
 public class SalesHistoryController implements Initializable {
-
     private static final Logger log = LoggerFactory.getLogger(SalesHistoryController.class);
 
     private final SalesService salesService = new SalesServiceImpl();
 
-    // Callback đóng màn hình lịch sử quay về bán hàng
     private Runnable onCloseHistory;
 
-    // Header controls
     @FXML private TextField txtSearch;
     @FXML private DatePicker dpFilterDate;
     @FXML private Button btnFilterDay;
@@ -70,7 +61,6 @@ public class SalesHistoryController implements Initializable {
     @FXML private TextField txtFilterYear;
     @FXML private ComboBox<String> cbFilterMonth;
 
-    // Table controls
     @FXML private TableView<SalesOrderDTO> tableSalesOrders;
     @FXML private TableColumn<SalesOrderDTO, String> colIndex;
     @FXML private TableColumn<SalesOrderDTO, String> colCode;
@@ -85,11 +75,9 @@ public class SalesHistoryController implements Initializable {
 
     @FXML private VBox paneEmptyHistory;
 
-    // Pagination controls
     @FXML private HBox paginationBox;
     @FXML private Label lblRecordRange;
 
-    // Dữ liệu và trạng thái
     private final ObservableList<SalesOrderDTO> pageData = FXCollections.observableArrayList();
     private int currentPage = 1;
     private final int pageSize = AppConstants.DEFAULT_PAGE_SIZE;
@@ -100,7 +88,7 @@ public class SalesHistoryController implements Initializable {
     private boolean monthMode = false;
     private int selectedYear = LocalDate.now().getYear();
     private int selectedMonth = LocalDate.now().getMonthValue();
-    // Chặn sự kiện onAction khi chương trình tự gán giá trị cho các ô lọc
+
     private boolean updatingControls = false;
     private String currentKeyword = "";
     private Integer filterEmployeeId = null;
@@ -123,11 +111,9 @@ public class SalesHistoryController implements Initializable {
 
         tableSalesOrders.setItems(pageData);
 
-        // Tự động căn chỉnh chiều cao dòng và chống giật VirtualFlow
         TableSyncHelper.enableAutoRowHeight(tableSalesOrders, null, pageSize);
         TableSyncHelper.setupTableScrollProtection(tableSalesOrders, pageSize);
 
-        // Tải dữ liệu ngày hôm nay
         loadSalesHistoryData();
     }
 
@@ -135,24 +121,17 @@ public class SalesHistoryController implements Initializable {
         this.onCloseHistory = onCloseHistory;
     }
 
-    /**
-     * Xác định quyền hạn: Quản lý xem lịch sử của toàn cửa hàng, Nhân viên chỉ xem đơn của bản thân.
-     */
     private void setupRoleAccess() {
         if (UserSession.isLoggedIn()) {
             isManager = UserSession.getInstance().isManager();
-            // Cùng phạm vi với Tổng quan/Báo cáo: Quản lý xem toàn cửa hàng, Nhân viên chỉ xem đơn của mình
+
             filterEmployeeId = UserSession.scopeEmployeeId(null);
         } else {
-            // Mặc định an toàn nếu chưa đăng nhập (môi trường dev/test)
             isManager = true;
             filterEmployeeId = null;
         }
     }
 
-    /**
-     * Khởi tạo bộ lọc: DatePicker dd/MM/yyyy (mặc định hôm nay), ô Năm và danh sách Tháng.
-     */
     private void setupFilterControls() {
         selectedDate = LocalDate.now();
         updatingControls = true;
@@ -160,7 +139,7 @@ public class SalesHistoryController implements Initializable {
             if (dpFilterDate != null) {
                 dpFilterDate.setValue(selectedDate);
                 FormatUtils.setupDatePicker(dpFilterDate);
-                // Khi người dùng gõ ngày rồi ấn Enter -> áp dụng lọc ngay
+
                 dpFilterDate.getEditor().setOnAction(e -> applyDateFilter());
             }
             if (txtFilterYear != null) {
@@ -193,9 +172,6 @@ public class SalesHistoryController implements Initializable {
         }
     }
 
-    /**
-     * Mở lịch sử bán hàng của cả một tháng (dùng khi bấm "Xem đầy đủ..." ở trang Báo cáo).
-     */
     public void showMonth(int year, int month) {
         selectedYear = year;
         selectedMonth = month;
@@ -212,7 +188,6 @@ public class SalesHistoryController implements Initializable {
         loadSalesHistoryData();
     }
 
-    /** Mở lịch sử bán hàng của một ngày (dùng khi bấm thẻ Doanh số/Hóa đơn hôm nay ở Tổng quan). */
     public void showDate(LocalDate date) {
         selectedDate = date;
         monthMode = false;
@@ -247,7 +222,7 @@ public class SalesHistoryController implements Initializable {
         if (updatingControls) return;
         int before = selectedYear;
         if (!readYearInput()) return;
-        // Nhập năm (Enter) hoặc đổi năm -> chuyển sang lọc Theo tháng
+
         if (event != null || before != selectedYear) {
             monthMode = true;
             updateFilterButtonStyles();
@@ -266,7 +241,6 @@ public class SalesHistoryController implements Initializable {
         loadSalesHistoryData();
     }
 
-    /** Đọc ô Năm; trả về false (và khôi phục giá trị cũ) nếu năm không hợp lệ. */
     private boolean readYearInput() {
         if (txtFilterYear == null) return true;
         String text = txtFilterYear.getText() != null ? txtFilterYear.getText().trim() : "";
@@ -340,7 +314,6 @@ public class SalesHistoryController implements Initializable {
                 new SimpleStringProperty(cellData.getValue().getFormattedPaymentMethod()));
         setupLeftAlignedCell(colPaymentMethod);
 
-        // Bấm vào từng dòng sẽ mở popup chi tiết đơn hàng
         tableSalesOrders.setRowFactory(tv -> {
             TableRow<SalesOrderDTO> row = new TableRow<>();
             row.setStyle("-fx-cursor: hand;");
@@ -398,7 +371,6 @@ public class SalesHistoryController implements Initializable {
             }
         }
 
-        // Mặc định là ngày hôm nay nếu chưa chọn ngày
         if (targetDate == null) {
             targetDate = LocalDate.now();
             dpFilterDate.setValue(targetDate);
@@ -411,9 +383,6 @@ public class SalesHistoryController implements Initializable {
         loadSalesHistoryData();
     }
 
-    /**
-     * Tải dữ liệu lịch sử bán hàng (theo ngày hoặc cả tháng) bất đồng bộ để giữ UI luôn mượt mà.
-     */
     public void loadSalesHistoryData() {
         setupRoleAccess();
         if (runningTask != null && runningTask.isRunning()) {
@@ -483,9 +452,6 @@ public class SalesHistoryController implements Initializable {
         }
     }
 
-    /**
-     * Hiển thị popup modal chi tiết đơn hàng khi người dùng click vào dòng.
-     */
     private void showOrderDetailDialog(SalesOrderDTO order) {
         if (order == null) return;
 
@@ -495,7 +461,6 @@ public class SalesHistoryController implements Initializable {
 
             SalesOrderDetailDialogController controller = loader.getController();
 
-            // Lấy danh sách mặt hàng của đơn hàng này
             List<SalesOrderDetailDTO> items = salesService.getSalesOrderDetails(order.getId());
             controller.setOrderData(order, items);
 
@@ -520,7 +485,6 @@ public class SalesHistoryController implements Initializable {
             dialogStage.setMinWidth(960);
             dialogStage.setMinHeight(520);
             dialogStage.showAndWait();
-
         } catch (IOException ex) {
             log.error("Lỗi khi mở popup chi tiết đơn hàng bán lẻ: ", ex);
         }

@@ -10,18 +10,9 @@ import javafx.stage.Window;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Tiện ích hiển thị thông báo, cảnh báo và xác nhận dùng chung trong toàn ứng dụng.
- * Tự động gắn Owner Window và Modality để đảm bảo Dialog luôn hiển thị trên màn hình hiện tại,
- * không bao giờ bị nhảy sang màn hình khác khi dùng đa màn hình hoặc TV.
- */
 public final class DialogUtils {
-
     private DialogUtils() {}
 
-    /**
-     * Tự động dò tìm Cửa sổ (Window) đang hoạt động/đang hiển thị.
-     */
     public static Window getActiveWindow() {
         List<Window> windows = Window.getWindows();
         for (Window w : windows) {
@@ -37,9 +28,6 @@ public final class DialogUtils {
         return null;
     }
 
-    /**
-     * Cấu hình gắn Owner và Modality cho bất kỳ Dialog/Alert nào.
-     */
     public static void configure(Dialog<?> dialog, Window explicitOwner) {
         if (dialog == null) return;
         Window owner = (explicitOwner != null) ? explicitOwner : getActiveWindow();

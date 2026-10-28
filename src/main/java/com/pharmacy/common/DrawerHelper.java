@@ -9,21 +9,12 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
-/**
- * Tiện ích quản lý hiệu ứng mở/đóng Drawer trượt từ cạnh phải và màn che mờ (Overlay).
- * Dùng chung giữa Thêm nhân viên và Nhập/Xuất kho.
- */
 public class DrawerHelper {
-
     private StackPane appRootPane;
     private Region overlayRegion;
     private Parent activeDrawerRoot;
     private Runnable onCloseCallback;
 
-    /**
-     * Khởi tạo hạ tầng overlay trên Scene hiện tại.
-     * Tự động bọc Root thành StackPane nếu chưa có.
-     */
     public void init(Scene scene, Runnable onClose) {
         if (scene == null || appRootPane != null) return;
         this.onCloseCallback = onClose;
@@ -48,9 +39,6 @@ public class DrawerHelper {
         appRootPane.getChildren().add(overlayRegion);
     }
 
-    /**
-     * Đăng ký một Drawer vào StackPane.
-     */
     public void registerDrawer(Parent drawerRoot) {
         if (appRootPane == null || drawerRoot == null) return;
         if (!appRootPane.getChildren().contains(drawerRoot)) {
@@ -60,9 +48,6 @@ public class DrawerHelper {
         }
     }
 
-    /**
-     * Mở Drawer với hiệu ứng trượt từ phải sang và mờ dần màn che.
-     */
     public void open(Parent drawerRoot) {
         if (drawerRoot == null || overlayRegion == null) return;
         this.activeDrawerRoot = drawerRoot;
@@ -85,9 +70,6 @@ public class DrawerHelper {
         new ParallelTransition(slideIn, fadeIn).play();
     }
 
-    /**
-     * Đóng Drawer với hiệu ứng trượt sang phải và ẩn màn che.
-     */
     public void close() {
         if (activeDrawerRoot == null || overlayRegion == null) return;
 
@@ -112,5 +94,4 @@ public class DrawerHelper {
         });
         parallel.play();
     }
-
 }

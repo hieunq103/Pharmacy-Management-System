@@ -20,15 +20,7 @@ import javafx.util.Duration;
 
 import java.util.List;
 
-/**
- * Component ô tìm kiếm chọn thuốc:
- * - Giao diện thanh tìm kiếm chuyên nghiệp: có icon kính lúp, prompt text, nút xóa nhanh.
- * - Cơ chế Debounce 300ms: người dùng nhập và dừng tay thì danh sách kết quả gợi ý tự động hiện ra ngay phía dưới.
- * - Hỗ trợ tìm kiếm theo Mã thuốc, Tên thuốc và Hoạt chất (hỗ trợ cả gõ tiếng Việt có dấu và không dấu).
- * - Danh sách gợi ý hiển thị trực quan thông tin mã, tên, tồn kho, đơn vị, giá bán.
- */
 public class SearchableMedicinePicker extends VBox {
-
     private final TextField txtSearch = new TextField();
     private final Button btnClear = new Button("✕");
     private final ListView<MedicineInventoryDTO> listView = new ListView<>();
@@ -57,7 +49,6 @@ public class SearchableMedicinePicker extends VBox {
         listView.setPrefHeight(180);
         listView.setMaxHeight(240);
 
-        // Thiết kế giao diện từng dòng kết quả trong danh sách: MÃ THUỐC + TÊN THUỐC + TRẠNG THÁI HẠN DÙNG BÊN PHẢI
         listView.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(MedicineInventoryDTO item, boolean empty) {
@@ -77,7 +68,6 @@ public class SearchableMedicinePicker extends VBox {
                     lblName.setStyle("-fx-font-size: 13.5px; -fx-font-family: 'Inter 18pt Medium'; -fx-text-fill: #0F172A;");
                     HBox.setHgrow(lblName, Priority.ALWAYS);
 
-                    // Trạng thái hạn dùng ở bên phải tên thuốc (css giống bảng kho thuốc)
                     Label lblExpiry = new Label();
                     MedicineInventoryDTO.ExpiryStatus expStatus = item.getExpiryStatus();
                     if (expStatus == null) {
@@ -102,7 +92,6 @@ public class SearchableMedicinePicker extends VBox {
 
                     row.getChildren().addAll(lblCode, lblName, lblExpiry);
 
-                    // Xử lý chọn thuốc ngay khi chuột nhấn xuống để không bị trễ hoặc mất sự kiện
                     row.setOnMousePressed(e -> {
                         applySelection(item);
                         e.consume();
@@ -114,29 +103,24 @@ public class SearchableMedicinePicker extends VBox {
             }
         });
 
-        // 1. Icon kính lúp tìm kiếm ở đầu ô nhập
         SVGPath svgSearch = new SVGPath();
         svgSearch.setContent("M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z");
         svgSearch.setFill(Color.web("#94A3B8"));
 
-        // 2. Ô nhập tìm kiếm
         txtSearch.setPromptText(promptText);
         txtSearch.setStyle("-fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 13.5px; -fx-font-family: 'Inter 18pt'; -fx-text-fill: #0F172A; -fx-padding: 4 0;");
         HBox.setHgrow(txtSearch, Priority.ALWAYS);
 
-        // 3. Nút xóa nhanh nội dung tìm kiếm
         btnClear.setStyle("-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-cursor: hand; -fx-font-size: 12px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-padding: 2 6;");
         btnClear.setVisible(false);
         btnClear.setManaged(false);
         btnClear.setOnAction(e -> clear());
 
-        // 4. Khung chứa thanh tìm kiếm (giống như nút tìm kiếm chuyên nghiệp)
         inputContainer.setAlignment(Pos.CENTER_LEFT);
         inputContainer.getStyleClass().add("medicine-picker-box");
         inputContainer.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12;");
         inputContainer.getChildren().addAll(svgSearch, txtSearch, btnClear);
 
-        // Hiệu ứng focus đường viền
         txtSearch.focusedProperty().addListener((obs, oldV, isFocused) -> {
             if (isFocused) {
                 if (!inputContainer.getStyleClass().contains("form-input-error")) {
@@ -152,7 +136,6 @@ public class SearchableMedicinePicker extends VBox {
             }
         });
 
-        // Tự động ẩn danh sách khi người dùng click chuột ra ngoài picker
         sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, evt -> {
@@ -172,7 +155,6 @@ public class SearchableMedicinePicker extends VBox {
             }
         });
 
-        // 5. Khung danh sách kết quả xổ xuống ở ngay dưới ô tìm kiếm
         lblNoResult.setStyle("-fx-font-size: 12.5px; -fx-font-family: 'Inter 18pt'; -fx-text-fill: #94A3B8; -fx-padding: 12 16;");
         lblNoResult.setAlignment(Pos.CENTER);
         lblNoResult.setMaxWidth(Double.MAX_VALUE);
@@ -183,7 +165,6 @@ public class SearchableMedicinePicker extends VBox {
 
         getChildren().addAll(inputContainer, resultsContainer);
 
-        // 6. Lắng nghe khi gõ vào ô tìm kiếm với cơ chế Debounce 300ms (dừng tay thì hiện kết quả ở dưới)
         txtSearch.textProperty().addListener((obs, oldV, newV) -> {
             if (isUpdatingText) return;
 
@@ -200,7 +181,6 @@ public class SearchableMedicinePicker extends VBox {
                 btnClear.setVisible(true);
                 btnClear.setManaged(true);
 
-                // Khởi động bộ đếm 300ms sau khi người dùng dừng tay
                 debounceTimer.setOnFinished(ev -> {
                     String kw = rawKeyword.toLowerCase();
                     String kwNoAccent = removeAccents(rawKeyword);
@@ -224,7 +204,6 @@ public class SearchableMedicinePicker extends VBox {
             }
         });
 
-        // 7. Thao tác chọn thuốc trong danh sách
         listView.setOnMouseClicked(e -> {
             MedicineInventoryDTO selected = listView.getSelectionModel().getSelectedItem();
             if (selected != null) {
@@ -232,7 +211,6 @@ public class SearchableMedicinePicker extends VBox {
             }
         });
 
-        // Phím điều hướng: Mũi tên xuống để vào danh sách, Enter để chọn, Escape để đóng
         txtSearch.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.DOWN) {
                 if (!resultsContainer.isVisible()) {
@@ -349,9 +327,6 @@ public class SearchableMedicinePicker extends VBox {
         return selectedMedicine.get();
     }
 
-    /**
-     * Chuyển đổi chuỗi tiếng Việt có dấu thành không dấu để hỗ trợ tìm kiếm linh hoạt
-     */
     private static String removeAccents(String s) {
         return FormatUtils.removeAccents(s);
     }

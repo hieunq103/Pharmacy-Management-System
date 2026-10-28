@@ -4,16 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * DTO đại diện cho một giao dịch xuất hoặc nhập kho (Master record).
- */
 public class InventoryTransactionDTO {
-
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     private Long id;
-    private String type; // 'IMPORT', 'EXPORT_DISPOSAL', 'EXPORT_SALE', etc.
+    private String type;
     private LocalDateTime transactionAt;
     private Integer employeeId;
     private String employeeName;
@@ -44,7 +40,6 @@ public class InventoryTransactionDTO {
         this.note = note;
     }
 
-
     public String getFormattedDateTime() {
         if (transactionAt == null) return "N/A";
         return transactionAt.format(DATE_TIME_FORMATTER);
@@ -65,7 +60,6 @@ public class InventoryTransactionDTO {
         };
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

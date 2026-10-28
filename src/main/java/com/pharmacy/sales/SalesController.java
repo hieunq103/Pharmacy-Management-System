@@ -36,20 +36,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class SalesController implements Initializable {
-
     private static final Logger log = LoggerFactory.getLogger(SalesController.class);
 
-    // Màn hình chính và Lịch sử bán hàng
     @FXML private HBox viewSalesMain;
     private static final double LINE_TOTAL_WIDTH = 86;
     @FXML private StackPane viewSalesHistory;
-    /** Hành động của nút back trong Lịch sử bán hàng; null = quay lại trang Bán hàng. */
+
     private Runnable historyBackAction;
 
     private Parent historyRootNode;
     private SalesHistoryController historyController;
 
-    // Cột trái: Tìm kiếm, nhóm thuốc, 6 thẻ thuốc và phân trang
     @FXML private TextField txtSearch;
     @FXML private ComboBox<String> cboCategory;
     @FXML private GridPane gridMedicineCards;
@@ -57,7 +54,6 @@ public class SalesController implements Initializable {
     @FXML private HBox paginationBox;
     @FXML private Label lblRecordRange;
 
-    // Cột phải: Giỏ hàng
     @FXML private VBox paneEmptyCart;
     @FXML private ScrollPane scrollCartItems;
     @FXML private VBox boxCartItems;
@@ -81,7 +77,6 @@ public class SalesController implements Initializable {
     private final SalesService salesService = new SalesServiceImpl();
     private CartOrder activeOrder = new CartOrder(1, "Hóa đơn");
 
-    // Cấu hình phân trang: 6 thuốc mỗi trang (2 cột x 3 hàng)
     private static final int PAGE_SIZE = 6;
     private int currentPage = 1;
     private int totalPages = 1;
@@ -119,7 +114,6 @@ public class SalesController implements Initializable {
 
             txtSearch.setOnAction(e -> {
                 if (!allLoadedMedicines.isEmpty()) {
-                    // Nếu ấn Enter mà có thuốc đầu tiên còn hàng -> thêm ngay vào giỏ
                     for (MedicineInventoryDTO m : allLoadedMedicines) {
                         if (m.getTotalQuantity() > 0) {
                             addMedicineToCart(m);
@@ -132,7 +126,6 @@ public class SalesController implements Initializable {
             });
         }
 
-        // Bắt phím tắt F2 (focus tìm kiếm) và F9 (thanh toán)
         Platform.runLater(() -> {
             if (txtSearch != null && txtSearch.getScene() != null) {
                 txtSearch.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
@@ -207,7 +200,6 @@ public class SalesController implements Initializable {
                 try {
                     BigDecimal num = new BigDecimal(digits);
                     if (isDiscountPercent) {
-                        // Nếu là %, tối đa 100%
                         if (num.compareTo(BigDecimal.valueOf(100)) > 0) {
                             num = BigDecimal.valueOf(100);
                             final String corrected = "100";
@@ -225,8 +217,6 @@ public class SalesController implements Initializable {
                         }
                         activeOrder.setDiscount(calculatedDisc);
                     } else {
-                        // Nếu là tiền VND:
-                        // QUY TẮC BẮT BUỘC: Không được giảm giá nhiều hơn số tiền phải thanh toán (subtotal)
                         if (num.compareTo(subtotal) > 0) {
                             num = subtotal;
                             final String corrected = subtotal.compareTo(BigDecimal.ZERO) > 0 ? subtotal.toPlainString() : "0";
@@ -247,9 +237,6 @@ public class SalesController implements Initializable {
         updateCartSummary();
     }
 
-    /**
-     * Nạp danh mục thuốc vào ComboBox chọn nhóm thuốc
-     */
     private void setupCategoryComboBox() {
         if (cboCategory == null) return;
         cboCategory.getItems().clear();
@@ -279,9 +266,6 @@ public class SalesController implements Initializable {
         });
     }
 
-    /**
-     * Nạp trang thuốc (mỗi trang đúng 6 thuốc) theo từ khóa và nhóm thuốc
-     */
     public void loadMedicinesData() {
         int pageToLoad = currentPage;
         String kw = currentKeyword;
@@ -334,9 +318,6 @@ public class SalesController implements Initializable {
         );
     }
 
-    /**
-     * Render 6 thẻ thuốc theo bố cục 2 cột x 3 hàng, không sử dụng thanh cuộn
-     */
     private void renderMedicineCards() {
         if (gridMedicineCards == null) return;
         gridMedicineCards.getChildren().clear();
@@ -369,7 +350,6 @@ public class SalesController implements Initializable {
                 GridPane.setFillWidth(card, true);
                 GridPane.setFillHeight(card, true);
             } else {
-                // Ô trống giữ chỗ giúp kích thước 6 ô chứa luôn đồng nhất tuyệt đối giữa các trang
                 Region emptySlot = new Region();
                 emptySlot.setMaxWidth(Double.MAX_VALUE);
                 emptySlot.setMaxHeight(Double.MAX_VALUE);
@@ -392,7 +372,6 @@ public class SalesController implements Initializable {
             card.getStyleClass().add("out-of-stock");
         }
 
-        // Hàng 1: Mã thuốc (bên trái) + Badge Kê toa (bên phải)
         HBox rowHeader = new HBox(6);
         rowHeader.setAlignment(Pos.CENTER_LEFT);
 
@@ -414,7 +393,6 @@ public class SalesController implements Initializable {
             rowHeader.getChildren().add(lblPrescription);
         }
 
-        // Hàng 2: Tên thuốc (chiếm toàn bộ chiều ngang, viết 2 dòng nếu dài, chiều cao chuẩn 36px cố định cho mọi thẻ)
         Label lblName = new Label(med.getMedicineName());
         lblName.getStyleClass().add("card-title");
         lblName.setWrapText(true);
@@ -423,7 +401,6 @@ public class SalesController implements Initializable {
         lblName.setMaxHeight(36.0);
         lblName.setAlignment(Pos.TOP_LEFT);
 
-        // Hàng 3: Đơn vị tính + Cảnh báo HSD gần hoặc Sắp hết (nếu có)
         HBox row3 = new HBox(6);
         row3.setAlignment(Pos.CENTER_LEFT);
         row3.setMinHeight(18.0);
@@ -451,11 +428,9 @@ public class SalesController implements Initializable {
             row3.getChildren().add(lblOut);
         }
 
-        // Spacer
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        // Hàng 4: Giá tiền (bên trái) + Số lượng còn lại (bên phải)
         HBox row4 = new HBox();
         row4.setAlignment(Pos.BOTTOM_LEFT);
         row4.setMinHeight(22.0);
@@ -478,7 +453,6 @@ public class SalesController implements Initializable {
             card.getStyleClass().add("in-cart");
         }
 
-        // Click để thêm vào giỏ hàng
         card.setOnMouseClicked(e -> {
             if (outOfStock) {
                 DialogUtils.showWarning("Hết hàng", "Thuốc '" + med.getMedicineName() + "' hiện đã hết hàng trong kho.");
@@ -500,9 +474,6 @@ public class SalesController implements Initializable {
         return 0;
     }
 
-    /**
-     * Thêm thuốc vào đơn hàng hiện tại
-     */
     private void addMedicineToCart(MedicineInventoryDTO med) {
         if (activeOrder == null) return;
 
@@ -540,9 +511,6 @@ public class SalesController implements Initializable {
         renderMedicineCards();
     }
 
-    /**
-     * Render các dòng sản phẩm trong giỏ hàng
-     */
     private void renderCartItems() {
         if (boxCartItems == null || paneEmptyCart == null || scrollCartItems == null) return;
 
@@ -565,11 +533,6 @@ public class SalesController implements Initializable {
         updateCartSummary();
     }
 
-    /**
-     * Một dòng sản phẩm trong giỏ, chia 2 hàng để không bị cắt chữ khi tên thuốc dài:
-     * - Hàng 1: [Mã] Tên thuốc (xuống dòng nếu dài) ............ [Kê toa] [✕]
-     * - Hàng 2: Đơn giá / Đơn vị ............ [-] [SL] [+]   Thành tiền
-     */
     private VBox createCartItemRow(CartItem item) {
         VBox row = new VBox(8);
         row.getStyleClass().add("cart-item-row");
@@ -602,23 +565,20 @@ public class SalesController implements Initializable {
         lblUnitPrice.getStyleClass().add("cart-item-unit-price");
         lblUnitPrice.setMinWidth(Region.USE_PREF_SIZE);
 
-        // Thành tiền của món (không bao giờ bị cắt thành "145.0...")
         Label lblTotal = new Label(FormatUtils.formatCurrency(item.getLineTotal()));
         lblTotal.getStyleClass().add("cart-item-total");
-        // Cột thành tiền rộng cố định (đủ tới hàng chục triệu) để ô số lượng các dòng luôn thẳng hàng
+
         lblTotal.setMinWidth(LINE_TOTAL_WIDTH);
         lblTotal.setPrefWidth(LINE_TOTAL_WIDTH);
         lblTotal.setMaxWidth(LINE_TOTAL_WIDTH);
         lblTotal.setAlignment(Pos.CENTER_RIGHT);
 
-        // Bộ nút tăng/giảm [-] [txtQty] [+]
         HBox qtyBox = CartQuantityControl.create(item, activeOrder, 52, () -> {
             recalculateDiscount();
             renderCartItems();
             renderMedicineCards();
         });
 
-        // Nút xóa dòng
         Button btnDelete = new Button("✕");
         btnDelete.getStyleClass().add("btn-remove-item");
         btnDelete.setOnAction(e -> {
@@ -630,7 +590,6 @@ public class SalesController implements Initializable {
 
         btnDelete.setMinWidth(Region.USE_PREF_SIZE);
 
-        // Tên thuốc đã giãn hết chiều ngang (Hgrow) nên nút ✕ luôn nằm sát mép phải
         nameRow.getChildren().add(btnDelete);
 
         Region priceSpacer = new Region();
@@ -648,13 +607,11 @@ public class SalesController implements Initializable {
         boolean hasItems = !activeOrder.getItems().isEmpty();
         boolean hasPrescription = activeOrder.hasPrescriptionItem();
 
-        // Banner thuốc kê toa
         if (bannerPrescriptionNotice != null) {
             bannerPrescriptionNotice.setVisible(hasPrescription);
             bannerPrescriptionNotice.setManaged(hasPrescription);
         }
 
-        // Biểu thức tính tiền: Tổng tiền hàng, Giảm giá, Tổng thanh toán
         BigDecimal subtotal = activeOrder.getSubtotal();
         BigDecimal discount = activeOrder.getDiscount();
         BigDecimal total = activeOrder.getTotalAmount();
@@ -673,7 +630,6 @@ public class SalesController implements Initializable {
             lblCartTotal.setText(FormatUtils.formatCurrency(total) + "đ");
         }
 
-        // Nút thanh toán mờ nếu không có sản phẩm
         if (btnCheckout != null) {
             btnCheckout.setDisable(!hasItems);
         }
@@ -691,9 +647,6 @@ public class SalesController implements Initializable {
         }
     }
 
-    /**
-     * Mở Dialog thanh toán theo đúng form bố cục yêu cầu
-     */
     @FXML
     private void handleOpenPaymentDialog() {
         if (activeOrder == null || activeOrder.getItems().isEmpty()) {
@@ -720,19 +673,17 @@ public class SalesController implements Initializable {
             stage.setScene(scene);
 
             controller.initializeData(activeOrder, orderCode -> {
-                // Thanh toán thành công!
                 DialogUtils.showInfo("Thanh toán thành công", "Hóa đơn " + orderCode + " đã được thanh toán và trừ kho thành công!");
                 activeOrder.clear();
                 if (txtCustomerPhone != null) txtCustomerPhone.clear();
                 if (txtDiscount != null) txtDiscount.clear();
                 renderCartItems();
                 renderMedicineCards();
-                loadMedicinesData(); // Nạp lại số lượng tồn kho mới nhất
+                loadMedicinesData();
             });
 
             stage.showAndWait();
 
-            // Đồng bộ lại giỏ hàng vì có thể đã thêm bớt số lượng hoặc xóa thuốc trong dialog thanh toán
             recalculateDiscount();
             renderCartItems();
             renderMedicineCards();
@@ -744,7 +695,6 @@ public class SalesController implements Initializable {
 
     @FXML
     public void handleOpenSalesHistory() {
-        // Mở từ nút lịch sử của trang Bán hàng -> nút back quay lại trang Bán hàng
         historyBackAction = null;
         showSalesHistoryView();
     }
@@ -764,7 +714,6 @@ public class SalesController implements Initializable {
         }
     }
 
-    /** Mở Lịch sử bán hàng với bộ lọc Theo ngày của ngày chỉ định. */
     public void openSalesHistoryForDate(LocalDate date, Runnable onBack) {
         historyBackAction = onBack;
         showSalesHistoryView();
@@ -773,7 +722,6 @@ public class SalesController implements Initializable {
         }
     }
 
-    /** Mở Lịch sử bán hàng với bộ lọc Theo tháng của tháng/năm chỉ định. */
     public void openSalesHistoryForMonth(int year, int month, Runnable onBack) {
         historyBackAction = onBack;
         showSalesHistoryView();

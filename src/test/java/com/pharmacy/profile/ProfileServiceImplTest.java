@@ -11,9 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/** Hồ sơ cá nhân: Nhân viên và Quản lý chỉ đổi được Họ tên, SĐT, Địa chỉ của chính mình (không cần DB). */
 class ProfileServiceImplTest {
-
     static class FakeEmployeeRepository extends EmployeeRepository {
         String savedName, savedPhone, savedAddress;
 

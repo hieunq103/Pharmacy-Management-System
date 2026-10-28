@@ -32,19 +32,16 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class ImportDialogController implements Initializable {
-
     private static final Logger log = LoggerFactory.getLogger(ImportDialogController.class);
 
     @FXML private StackPane supplierPickerContainer;
     @FXML private Label lblErrorSupplier;
     @FXML private TextField txtNote;
 
-    // 2 Chế độ thêm thuốc
     @FXML private RadioButton rbExistingMedicine;
     @FXML private RadioButton rbNewMedicine;
     @FXML private ToggleGroup itemModeGroup;
 
-    // Chế độ 1: Thuốc đã có
     @FXML private VBox boxExistingMedicine;
     @FXML private StackPane medicinePickerContainer;
     @FXML private HBox boxSelectedMedInfo;
@@ -52,7 +49,6 @@ public class ImportDialogController implements Initializable {
     @FXML private Label lblSelectedCategory;
     @FXML private Label lblSelectedStock;
 
-    // Chế độ 2: Thuốc mới
     @FXML private VBox boxNewMedicine;
     @FXML private TextField txtNewName;
     @FXML private StackPane categoryPickerContainer;
@@ -61,7 +57,6 @@ public class ImportDialogController implements Initializable {
     @FXML private TextField txtNewSellPrice;
     @FXML private CheckBox chkRequiresPrescription;
 
-    // Chi tiết lô
     @FXML private TextField txtLotNumber;
     @FXML private DatePicker dpExpiryDate;
     @FXML private ComboBox<String> cbUnit;
@@ -69,7 +64,6 @@ public class ImportDialogController implements Initializable {
     @FXML private TextField txtImportPrice;
     @FXML private Label lblItemError;
 
-    // Bảng danh sách mặt hàng đã thêm (Cuộn ngang dọc như kho thuốc)
     @FXML private Label lblItemCountBadge;
     @FXML private TableView<BatchImportItemDTO> tableItems;
     @FXML private TableColumn<BatchImportItemDTO, Integer> colIndex;
@@ -85,7 +79,6 @@ public class ImportDialogController implements Initializable {
     @FXML private TableColumn<BatchImportItemDTO, String> colTotal;
     @FXML private TableColumn<BatchImportItemDTO, BatchImportItemDTO> colAction;
 
-    // Footer & Summary
     @FXML private Label lblGeneralError;
     @FXML private Label lblSummaryTotalQuantity;
     @FXML private Label lblGrandTotal;
@@ -106,33 +99,26 @@ public class ImportDialogController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // 1. Khởi tạo Picker cho Nhà cung cấp
         supplierPicker = new SearchableStringPicker("Nhập hoặc tìm kiếm nhà cung cấp...");
         supplierPickerContainer.getChildren().add(supplierPicker);
 
-        // 2. Khởi tạo Picker cho Thuốc có sẵn
         medicinePicker = new SearchableMedicinePicker("Nhập mã thuốc hoặc tên thuốc...");
         medicinePickerContainer.getChildren().add(medicinePicker);
 
-        // 3. Khởi tạo Picker cho Nhóm thuốc (khi tạo thuốc mới)
         categoryPicker = new SearchableStringPicker("Nhập hoặc tìm kiếm nhóm thuốc...");
         categoryPickerContainer.getChildren().add(categoryPicker);
 
-        // 4. Chuẩn hóa DatePicker Hạn sử dụng theo dd/MM/yyyy
         dpExpiryDate.setPromptText("dd/MM/yyyy");
         com.pharmacy.common.FormatUtils.setupDatePicker(dpExpiryDate);
 
-        // 5. Đơn vị tính phổ biến
         cbUnit.setItems(FXCollections.observableArrayList(
                 "Hộp", "Vỉ", "Viên", "Chai", "Lọ", "Ống", "Gói", "Tuýp", "Hũ", "Bình", "Túi", "Miếng"
         ));
         cbUnit.setValue("Hộp");
 
-        // 6. Setup TableView (Cấu hình cuộn ngang dọc như kho thuốc)
         setupTableColumns();
         tableItems.setItems(itemList);
 
-        // 7. Xử lý chuyển đổi giữa 2 chế độ: Thuốc đã có vs Thuốc mới
         itemModeGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
             boolean isNew = (newVal == rbNewMedicine);
             boxExistingMedicine.setVisible(!isNew);
@@ -142,7 +128,6 @@ public class ImportDialogController implements Initializable {
             clearItemError();
         });
 
-        // 8. Lắng nghe chọn thuốc từ Picker
         medicinePicker.selectedMedicineProperty().addListener((obs, oldVal, newVal) -> {
             currentlySelectedMedicine = newVal;
             if (newVal != null) {
@@ -162,7 +147,6 @@ public class ImportDialogController implements Initializable {
             }
         });
 
-        // 9. Ràng buộc nhập số
         txtQuantityIn.textProperty().addListener((obs, oldV, newV) -> {
             if (newV != null && !newV.matches("\\d*")) {
                 txtQuantityIn.setText(newV.replaceAll("[^\\d]", ""));
@@ -274,7 +258,6 @@ public class ImportDialogController implements Initializable {
         this.onSuccessCallback = onSuccess;
         medicinePicker.setMedicines(medicines);
 
-        // Tải danh sách nhà cung cấp và nhóm thuốc trong luồng nền
         Task<Void> loadAuxTask = new Task<>() {
             private List<String> suppliers;
             private List<String> categories;
@@ -308,7 +291,6 @@ public class ImportDialogController implements Initializable {
 
         boolean isNewMedicine = rbNewMedicine.isSelected();
 
-        // 1. Kiểm tra thông tin thuốc theo từng chế độ
         String medicineName;
         String categoryName;
         String manufacturer = "";
@@ -355,7 +337,6 @@ public class ImportDialogController implements Initializable {
             manufacturer = currentlySelectedMedicine.getManufacturer();
         }
 
-        // 2. Kiểm tra thông tin lô: Số lô, Hạn dùng, Số lượng, Đơn vị, Giá nhập
         String lotNumber = txtLotNumber.getText() != null ? txtLotNumber.getText().trim() : "";
         if (lotNumber.isEmpty()) {
             showItemError("Vui lòng nhập Số lô (Lot Number)!");
@@ -412,7 +393,6 @@ public class ImportDialogController implements Initializable {
             return;
         }
 
-        // 3. Tạo DTO và thêm vào danh sách
         BatchImportItemDTO item;
         if (isNewMedicine) {
             item = BatchImportItemDTO.fromNew(
@@ -432,14 +412,9 @@ public class ImportDialogController implements Initializable {
         tableItems.refresh();
         tableItems.scrollTo(item);
 
-        // 4. Xóa form nhập để chuẩn bị cho thuốc tiếp theo
         resetItemInputForm();
     }
 
-    /**
-     * Tự động sinh và đánh số mã thuốc tạm thời (MEDxxx) cho các mặt hàng thuốc mới
-     * trong danh sách tạm, bảo đảm khi thêm nhiều thuốc mới hoặc xóa bớt thì mã tự động cập nhật tuần tự.
-     */
     private void reassignTempMedicineCodes() {
         String nextCodeFromDb = inventoryService != null ? inventoryService.getNextMedicineCode() : "MED001";
         int baseNumber = 1;
@@ -510,13 +485,11 @@ public class ImportDialogController implements Initializable {
         lblGeneralError.setVisible(false);
         lblGeneralError.setManaged(false);
 
-        // 1. Kiểm tra danh sách mặt hàng
         if (itemList.isEmpty()) {
             showGeneralError("Danh sách mặt hàng trống! Vui lòng thêm ít nhất 1 loại thuốc vào phiếu nhập.");
             return;
         }
 
-        // 2. Kiểm tra nhà cung cấp
         String supplier = supplierPicker.getText() != null ? supplierPicker.getText().trim() : "";
         if (supplier.isEmpty()) {
             lblErrorSupplier.setText("Vui lòng chọn hoặc nhập tên Nhà cung cấp!");
@@ -526,7 +499,6 @@ public class ImportDialogController implements Initializable {
             return;
         }
 
-        // 3. Lấy nhân viên đang thao tác
         Integer employeeId = UserSession.currentEmployeeId();
 
         String note = txtNote.getText() != null ? txtNote.getText().trim() : "";

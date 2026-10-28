@@ -18,15 +18,7 @@ import javafx.util.Duration;
 
 import java.util.List;
 
-/**
- * Ô nhập liệu tìm kiếm gợi ý linh hoạt
- * - Có icon tìm kiếm, nút xoá nhanh ✕.
- * - Hỗ trợ tìm kiếm theo danh sách đã có (Nhà cung cấp, Nhóm thuốc...) cả tiếng Việt có dấu và không dấu.
- * - Cơ chế Debounce 300ms: người dùng nhập và dừng tay thì danh sách gợi ý xổ xuống ngay dưới ô nhập liệu.
- * - Khi không có kết quả gợi ý trùng khớp, danh sách ẩn đi, giữ nguyên giá trị người dùng gõ để tự động tạo mới.
- */
 public class SearchableStringPicker extends VBox {
-
     private final TextField txtInput = new TextField();
     private final Button btnClear = new Button("✕");
     private final ListView<String> listView = new ListView<>();
@@ -53,7 +45,6 @@ public class SearchableStringPicker extends VBox {
         listView.setPrefHeight(150);
         listView.setMaxHeight(200);
 
-        // Hiển thị từng dòng gợi ý
         listView.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -72,7 +63,6 @@ public class SearchableStringPicker extends VBox {
 
                     row.getChildren().add(lbl);
 
-                    // Chọn ngay khi nhấn chuột
                     row.setOnMousePressed(e -> {
                         applySelection(item);
                         e.consume();
@@ -84,29 +74,24 @@ public class SearchableStringPicker extends VBox {
             }
         });
 
-        // Icon kính lúp tìm kiếm ở đầu ô nhập
         SVGPath svgSearch = new SVGPath();
         svgSearch.setContent("M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z");
         svgSearch.setFill(Color.web("#94A3B8"));
 
-        // Ô nhập dữ liệu
         txtInput.setPromptText(promptText);
         txtInput.setStyle("-fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 13.5px; -fx-font-family: 'Inter 18pt'; -fx-text-fill: #0F172A; -fx-padding: 4 0;");
         HBox.setHgrow(txtInput, Priority.ALWAYS);
 
-        // Nút xóa nhanh
         btnClear.setStyle("-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-cursor: hand; -fx-font-size: 12px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-padding: 2 6;");
         btnClear.setVisible(false);
         btnClear.setManaged(false);
         btnClear.setOnAction(e -> clear());
 
-        // Khung chứa ô nhập
         inputContainer.setAlignment(Pos.CENTER_LEFT);
         inputContainer.getStyleClass().add("string-picker-box");
         inputContainer.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12;");
         inputContainer.getChildren().addAll(svgSearch, txtInput, btnClear);
 
-        // Hiệu ứng focus
         txtInput.focusedProperty().addListener((obs, oldV, isFocused) -> {
             if (isFocused) {
                 if (!inputContainer.getStyleClass().contains("form-input-error")) {
@@ -122,7 +107,6 @@ public class SearchableStringPicker extends VBox {
             }
         });
 
-        // Tự động ẩn gợi ý khi người dùng click ra ngoài
         sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, evt -> {
@@ -142,14 +126,12 @@ public class SearchableStringPicker extends VBox {
             }
         });
 
-        // Khung danh sách gợi ý xổ xuống
         resultsContainer.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4); -fx-padding: 2;");
         resultsContainer.setVisible(false);
         resultsContainer.setManaged(false);
 
         getChildren().addAll(inputContainer, resultsContainer);
 
-        // Lắng nghe khi gõ với Debounce 300ms
         txtInput.textProperty().addListener((obs, oldV, newV) -> {
             if (isUpdatingText) return;
 
@@ -176,7 +158,6 @@ public class SearchableStringPicker extends VBox {
                         return itemLower.contains(kw) || itemNoAccent.contains(kwNoAccent);
                     });
 
-                    // Nếu có kết quả trùng khớp thì hiện gợi ý, không có thì ẩn để người dùng tự do nhập mới
                     if (!filteredData.isEmpty()) {
                         showResults();
                     } else {
@@ -187,7 +168,6 @@ public class SearchableStringPicker extends VBox {
             }
         });
 
-        // Bấm chọn từ danh sách
         listView.setOnMouseClicked(e -> {
             String selected = listView.getSelectionModel().getSelectedItem();
             if (selected != null) {
@@ -195,7 +175,6 @@ public class SearchableStringPicker extends VBox {
             }
         });
 
-        // Bàn phím điều hướng
         txtInput.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.DOWN) {
                 if (!resultsContainer.isVisible()) {

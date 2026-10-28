@@ -5,12 +5,7 @@ import com.pharmacy.common.FormatUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/**
- * DTO đại diện cho một mặt hàng thuốc/lô thuốc trong danh sách lập phiếu xuất kho hàng loạt.
- */
 public class BatchExportItemDTO {
-
-
     private int medicineId;
     private String medicineCode;
     private String medicineName;
@@ -65,7 +60,6 @@ public class BatchExportItemDTO {
         return FormatUtils.formatCurrency(lineTotal);
     }
 
-    // Getters and Setters
     public int getMedicineId() {
         return medicineId;
     }

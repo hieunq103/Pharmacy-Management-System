@@ -14,23 +14,15 @@ public final class DatabaseHealthChecker {
 
     private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(runnable -> {
         Thread thread = new Thread(runnable, "DB-HealthChecker-Thread");
-        thread.setDaemon(true); // Thread tự giải phóng khi tắt app
+        thread.setDaemon(true);
         return thread;
     });
 
-    // Trạng thái lần kiểm tra trước (chỉ đọc/ghi trên luồng giám sát)
     private static volatile boolean connected = true;
 
     private DatabaseHealthChecker() {
     }
 
-    /**
-     * Bắt đầu giám sát định kỳ trạng thái CSDL
-     * 
-     * @param intervalSeconds Chu kỳ kiểm tra (giây)
-     * @param onStatusChange  Callback gọi khi trạng thái thay đổi (chạy trên JavaFX
-     *                        Application Thread)
-     */
     public static void startMonitoring(int intervalSeconds, Consumer<Boolean> onStatusChange) {
         scheduler.scheduleWithFixedDelay(() -> {
             boolean alive = HibernateUtil.isDatabaseAlive();

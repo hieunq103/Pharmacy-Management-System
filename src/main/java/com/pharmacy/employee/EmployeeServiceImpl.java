@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class EmployeeServiceImpl implements EmployeeService {
-
     private static final Logger log = LoggerFactory.getLogger(EmployeeServiceImpl.class);
     private final EmployeeRepository employeeRepository;
     private final AccountRepository accountRepository = new AccountRepository();
@@ -38,7 +37,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         requireManager();
         return employeeRepository.getEmployeeSummary();
     }
-
 
     @Override
     public Optional<Employee> findByIdWithDetails(Integer id) {
@@ -74,7 +72,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employeeRepository.existsByPhone(employee.getPhone())) {
             throw new IllegalArgumentException("Số điện thoại này đã được sử dụng trong hệ thống.");
         }
-        // Mật khẩu khởi tạo lấy từ cấu hình; tài khoản được gắn cờ bắt buộc đổi ở lần đăng nhập đầu
+
         String hashedPassword = PasswordEncoder.hash(AuthServiceImpl.defaultPassword());
         return employeeRepository.addEmployeeWithAccount(employee, role.trim(), hashedPassword);
     }
@@ -126,16 +124,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         requireManager();
         validateEmployee(req.fullName(), req.phone(), req.nationalId(), req.dob());
 
-        // 1. Chuẩn hóa trạng thái Employee: sang "ACTIVE" hoặc "INACTIVE"
         String normalizedEmpStatus = parseEmployeeStatus(req.empStatus());
 
-        // 2. Chuẩn hóa trạng thái Account: sang "ACTIVE" hoặc "DISABLED"
         String normalizedAccStatus = parseAccountStatus(req.accountStatus());
 
-        // 3. Chuẩn hóa Role: sang code hệ thống (ví dụ: MANAGER, STAFF)
         String normalizedRole = parseRoleCode(req.roleName());
 
-        // Ràng buộc bảo mật: Quản lý không được tự đổi role, tự cho nghỉ hoặc tự khóa tài khoản chính mình
         if (UserSession.isLoggedIn()) {
             Integer currentEmpId = UserSession.getInstance().getEmployeeId();
             if (currentEmpId != null && currentEmpId.equals(req.employeeId())) {
@@ -155,7 +149,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                     throw new IllegalArgumentException("Quản lý không thể tự khóa tài khoản của chính mình.");
                 }
 
-                // Hồ sơ của chính mình chỉ được đổi Họ tên, SĐT, Địa chỉ (giống trang Hồ sơ cá nhân)
                 Employee self = UserSession.getInstance().getEmployee();
                 if (self != null && (changed(self.getNationalId(), req.nationalId() != null ? req.nationalId().trim() : null)
                         || changed(self.getDob(), req.dob())
@@ -166,7 +159,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
         }
 
-        // 4. Đóng gói dữ liệu đã được làm sạch
         EmployeeUpdateRequest sanitizedRequest = new EmployeeUpdateRequest(
                 req.employeeId(),
                 req.fullName() != null ? req.fullName().trim() : "",
@@ -180,7 +172,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                 normalizedRole
         );
 
-        // 5. DB Validation: Kiểm tra trùng lặp CCCD và Số điện thoại với nhân viên khác trong CSDL
         if (employeeRepository.existsByNationalIdAndNotId(sanitizedRequest.nationalId(), sanitizedRequest.employeeId())) {
             throw new IllegalArgumentException("Căn cước công dân này đã thuộc về nhân viên khác.");
         }
@@ -188,11 +179,9 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new IllegalArgumentException("Số điện thoại này đã thuộc về nhân viên khác.");
         }
 
-        // 6. Gọi repository thực thi Hibernate Transaction
         return employeeRepository.updateEmployeeByManager(sanitizedRequest);
     }
 
-    /** Giá trị mới khác giá trị hiện tại (bỏ qua khi hiện tại chưa có dữ liệu). */
     private static boolean changed(Object current, Object requested) {
         return current != null && !current.equals(requested);
     }
@@ -208,7 +197,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
-    /** Kiểm tra dữ liệu hồ sơ ở tầng service (không chỉ dựa vào form). */
     static void validateEmployee(String fullName, String phone, String nationalId, java.time.LocalDate dob) {
         if (fullName == null || fullName.isBlank()) {
             throw new IllegalArgumentException("Họ tên nhân viên không được để trống.");
@@ -253,5 +241,4 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         return trimmed;
     }
-
 }

@@ -17,7 +17,6 @@ import javafx.util.Duration;
 import java.util.List;
 
 public class SalesOrderDetailDialogController {
-
     @FXML private Label lblOrderCode;
     @FXML private Label lblOrderTime;
     @FXML private Label lblEmployee;

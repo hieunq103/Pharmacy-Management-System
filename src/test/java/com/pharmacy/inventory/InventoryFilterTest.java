@@ -18,9 +18,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/** Integration test phân hệ Kho (cần MySQL đã chạy migration V1..V5). */
 public class InventoryFilterTest {
-
     private final InventoryRepository repo = new InventoryRepository();
 
     @BeforeAll
@@ -72,7 +70,6 @@ public class InventoryFilterTest {
         assertTrue(repo.getInventoryPageResult(1, 7, "Augmentin", null, null).getTotalElements() > 0);
     }
 
-    /** Bộ lọc mới (bảng tổng hợp lô) phải cho kết quả khớp với trạng thái tính trên từng dòng. */
     @Test
     void testFiltersMatchRowStatus() {
         List<MedicineInventoryDTO> all = allMedicines();
@@ -117,7 +114,7 @@ public class InventoryFilterTest {
         List<BatchImportItemDTO> items = new ArrayList<>();
         items.add(BatchImportItemDTO.fromExisting(1, "MED001", "Augmentin 635mg", "Kháng sinh", "GSK",
                 "LOT-BATCH-" + suffix, LocalDate.now().plusYears(2), "Hộp", 30, new BigDecimal("180000")));
-        // Hai thuốc mới trong cùng phiếu: trước đây bị cấp trùng mã MEDxxx -> lỗi UNIQUE
+
         items.add(BatchImportItemDTO.fromNew(null, "Thuốc Test A " + suffix, "Vitamin & Khoáng chất", "Vitamin C",
                 "DHG", new BigDecimal("95000"), false, "LOT-NEW-A-" + suffix, LocalDate.now().plusYears(1), "Lọ", 50, new BigDecimal("60000")));
         items.add(BatchImportItemDTO.fromNew(null, "Thuốc Test B " + suffix, "Vitamin & Khoáng chất", "Vitamin D",
@@ -171,7 +168,6 @@ public class InventoryFilterTest {
 
     @Test
     void testDashboardCountsMatchInventoryFilters() {
-        // Bấm thẻ "Sắp hết hàng"/"Cận hạn sử dụng" ở Tổng quan mở Kho với bộ lọc tương ứng -> số phải khớp
         InventoryRepository.InventorySummary summary = repo.getInventorySummary();
         assertEquals(summary.lowStockMedicines(),
                 repo.getInventoryPageResult(1, 7, null, "Sắp hết hàng,Hết hàng", null).getTotalElements());

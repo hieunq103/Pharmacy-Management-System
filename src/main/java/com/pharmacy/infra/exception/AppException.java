@@ -1,7 +1,6 @@
 package com.pharmacy.infra.exception;
 
 public abstract class AppException extends RuntimeException {
-
     private final ErrorCode errorCode;
 
     public AppException(ErrorCode errorCode) {

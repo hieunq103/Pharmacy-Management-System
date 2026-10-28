@@ -4,11 +4,10 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class SalesOrderRequest {
-
     private Integer employeeId;
     private String customerPhone;
     private BigDecimal discount;
-    private String paymentMethod; // "CASH" or "TRANSFER"
+    private String paymentMethod;
     private boolean prescriptionConfirmed;
     private List<CartItem> items;
     private String orderCode;

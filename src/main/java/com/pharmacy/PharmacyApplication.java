@@ -23,31 +23,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-/**
- * Điểm khởi động ứng dụng desktop PharmaOS.
- * <p>
- * Lớp chứa {@code main} cố ý KHÔNG kế thừa {@link Application}: từ Java 11, nếu lớp main kế thừa
- * Application mà JavaFX không nằm trên module path (chạy thẳng từ IntelliJ/classpath) thì JVM báo
- * "JavaFX runtime components are missing". Vòng đời JavaFX nằm trong lớp lồng {@link App}.
- */
 public class PharmacyApplication {
-
     private static final Logger log = LoggerFactory.getLogger(PharmacyApplication.class);
 
     public static void main(String[] args) {
         Application.launch(App.class, args);
     }
 
-    /** Vòng đời JavaFX (init / start / stop) của ứng dụng. */
     public static class App extends Application {
-
         @Override
         public void init() {
-            // 1. Cấu hình bắt ngoại lệ chưa được xử lý trên toàn bộ Thread (R2)
             Thread.setDefaultUncaughtExceptionHandler(
                     (thread, ex) -> log.error("Uncaught exception trên thread '{}': ", thread.getName(), ex));
 
-            // 2. Chạy Flyway migration trước để đồng bộ schema (R72)
             try {
                 MigrationRunner.migrate();
             } catch (Exception e) {
@@ -56,7 +44,6 @@ public class PharmacyApplication {
                 System.exit(1);
             }
 
-            // 3. Khởi tạo Hibernate SessionFactory và HikariCP Pool
             try {
                 HibernateUtil.init();
                 log.info("Hibernate SessionFactory đã được khởi tạo thành công.");
@@ -81,7 +68,6 @@ public class PharmacyApplication {
             });
 
             try {
-
                 boolean autoLoginDevMode = false;
                 String fxmlPath;
                 String title;
@@ -125,7 +111,6 @@ public class PharmacyApplication {
                 primaryStage.setY(visualBounds.getMinY() + (visualBounds.getHeight() - targetHeight) / 2);
                 com.pharmacy.common.UiScaleManager.getInstance().install(scene);
 
-                // Graceful shutdown khi người dùng bấm nút đóng cửa sổ (R71)
                 primaryStage.setOnCloseRequest(event -> {
                     log.info("Nhận tín hiệu đóng cửa sổ chính, đang dọn dẹp tài nguyên...");
                 });

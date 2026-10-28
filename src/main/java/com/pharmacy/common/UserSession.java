@@ -4,7 +4,6 @@ import com.pharmacy.account.Account;
 import com.pharmacy.employee.Employee;
 
 public final class UserSession {
-
     private static volatile UserSession instance;
 
     private final Account account;
@@ -35,9 +34,6 @@ public final class UserSession {
         }
     }
 
-    /**
-     * Kiểm tra quyền Quản lý ở tầng service (không chỉ dựa vào việc ẩn nút trên UI).
-     */
     public static void requireManager() {
         requireAuthenticated();
         if (!instance.isManager()) {
@@ -45,18 +41,11 @@ public final class UserSession {
         }
     }
 
-    /**
-     * ID nhân viên đang đăng nhập, hoặc null nếu chưa có phiên làm việc.
-     */
     public static Integer currentEmployeeId() {
         UserSession current = instance;
         return current != null ? current.getEmployeeId() : null;
     }
 
-    /**
-     * Phạm vi dữ liệu theo nhân viên: Nhân viên (STAFF) chỉ được xem dữ liệu của chính mình,
-     * bất kể tham số UI truyền vào; Quản lý giữ nguyên bộ lọc yêu cầu (null = toàn hệ thống).
-     */
     public static Integer scopeEmployeeId(Integer requested) {
         UserSession current = instance;
         if (current != null && current.account != null && !current.isManager()) {

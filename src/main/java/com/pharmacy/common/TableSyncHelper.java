@@ -12,7 +12,6 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Region;
 
 public final class TableSyncHelper {
-
     private TableSyncHelper() {}
 
     public static void enableAutoRowHeight(TableView<?> mainTable, TableView<?> stickyTable, int targetRowCount) {

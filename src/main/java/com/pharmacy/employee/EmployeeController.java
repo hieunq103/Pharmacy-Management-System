@@ -38,7 +38,6 @@ import com.pharmacy.common.TableFilterHelper;
 import com.pharmacy.common.TableSyncHelper;
 
 public class EmployeeController implements Initializable {
-
     private static final Logger log = LoggerFactory.getLogger(EmployeeController.class);
 
     @FXML private Label lblTotalEmployees;
@@ -85,10 +84,8 @@ public class EmployeeController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setupTableColumns();
 
-        // Tự động điều chỉnh chiều cao 7 dòng lấp đầy 100% bảng khi phóng to màn hình (không còn khoảng trắng)
         TableSyncHelper.enableAutoRowHeight(tableEmployee, tableActionSticky, AppConstants.DEFAULT_PAGE_SIZE);
 
-        // Thiết lập đồng bộ cuộn 2 chiều tuyệt đối: cuộn dọc mượt mà, không bao giờ xê dịch lệch hàng
         TableSyncHelper.setupDualTableSync(tableEmployee, tableActionSticky);
 
         Platform.runLater(() -> {
@@ -126,7 +123,6 @@ public class EmployeeController implements Initializable {
 
         tableEmployee.setItems(pageData);
 
-        // Nhấp đúp chuột (double-click) vào hàng để mở nhanh trang Thông tin chi tiết
         tableEmployee.setRowFactory(tv -> {
             TableRow<Employee> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -181,7 +177,6 @@ public class EmployeeController implements Initializable {
                 currentPage = result.getCurrentPage();
                 pageData.setAll(result.getItems());
 
-                // Cập nhật thông tin phạm vi bản ghi
                 if (lblRecordRange != null) {
                     if (totalRecords == 0) {
                         lblRecordRange.setText("0 - 0");
@@ -437,9 +432,6 @@ public class EmployeeController implements Initializable {
 
         itemToggleAcc.setDisable(isEmpInactive);
 
-        // =========================================================================
-        // 1. CHỨC NĂNG KHÓA / MỞ KHÓA TÀI KHOẢN
-        // =========================================================================
         itemToggleAcc.setOnAction(e -> {
             if (acc == null || acc.getId() == null) {
                 DialogUtils.showError("Lỗi", "Không tìm thấy thông tin tài khoản.");
@@ -477,7 +469,6 @@ public class EmployeeController implements Initializable {
                         if (success) {
                             DialogUtils.showInfo("Thông báo", toggleLabel + " thành công!");
 
-                            // ----- CÁCH 1: CẬP NHẬT TRỰC TIẾP TRÊN RAM VÀ REFRESH BẢNG -----
                             if (isAccountDisabled) {
                                 acc.setStatus(Account.Status.ACTIVE);
                             } else {
@@ -486,8 +477,6 @@ public class EmployeeController implements Initializable {
 
                             tableEmployee.refresh();
                             if (tableActionSticky != null) tableActionSticky.refresh();
-                            // ---------------------------------------------------------------
-
                         } else {
                             DialogUtils.showError("Thông báo", toggleLabel + " thất bại.");
                         }
@@ -503,9 +492,6 @@ public class EmployeeController implements Initializable {
             });
         });
 
-        // =========================================================================
-        // 2. CHỨC NĂNG ĐÁNH DẤU ĐÃ NGHỈ
-        // =========================================================================
         MenuItem itemMarkInactive = new MenuItem("Đánh dấu đã nghỉ");
         itemMarkInactive.setDisable(isEmpInactive);
         itemMarkInactive.setOnAction(e -> {
@@ -522,8 +508,6 @@ public class EmployeeController implements Initializable {
                 if (res == ButtonType.YES) {
                     boolean success = employeeService.markAsInactive(emp.getId());
                     if (success) {
-
-                        // ----- CÁCH 1: CẬP NHẬT TRỰC TIẾP TRÊN RAM VÀ REFRESH BẢNG -----
                         emp.setStatus(Employee.Status.INACTIVE);
                         if (emp.getAccount() != null) {
                             emp.getAccount().setStatus(Account.Status.DISABLED);
@@ -532,10 +516,7 @@ public class EmployeeController implements Initializable {
                         tableEmployee.refresh();
                         if (tableActionSticky != null) tableActionSticky.refresh();
 
-                        // Cập nhật lại luôn số đếm tổng/đang làm trên Header
                         updateSummaryCounts();
-                        // ---------------------------------------------------------------
-
                     } else {
                         DialogUtils.showError("Lỗi", "Không thể cập nhật trạng thái nhân viên.");
                     }
@@ -543,9 +524,6 @@ public class EmployeeController implements Initializable {
             });
         });
 
-        // =========================================================================
-        // 3. CHỨC NĂNG XEM CHI TIẾT
-        // =========================================================================
         MenuItem itemEditDetail = new MenuItem("Thông tin chi tiết");
         itemEditDetail.setOnAction(e -> showEmployeeDetail(emp));
 
@@ -564,7 +542,7 @@ public class EmployeeController implements Initializable {
             DialogUtils.showWarning("Cảnh báo", "Vui lòng chọn nhân viên cần xem chi tiết.");
             return;
         }
-        // Chọn chính mình -> mở Hồ sơ cá nhân thay cho hồ sơ chi tiết nhân viên
+
         if (emp.getId().equals(UserSession.currentEmployeeId()) && MainLayoutController.getInstance() != null) {
             MainLayoutController.getInstance().navigateToProfileFromEmployees();
             return;
@@ -599,7 +577,6 @@ public class EmployeeController implements Initializable {
 
                 contentArea.getChildren().setAll(detailView);
             }
-
         } catch (Exception ex) {
             log.error("Lỗi khi mở màn hình chi tiết nhân viên: ", ex);
             DialogUtils.showError("Lỗi", "Không thể mở trang chi tiết: " + ex.getMessage());

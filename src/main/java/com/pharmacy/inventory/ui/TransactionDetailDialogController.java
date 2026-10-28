@@ -27,14 +27,12 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class TransactionDetailDialogController implements Initializable {
-
     private static final Logger log = LoggerFactory.getLogger(TransactionDetailDialogController.class);
 
     @FXML private Button btnClose;
     @FXML private Label lblDialogTitle;
     @FXML private Label lblTransactionTime;
 
-    // Info card
     @FXML private Label lblEmployee;
     @FXML private Label lblPartnerLabel;
     @FXML private Label lblPartnerValue;
@@ -44,11 +42,9 @@ public class TransactionDetailDialogController implements Initializable {
     @FXML private HBox boxTotalAmount;
     @FXML private Label lblTotalAmount;
 
-    // Search & Counter
     @FXML private TextField txtSearchDetail;
     @FXML private Label lblRowCount;
 
-    // Table & Columns
     @FXML private TableView<InventoryTransactionDetailDTO> tableDetails;
     @FXML private TableColumn<InventoryTransactionDetailDTO, Integer> colIndex;
     @FXML private TableColumn<InventoryTransactionDetailDTO, String> colMedCode;
@@ -74,7 +70,6 @@ public class TransactionDetailDialogController implements Initializable {
     private int totalPages = 1;
     private long totalRecords = 0;
 
-    /** Nút X ở góc phải: đóng cửa sổ chi tiết phiếu nhập / xuất kho. */
     @FXML
     private void handleClose() {
         if (btnClose != null && btnClose.getScene() != null
@@ -182,7 +177,6 @@ public class TransactionDetailDialogController implements Initializable {
 
         boolean isImport = "IMPORT".equalsIgnoreCase(tx.getType());
 
-        // Tiêu đề
         if (isImport) {
             lblDialogTitle.setText("Chi tiết Phiếu Nhập Kho Dược Phẩm");
 
@@ -195,11 +189,9 @@ public class TransactionDetailDialogController implements Initializable {
                 lblTotalAmount.setText(FormatUtils.formatCurrency(tx.getTotalAmount()));
             }
 
-            // Hiện cột giá tiền, ẩn cột lý do
             colUnitPrice.setVisible(true);
             colTotalPrice.setVisible(true);
             colReason.setVisible(false);
-
         } else {
             lblDialogTitle.setText("Chi tiết Phiếu Xuất Kho");
 
@@ -211,7 +203,6 @@ public class TransactionDetailDialogController implements Initializable {
                 boxTotalAmount.setManaged(false);
             }
 
-            // Ẩn cột giá tiền, hiện cột lý do xuất cụ thể
             colUnitPrice.setVisible(false);
             colTotalPrice.setVisible(false);
             colReason.setVisible(true);
@@ -223,7 +214,6 @@ public class TransactionDetailDialogController implements Initializable {
         lblItemCount.setText(tx.getItemCount() + " mặt hàng");
         lblTotalQuantity.setText(tx.getTotalQuantity() + " sản phẩm");
 
-        // Tải chi tiết các mặt hàng thuốc trong phiếu từ DB
         Task<List<InventoryTransactionDetailDTO>> task = new Task<>() {
             @Override
             protected List<InventoryTransactionDetailDTO> call() {

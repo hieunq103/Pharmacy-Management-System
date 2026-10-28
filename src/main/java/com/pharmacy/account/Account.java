@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "accounts")
 public class Account implements Serializable {
-
     public enum Status {
         ACTIVE, DISABLED
     }
@@ -28,7 +27,6 @@ public class Account implements Serializable {
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
-    // LAZY: mọi truy vấn cần role đều JOIN FETCH a.role (findByUsername, findByIdWithDetails, getEmployeesPage)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;

@@ -14,19 +14,14 @@ import java.util.Map;
 import java.util.Optional;
 
 public class EmployeeRepository {
-
     private static final Logger log = LoggerFactory.getLogger(EmployeeRepository.class);
 
-    /**
-     * Kiểm tra mã nhân viên đã tồn tại hay chưa
-     */
+    // Kiểm tra mã nhân viên đã tồn tại chưa
     public boolean existsByCode(String code) {
         return existsByField("code", code, null, "mã nhân viên");
     }
 
-    /**
-     * Tự động sinh mã nhân viên tiếp theo theo định dạng PMS + 4 chữ số (PMS0001, PMS0002...).
-     */
+    // Sinh mã nhân viên tiếp theo theo định dạng PMSxxxx
     public String generateNextEmployeeCode() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String sql = "SELECT code FROM employees WHERE code LIKE 'PMS%' ORDER BY LENGTH(code) DESC, code DESC LIMIT 1";
@@ -49,30 +44,28 @@ public class EmployeeRepository {
         }
     }
 
-    /**
-     * Dùng cho CẬP NHẬT: Kiểm tra SĐT có bị trùng với NGƯỜI KHÁC hay không
-     */
+    // Kiểm tra số điện thoại đã tồn tại ở nhân viên khác chưa
     public boolean existsByPhoneAndNotId(String phone, Integer currentEmployeeId) {
         return existsByField("phone", phone, currentEmployeeId, "số điện thoại");
     }
 
+    // Kiểm tra số điện thoại đã tồn tại trong hệ thống chưa
     public boolean existsByPhone(String phone) {
         return existsByField("phone", phone, null, "số điện thoại");
     }
 
+    // Kiểm tra căn cước công dân đã tồn tại trong hệ thống chưa
     public boolean existsByNationalId(String nationalId) {
         return existsByField("nationalId", nationalId, null, "CCCD");
     }
 
-    /**
-     * Dùng cho CẬP NHẬT: Kiểm tra CCCD có bị trùng với NGƯỜI KHÁC hay không
-     */
+    // Kiểm tra căn cước công dân đã tồn tại ở nhân viên khác chưa
     public boolean existsByNationalIdAndNotId(String nationalId, Integer employeeId) {
         if (employeeId == null) return false;
         return existsByField("nationalId", nationalId, employeeId, "CCCD");
     }
 
-    /** Đếm nhân viên có field = value (bỏ qua nhân viên excludeId nếu có). Cột phone/national_id đều có UNIQUE index. */
+    // Đếm số lượng nhân viên theo trường dữ liệu chỉ định
     private boolean existsByField(String field, String value, Integer excludeId, String label) {
         if (value == null || value.isBlank()) return false;
         try {
@@ -90,7 +83,7 @@ public class EmployeeRepository {
         }
     }
 
-    /** Cập nhật hồ sơ cá nhân: chỉ Họ tên, SĐT, địa chỉ. */
+    // Cập nhật thông tin hồ sơ cá nhân của nhân viên đang đăng nhập
     public boolean updateOwnProfile(Integer employeeId, String fullName, String phone, String address) {
         try {
             return HibernateUtil.executeWithResult(session -> session.createMutationQuery("""
@@ -108,6 +101,7 @@ public class EmployeeRepository {
         }
     }
 
+    // Tìm nhân viên theo ID kèm thông tin tài khoản và vai trò
     public Optional<Employee> findByIdWithDetails(Integer id) {
         if (id == null)
             return Optional.empty();
@@ -124,6 +118,7 @@ public class EmployeeRepository {
         });
     }
 
+    // Lấy danh sách lịch sử đăng nhập của tài khoản
     public List<Object[]> getLoginHistory(Integer accountId) {
         if (accountId == null)
             return List.of();
@@ -151,6 +146,7 @@ public class EmployeeRepository {
         }
     }
 
+    // Thống kê tổng số nhân viên và số nhân viên đang hoạt động
     public EmployeeSummary getEmployeeSummary() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String hql = """
@@ -168,9 +164,7 @@ public class EmployeeRepository {
         }
     }
 
-    /**
-     * Phân trang nhân viên chuẩn Server-side: Tìm kiếm và lọc đa tiêu chí tại CSDL
-     */
+    // Phân trang và lọc danh sách nhân viên theo nhiều tiêu chí
     public PageResult<Employee> getEmployeesPage(int page, int size, String keyword, String gender, String role,
             String status, String accountStatus) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -189,7 +183,6 @@ public class EmployeeRepository {
                 params.put("keyword", "%" + cleanKw + "%");
             }
 
-            // Giới tính, Vai trò, Tài khoản: hỗ trợ chọn nhiều giá trị (phân tách bằng dấu phẩy, ví dụ "Nam,Nữ")
             List<String> genders = parseMultiFilter(gender);
             if (!genders.isEmpty()) {
                 whereClause.append(" AND e.gender IN (:genders) ");
@@ -224,7 +217,6 @@ public class EmployeeRepository {
 
             boolean needAccountJoin = !roleCodes.isEmpty() || !accStatuses.isEmpty();
 
-            // 1. Query COUNT
             String countHql = needAccountJoin
                     ? "SELECT COUNT(e.id) FROM Employee e LEFT JOIN e.account a LEFT JOIN a.role r "
                             + whereClause
@@ -238,8 +230,6 @@ public class EmployeeRepository {
                 return PageResult.empty(page, size);
             }
 
-            // 2. Query DATA (phân trang bằng setFirstResult và setMaxResults)
-            // Quan hệ to-one nên JOIN FETCH không nhân bản dòng -> không cần DISTINCT, LIMIT/OFFSET chạy ở SQL
             String dataHql = "SELECT e FROM Employee e LEFT JOIN FETCH e.account a LEFT JOIN FETCH a.role r "
                     + whereClause + " ORDER BY e.id DESC";
             var dataQuery = session.createSelectionQuery(dataHql, Employee.class);
@@ -255,8 +245,7 @@ public class EmployeeRepository {
         }
     }
 
-
-    /** Tách bộ lọc đa chọn "A,B" thành danh sách; rỗng nghĩa là không lọc ("Tất cả"). */
+    // Chuyển chuỗi lọc nhiều giá trị phân tách bởi dấu phẩy thành danh sách
     private static List<String> parseMultiFilter(String raw) {
         if (raw == null || raw.isBlank()) return List.of();
         return java.util.Arrays.stream(raw.split(","))
@@ -266,6 +255,7 @@ public class EmployeeRepository {
                 .toList();
     }
 
+    // Thêm mới nhân viên đồng thời tạo tài khoản đăng nhập
     public boolean addEmployeeWithAccount(Employee emp, String roleDisplayOrCode, String initialPasswordHash) {
         String roleCode = roleDisplayOrCode;
         if ("Quản lý".equalsIgnoreCase(roleDisplayOrCode) || "MANAGER".equalsIgnoreCase(roleDisplayOrCode)) {
@@ -290,12 +280,12 @@ public class EmployeeRepository {
 
                 Account account = new Account();
                 account.setEmployee(emp);
-                // Tên đăng nhập gắn cố định theo mã nhân viên (PMSxxxx)
+
                 account.setUsername(emp.getCode());
                 account.setRole(role);
                 account.setPasswordHash(initialPasswordHash);
                 account.setStatus(Account.Status.ACTIVE);
-                // Tài khoản mới dùng mật khẩu khởi tạo -> bắt buộc đổi ở lần đăng nhập đầu tiên
+
                 account.setMustChangePassword(true);
                 session.persist(account);
                 return true;
@@ -306,6 +296,7 @@ public class EmployeeRepository {
         }
     }
 
+    // Đánh dấu nhân viên đã nghỉ việc và vô hiệu hóa tài khoản
     public boolean markAsInactive(Integer employeeId) {
         try {
             HibernateUtil.execute(session -> {
@@ -325,6 +316,7 @@ public class EmployeeRepository {
         }
     }
 
+    // Cập nhật thông tin nhân viên, trạng thái và vai trò tài khoản bởi Quản lý
     public boolean updateEmployeeByManager(EmployeeUpdateRequest req) {
         try {
             return HibernateUtil.executeWithResult(session -> {
@@ -348,7 +340,6 @@ public class EmployeeRepository {
                     return false;
                 }
 
-                // Tìm Role theo code hoặc tên hiển thị; không tìm thấy thì giữ nguyên role, chỉ đổi trạng thái
                 Role role = session.createSelectionQuery("FROM Role r WHERE r.code = :roleVal OR r.name = :roleVal", Role.class)
                         .setParameter("roleVal", req.roleName())
                         .setMaxResults(1)

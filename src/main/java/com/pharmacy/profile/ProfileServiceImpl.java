@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProfileServiceImpl implements ProfileService {
-
     private static final Logger log = LoggerFactory.getLogger(ProfileServiceImpl.class);
 
     private final EmployeeRepository employeeRepository;
@@ -30,7 +29,7 @@ public class ProfileServiceImpl implements ProfileService {
         if (request == null || request.employeeId() == null) {
             throw new IllegalArgumentException("Dữ liệu yêu cầu cập nhật không hợp lệ.");
         }
-        // Hồ sơ cá nhân: chỉ được sửa hồ sơ của chính người đang đăng nhập
+
         UserSession.requireAuthenticated();
         if (!request.employeeId().equals(UserSession.currentEmployeeId())) {
             throw new SecurityException("Chỉ được cập nhật hồ sơ cá nhân của chính mình.");
@@ -105,7 +104,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         account.setPasswordHash(newPasswordHash);
         account.setMustChangePassword(false);
-        // Đồng bộ tài khoản trong phiên hiện tại (đối tượng có thể khác instance vừa đọc từ DB)
+
         if (UserSession.isLoggedIn() && account.getId().equals(UserSession.getInstance().getAccount().getId())) {
             UserSession.getInstance().getAccount().setPasswordHash(newPasswordHash);
             UserSession.getInstance().getAccount().setMustChangePassword(false);

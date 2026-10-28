@@ -48,7 +48,6 @@ public final class HibernateUtil {
         try {
             log.info("Khởi tạo Hibernate SessionFactory với HikariCP...");
 
-            // Cấu hình HikariCP Connection Pool
             HikariConfig config = new HikariConfig();
             config.setDriverClassName("com.mysql.cj.jdbc.Driver");
             config.setJdbcUrl(AppConfig.get("db.url"));
@@ -62,31 +61,28 @@ public final class HibernateUtil {
             config.setMaxLifetime(Long.parseLong(AppConfig.get("db.pool.maxLifetimeMs", "1800000")));
             config.setIdleTimeout(Long.parseLong(AppConfig.get("db.pool.idleTimeoutMs", "600000")));
             config.setPoolName("PharmaOS-MainPool");
-            // Driver MySQL gộp các câu trong JDBC batch thành 1 câu INSERT nhiều dòng (giảm round-trip)
+
             config.addDataSourceProperty("rewriteBatchedStatements", "true");
-            // NOW()/CURDATE() trong SQL phải cùng múi giờ với mốc thời gian Java gửi xuống (driver quy đổi theo
-            // serverTimezone trong URL); nếu MySQL chạy múi giờ khác (vd. UTC) thì "hôm nay" sẽ bị lệch ngày.
+
             config.setConnectionInitSql("SET time_zone = '" + sessionTimeZoneOffset(config.getJdbcUrl()) + "'");
 
             dataSource = new HikariDataSource(config);
 
-            // Cấu hình Hibernate Service Registry
             StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder();
             registryBuilder.applySetting(AvailableSettings.JAKARTA_NON_JTA_DATASOURCE, dataSource);
             registryBuilder.applySetting(AvailableSettings.HBM2DDL_AUTO, "none");
-            // Log SQL / thống kê để đo số câu truy vấn (bật qua application.properties khi cần profiling)
+
             registryBuilder.applySetting(AvailableSettings.SHOW_SQL, AppConfig.get("hibernate.show_sql", "false"));
             registryBuilder.applySetting(AvailableSettings.FORMAT_SQL, AppConfig.get("hibernate.format_sql", "false"));
             registryBuilder.applySetting(AvailableSettings.GENERATE_STATISTICS,
                     AppConfig.get("hibernate.generate_statistics", "false"));
-            // Gom insert/update theo lô (JDBC batch) cho các thao tác ghi hàng loạt
+
             registryBuilder.applySetting(AvailableSettings.STATEMENT_BATCH_SIZE, AppConfig.get("hibernate.jdbc.batch_size", "50"));
             registryBuilder.applySetting(AvailableSettings.ORDER_INSERTS, "true");
             registryBuilder.applySetting(AvailableSettings.ORDER_UPDATES, "true");
 
             registry = registryBuilder.build();
 
-            // Đăng ký các Entity ORM
             MetadataSources metadataSources = new MetadataSources(registry);
             metadataSources.addAnnotatedClass(Role.class);
             metadataSources.addAnnotatedClass(Employee.class);
@@ -104,10 +100,6 @@ public final class HibernateUtil {
         }
     }
 
-    /**
-     * Độ lệch UTC (vd. "+07:00") của múi giờ kết nối: serverTimezone/connectionTimeZone trong URL,
-     * mặc định là múi giờ của JVM.
-     */
     static String sessionTimeZoneOffset(String jdbcUrl) {
         ZoneId zone = ZoneId.systemDefault();
         Matcher m = Pattern.compile("[?&](?:serverTimezone|connectionTimeZone)=([^&]+)").matcher(jdbcUrl == null ? "" : jdbcUrl);
@@ -125,9 +117,6 @@ public final class HibernateUtil {
         return "Z".equals(offset) ? "+00:00" : offset;
     }
 
-    /**
-     * Thực thi thao tác truy vấn có kết quả trả về trong một Transaction an toàn
-     */
     public static <R> R executeWithResult(Function<Session, R> function) {
         try (Session session = getSessionFactory().openSession()) {
             Transaction tx = null;
@@ -144,10 +133,6 @@ public final class HibernateUtil {
         }
     }
 
-    /**
-     * Thực thi thao tác thay đổi dữ liệu (Insert, Update, Delete) không cần giá trị
-     * trả về
-     */
     public static void execute(Consumer<Session> consumer) {
         try (Session session = getSessionFactory().openSession()) {
             Transaction tx = null;
@@ -163,9 +148,6 @@ public final class HibernateUtil {
         }
     }
 
-    /**
-     * Kiểm tra trạng thái sống của kết nối cơ sở dữ liệu (Heartbeat check)
-     */
     public static boolean isDatabaseAlive() {
         if (dataSource == null || dataSource.isClosed())
             return false;
@@ -176,9 +158,6 @@ public final class HibernateUtil {
         }
     }
 
-    /**
-     * R71: Đóng an toàn toàn bộ tài nguyên khi tắt ứng dụng
-     */
     public static synchronized void shutdown() {
         if (sessionFactory != null && !sessionFactory.isClosed()) {
             sessionFactory.close();

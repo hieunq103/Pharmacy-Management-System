@@ -13,7 +13,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EmployeeServiceSelfEditTest {
-
     private FakeEmployeeRepository fakeRepository;
     private EmployeeServiceImpl employeeService;
     private Employee currentManager;
@@ -90,7 +89,7 @@ class EmployeeServiceSelfEditTest {
                 "Nam",
                 "Đang làm việc",
                 "Đang hoạt động",
-                "Nhân viên bán thuốc" // Cố tình hạ quyền thành nhân viên
+                "Nhân viên bán thuốc"
         );
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
@@ -111,7 +110,7 @@ class EmployeeServiceSelfEditTest {
                 "Hà Nội",
                 LocalDate.of(1990, 1, 1),
                 "Nam",
-                "Đã nghỉ việc", // Cố tình tự đánh dấu nghỉ
+                "Đã nghỉ việc",
                 "Đang hoạt động",
                 "Quản lý cửa hàng"
         );
@@ -135,7 +134,7 @@ class EmployeeServiceSelfEditTest {
                 LocalDate.of(1990, 1, 1),
                 "Nam",
                 "Đang làm việc",
-                "Đang bị khóa", // Cố tình tự khóa tài khoản
+                "Đang bị khóa",
                 "Quản lý cửa hàng"
         );
 
@@ -172,12 +171,10 @@ class EmployeeServiceSelfEditTest {
         currentManager.setDob(LocalDate.of(1990, 1, 1));
         currentManager.setGender("Nam");
 
-        // Đổi Họ tên, SĐT, Địa chỉ của chính mình: được phép
         EmployeeUpdateRequest allowed = new EmployeeUpdateRequest(1, "Tên Mới", "001090000001", "0987654321",
                 "Hà Đông", LocalDate.of(1990, 1, 1), "Nam", "Đang làm việc", "Đang hoạt động", "Quản lý cửa hàng");
         assertTrue(employeeService.updateEmployeeByManager(allowed));
 
-        // Tự đổi CCCD / ngày sinh / giới tính: bị chặn
         EmployeeUpdateRequest changeCccd = new EmployeeUpdateRequest(1, "Tên Mới", "001090000099", "0987654321",
                 "Hà Đông", LocalDate.of(1990, 1, 1), "Nam", "Đang làm việc", "Đang hoạt động", "Quản lý cửa hàng");
         EmployeeUpdateRequest changeDob = new EmployeeUpdateRequest(1, "Tên Mới", "001090000001", "0987654321",
@@ -194,7 +191,7 @@ class EmployeeServiceSelfEditTest {
     @Test
     void testManagerCanEditOtherEmployeeRoleAndStatus() {
         EmployeeUpdateRequest request = new EmployeeUpdateRequest(
-                2, // Khác ID của Quản lý hiện tại
+                2,
                 "Trần Văn Nhân Viên",
                 "001090000002",
                 "0912345678",
@@ -203,7 +200,7 @@ class EmployeeServiceSelfEditTest {
                 "Nam",
                 "Đang làm việc",
                 "Đang hoạt động",
-                "Quản lý cửa hàng" // Thăng chức cho nhân viên khác
+                "Quản lý cửa hàng"
         );
 
         boolean result = employeeService.updateEmployeeByManager(request);

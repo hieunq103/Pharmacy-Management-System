@@ -3,7 +3,6 @@ package com.pharmacy.infra.security;
 import org.mindrot.jbcrypt.BCrypt;
 
 public final class PasswordEncoder {
-
     private static final int BCRYPT_WORK_FACTOR = 12;
 
     private PasswordEncoder() {

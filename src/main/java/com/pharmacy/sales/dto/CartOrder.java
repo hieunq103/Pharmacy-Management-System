@@ -6,7 +6,6 @@ import javafx.collections.ObservableList;
 import java.math.BigDecimal;
 
 public class CartOrder {
-
     private final int id;
     private String name;
     private final ObservableList<CartItem> items = FXCollections.observableArrayList();

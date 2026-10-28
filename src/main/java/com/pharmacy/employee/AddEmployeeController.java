@@ -10,7 +10,6 @@ import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 public class AddEmployeeController implements Initializable {
-
     @FXML private TextField txtEmployeeCode;
     @FXML private TextField txtFullName;
     @FXML private DatePicker dpBirthDate;
@@ -44,10 +43,8 @@ public class AddEmployeeController implements Initializable {
         cbRole.setItems(FXCollections.observableArrayList("Nhân viên", "Quản lý"));
         cbRole.setValue("Nhân viên");
 
-        // Format DatePicker hiển thị định dạng ngày dd/MM/yyyy
         com.pharmacy.common.FormatUtils.setupDatePicker(dpBirthDate);
 
-        // Xóa viền đỏ và text báo lỗi ngay khi người dùng gõ hoặc chọn lại
         txtFullName.textProperty().addListener((obs, o, n) -> clearError(txtFullName, lblErrorName));
         dpBirthDate.valueProperty().addListener((obs, o, n) -> clearError(dpBirthDate, lblErrorBirthDate));
         txtCitizenId.textProperty().addListener((obs, o, n) -> clearError(txtCitizenId, lblErrorCitizenId));
@@ -99,7 +96,6 @@ public class AddEmployeeController implements Initializable {
 
         boolean isValid = true;
 
-        // 1. Validate Họ và tên
         if (name.isEmpty()) {
             showError(txtFullName, lblErrorName, "Họ và tên không được để trống");
             isValid = false;
@@ -108,7 +104,6 @@ public class AddEmployeeController implements Initializable {
             isValid = false;
         }
 
-        // 2. Validate Ngày sinh (Nhân viên phải từ đủ 18 tuổi)
         if (birthDate == null) {
             showError(dpBirthDate, lblErrorBirthDate, "Vui lòng chọn ngày sinh");
             isValid = false;
@@ -117,7 +112,6 @@ public class AddEmployeeController implements Initializable {
             isValid = false;
         }
 
-        // 3. Validate Căn cước công dân (12 chữ số)
         if (citizenId.isEmpty()) {
             showError(txtCitizenId, lblErrorCitizenId, "Vui lòng nhập căn cước công dân");
             isValid = false;
@@ -126,7 +120,6 @@ public class AddEmployeeController implements Initializable {
             isValid = false;
         }
 
-        // 4. Validate Số điện thoại (10 chữ số chuẩn đầu số VN)
         if (phone.isEmpty()) {
             showError(txtPhone, lblErrorPhone, "Số điện thoại không được để trống");
             isValid = false;
@@ -135,7 +128,6 @@ public class AddEmployeeController implements Initializable {
             isValid = false;
         }
 
-        // 5. Validate Địa chỉ
         if (address.isEmpty()) {
             showError(txtAddress, lblErrorAddress, "Địa chỉ không được để trống");
             isValid = false;
@@ -143,7 +135,6 @@ public class AddEmployeeController implements Initializable {
 
         if (!isValid) return;
 
-        // 6. Gán dữ liệu vào Entity Employee
         Employee newEmp = new Employee();
         String code = txtEmployeeCode != null ? txtEmployeeCode.getText().trim() : "";
         if (!code.isEmpty()) {
@@ -156,11 +147,9 @@ public class AddEmployeeController implements Initializable {
         newEmp.setPhone(phone);
         newEmp.setAddress(address);
 
-        // Tự động gán Ngày vào làm và Trạng thái ban đầu
         newEmp.setHiredDate(LocalDate.now());
         newEmp.setStatus(Employee.Status.ACTIVE);
 
-        // 7. Gọi Service lưu thông tin nhân viên và cấp tài khoản cùng lúc
         try {
             boolean success = employeeService.createEmployeeWithAccount(newEmp, role);
 
@@ -169,7 +158,6 @@ public class AddEmployeeController implements Initializable {
                     onSaveSuccessCallback.accept(newEmp);
                 }
             } else {
-                // Trường hợp repository commit thất bại do lỗi hệ thống/kết nối DB
                 showError(txtPhone, lblErrorPhone, "Lưu thất bại! Đã có lỗi xảy ra từ hệ thống.");
             }
         } catch (IllegalArgumentException ex) {

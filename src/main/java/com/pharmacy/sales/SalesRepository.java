@@ -38,10 +38,8 @@ import static com.pharmacy.common.SqlRows.*;
 import static com.pharmacy.inventory.InventorySql.*;
 
 public class SalesRepository {
-
     private static final Logger log = LoggerFactory.getLogger(SalesRepository.class);
 
-    /** Cột thông tin đơn hàng (đã tổng hợp chi tiết) theo thứ tự {@link #mapOrderRow(Object[])} đọc. */
     private static final String ORDER_SUMMARY_SELECT = """
             SELECT so.id, so.code, so.created_at, so.employee_id, e.full_name AS employee_name,
                    so.customer_phone, agg.item_count, agg.total_qty, agg.subtotal,
@@ -59,9 +57,7 @@ public class SalesRepository {
             ORDER BY so.created_at DESC, so.id DESC
             """;
 
-    /**
-     * Lấy danh sách tất cả danh mục thuốc để hiển thị các nút pill filter hoặc combobox
-     */
+    // Lấy danh sách tên tất cả danh mục thuốc cho màn hình bán hàng
     public List<String> getAllCategories() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createNativeQuery("SELECT name FROM medicine_categories ORDER BY id ASC", String.class).list();
@@ -71,11 +67,7 @@ public class SalesRepository {
         }
     }
 
-    /**
-     * Phân trang thuốc cho quầy bán hàng (thuốc còn hàng bán được xếp trước, rồi theo tên).
-     * Bước 1 chỉ lấy ID của trang (mỗi thuốc 1 lần dò chỉ mục EXISTS), bước 2 tính tồn kho
-     * cho đúng các thuốc trong trang bằng LATERAL — thay cho 5 subquery x toàn bộ danh mục.
-     */
+    // Phân trang danh sách thuốc bán kèm số lượng tồn khả dụng
     public PageResult<MedicineInventoryDTO> getMedicinesPage(int page, int size, String keyword, String categoryName) {
         int validPage = Math.max(1, page);
         int validSize = Math.max(1, size);
@@ -130,15 +122,13 @@ public class SalesRepository {
         }
     }
 
+    // Gán tham số tìm kiếm từ khóa và danh mục cho truy vấn thuốc bán
     private static void bindMedicineFilter(NativeQuery<?> query, String keyword, String category) {
         if (keyword != null) query.setParameter("keyword", likeParam(keyword));
         if (category != null) query.setParameter("category", category.trim());
     }
 
-    /**
-     * Thuốc ở quầy bán: số lượng hiển thị là tồn BÁN ĐƯỢC (không tính lô đã hết hạn),
-     * đúng với số lượng mà {@link #createSalesOrder(SalesOrderRequest)} cho phép trừ kho.
-     */
+    // Ánh xạ dòng kết quả truy vấn sang DTO thuốc bán
     private static MedicineInventoryDTO mapSalesMedicineRow(Object[] row) {
         int sellableQty = Math.max(0, toInt(row[13]));
         int expiredCount = toInt(row[10]);
@@ -161,13 +151,7 @@ public class SalesRepository {
         return dto;
     }
 
-    /**
-     * Sinh trước mã hóa đơn bán lẻ độc nhất: HDB-[STORE_CODE]-YYMMDD-HHmmss-XX
-     * - STORE_CODE: Đọc động từ file payment.properties (tuyệt đối không hardcode).
-     * - YYMMDD-HHmmss: Thời gian thực tạo đơn đến từng giây.
-     * - XX: Số ngẫu nhiên chống xung đột đồng thời khi nhiều quầy/cửa hàng cùng bấm thanh toán.
-     * Ví dụ: HDB-CH01-261022-152630-78 (Độ dài 25 ký tự, vừa vặn cột VARCHAR(30) của Database).
-     */
+    // Sinh mã hóa đơn tiếp theo theo định dạng HDB-yyMMdd-xxx
     public String generateNextOrderCode() {
         String store = com.pharmacy.sales.payment.PaymentConfig.getStoreCode();
         String storeClean = hasText(store) ? store.trim().toUpperCase().replaceAll("[^A-Z0-9]", "") : "CH01";
@@ -179,17 +163,7 @@ public class SalesRepository {
         return String.format("HDB-%s-%s-%02d", storeClean, timestamp, randomSuffix);
     }
 
-    /**
-     * Tạo hóa đơn bán lẻ và trừ kho theo FEFO trong một transaction.
-     * <ul>
-     *   <li>Giá bán lấy từ bảng medicines (không tin giá/tổng tiền gửi từ client); nếu giá trong giỏ
-     *       khác giá hiện tại thì từ chối để tránh lệch với số tiền khách đã chuyển khoản.</li>
-     *   <li>Chỉ trừ lô CÒN HẠN (expiry_date &gt; hôm nay) — không bán thuốc hết hạn.</li>
-     *   <li>Các lô được khóa bằng SELECT ... FOR UPDATE nên hai quầy thanh toán đồng thời
-     *       không thể bán vượt tồn.</li>
-     *   <li>Chi tiết hóa đơn và cập nhật tồn chạy bằng JDBC batch.</li>
-     * </ul>
-     */
+    // Tạo mới đơn bán hàng, phân bổ lô thuốc theo FEFO và cập nhật tồn kho
     public String createSalesOrder(SalesOrderRequest req) {
         if (req == null || req.getItems() == null || req.getItems().isEmpty()) {
             throw new IllegalArgumentException("Đơn hàng rỗng, không có sản phẩm nào để thanh toán.");
@@ -201,7 +175,6 @@ public class SalesRepository {
 
         try {
             HibernateUtil.execute(session -> session.doWork(conn -> {
-                // Gộp số lượng theo thuốc (giữ thứ tự trong giỏ)
                 Map<Integer, Integer> qtyByMedicine = new LinkedHashMap<>();
                 Map<Integer, CartItem> cartByMedicine = new HashMap<>();
                 for (CartItem item : req.getItems()) {
@@ -215,9 +188,8 @@ public class SalesRepository {
                 Map<Integer, BigDecimal> prices = loadActivePrices(conn, qtyByMedicine.keySet());
                 Map<Integer, List<long[]>> lotsByMedicine = lockSellableLots(conn, qtyByMedicine.keySet());
 
-                // 1. Tính tiền từ giá DB và phân bổ số lượng vào các lô theo FEFO
                 BigDecimal subtotal = BigDecimal.ZERO;
-                List<Object[]> lines = new ArrayList<>(); // {medicineId, lotId, qty, unitPrice, lineTotal}
+                List<Object[]> lines = new ArrayList<>();
                 for (Map.Entry<Integer, Integer> entry : qtyByMedicine.entrySet()) {
                     int medicineId = entry.getKey();
                     int needed = entry.getValue();
@@ -251,7 +223,6 @@ public class SalesRepository {
                 BigDecimal totalAmount = CartTotals.total(subtotal, discount);
                 String phone = hasText(req.getCustomerPhone()) ? req.getCustomerPhone().trim() : null;
 
-                // 2. Hóa đơn
                 long orderId;
                 try (PreparedStatement ps = conn.prepareStatement("""
                         INSERT INTO sales_orders (code, employee_id, customer_phone, total_amount, discount, payment_method, created_at)
@@ -270,7 +241,6 @@ public class SalesRepository {
                     }
                 }
 
-                // 3. Chi tiết hóa đơn + trừ tồn (batch)
                 try (PreparedStatement itemPs = conn.prepareStatement("""
                         INSERT INTO sales_order_items (sales_order_id, medicine_id, inventory_lot_id, quantity, unit_price, line_total)
                         VALUES (?, ?, ?, ?, ?, ?)
@@ -299,7 +269,6 @@ public class SalesRepository {
                     }
                 }
 
-                // 4. Giao dịch xuất kho EXPORT_SALE
                 try (PreparedStatement ps = conn.prepareStatement("""
                         INSERT INTO inventory_transactions (type, sales_order_id, employee_id, transaction_at, note)
                         VALUES ('EXPORT_SALE', ?, ?, NOW(), ?)
@@ -320,11 +289,12 @@ public class SalesRepository {
         }
     }
 
+    // Tạo chuỗi dấu hỏi chấm cho mệnh đề IN trong SQL
     private static String placeholders(int n) {
         return String.join(",", Collections.nCopies(n, "?"));
     }
 
-    /** Giá bán hiện tại của các thuốc đang kinh doanh. Khóa dòng (FOR SHARE) để giá không đổi giữa chừng. */
+    // Lấy giá bán hiện tại của các thuốc đang kinh doanh
     private static Map<Integer, BigDecimal> loadActivePrices(Connection conn, java.util.Set<Integer> medicineIds) throws SQLException {
         Map<Integer, BigDecimal> prices = new HashMap<>();
         try (PreparedStatement ps = conn.prepareStatement("SELECT id, sell_price FROM medicines WHERE status = 'ACTIVE' AND id IN ("
@@ -338,10 +308,7 @@ public class SalesRepository {
         return prices;
     }
 
-    /**
-     * Khóa (FOR UPDATE) toàn bộ lô còn tồn và còn hạn của các thuốc trong giỏ bằng 1 câu lệnh,
-     * sắp theo FEFO. Trả về medicineId -> [{lotId, quantityRemaining}, ...].
-     */
+    // Khóa và lấy danh sách lô thuốc còn hạn theo thứ tự ưu tiên FEFO
     private static Map<Integer, List<long[]>> lockSellableLots(Connection conn, java.util.Set<Integer> medicineIds) throws SQLException {
         Map<Integer, List<long[]>> result = new HashMap<>();
         try (PreparedStatement ps = conn.prepareStatement("""
@@ -363,20 +330,13 @@ public class SalesRepository {
         return result;
     }
 
-    /**
-     * Lịch sử bán hàng theo ngày, phân quyền nhân viên/quản lý.
-     * @param date Ngày bán (mặc định hôm nay nếu null)
-     * @param employeeId ID nhân viên nếu là cấp Nhân viên (chỉ xem của bản thân); null nếu là Quản lý
-     * @param keyword Từ khóa tìm kiếm mã đơn, SĐT hoặc tên nhân viên
-     */
+    // Lấy danh sách hóa đơn bán hàng theo một ngày cụ thể
     public PageResult<SalesOrderDTO> getSalesOrders(LocalDate date, Integer employeeId, String keyword, int page, int size) {
         if (date == null) date = LocalDate.now();
         return getSalesOrders(date, date, employeeId, keyword, page, size);
     }
 
-    /**
-     * Lịch sử bán hàng trong khoảng ngày [fromDate, toDate] (gồm cả hai đầu), ví dụ cả một tháng.
-     */
+    // Phân trang danh sách hóa đơn bán hàng theo khoảng ngày và từ khóa
     public PageResult<SalesOrderDTO> getSalesOrders(LocalDate fromDate, LocalDate toDate, Integer employeeId, String keyword,
                                                     int page, int size) {
         if (fromDate == null) fromDate = LocalDate.now();
@@ -386,7 +346,7 @@ public class SalesRepository {
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             boolean hasKeyword = hasText(keyword);
-            // Khoảng nửa mở [00:00 ngày đầu, 00:00 ngày sau ngày cuối) dùng được chỉ mục created_at
+
             StringBuilder where = new StringBuilder(" WHERE so.created_at >= :fromTs AND so.created_at < :toTs ");
             if (employeeId != null) where.append(" AND so.employee_id = :empId ");
             if (hasKeyword) {
@@ -418,6 +378,7 @@ public class SalesRepository {
         }
     }
 
+    // Gán tham số bộ lọc cho truy vấn danh sách hóa đơn
     private static void bindOrderFilter(NativeQuery<?> query, LocalDate fromDate, LocalDate toDate, Integer employeeId, String keyword) {
         query.setParameter("fromTs", Timestamp.valueOf(fromDate.atStartOfDay()));
         query.setParameter("toTs", Timestamp.valueOf(toDate.plusDays(1).atStartOfDay()));
@@ -425,6 +386,7 @@ public class SalesRepository {
         if (keyword != null) query.setParameter("kw", likeParam(keyword));
     }
 
+    // Ánh xạ dòng dữ liệu SQL sang đối tượng SalesOrderDTO
     private static SalesOrderDTO mapOrderRow(Object[] r) {
         return new SalesOrderDTO(
                 toLongObj(r[0]), toStr(r[1]), toLocalDateTime(r[2]), toInteger(r[3]), toStr(r[4]), null,
@@ -432,9 +394,7 @@ public class SalesRepository {
                 toBigDecimal(r[10]), toStr(r[11]));
     }
 
-    /**
-     * Lấy danh sách các mặt hàng chi tiết trong 1 đơn bán hàng
-     */
+    // Lấy danh sách chi tiết các mặt hàng của một hóa đơn
     public List<SalesOrderDetailDTO> getSalesOrderItems(long orderId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String sql = """
@@ -463,9 +423,7 @@ public class SalesRepository {
         }
     }
 
-    /**
-     * Doanh số và số hóa đơn hôm nay — quét theo chỉ mục created_at.
-     */
+    // Lấy thống kê tổng quan doanh thu và số đơn bán trong ngày hôm nay
     public TodaySalesSummary getTodaySalesSummary(Integer employeeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             LocalDate today = LocalDate.now();
@@ -488,17 +446,12 @@ public class SalesRepository {
         }
     }
 
-    /**
-     * Doanh số theo từng ngày trong 7 ngày gần nhất phục vụ vẽ biểu đồ tuần
-     */
+    // Lấy doanh số bán hàng trong 7 ngày gần nhất tính đến hôm nay
     public List<DailySalesDTO> getLast7DaysSales(Integer employeeId) {
         return get7DaysSalesUpTo(LocalDate.now(), employeeId);
     }
 
-    /**
-     * Doanh số, số đơn và số lượng thuốc theo ngày trong 7 ngày tính đến endDate (gồm endDate).
-     * Một câu SQL: số lượng thuốc của mỗi đơn lấy qua LATERAL nên SUM(total_amount) không bị nhân bản bởi JOIN.
-     */
+    // Lấy doanh số bán hàng trong 7 ngày tính đến một ngày cụ thể
     public List<DailySalesDTO> get7DaysSalesUpTo(LocalDate endDate, Integer employeeId) {
         if (endDate == null) {
             endDate = LocalDate.now();
@@ -546,6 +499,7 @@ public class SalesRepository {
         }
     }
 
+    // Chuyển thứ trong tuần sang tên viết tắt tiếng Việt
     private static String dayOfWeekLabel(DayOfWeek dow) {
         return switch (dow) {
             case MONDAY -> "T2";
@@ -558,11 +512,7 @@ public class SalesRepository {
         };
     }
 
-    /**
-     * Các giao dịch bán hàng gần đây nhất cho Dashboard.
-     * Lấy LIMIT trên sales_orders trước (backward scan chỉ mục created_at), sau đó mới tổng hợp chi tiết —
-     * trước đây GROUP BY toàn bộ sales_orders JOIN sales_order_items rồi mới LIMIT.
-     */
+    // Lấy danh sách các đơn bán hàng gần nhất cho Dashboard
     public List<SalesOrderDTO> getRecentSalesOrders(int limit, Integer employeeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String pageIds = "SELECT so.id FROM sales_orders so"

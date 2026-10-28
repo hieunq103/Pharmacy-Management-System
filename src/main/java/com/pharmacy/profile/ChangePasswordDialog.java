@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import java.util.function.Consumer;
 
 public class ChangePasswordDialog extends Dialog<ButtonType> {
-
     private static final Logger log = LoggerFactory.getLogger(ChangePasswordDialog.class);
 
     private final ProfileService profileService;
@@ -41,7 +40,6 @@ public class ChangePasswordDialog extends Dialog<ButtonType> {
         setTitle("Đổi mật khẩu");
         buildUI();
 
-        // Tự động focus vào ô mật khẩu hiện tại khi mở dialog
         Platform.runLater(() -> {
             if (txtCurrentPassword != null) {
                 txtCurrentPassword.requestFocus();
@@ -62,7 +60,6 @@ public class ChangePasswordDialog extends Dialog<ButtonType> {
         lblDialogStatus.setVisible(false);
         lblDialogStatus.setManaged(false);
 
-        // Chỉ xóa thông báo khi người dùng chủ động gõ phím, không xóa khi code tự dọn ô nhập
         txtCurrentPassword.textProperty().addListener((obs, oldVal, newVal) -> {
             if (!isInternalClearing) clearError();
         });
@@ -111,14 +108,12 @@ public class ChangePasswordDialog extends Dialog<ButtonType> {
 
         String btnBase = "-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 14px; -fx-pref-height: 38px; -fx-min-height: 38px; -fx-background-radius: 6; -fx-cursor: hand; ";
 
-        // Nút xác nhận (.btn-success)
         String btnSuccessStyle = btnBase + "-fx-background-color: #16A34A !important; -fx-text-fill: white !important; -fx-padding: 0 20;";
         String btnSuccessHover = btnBase + "-fx-background-color: #15803D !important; -fx-text-fill: white !important; -fx-padding: 0 20;";
         btnOk.setStyle(btnSuccessStyle);
         btnOk.setOnMouseEntered(e -> btnOk.setStyle(btnSuccessHover));
         btnOk.setOnMouseExited(e -> btnOk.setStyle(btnSuccessStyle));
 
-        // Nút Hủy (.btn-secondary)
         String btnCancelStyle = btnBase + "-fx-background-color: #E2E8F0; -fx-text-fill: #334155; -fx-padding: 0 20;";
         String btnCancelHover = btnBase + "-fx-background-color: #CBD5E1; -fx-text-fill: #334155; -fx-padding: 0 20;";
         btnCancel.setStyle(btnCancelStyle);
@@ -192,7 +187,6 @@ public class ChangePasswordDialog extends Dialog<ButtonType> {
             Throwable ex = task.getException();
             log.error("Lỗi đổi mật khẩu: ", ex);
 
-            // Bóc tách đúng thông điệp lỗi từ ngoại lệ gốc (tránh bị nuốt message bởi Task/ExecutionException)
             String errorMsg = "Có lỗi xảy ra, vui lòng thử lại.";
             if (ex != null) {
                 Throwable cause = ex.getCause() != null ? ex.getCause() : ex;
@@ -201,10 +195,8 @@ public class ChangePasswordDialog extends Dialog<ButtonType> {
                 }
             }
 
-            // 1. Hiển thị thông báo lỗi
             showError(errorMsg);
 
-            // 2. Xóa ô mật khẩu hiện tại nhưng bọc cờ chặn để listener không xóa mất thông báo lỗi vừa hiển thị
             isInternalClearing = true;
             try {
                 txtCurrentPassword.clear();

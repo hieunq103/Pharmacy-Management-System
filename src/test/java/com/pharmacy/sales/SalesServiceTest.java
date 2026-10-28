@@ -19,9 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/** Integration test phân hệ Bán hàng (cần MySQL đã chạy migration V1..V5). */
 public class SalesServiceTest {
-
     private final SalesService salesService = new SalesServiceImpl();
     private final InventoryRepository inventoryRepository = new InventoryRepository();
 
@@ -70,7 +68,6 @@ public class SalesServiceTest {
         assertEquals(6, page1.getItems().size(), "Trang 1 phải có đúng 6 thuốc");
         assertTrue(page1.getTotalPages() >= 2);
 
-        // Thuốc còn hàng bán được luôn đứng trước thuốc hết hàng
         List<MedicineInventoryDTO> all = allSalesMedicines();
         int firstOut = -1;
         for (int i = 0; i < all.size(); i++) {
@@ -85,7 +82,6 @@ public class SalesServiceTest {
         }
     }
 
-    /** FEFO: trừ lô còn hạn gần nhất, KHÔNG trừ lô đã hết hạn. */
     @Test
     void testCheckoutUsesEarliestNonExpiredLot() {
         LocalDate today = LocalDate.now();
@@ -133,7 +129,6 @@ public class SalesServiceTest {
         assertThrows(SecurityException.class, () -> salesService.checkout(request(cartItem(med, 1, med.getSellPrice()))));
     }
 
-    /** Lịch sử bán hàng lọc theo tháng phải khớp số đơn của báo cáo tháng ("Xem đầy đủ..." ở trang Báo cáo). */
     @Test
     void testSalesHistoryByMonthMatchesReport() {
         LocalDate from = LocalDate.of(2026, 3, 1);
@@ -157,7 +152,6 @@ public class SalesServiceTest {
             assertEquals(order.getTotalQuantity(), details.stream().mapToInt(d -> d.getQuantity()).sum());
         }
 
-        // Nhân viên chỉ xem được đơn của chính mình dù UI truyền employeeId = null
         var staff = DbTestSupport.loginAs(DbTestSupport.STAFF_USERNAME);
         for (var order : salesService.getSalesHistory(today, null, "", 1, 50).getItems()) {
             assertEquals(staff.getEmployee().getId(), order.getEmployeeId());

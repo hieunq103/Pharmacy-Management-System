@@ -22,18 +22,10 @@ import java.util.Map;
 
 import static com.pharmacy.common.SqlRows.*;
 
-/**
- * Truy vấn thống kê/báo cáo. Mọi phép tổng hợp (SUM/COUNT/GROUP BY) đều chạy trong MySQL,
- * điều kiện thời gian dùng khoảng nửa mở [from 00:00, to + 1 ngày 00:00) trên created_at để dùng chỉ mục
- * idx_sales_orders_created_at hoặc idx_sales_orders_employee_created (khi lọc theo nhân viên).
- */
 public class ReportRepository {
     private static final Logger log = LoggerFactory.getLogger(ReportRepository.class);
 
-    /**
-     * Tổng hợp doanh số, số đơn, tiền mặt/chuyển khoản và tổng số lượng thuốc đã bán trong kỳ — 1 câu SQL.
-     * Số lượng thuốc của từng đơn lấy qua LATERAL để SUM(total_amount) không bị nhân bản bởi JOIN chi tiết.
-     */
+    // Lấy tổng quan báo cáo doanh số, số đơn hàng và số lượng thuốc bán
     public ReportSummaryDTO getReportSummary(LocalDate from, LocalDate to, Integer employeeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String sql = """
@@ -58,11 +50,7 @@ public class ReportRepository {
         }
     }
 
-    /**
-     * Báo cáo chi tiết số lượng từng loại thuốc đã bán trong kỳ.
-     * Gom nhóm theo medicine_id trên chỉ mục phủ idx_so_items_order_cover rồi mới JOIN medicines,
-     * thay vì GROUP BY trên kết quả JOIN 4 bảng.
-     */
+    // Lấy danh sách thuốc đã bán kèm số lượng và doanh thu trong khoảng thời gian
     public List<SoldMedicineDTO> getSoldMedicines(LocalDate from, LocalDate to, String keyword, Integer employeeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             boolean hasKeyword = keyword != null && !keyword.isBlank();
@@ -100,9 +88,7 @@ public class ReportRepository {
         }
     }
 
-    /**
-     * Doanh số đủ 12 tháng (Tháng 1 -> Tháng 12) của năm chỉ định.
-     */
+    // Lấy biểu đồ doanh thu theo 12 tháng của năm
     public List<RevenueTimelineDTO> get12MonthsRevenueTimeline(int year, Integer employeeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String sql = """
@@ -129,9 +115,7 @@ public class ReportRepository {
         }
     }
 
-    /**
-     * Số lượng thuốc đã bán đủ 12 tháng (Tháng 1 -> Tháng 12) của năm chỉ định.
-     */
+    // Lấy biểu đồ số lượng thuốc bán theo 12 tháng của năm
     public List<MedicineTimelineDTO> get12MonthsMedicineTimeline(int year, Integer employeeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String sql = """
@@ -158,6 +142,7 @@ public class ReportRepository {
         }
     }
 
+    // Gom nhóm kết quả truy vấn theo tháng
     private static Map<Integer, Object[]> groupByMonth(List<Object[]> rows) {
         Map<Integer, Object[]> byMonth = new HashMap<>();
         for (Object[] r : rows) {
@@ -166,11 +151,12 @@ public class ReportRepository {
         return byMonth;
     }
 
+    // Tạo điều kiện SQL lọc theo nhân viên nếu có
     private static String employeeFilter(Integer employeeId) {
         return employeeId != null ? " AND so.employee_id = :employeeId " : "";
     }
 
-    /** Gán khoảng nửa mở [from 00:00, to + 1 ngày 00:00) và nhân viên (nếu có). */
+    // Gán tham số khoảng ngày và nhân viên vào câu truy vấn
     private static void bindRange(NativeQuery<?> query, LocalDate from, LocalDate to, Integer employeeId) {
         query.setParameter("startTime", Timestamp.valueOf(from.atStartOfDay()));
         query.setParameter("endTime", Timestamp.valueOf(to.plusDays(1).atStartOfDay()));

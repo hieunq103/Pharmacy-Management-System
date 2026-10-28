@@ -64,7 +64,7 @@ public class VietQrService {
 
     public static String getBinForBank(String bankInput) {
         if (bankInput == null || bankInput.isBlank()) {
-            return "970422"; // default MB Bank
+            return "970422";
         }
         String clean = bankInput.trim().toUpperCase().replaceAll("[^A-Z0-9]", "");
         if (clean.matches("\\d{6}")) {

@@ -36,7 +36,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class DashboardController implements Initializable {
-
     private static final Logger log = LoggerFactory.getLogger(DashboardController.class);
 
     @FXML private Label lblTodayRevenue;
@@ -50,7 +49,6 @@ public class DashboardController implements Initializable {
     @FXML private VBox boxInventoryAlerts;
     @FXML private VBox boxRecentTransactions;
 
-    // Mini Tabs cho Cảnh báo kho (Hạn dùng / Tồn kho)
     @FXML private Button btnAlertTabExpiry;
     @FXML private Button btnAlertTabStock;
 
@@ -139,7 +137,6 @@ public class DashboardController implements Initializable {
         }
     }
 
-    /** Mỗi tab Cảnh báo kho chỉ hiện 4 thuốc, phía dưới là link xem tất cả trong Kho thuốc (không cần cuộn). */
     private static final int ALERT_LIMIT = 4;
 
     private void renderAlertsUI() {
@@ -170,7 +167,6 @@ public class DashboardController implements Initializable {
             row.setMinHeight(Region.USE_PREF_SIZE);
             row.setPrefHeight(Region.USE_COMPUTED_SIZE);
 
-            // Icon circle
             StackPane iconCircle = new StackPane();
             SVGPath svg = new SVGPath();
             svg.getStyleClass().add("alert-svg");
@@ -184,7 +180,6 @@ public class DashboardController implements Initializable {
             }
             iconCircle.getChildren().add(svg);
 
-            // Titles: Wrap text to ensure full medicine names are always displayed cleanly
             VBox textBox = new VBox(3.0);
             HBox.setHgrow(textBox, Priority.ALWAYS);
             Label title = new Label(alert.getTitle());
@@ -198,7 +193,6 @@ public class DashboardController implements Initializable {
             subtitle.setMaxWidth(Double.MAX_VALUE);
             textBox.getChildren().addAll(title, subtitle);
 
-            // Badge
             Label badge = new Label(alert.getQuantityBadgeText());
             badge.setMinHeight(Region.USE_PREF_SIZE);
             badge.setMinWidth(Region.USE_PREF_SIZE);
@@ -212,7 +206,6 @@ public class DashboardController implements Initializable {
             boxInventoryAlerts.getChildren().add(row);
         }
 
-        // Nút xem chi tiết toàn bộ kho thuốc tương ứng theo tab đang chọn
         String viewMoreText = (currentAlertTab == AlertTab.EXPIRY)
                 ? "Xem tất cả thuốc cận & hết hạn trong Kho thuốc →"
                 : "Xem tất cả thuốc sắp hết & hết hàng trong Kho thuốc →";
@@ -258,7 +251,6 @@ public class DashboardController implements Initializable {
 
         chartWeeklySales.getData().add(series);
 
-        // Gắn Tooltip hiển thị số tiền chính xác khi di chuột vào từng cột
         Platform.runLater(() -> {
             for (XYChart.Data<String, Number> data : series.getData()) {
                 if (data.getNode() != null) {
@@ -288,13 +280,11 @@ public class DashboardController implements Initializable {
             row.getStyleClass().add("recent-tx-row");
             row.setAlignment(Pos.CENTER_LEFT);
 
-            // 1. Mã HĐ: Căn trái
             Label lblCode = new Label(tx.getCode());
             lblCode.setPrefWidth(160.0);
             lblCode.setAlignment(Pos.CENTER_LEFT);
             lblCode.getStyleClass().add("tx-code");
 
-            // 2. Khách hàng: Căn trái. Nếu không có số điện thoại thì hiển thị "Khách lẻ"
             String phone = tx.getCustomerPhone();
             boolean isGuest = (phone == null || phone.isBlank() || "Khách lẻ".equalsIgnoreCase(phone) || "null".equalsIgnoreCase(phone));
             Label lblCustomer = new Label(isGuest ? "Khách lẻ" : phone);
@@ -305,7 +295,6 @@ public class DashboardController implements Initializable {
                 lblCustomer.getStyleClass().add("tx-customer-guest");
             }
 
-            // 3. Nhân viên: Initials avatar pill + Tên (Căn trái)
             HBox empBox = new HBox(8.0);
             empBox.setPrefWidth(210.0);
             empBox.setAlignment(Pos.CENTER_LEFT);
@@ -315,7 +304,6 @@ public class DashboardController implements Initializable {
             lblEmpName.getStyleClass().add("employee-name");
             empBox.getChildren().addAll(lblAvatar, lblEmpName);
 
-            // 4. Thời gian: Hiển thị cả Giờ và Ngày (Căn trái)
             String formattedDateTime = tx.getCreatedAt() != null
                     ? tx.getCreatedAt().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy"))
                     : "--:--";
@@ -324,7 +312,6 @@ public class DashboardController implements Initializable {
             lblTime.setAlignment(Pos.CENTER_LEFT);
             lblTime.getStyleClass().add("tx-time");
 
-            // 5. Thanh toán: Khung ô căn trái 140px, phần badge pill ôm sát chữ
             HBox paymentBox = new HBox();
             paymentBox.setPrefWidth(140.0);
             paymentBox.setAlignment(Pos.CENTER_LEFT);
@@ -332,11 +319,9 @@ public class DashboardController implements Initializable {
             lblPayment.getStyleClass().setAll("payment-badge", tx.getPaymentBadgeClass());
             paymentBox.getChildren().add(lblPayment);
 
-            // 6. Region grow
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
 
-            // 7. Tổng tiền: Căn trái theo yêu cầu
             Label lblAmount = new Label(tx.getFormattedTotal());
             lblAmount.setPrefWidth(140.0);
             lblAmount.setAlignment(Pos.CENTER_LEFT);
@@ -358,7 +343,6 @@ public class DashboardController implements Initializable {
         }
     }
 
-    /** Bấm thẻ "Sắp hết hàng" -> Kho thuốc lọc Tồn kho: Sắp hết hàng + Hết hàng (khớp số trên thẻ). */
     @FXML
     private void handleOpenLowStockInventory(javafx.scene.input.MouseEvent event) {
         if (MainLayoutController.getInstance() != null) {
@@ -366,7 +350,6 @@ public class DashboardController implements Initializable {
         }
     }
 
-    /** Bấm thẻ "Cận hạn sử dụng" -> Kho thuốc lọc Hạn dùng: Có lô cận hạn (khớp số trên thẻ). */
     @FXML
     private void handleOpenNearExpiryInventory(javafx.scene.input.MouseEvent event) {
         if (MainLayoutController.getInstance() != null) {
@@ -374,7 +357,6 @@ public class DashboardController implements Initializable {
         }
     }
 
-    /** Bấm thẻ Doanh số/Hóa đơn hôm nay -> Lịch sử bán hàng lọc đúng ngày hôm nay. */
     @FXML
     private void handleOpenTodaySalesHistory(javafx.scene.input.MouseEvent event) {
         if (MainLayoutController.getInstance() != null) {
@@ -387,7 +369,6 @@ public class DashboardController implements Initializable {
     private void handleNavSalesHistory(ActionEvent event) {
         MainLayoutController layout = MainLayoutController.getInstance();
         if (layout != null) {
-            // Nút "Lịch sử bán": mở Lịch sử bán hàng lọc theo tháng hiện tại, back -> Tổng quan
             LocalDate today = LocalDate.now();
             layout.navigateToSalesHistoryForMonth(today.getYear(), today.getMonthValue(), layout::navigateToDashboard);
         }

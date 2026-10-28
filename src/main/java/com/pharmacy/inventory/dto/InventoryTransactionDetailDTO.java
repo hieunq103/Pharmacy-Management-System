@@ -4,12 +4,7 @@ import com.pharmacy.common.FormatUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/**
- * DTO đại diện cho một dòng chi tiết thuốc trong giao dịch xuất hoặc nhập kho (Detail record).
- */
 public class InventoryTransactionDetailDTO {
-
-
     private Long id;
     private Integer medicineId;
     private String medicineCode;
@@ -53,7 +48,6 @@ public class InventoryTransactionDetailDTO {
         return expiryDate.format(FormatUtils.DATE_FORMATTER);
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

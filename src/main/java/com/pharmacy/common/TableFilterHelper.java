@@ -11,17 +11,10 @@ import javafx.scene.layout.HBox;
 
 import java.util.Map;
 
-/**
- * Tiện ích tạo menu lọc (Filter dropdown) trên thanh tiêu đề của TableColumn.
- */
 public final class TableFilterHelper {
-
     private TableFilterHelper() {
     }
 
-    /**
-     * Gắn dropdown menu lọc lên TableColumn.
-     */
     public static <T> void setupColumnFilter(
             TableColumn<T, ?> column,
             String title,
@@ -56,8 +49,6 @@ public final class TableFilterHelper {
             } else {
                 iconFilter.getStyleClass().remove("filter-active");
             }
-
-            // Cập nhật trạng thái active trên các label trong menu
             for (MenuItem mi : menu.getItems()) {
                 if (mi instanceof CustomMenuItem cmi && cmi.getContent() instanceof Label lbl) {
                     lbl.getStyleClass().remove("filter-item-active");
@@ -108,9 +99,6 @@ public final class TableFilterHelper {
         column.setGraphic(headerBox);
     }
 
-    /**
-     * Gắn dropdown menu lọc dạng nhiều lựa chọn lên TableColumn.
-     */
     public static <T> void setupMultiSelectColumnFilter(
             TableColumn<T, ?> column,
             String title,
@@ -163,8 +151,6 @@ public final class TableFilterHelper {
         };
 
         column.getProperties().put("tableFilterHelper_multiSetter", multiSetter);
-
-        // Hàng "Tất cả"
         HBox boxAll = new HBox(8, chkAll);
         boxAll.setAlignment(Pos.CENTER_LEFT);
         boxAll.getStyleClass().add("filter-item-label");
@@ -186,8 +172,6 @@ public final class TableFilterHelper {
             e.consume();
         });
         menu.getItems().add(itemAll);
-
-        // Các hàng tùy chọn thực tế
         for (String opt : options) {
             javafx.scene.control.CheckBox chk = new javafx.scene.control.CheckBox(opt);
             chk.getStyleClass().add("filter-checkbox");
@@ -236,9 +220,6 @@ public final class TableFilterHelper {
         column.setGraphic(headerBox);
     }
 
-    /**
-     * Kích hoạt nhiều giá trị lọc dạng multi-select checkbox theo lập trình
-     */
     public static void setMultiFilter(TableColumn<?, ?> column, String... values) {
         if (column == null)
             return;
