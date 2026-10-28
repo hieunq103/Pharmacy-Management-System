@@ -58,7 +58,6 @@
         <HBox alignment="CENTER_LEFT">
             <VBox spacing="1.0">
                 <Label styleClass="payment-header-sub" text="Tổng thanh toán:" />
-                <Label styleClass="payment-formula-hint" text="(Tổng tiền hàng - Giảm giá)" />
             </VBox>
             <Region HBox.hgrow="ALWAYS" />
             <Label fx:id="lblTotalAmount" styleClass="payment-total-amount" text="0đ" />
@@ -93,7 +92,6 @@
                 <HBox alignment="CENTER_LEFT">
                     <VBox spacing="1.0">
                         <Label styleClass="change-card-title-compact" text="Tiền thừa trả khách:" />
-                        <Label styleClass="change-card-hint-compact" text="Số tiền cần hoàn trả lại cho khách" />
                     </VBox>
                     <Region HBox.hgrow="ALWAYS" />
                     <Label fx:id="lblChangeAmount" styleClass="change-card-value-compact" text="0đ" />

@@ -11,8 +11,9 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.shape.SVGPath?>
 <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: #F8FAFC;"
-            stylesheets="@../../css/profile.css" xmlns="http://javafx.com/javafx/21"
+            stylesheets="@../../css/profile.css, @../../css/icon_buttons.css" xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pharmacy.profile.ProfileController">
     <content>
         <VBox spacing="20.0" style="-fx-padding: 24;">
@@ -20,7 +21,16 @@
             <VBox spacing="16.0"
                   style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 10, 0, 0, 2);">
 
-                <Label style="-fx-font-size: 16px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0F172A;" text="Hồ sơ cá nhân" />
+                <HBox alignment="CENTER_LEFT">
+                    <Label style="-fx-font-size: 16px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0F172A;" text="Hồ sơ cá nhân" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <!-- Chỉ hiện khi mở từ danh sách Nhân viên (chọn chính mình) -> quay về trang Nhân viên -->
+                    <Button fx:id="btnBack" onAction="#handleBack" styleClass="btn-back" text="Quay lại" visible="false" managed="false">
+                        <graphic>
+                            <SVGPath content="M 0 7 L 14 7 M 8 1 L 14 7 L 8 13" styleClass="btn-back-glyph" />
+                        </graphic>
+                    </Button>
+                </HBox>
                 <Label style="-fx-font-size: 13px; -fx-text-fill: #64748B;" text="Bạn chỉ có thể cập nhật Họ và tên, Số điện thoại và Địa chỉ. Các thông tin khác do Quản lý cửa hàng cập nhật." />
 
                 <!-- Thông báo trạng thái -->

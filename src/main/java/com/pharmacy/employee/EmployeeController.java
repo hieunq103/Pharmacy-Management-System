@@ -582,7 +582,7 @@ public class EmployeeController implements Initializable {
         }
         // Chọn chính mình -> mở Hồ sơ cá nhân thay cho hồ sơ chi tiết nhân viên
         if (emp.getId().equals(UserSession.currentEmployeeId()) && MainLayoutController.getInstance() != null) {
-            MainLayoutController.getInstance().navigateToProfile();
+            MainLayoutController.getInstance().navigateToProfileFromEmployees();
             return;
         }
 

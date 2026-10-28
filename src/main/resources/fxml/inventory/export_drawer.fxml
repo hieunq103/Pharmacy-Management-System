@@ -28,7 +28,6 @@
     <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 16 24; -fx-border-color: #E2E8F0; -fx-border-width: 0 0 1 0; -fx-background-color: #FFFFFF;">
         <VBox spacing="2">
             <Label text="Lập Phiếu Xuất Kho" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 18px; -fx-text-fill: #1E293B;"/>
-            <Label text="Xuất danh sách nhiều mặt hàng thuốc với từng lý do xuất hủy, thu hồi hoặc chuyển trả NCC cụ thể" style="-fx-font-size: 13px; -fx-text-fill: #64748B;"/>
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
     </HBox>

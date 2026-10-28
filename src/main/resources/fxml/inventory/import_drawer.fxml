@@ -32,7 +32,6 @@
     <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 16 24; -fx-border-color: #E2E8F0; -fx-border-width: 0 0 1 0; -fx-background-color: #FFFFFF;">
         <VBox spacing="2">
             <Label text="Lập Phiếu Nhập Kho Dược Phẩm" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 18px; -fx-text-fill: #1E293B;"/>
-            <Label text="Nhập danh sách nhiều mặt hàng thuốc từ nhà cung cấp và ghi nhận vào kho" style="-fx-font-size: 13px; -fx-text-fill: #64748B;"/>
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
     </HBox>

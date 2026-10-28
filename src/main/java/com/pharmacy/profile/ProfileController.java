@@ -29,6 +29,11 @@ public class ProfileController {
     }
 
     @FXML
+    private Button btnBack;
+    /** Hành động của nút Quay lại; null khi mở Hồ sơ cá nhân trực tiếp (nút ẩn). */
+    private Runnable onBack;
+
+    @FXML
     private Label lblStatusMessage;
 
     @FXML
@@ -349,5 +354,21 @@ public class ProfileController {
         lblStatusMessage.setVisible(false);
         lblStatusMessage.setManaged(false);
         lblStatusMessage.setText("");
+    }
+
+    /** Hiện nút "Quay lại" (vd. khi mở từ danh sách Nhân viên) với hành động quay về tương ứng. */
+    public void setOnBack(Runnable onBack) {
+        this.onBack = onBack;
+        if (btnBack != null) {
+            btnBack.setVisible(onBack != null);
+            btnBack.setManaged(onBack != null);
+        }
+    }
+
+    @FXML
+    private void handleBack() {
+        if (onBack != null) {
+            onBack.run();
+        }
     }
 }

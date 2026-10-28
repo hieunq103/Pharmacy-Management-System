@@ -77,7 +77,6 @@
                         </StackPane>
                     </HBox>
                     <Label fx:id="lblLowStockCount" styleClass="stat-value" text="0" />
-                    <Label styleClass="stat-subtext-warning" text="Cần lên đơn nhập hàng" />
                 </VBox>
 
                 <!-- THẺ 4: CẬN HẠN SỬ DỤNG -->

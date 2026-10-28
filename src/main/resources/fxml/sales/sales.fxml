@@ -179,7 +179,6 @@
             <HBox alignment="CENTER_LEFT" styleClass="cart-total-row">
                 <VBox spacing="1.0">
                     <Label styleClass="cart-total-label" text="Tổng thanh toán" />
-                    <Label styleClass="cart-formula-hint" text="(Tổng tiền hàng - Giảm giá)" />
                 </VBox>
                 <Region HBox.hgrow="ALWAYS" />
                 <Label fx:id="lblCartTotal" styleClass="cart-total-value" text="0đ" />

@@ -265,8 +265,15 @@ public class MainLayoutController {
     }
 
     /** Mở trang Hồ sơ cá nhân (vd. khi Quản lý chọn chính mình trong danh sách nhân viên). */
-    public void navigateToProfile() {
-        handleNavProfile(null);
+    /** Mở Hồ sơ cá nhân có nút "Quay lại" về trang Nhân viên (khi Quản lý chọn chính mình trong danh sách). */
+    public void navigateToProfileFromEmployees() {
+        if (lblHeaderTitle != null) {
+            lblHeaderTitle.setText("Thông tin cá nhân");
+        }
+        FXMLLoader loader = loadCenterViewWithLoader("/fxml/profile/profile.fxml");
+        if (loader != null && loader.getController() instanceof com.pharmacy.profile.ProfileController profileCtrl) {
+            profileCtrl.setOnBack(() -> handleNavEmployee(null));
+        }
     }
 
     @FXML
