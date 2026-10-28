@@ -74,7 +74,7 @@ public class PharmacyApplication {
 
                 if (autoLoginDevMode) {
                     AuthService authService = new AuthServiceImpl();
-                    authService.login(new LoginRequest("PMS0001", "12345678"));
+                    authService.login(new LoginRequest("PMS2601001", "12345678"));
                     log.info("Đăng nhập Admin tự động thành công: {}", UserSession.getInstance().getEmployeeName());
                     fxmlPath = "/fxml/layout/main_layout.fxml";
                     title = "PharmaOS — Quản lý cửa hàng thuốc (Admin Mode)";

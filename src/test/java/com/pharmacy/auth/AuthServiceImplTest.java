@@ -19,7 +19,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AuthServiceImplTest {
-    private static final String USERNAME = "PMS0099";
+    private static final String USERNAME = "PMS2609099";
     private static final String STRONG_PASSWORD = "MatKhau@2026";
 
     private FakeAccountRepository repo;

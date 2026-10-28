@@ -38,13 +38,13 @@ class AuthServiceTest {
 
     @Test
     void testLoginWithUsernameSuccess() {
-        Account account = authService.login(new LoginRequest("PMS0001", "12345678"));
-        assertNotNull(account, "Đăng nhập bằng mã nhân viên PMS0001 phải thành công");
-        assertEquals("PMS0001", account.getUsername());
-        assertEquals("PMS0001", account.getEmployee().getCode());
+        Account account = authService.login(new LoginRequest("PMS2601001", "12345678"));
+        assertNotNull(account, "Đăng nhập bằng mã nhân viên PMS2601001 phải thành công");
+        assertEquals("PMS2601001", account.getUsername());
+        assertEquals("PMS2601001", account.getEmployee().getCode());
         assertTrue(UserSession.isLoggedIn(), "UserSession phải ở trạng thái đã đăng nhập");
-        assertEquals("PMS0001", UserSession.getInstance().getUsername());
-        assertEquals("PMS0001", UserSession.getInstance().getEmployeeCode());
+        assertEquals("PMS2601001", UserSession.getInstance().getUsername());
+        assertEquals("PMS2601001", UserSession.getInstance().getEmployeeCode());
     }
 
     @Test
@@ -73,7 +73,7 @@ class AuthServiceTest {
         FormValidator.ValidationResult resEmpty = FormValidator.validateLoginForm("", "");
         assertFalse(resEmpty.isValid());
 
-        FormValidator.ValidationResult resUser = FormValidator.validateLoginForm("PMS0001", "12345678");
+        FormValidator.ValidationResult resUser = FormValidator.validateLoginForm("PMS2601001", "12345678");
         assertTrue(resUser.isValid());
     }
 }

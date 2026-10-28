@@ -1,8 +1,3 @@
--- =============================================================================
--- V3: SEED DATA DƯỢC PHẨM & TỒN KHO DEMO (200 LOẠI THUỐC, 10 NHÓM, LÔ HẠN DÙNG)
--- =============================================================================
-
--- 1. NHÓM THUỐC (MEDICINE CATEGORIES)
 INSERT INTO `medicine_categories` (`name`) VALUES
     ('Thuốc kháng sinh'),
     ('Thuốc giảm đau, hạ sốt, chống viêm'),
@@ -15,7 +10,6 @@ INSERT INTO `medicine_categories` (`name`) VALUES
     ('Thuốc cơ xương khớp & gout'),
     ('Thuốc thần kinh & tuần hoàn não');
 
--- 2. NHÀ CUNG CẤP (SUPPLIERS)
 INSERT INTO `suppliers` (`name`, `tax_code`, `address`, `contact_person`, `phone`) VALUES
     ('Công ty Cổ phần Dược Hậu Giang (DHG Pharma)', '1800156801', '288 Bis Nguyễn Văn Cừ, An Hòa, Ninh Kiều, Cần Thơ', 'Nguyễn Văn Hậu', '02923891433'),
     ('Công ty Cổ phần Traphaco', '0100108656', '75 Yên Ninh, Quán Thánh, Ba Đình, Hà Nội', 'Trần Thị Mai', '02437341797'),
@@ -23,7 +17,6 @@ INSERT INTO `suppliers` (`name`, `tax_code`, `address`, `contact_person`, `phone
     ('Công ty Cổ phần Dược phẩm Sanofi-Aventis VN', '0303038676', 'Lô I-8-1, Đường D8, Khu Công nghệ cao, TP. Thủ Đức, TP. HCM', 'Phạm Quốc Dũng', '02838298526'),
     ('Công ty Cổ phần Dược TW1 (Pharbaco)', '0100109018', '160 Tôn Đức Thắng, Hàng Bột, Đống Đa, Hà Nội', 'Hoàng Kim Chi', '02438454561');
 
--- 3. DANH MỤC 200 THUỐC (MEDICINES)
 INSERT INTO `medicines` (`code`, `name`, `active_ingredient`, `unit`, `category_id`, `manufacturer`, `sell_price`, `requires_prescription`, `min_stock_threshold`, `status`) VALUES
     ('MED001', 'Augmentin 625mg', 'Amoxicillin + Acid Clavulanic', 'Hộp', (SELECT `id` FROM `medicine_categories` WHERE `name` = 'Thuốc kháng sinh'), 'GSK (GlaxoSmithKline)', 145000.00, TRUE, 10, 'ACTIVE'),
     ('MED002', 'Augmentin 1g', 'Amoxicillin + Acid Clavulanic', 'Hộp', (SELECT `id` FROM `medicine_categories` WHERE `name` = 'Thuốc kháng sinh'), 'GSK (GlaxoSmithKline)', 210000.00, TRUE, 10, 'ACTIVE'),
@@ -226,11 +219,9 @@ INSERT INTO `medicines` (`code`, `name`, `active_ingredient`, `unit`, `category_
     ('MED199', 'An Thần Đan', 'Bình vôi, Lạc tiên, Vông nem', 'Hộp', (SELECT `id` FROM `medicine_categories` WHERE `name` = 'Thuốc thần kinh & tuần hoàn não'), 'Dược TW3', 85000.00, FALSE, 20, 'ACTIVE'),
     ('MED200', 'Seduxen 5mg', 'Diazepam', 'Hộp', (SELECT `id` FROM `medicine_categories` WHERE `name` = 'Thuốc thần kinh & tuần hoàn não'), 'Gedeon Richter', 95000.00, TRUE, 10, 'ACTIVE');
 
--- 4. PHIẾU NHẬP KHO BAN ĐẦU (INITIAL INVENTORY IMPORT TRANSACTION)
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', (SELECT `id` FROM `suppliers` WHERE `tax_code` = '1800156801'), (SELECT `id` FROM `employees` ORDER BY `id` ASC LIMIT 1), NOW(), 'Nhập kho ban đầu phục vụ khai trương và kinh doanh');
 
--- 5. LÔ THUỐC & TỒN KHO (INVENTORY LOTS - ĐA DẠNG TRẠNG THÁI: BÌNH THƯỜNG, CẬN HẠN, HẾT HẠN, HẾT HÀNG)
 INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `expiry_date`, `import_price`, `quantity_in`, `quantity_remaining`) VALUES
     ((SELECT `id` FROM `medicines` WHERE `code` = 'MED001'), (SELECT `id` FROM `inventory_transactions` ORDER BY `id` DESC LIMIT 1), 'LOT-001-A', DATE_ADD(CURDATE(), INTERVAL 368 DAY), 108800.00, 100, 55),
     ((SELECT `id` FROM `medicines` WHERE `code` = 'MED002'), (SELECT `id` FROM `inventory_transactions` ORDER BY `id` DESC LIMIT 1), 'LOT-002-A', DATE_ADD(CURDATE(), INTERVAL 371 DAY), 157500.00, 100, 60),
@@ -426,3 +417,5 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
     ((SELECT `id` FROM `medicines` WHERE `code` = 'MED192'), (SELECT `id` FROM `inventory_transactions` ORDER BY `id` DESC LIMIT 1), 'LOT-ZERO-192', DATE_ADD(CURDATE(), INTERVAL 492 DAY), 135000.00, 100, 0),
     ((SELECT `id` FROM `medicines` WHERE `code` = 'MED193'), (SELECT `id` FROM `inventory_transactions` ORDER BY `id` DESC LIMIT 1), 'LOT-ZERO-193', DATE_ADD(CURDATE(), INTERVAL 493 DAY), 6000.00, 100, 0),
     ((SELECT `id` FROM `medicines` WHERE `code` = 'MED194'), (SELECT `id` FROM `inventory_transactions` ORDER BY `id` DESC LIMIT 1), 'LOT-ZERO-194', DATE_ADD(CURDATE(), INTERVAL 494 DAY), 131200.00, 100, 0);
+
+INSERT INTO `code_sequences` (`name`, `current_number`) VALUES ('MEDICINE', 200);

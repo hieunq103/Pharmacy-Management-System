@@ -52,7 +52,7 @@ class EmployeeServiceSelfEditTest {
 
         currentManager = new Employee();
         currentManager.setId(1);
-        currentManager.setCode("PMS0001");
+        currentManager.setCode("PMS2601001");
         currentManager.setFullName("Nguyễn Văn Quản Lý");
         currentManager.setStatus(Employee.Status.ACTIVE);
 
@@ -63,7 +63,7 @@ class EmployeeServiceSelfEditTest {
 
         currentAccount = new Account();
         currentAccount.setId(10);
-        currentAccount.setUsername("PMS0001");
+        currentAccount.setUsername("PMS2601001");
         currentAccount.setStatus(Account.Status.ACTIVE);
         currentAccount.setRole(managerRole);
         currentAccount.setEmployee(currentManager);

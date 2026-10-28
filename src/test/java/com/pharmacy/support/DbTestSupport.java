@@ -9,9 +9,9 @@ import com.pharmacy.infra.db.MigrationRunner;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public final class DbTestSupport {
-    public static final String MANAGER_USERNAME = "PMS0001";
+    public static final String MANAGER_USERNAME = "PMS2601001";
 
-    public static final String STAFF_USERNAME = "PMS0002";
+    public static final String STAFF_USERNAME = "PMS2602001";
 
     private static Boolean available;
 

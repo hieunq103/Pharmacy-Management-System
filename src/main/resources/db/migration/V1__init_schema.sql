@@ -1,17 +1,11 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
--- -----------------------------------------------------------------------------
--- 1. BẢNG VAI TRÒ (ROLES)
--- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `roles` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `code` VARCHAR(20) NOT NULL UNIQUE,
     `name` VARCHAR(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 2. BẢNG HỒ SƠ NHÂN VIÊN (EMPLOYEES)
--- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `employees` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `code` VARCHAR(20) NOT NULL UNIQUE,
@@ -30,9 +24,6 @@ CREATE TABLE IF NOT EXISTS `employees` (
     INDEX `idx_employees_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 3. BẢNG TÀI KHOẢN (ACCOUNTS)
--- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `accounts` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `employee_id` INT NOT NULL UNIQUE,
@@ -48,9 +39,6 @@ CREATE TABLE IF NOT EXISTS `accounts` (
     CONSTRAINT `fk_accounts_roles` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 4. BẢNG LỊCH SỬ ĐĂNG NHẬP (LOGIN_HISTORY)
--- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `login_history` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
     `account_id` INT NOT NULL,
@@ -61,9 +49,6 @@ CREATE TABLE IF NOT EXISTS `login_history` (
     CONSTRAINT `fk_login_history_accounts` FOREIGN KEY (`account_id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 5. DANH MỤC & THÔNG TIN THUỐC (MEDICINES)
--- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `medicine_categories` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(100) NOT NULL UNIQUE
@@ -88,9 +73,6 @@ CREATE TABLE IF NOT EXISTS `medicines` (
     CONSTRAINT `chk_medicines_values` CHECK (`sell_price` >= 0 AND `min_stock_threshold` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 6. NHÀ CUNG CẤP & GIAO DỊCH KHO (INVENTORY TRANSACTIONS)
--- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `suppliers` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(150) NOT NULL UNIQUE,
@@ -118,9 +100,6 @@ CREATE TABLE IF NOT EXISTS `inventory_transactions` (
     CONSTRAINT `chk_transactions_sale_link` CHECK ((`type` = 'EXPORT_SALE') = (`sales_order_id` IS NOT NULL))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 7. LÔ THUỐC VÀ HẠN DÙNG (INVENTORY LOTS - FEFO)
--- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `inventory_lots` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
     `medicine_id` INT NOT NULL,
@@ -141,10 +120,6 @@ CREATE TABLE IF NOT EXISTS `inventory_lots` (
     CONSTRAINT `chk_inventory_lots_price` CHECK (`import_price` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 8. LÔ THUỐC ĐEM ĐI HUỶ
--- -----------------------------------------------------------------------------
-
 CREATE TABLE IF NOT EXISTS `inventory_disposal_items` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
     `transaction_id` BIGINT NOT NULL,
@@ -156,9 +131,6 @@ CREATE TABLE IF NOT EXISTS `inventory_disposal_items` (
     CONSTRAINT `chk_disposal_items_quantity` CHECK (`quantity` > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 9. HÓA ĐƠN BÁN LẺ (SALES ORDERS & ITEMS)
--- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `sales_orders` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
     `code` VARCHAR(30) NOT NULL UNIQUE,
@@ -202,22 +174,22 @@ SET FOREIGN_KEY_CHECKS = 1;
 INSERT INTO `roles` (`code`, `name`) VALUES ('MANAGER', 'Quản lý cửa hàng'), ('STAFF', 'Nhân viên bán thuốc');
 
 INSERT INTO `employees` (`code`, `full_name`, `dob`, `gender`, `national_id`, `address`, `phone`, `hired_date`, `status`) VALUES
-    ('PMS0001', 'Quản lý cửa hàng', '1990-01-01', 'Nam', '001090000001', 'Hà Nội', '0985549854', '2026-01-01', 'ACTIVE');
+    ('PMS2601001', 'Quản lý cửa hàng', '1990-01-01', 'Nam', '001090000001', 'Hà Nội', '0985549854', '2026-01-01', 'ACTIVE');
 
 INSERT INTO `accounts` (`employee_id`, `username`, `password_hash`, `role_id`, `status`) VALUES (
   (SELECT `id` FROM `employees` WHERE `national_id` = '001090000001'),
-  'PMS0001',
+  'PMS2601001',
   '$2a$12$1/E8j01kLrkJvjJ4.R91x.5A7B8nzOtVk1mZSonKBWP/Ecm3Abtce',
   (SELECT `id` FROM `roles` WHERE `code` = 'MANAGER'),
   'ACTIVE'
 );
 
 INSERT INTO `employees` (`code`, `full_name`, `dob`, `gender`, `national_id`, `address`, `phone`, `hired_date`, `status`) VALUES
-    ('PMS0002', 'Nguyễn Quang Hiếu', '2005-03-10', 'Nam', '001095000002', 'Hà Nội', '0989261809', '2026-02-01', 'ACTIVE');
+    ('PMS2602001', 'Nguyễn Quang Hiếu', '2005-03-10', 'Nam', '001095000002', 'Hà Nội', '0989261809', '2026-02-01', 'ACTIVE');
 
 INSERT INTO `accounts` (`employee_id`, `username`, `password_hash`, `role_id`, `status`) VALUES (
   (SELECT `id` FROM `employees` WHERE `national_id` = '001095000002'),
-  'PMS0002',
+  'PMS2602001',
   '$2a$12$1/E8j01kLrkJvjJ4.R91x.5A7B8nzOtVk1mZSonKBWP/Ecm3Abtce',
   (SELECT `id` FROM `roles` WHERE `code` = 'STAFF'),
   'ACTIVE'

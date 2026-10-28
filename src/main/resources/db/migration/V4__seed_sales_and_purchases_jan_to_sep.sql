@@ -1,13 +1,5 @@
--- =============================================================================
--- V4: BỔ SUNG DỮ LIỆU MUA THUỐC (NHẬP KHO) VÀ BÁN THUỐC TỪ THÁNG 1 TỚI THÁNG 9/2026
--- =============================================================================
-
 SET FOREIGN_KEY_CHECKS = 0;
 
--- -----------------------------------------------------------------------------
--- 1. MUA THUỐC: GIAO DỊCH NHẬP KHO (IMPORT) & LÔ THUỐC TỪ THÁNG 1 ĐẾN THÁNG 9/2026
--- -----------------------------------------------------------------------------
--- Tháng 1/2026 - Đợt nhập 1
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 1, 1, '2026-01-04 08:30:00', 'Nhập hàng định kỳ Tháng 01/2026 - Đợt 1 từ DHG Pharma');
 SET @tx_id = LAST_INSERT_ID();
@@ -24,7 +16,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED026'), @tx_id, 'LOT-202601-01-MED026', '2028-05-28', 73500.00, 300, 240),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED027'), @tx_id, 'LOT-202601-01-MED027', '2028-05-28', 28500.00, 300, 240);
 
--- Tháng 1/2026 - Đợt nhập 2
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 4, 1, '2026-01-18 09:15:00', 'Nhập hàng định kỳ Tháng 01/2026 - Đợt 2 từ Sanofi-Aventis');
 SET @tx_id = LAST_INSERT_ID();
@@ -41,7 +32,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED145'), @tx_id, 'LOT-202601-02-MED145', '2029-07-25', 73500.00, 250, 200),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED146'), @tx_id, 'LOT-202601-02-MED146', '2029-07-25', 63800.00, 250, 200);
 
--- Tháng 2/2026 - Đợt nhập 1
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 1, 1, '2026-02-04 08:30:00', 'Nhập hàng định kỳ Tháng 02/2026 - Đợt 1 từ DHG Pharma');
 SET @tx_id = LAST_INSERT_ID();
@@ -58,7 +48,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED026'), @tx_id, 'LOT-202602-01-MED026', '2028-06-28', 73500.00, 300, 240),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED027'), @tx_id, 'LOT-202602-01-MED027', '2028-06-28', 28500.00, 300, 240);
 
--- Tháng 2/2026 - Đợt nhập 2
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 4, 1, '2026-02-18 09:15:00', 'Nhập hàng định kỳ Tháng 02/2026 - Đợt 2 từ Sanofi-Aventis');
 SET @tx_id = LAST_INSERT_ID();
@@ -75,7 +64,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED145'), @tx_id, 'LOT-202602-02-MED145', '2029-08-25', 73500.00, 250, 200),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED146'), @tx_id, 'LOT-202602-02-MED146', '2029-08-25', 63800.00, 250, 200);
 
--- Tháng 3/2026 - Đợt nhập 1
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 1, 1, '2026-03-04 08:30:00', 'Nhập hàng định kỳ Tháng 03/2026 - Đợt 1 từ DHG Pharma');
 SET @tx_id = LAST_INSERT_ID();
@@ -92,7 +80,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED026'), @tx_id, 'LOT-202603-01-MED026', '2028-07-28', 73500.00, 300, 240),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED027'), @tx_id, 'LOT-202603-01-MED027', '2028-07-28', 28500.00, 300, 240);
 
--- Tháng 3/2026 - Đợt nhập 2
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 4, 1, '2026-03-18 09:15:00', 'Nhập hàng định kỳ Tháng 03/2026 - Đợt 2 từ Sanofi-Aventis');
 SET @tx_id = LAST_INSERT_ID();
@@ -109,7 +96,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED145'), @tx_id, 'LOT-202603-02-MED145', '2029-09-25', 73500.00, 250, 200),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED146'), @tx_id, 'LOT-202603-02-MED146', '2029-09-25', 63800.00, 250, 200);
 
--- Tháng 4/2026 - Đợt nhập 1
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 1, 1, '2026-04-04 08:30:00', 'Nhập hàng định kỳ Tháng 04/2026 - Đợt 1 từ DHG Pharma');
 SET @tx_id = LAST_INSERT_ID();
@@ -126,7 +112,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED026'), @tx_id, 'LOT-202604-01-MED026', '2028-08-28', 73500.00, 300, 240),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED027'), @tx_id, 'LOT-202604-01-MED027', '2028-08-28', 28500.00, 300, 240);
 
--- Tháng 4/2026 - Đợt nhập 2
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 4, 1, '2026-04-18 09:15:00', 'Nhập hàng định kỳ Tháng 04/2026 - Đợt 2 từ Sanofi-Aventis');
 SET @tx_id = LAST_INSERT_ID();
@@ -143,7 +128,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED145'), @tx_id, 'LOT-202604-02-MED145', '2029-10-25', 73500.00, 250, 200),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED146'), @tx_id, 'LOT-202604-02-MED146', '2029-10-25', 63800.00, 250, 200);
 
--- Tháng 5/2026 - Đợt nhập 1
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 1, 1, '2026-05-04 08:30:00', 'Nhập hàng định kỳ Tháng 05/2026 - Đợt 1 từ DHG Pharma');
 SET @tx_id = LAST_INSERT_ID();
@@ -160,7 +144,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED026'), @tx_id, 'LOT-202605-01-MED026', '2028-09-28', 73500.00, 300, 240),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED027'), @tx_id, 'LOT-202605-01-MED027', '2028-09-28', 28500.00, 300, 240);
 
--- Tháng 5/2026 - Đợt nhập 2
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 4, 1, '2026-05-18 09:15:00', 'Nhập hàng định kỳ Tháng 05/2026 - Đợt 2 từ Sanofi-Aventis');
 SET @tx_id = LAST_INSERT_ID();
@@ -177,7 +160,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED145'), @tx_id, 'LOT-202605-02-MED145', '2029-11-25', 73500.00, 250, 200),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED146'), @tx_id, 'LOT-202605-02-MED146', '2029-11-25', 63800.00, 250, 200);
 
--- Tháng 6/2026 - Đợt nhập 1
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 1, 1, '2026-06-04 08:30:00', 'Nhập hàng định kỳ Tháng 06/2026 - Đợt 1 từ DHG Pharma');
 SET @tx_id = LAST_INSERT_ID();
@@ -194,7 +176,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED026'), @tx_id, 'LOT-202606-01-MED026', '2028-10-28', 73500.00, 300, 240),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED027'), @tx_id, 'LOT-202606-01-MED027', '2028-10-28', 28500.00, 300, 240);
 
--- Tháng 6/2026 - Đợt nhập 2
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 4, 1, '2026-06-18 09:15:00', 'Nhập hàng định kỳ Tháng 06/2026 - Đợt 2 từ Sanofi-Aventis');
 SET @tx_id = LAST_INSERT_ID();
@@ -211,7 +192,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED145'), @tx_id, 'LOT-202606-02-MED145', '2029-12-25', 73500.00, 250, 200),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED146'), @tx_id, 'LOT-202606-02-MED146', '2029-12-25', 63800.00, 250, 200);
 
--- Tháng 7/2026 - Đợt nhập 1
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 1, 1, '2026-07-04 08:30:00', 'Nhập hàng định kỳ Tháng 07/2026 - Đợt 1 từ DHG Pharma');
 SET @tx_id = LAST_INSERT_ID();
@@ -228,7 +208,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED026'), @tx_id, 'LOT-202607-01-MED026', '2028-11-28', 73500.00, 300, 240),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED027'), @tx_id, 'LOT-202607-01-MED027', '2028-11-28', 28500.00, 300, 240);
 
--- Tháng 7/2026 - Đợt nhập 2
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 4, 1, '2026-07-18 09:15:00', 'Nhập hàng định kỳ Tháng 07/2026 - Đợt 2 từ Sanofi-Aventis');
 SET @tx_id = LAST_INSERT_ID();
@@ -245,7 +224,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED145'), @tx_id, 'LOT-202607-02-MED145', '2029-01-25', 73500.00, 250, 200),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED146'), @tx_id, 'LOT-202607-02-MED146', '2029-01-25', 63800.00, 250, 200);
 
--- Tháng 8/2026 - Đợt nhập 1
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 1, 1, '2026-08-04 08:30:00', 'Nhập hàng định kỳ Tháng 08/2026 - Đợt 1 từ DHG Pharma');
 SET @tx_id = LAST_INSERT_ID();
@@ -262,7 +240,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED026'), @tx_id, 'LOT-202608-01-MED026', '2028-12-28', 73500.00, 300, 240),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED027'), @tx_id, 'LOT-202608-01-MED027', '2028-12-28', 28500.00, 300, 240);
 
--- Tháng 8/2026 - Đợt nhập 2
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 4, 1, '2026-08-18 09:15:00', 'Nhập hàng định kỳ Tháng 08/2026 - Đợt 2 từ Sanofi-Aventis');
 SET @tx_id = LAST_INSERT_ID();
@@ -279,7 +256,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED145'), @tx_id, 'LOT-202608-02-MED145', '2029-02-25', 73500.00, 250, 200),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED146'), @tx_id, 'LOT-202608-02-MED146', '2029-02-25', 63800.00, 250, 200);
 
--- Tháng 9/2026 - Đợt nhập 1
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 1, 1, '2026-09-04 08:30:00', 'Nhập hàng định kỳ Tháng 09/2026 - Đợt 1 từ DHG Pharma');
 SET @tx_id = LAST_INSERT_ID();
@@ -296,7 +272,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED026'), @tx_id, 'LOT-202609-01-MED026', '2028-01-28', 73500.00, 300, 240),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED027'), @tx_id, 'LOT-202609-01-MED027', '2028-01-28', 28500.00, 300, 240);
 
--- Tháng 9/2026 - Đợt nhập 2
 INSERT INTO `inventory_transactions` (`type`, `supplier_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('IMPORT', 4, 1, '2026-09-18 09:15:00', 'Nhập hàng định kỳ Tháng 09/2026 - Đợt 2 từ Sanofi-Aventis');
 SET @tx_id = LAST_INSERT_ID();
@@ -313,10 +288,6 @@ INSERT INTO `inventory_lots` (`medicine_id`, `transaction_id`, `lot_number`, `ex
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED145'), @tx_id, 'LOT-202609-02-MED145', '2029-03-25', 73500.00, 250, 200),
 ((SELECT `id` FROM `medicines` WHERE `code` = 'MED146'), @tx_id, 'LOT-202609-02-MED146', '2029-03-25', 63800.00, 250, 200);
 
--- -----------------------------------------------------------------------------
--- 2. BÁN THUỐC: HÓA ĐƠN BÁN LẺ & GIAO DỊCH XUẤT BÁN (EXPORT_SALE) THÁNG 1 - 9/2026
--- -----------------------------------------------------------------------------
--- ==================== BÁN THUỐC THÁNG 01/2026 ====================
 INSERT INTO `sales_orders` (`code`, `employee_id`, `customer_phone`, `total_amount`, `discount`, `payment_method`, `created_at`) VALUES
 ('HDB-260102-001', 1, '0978998877', 605000.00, 0.00, 'CASH', '2026-01-02 09:30:00');
 SET @order_id = LAST_INSERT_ID();
@@ -405,7 +376,6 @@ INSERT INTO `sales_order_items` (`sales_order_id`, `medicine_id`, `inventory_lot
 INSERT INTO `inventory_transactions` (`type`, `sales_order_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('EXPORT_SALE', @order_id, 2, '2026-01-28 20:48:00', 'Bán lẻ tại quầy - Mã đơn HDB-260128-010');
 
--- ==================== BÁN THUỐC THÁNG 02/2026 ====================
 INSERT INTO `sales_orders` (`code`, `employee_id`, `customer_phone`, `total_amount`, `discount`, `payment_method`, `created_at`) VALUES
 ('HDB-260202-001', 2, '0988554433', 490000.00, 0.00, 'CASH', '2026-02-02 17:42:00');
 SET @order_id = LAST_INSERT_ID();
@@ -499,7 +469,6 @@ INSERT INTO `sales_order_items` (`sales_order_id`, `medicine_id`, `inventory_lot
 INSERT INTO `inventory_transactions` (`type`, `sales_order_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('EXPORT_SALE', @order_id, 1, '2026-02-28 18:35:00', 'Bán lẻ tại quầy - Mã đơn HDB-260228-010');
 
--- ==================== BÁN THUỐC THÁNG 03/2026 ====================
 INSERT INTO `sales_orders` (`code`, `employee_id`, `customer_phone`, `total_amount`, `discount`, `payment_method`, `created_at`) VALUES
 ('HDB-260302-001', 1, '0918776655', 130000.00, 0.00, 'CASH', '2026-03-02 17:51:00');
 SET @order_id = LAST_INSERT_ID();
@@ -586,7 +555,6 @@ INSERT INTO `sales_order_items` (`sales_order_id`, `medicine_id`, `inventory_lot
 INSERT INTO `inventory_transactions` (`type`, `sales_order_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('EXPORT_SALE', @order_id, 1, '2026-03-28 14:30:00', 'Bán lẻ tại quầy - Mã đơn HDB-260328-010');
 
--- ==================== BÁN THUỐC THÁNG 04/2026 ====================
 INSERT INTO `sales_orders` (`code`, `employee_id`, `customer_phone`, `total_amount`, `discount`, `payment_method`, `created_at`) VALUES
 ('HDB-260402-001', 1, '0912345678', 290000.00, 0.00, 'CASH', '2026-04-02 14:36:00');
 SET @order_id = LAST_INSERT_ID();
@@ -680,7 +648,6 @@ INSERT INTO `sales_order_items` (`sales_order_id`, `medicine_id`, `inventory_lot
 INSERT INTO `inventory_transactions` (`type`, `sales_order_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('EXPORT_SALE', @order_id, 2, '2026-04-28 18:12:00', 'Bán lẻ tại quầy - Mã đơn HDB-260428-010');
 
--- ==================== BÁN THUỐC THÁNG 05/2026 ====================
 INSERT INTO `sales_orders` (`code`, `employee_id`, `customer_phone`, `total_amount`, `discount`, `payment_method`, `created_at`) VALUES
 ('HDB-260502-001', 1, '0988554433', 468000.00, 0.00, 'CASH', '2026-05-02 08:24:00');
 SET @order_id = LAST_INSERT_ID();
@@ -779,7 +746,6 @@ INSERT INTO `sales_order_items` (`sales_order_id`, `medicine_id`, `inventory_lot
 INSERT INTO `inventory_transactions` (`type`, `sales_order_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('EXPORT_SALE', @order_id, 1, '2026-05-28 14:51:00', 'Bán lẻ tại quầy - Mã đơn HDB-260528-010');
 
--- ==================== BÁN THUỐC THÁNG 06/2026 ====================
 INSERT INTO `sales_orders` (`code`, `employee_id`, `customer_phone`, `total_amount`, `discount`, `payment_method`, `created_at`) VALUES
 ('HDB-260602-001', 2, '0989261809', 571000.00, 0.00, 'CASH', '2026-06-02 17:47:00');
 SET @order_id = LAST_INSERT_ID();
@@ -882,7 +848,6 @@ INSERT INTO `sales_order_items` (`sales_order_id`, `medicine_id`, `inventory_lot
 INSERT INTO `inventory_transactions` (`type`, `sales_order_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('EXPORT_SALE', @order_id, 2, '2026-06-28 08:27:00', 'Bán lẻ tại quầy - Mã đơn HDB-260628-010');
 
--- ==================== BÁN THUỐC THÁNG 07/2026 ====================
 INSERT INTO `sales_orders` (`code`, `employee_id`, `customer_phone`, `total_amount`, `discount`, `payment_method`, `created_at`) VALUES
 ('HDB-260702-001', 2, '0934556677', 1500000.00, 0.00, 'CASH', '2026-07-02 14:41:00');
 SET @order_id = LAST_INSERT_ID();
@@ -983,7 +948,6 @@ INSERT INTO `sales_order_items` (`sales_order_id`, `medicine_id`, `inventory_lot
 INSERT INTO `inventory_transactions` (`type`, `sales_order_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('EXPORT_SALE', @order_id, 1, '2026-07-28 11:20:00', 'Bán lẻ tại quầy - Mã đơn HDB-260728-010');
 
--- ==================== BÁN THUỐC THÁNG 08/2026 ====================
 INSERT INTO `sales_orders` (`code`, `employee_id`, `customer_phone`, `total_amount`, `discount`, `payment_method`, `created_at`) VALUES
 ('HDB-260802-001', 1, '0934556677', 767000.00, 0.00, 'TRANSFER', '2026-08-02 17:33:00');
 SET @order_id = LAST_INSERT_ID();
@@ -1082,7 +1046,6 @@ INSERT INTO `sales_order_items` (`sales_order_id`, `medicine_id`, `inventory_lot
 INSERT INTO `inventory_transactions` (`type`, `sales_order_id`, `employee_id`, `transaction_at`, `note`) VALUES
 ('EXPORT_SALE', @order_id, 2, '2026-08-28 19:34:00', 'Bán lẻ tại quầy - Mã đơn HDB-260828-010');
 
--- ==================== BÁN THUỐC THÁNG 09/2026 ====================
 INSERT INTO `sales_orders` (`code`, `employee_id`, `customer_phone`, `total_amount`, `discount`, `payment_method`, `created_at`) VALUES
 ('HDB-260902-001', 2, '0934556677', 1706000.00, 0.00, 'TRANSFER', '2026-09-02 14:25:00');
 SET @order_id = LAST_INSERT_ID();
