@@ -190,4 +190,22 @@ class EmployeeServiceTest {
         assertTrue(service.createEmployeeWithAccount(ok, "STAFF"));
         assertEquals(expected, ok.getCode(), "Nhân viên kế tiếp phải nhận đúng số đã dự kiến, không bị nhảy số");
     }
+
+    @Test
+    void codeFollowsHiredMonthAndContinuesSeedCounter() {
+        DbTestSupport.loginAsManager();
+        EmployeeRepository repo = new EmployeeRepository();
+        long n = System.nanoTime() % 100_000_000L;
+        Employee e = new Employee();
+        e.setFullName("Nhân viên Tháng Chín");
+        e.setDob(LocalDate.of(1998, 3, 3));
+        e.setGender(Employee.GENDER_MALE);
+        e.setNationalId(String.format("0795%08d", n));
+        e.setPhone(String.format("06%08d", n));
+        e.setHiredDate(LocalDate.of(2026, 9, 15));
+        assertTrue(repo.addEmployeeWithAccount(e, "STAFF", "x"));
+        assertTrue(e.getCode().matches("PMS2609\\d{3}"), e.getCode());
+        assertTrue(Integer.parseInt(e.getCode().substring(7)) > 10,
+                "Seed đã có 10 nhân viên vào làm 09/2026 nên số mới phải tiếp nối: " + e.getCode());
+    }
 }

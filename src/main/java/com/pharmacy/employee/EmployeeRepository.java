@@ -17,6 +17,7 @@ import java.util.Optional;
 
 public class EmployeeRepository {
     private static final Logger log = LoggerFactory.getLogger(EmployeeRepository.class);
+    private static final DateTimeFormatter YYMM = DateTimeFormatter.ofPattern("yyMM");
 
     // Kiểm tra mã nhân viên đã tồn tại chưa
     public boolean existsByCode(String code) {
@@ -25,7 +26,7 @@ public class EmployeeRepository {
 
     // Mã nhân viên dự kiến cho màn hình thêm mới (chỉ xem, không giữ chỗ); mã thật được cấp khi lưu
     public String generateNextEmployeeCode() {
-        String prefix = employeeCodePrefix();
+        String prefix = employeeCodePrefix(LocalDate.now());
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Number last = (Number) session.createNativeQuery(
                     "SELECT current_number FROM code_sequences WHERE name = :name", Object.class)
@@ -59,9 +60,9 @@ public class EmployeeRepository {
         return formatEmployeeCode(prefix, allocated.longValue());
     }
 
-    // PMS + YYMM của tháng hiện tại, ví dụ PMS2610
-    private static String employeeCodePrefix() {
-        return "PMS" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyMM"));
+    // PMS + YYMM của tháng vào làm (giống dữ liệu seed), ví dụ vào làm 10/2026 -> PMS2610
+    private static String employeeCodePrefix(LocalDate hiredDate) {
+        return "PMS" + (hiredDate != null ? hiredDate : LocalDate.now()).format(YYMM);
     }
 
     private static String sequenceName(String prefix) {
@@ -283,7 +284,10 @@ public class EmployeeRepository {
         }
         final String code = roleCode;
         final boolean needsCode = emp.getCode() == null || emp.getCode().isBlank();
-        final String prefix = employeeCodePrefix();
+        if (emp.getHiredDate() == null) {
+            emp.setHiredDate(LocalDate.now());
+        }
+        final String prefix = employeeCodePrefix(emp.getHiredDate());
         try {
             if (needsCode) {
                 ensureEmployeeSequence(prefix);
@@ -316,10 +320,11 @@ public class EmployeeRepository {
                 return true;
             });
         } catch (Exception e) {
+            // Giao dịch đã rollback: bỏ mã và id đã gán để lần lưu lại cấp mã mới và chèn như bản ghi mới
             if (needsCode) {
-                // Giao dịch đã rollback nên mã đã cấp không còn hiệu lực
                 emp.setCode(null);
             }
+            emp.setId(null);
             log.error("Lỗi khi thêm mới nhân viên và tài khoản: ", e);
             return false;
         }

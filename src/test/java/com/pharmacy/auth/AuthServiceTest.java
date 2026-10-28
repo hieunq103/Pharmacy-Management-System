@@ -65,7 +65,8 @@ class AuthServiceTest {
     void testEmployeeCodeFormatAndGeneration() {
         String nextCode = employeeService.generateNextEmployeeCode();
         assertNotNull(nextCode);
-        assertTrue(nextCode.matches("^PMS\\d{4,}$"), "Mã nhân viên tự động sinh phải có format PMSxxxx: " + nextCode);
+        String yymm = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyMM"));
+        assertTrue(nextCode.matches("^PMS" + yymm + "\\d{3,}$"), "Mã nhân viên phải có dạng PMS + YYMM + STT: " + nextCode);
     }
 
     @Test
