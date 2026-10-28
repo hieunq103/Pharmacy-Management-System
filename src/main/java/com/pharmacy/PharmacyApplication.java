@@ -1,9 +1,5 @@
 package com.pharmacy;
 
-import com.pharmacy.auth.AuthService;
-import com.pharmacy.auth.AuthServiceImpl;
-import com.pharmacy.auth.LoginRequest;
-import com.pharmacy.common.UserSession;
 import com.pharmacy.infra.db.DatabaseHealthChecker;
 import com.pharmacy.infra.db.HibernateUtil;
 import com.pharmacy.infra.db.MigrationRunner;
@@ -68,20 +64,8 @@ public class PharmacyApplication {
             });
 
             try {
-                boolean autoLoginDevMode = false;
-                String fxmlPath;
-                String title;
-
-                if (autoLoginDevMode) {
-                    AuthService authService = new AuthServiceImpl();
-                    authService.login(new LoginRequest("PMS2601001", "12345678"));
-                    log.info("Đăng nhập Admin tự động thành công: {}", UserSession.getInstance().getEmployeeName());
-                    fxmlPath = "/fxml/layout/main_layout.fxml";
-                    title = "PharmaOS — Quản lý cửa hàng thuốc (Admin Mode)";
-                } else {
-                    fxmlPath = "/fxml/auth/login.fxml";
-                    title = "PharmaOS — Quản lý cửa hàng thuốc";
-                }
+                String fxmlPath = "/fxml/auth/login.fxml";
+                String title = "PharmaOS — Quản lý cửa hàng thuốc";
 
                 URL fxmlUrl = getClass().getResource(fxmlPath);
                 if (fxmlUrl == null) {

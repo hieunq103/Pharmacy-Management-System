@@ -91,14 +91,6 @@ class AuthServiceImplTest {
     }
 
     @Test
-    void defaultPasswordForcesPasswordChange() {
-        repo.account = account(AuthServiceImpl.defaultPassword(), Account.Status.ACTIVE);
-        Account logged = service.login(new LoginRequest(USERNAME, AuthServiceImpl.defaultPassword()));
-        assertTrue(logged.isMustChangePassword());
-        assertTrue(UserSession.isLoggedIn());
-    }
-
-    @Test
     void ownPasswordDoesNotForceChange() {
         repo.account = account(STRONG_PASSWORD, Account.Status.ACTIVE);
         assertFalse(service.login(new LoginRequest(USERNAME, STRONG_PASSWORD)).isMustChangePassword());

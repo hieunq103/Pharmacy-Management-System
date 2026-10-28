@@ -3,7 +3,6 @@ package com.pharmacy.auth;
 import com.pharmacy.account.Account;
 import com.pharmacy.account.AccountRepository;
 import com.pharmacy.common.UserSession;
-import com.pharmacy.infra.config.AppConfig;
 import com.pharmacy.infra.exception.AuthenticationException;
 import com.pharmacy.infra.exception.ErrorCode;
 import com.pharmacy.infra.security.PasswordEncoder;
@@ -57,22 +56,11 @@ public class AuthServiceImpl implements AuthService {
                     "Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
         }
 
-        // Tài khoản mới (cờ must_change_password) hoặc vẫn dùng mật khẩu khởi tạo mặc
-        // định -> bắt buộc đổi
-        if (request.password().equals(defaultPassword())) {
-            account.setMustChangePassword(true);
-        }
-
         accountRepository.recordSuccessfulLogin(accountId, CLIENT_INFO);
         UserSession.start(account);
 
         log.info("Nhân viên [{}] đăng nhập thành công", UserSession.getInstance().getEmployeeName());
         return account;
-    }
-
-    // Mật khẩu khởi tạo cho tài khoản mới
-    public static String defaultPassword() {
-        return AppConfig.get("auth.defaultPassword", "12345678");
     }
 
     @Override

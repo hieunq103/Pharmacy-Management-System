@@ -9,7 +9,7 @@ public interface EmployeeService {
     EmployeeRepository.EmployeeSummary getEmployeeSummary();
     Optional<Employee> findByIdWithDetails(Integer id);
     String generateNextEmployeeCode();
-    boolean createEmployeeWithAccount(Employee employee, String role);
+    Optional<NewEmployeeAccount> createEmployeeWithAccount(Employee employee, String role);
     boolean markAsInactive(Integer employeeId);
     boolean lockAccount(Integer accountId);
     boolean unlockAccount(Integer accountId);

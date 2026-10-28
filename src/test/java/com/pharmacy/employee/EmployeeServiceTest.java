@@ -87,7 +87,7 @@ class EmployeeServiceTest {
         e.setNationalId(String.format("0790%08d", n));
         e.setPhone(String.format("09%08d", n));
         e.setHiredDate(LocalDate.now());
-        assertTrue(service.createEmployeeWithAccount(e, "STAFF"));
+        assertTrue(service.createEmployeeWithAccount(e, "STAFF").isPresent());
 
         assertTrue(e.getCode() != null && e.getCode().startsWith("PMS"), "Mã nhân viên tự sinh: " + e.getCode());
         var account = new com.pharmacy.account.AccountRepository().findByUsername(e.getCode()).orElseThrow();
@@ -108,7 +108,7 @@ class EmployeeServiceTest {
         old.setNationalId(String.format("0791%08d", n));
         old.setPhone(String.format("08%08d", n));
         old.setHiredDate(LocalDate.now());
-        assertTrue(service.createEmployeeWithAccount(old, "STAFF"));
+        assertTrue(service.createEmployeeWithAccount(old, "STAFF").isPresent());
         Integer oldId = new EmployeeRepository().findByPhone(old.getPhone(), null).map(c -> {
             assertEquals(old.getCode(), c.code());
             return com.pharmacy.infra.db.HibernateUtil.executeWithResult(s -> s
@@ -149,7 +149,7 @@ class EmployeeServiceTest {
                 e.setPhone(String.format("07%08d", n % 100_000_000L));
                 e.setHiredDate(LocalDate.now());
                 start.await();
-                assertTrue(service.createEmployeeWithAccount(e, "STAFF"));
+                assertTrue(service.createEmployeeWithAccount(e, "STAFF").isPresent());
                 return e.getCode();
             }));
         }
@@ -187,7 +187,7 @@ class EmployeeServiceTest {
         ok.setNationalId(String.format("0794%08d", n));
         ok.setPhone(String.format("07%08d", n));
         ok.setHiredDate(LocalDate.now());
-        assertTrue(service.createEmployeeWithAccount(ok, "STAFF"));
+        assertTrue(service.createEmployeeWithAccount(ok, "STAFF").isPresent());
         assertEquals(expected, ok.getCode(), "Nhân viên kế tiếp phải nhận đúng số đã dự kiến, không bị nhảy số");
     }
 
@@ -207,5 +207,39 @@ class EmployeeServiceTest {
         assertTrue(e.getCode().matches("PMS2609\\d{3}"), e.getCode());
         assertTrue(Integer.parseInt(e.getCode().substring(7)) > 10,
                 "Seed đã có 10 nhân viên vào làm 09/2026 nên số mới phải tiếp nối: " + e.getCode());
+    }
+
+    @Test
+    void newEmployeeGetsRandomEightDigitPasswordAndMustChangeIt() {
+        DbTestSupport.loginAsManager();
+        long n = System.nanoTime() % 100_000_000L;
+        Employee e = new Employee();
+        e.setFullName("Nhân viên Mật khẩu Tạm");
+        e.setDob(LocalDate.of(1998, 3, 3));
+        e.setGender(Employee.GENDER_MALE);
+        e.setNationalId(String.format("0796%08d", n));
+        e.setPhone(String.format("05%08d", n));
+        e.setHiredDate(LocalDate.now());
+        NewEmployeeAccount created = service.createEmployeeWithAccount(e, "STAFF").orElseThrow();
+
+        assertEquals(e.getCode(), created.username());
+        assertTrue(created.temporaryPassword().matches("\\d{8}"), created.temporaryPassword());
+        DbTestSupport.logout();
+
+        var account = new com.pharmacy.auth.AuthServiceImpl()
+                .login(new com.pharmacy.auth.LoginRequest(created.username(), created.temporaryPassword()));
+        assertTrue(account.isMustChangePassword(), "Lần đăng nhập đầu phải bắt đổi mật khẩu");
+        assertNotEquals(created.temporaryPassword(), account.getPasswordHash(), "CSDL chỉ lưu bản băm");
+    }
+
+    @Test
+    void temporaryPasswordsAreEightDigitsAndVary() {
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        for (int i = 0; i < 200; i++) {
+            String p = com.pharmacy.infra.security.TemporaryPassword.generate();
+            assertTrue(p.matches("\\d{8}"), p);
+            seen.add(p);
+        }
+        assertTrue(seen.size() > 190, "Mật khẩu tạm phải ngẫu nhiên");
     }
 }

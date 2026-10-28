@@ -3,9 +3,9 @@ package com.pharmacy.employee;
 import com.pharmacy.account.Account;
 import com.pharmacy.account.AccountRepository;
 import com.pharmacy.common.UserSession;
-import com.pharmacy.auth.AuthServiceImpl;
 import com.pharmacy.common.FormValidator;
 import com.pharmacy.infra.security.PasswordEncoder;
+import com.pharmacy.infra.security.TemporaryPassword;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,10 +54,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public boolean createEmployeeWithAccount(Employee employee, String role) {
+    public Optional<NewEmployeeAccount> createEmployeeWithAccount(Employee employee, String role) {
         requireManager();
         if (employee == null || role == null || role.trim().isEmpty()) {
-            return false;
+            return Optional.empty();
         }
         validateEmployee(employee.getFullName(), employee.getPhone(), employee.getNationalId(), employee.getDob());
         if (employee.getCode() != null && !employee.getCode().isBlank()
@@ -71,8 +71,11 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new IllegalArgumentException(c.message("Số điện thoại"));
         });
 
-        String hashedPassword = PasswordEncoder.hash(AuthServiceImpl.defaultPassword());
-        return employeeRepository.addEmployeeWithAccount(employee, role.trim(), hashedPassword);
+        String temporaryPassword = TemporaryPassword.generate();
+        if (!employeeRepository.addEmployeeWithAccount(employee, role.trim(), PasswordEncoder.hash(temporaryPassword))) {
+            return Optional.empty();
+        }
+        return Optional.of(new NewEmployeeAccount(employee.getCode(), temporaryPassword));
     }
 
     @Override

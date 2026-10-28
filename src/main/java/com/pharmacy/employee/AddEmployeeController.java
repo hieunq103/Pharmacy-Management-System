@@ -147,9 +147,11 @@ public class AddEmployeeController implements Initializable {
         newEmp.setStatus(Employee.Status.ACTIVE);
 
         try {
-            boolean success = employeeService.createEmployeeWithAccount(newEmp, role);
+            var account = employeeService.createEmployeeWithAccount(newEmp, role);
 
-            if (success) {
+            if (account.isPresent()) {
+                NewAccountDialog.show(txtFullName.getScene() != null ? txtFullName.getScene().getWindow() : null,
+                        newEmp.getFullName(), account.get());
                 if (onSaveSuccessCallback != null) {
                     onSaveSuccessCallback.accept(newEmp);
                 }
