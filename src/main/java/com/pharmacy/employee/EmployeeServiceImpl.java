@@ -79,6 +79,31 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public NewEmployeeAccount resetPassword(Integer employeeId) {
+        requireManager();
+        if (employeeId == null) {
+            throw new IllegalArgumentException("Không xác định được nhân viên cần cấp lại mật khẩu.");
+        }
+        if (employeeId.equals(UserSession.currentEmployeeId())) {
+            throw new IllegalArgumentException("Không thể tự cấp lại mật khẩu cho chính mình. Hãy dùng chức năng Đổi mật khẩu.");
+        }
+        Employee employee = employeeRepository.findByIdWithDetails(employeeId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhân viên."));
+        if (employee.getStatus() == Employee.Status.INACTIVE) {
+            throw new IllegalArgumentException("Nhân viên đã nghỉ việc, không thể cấp lại mật khẩu.");
+        }
+        Account account = employee.getAccount();
+        if (account == null) {
+            throw new IllegalArgumentException("Nhân viên này chưa có tài khoản đăng nhập.");
+        }
+        String temporaryPassword = TemporaryPassword.generate();
+        if (!accountRepository.resetPassword(account.getId(), PasswordEncoder.hash(temporaryPassword))) {
+            throw new IllegalStateException("Không thể cấp lại mật khẩu. Vui lòng thử lại.");
+        }
+        return new NewEmployeeAccount(account.getUsername(), temporaryPassword);
+    }
+
+    @Override
     public boolean markAsInactive(Integer employeeId) {
         if (employeeId == null) return false;
         requireManager();

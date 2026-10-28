@@ -61,6 +61,15 @@ public class AccountRepository {
         });
     }
 
+    // Cấp lại mật khẩu tạm: thay bản băm và bật lại cờ bắt buộc đổi mật khẩu
+    public boolean resetPassword(Integer accountId, String newPasswordHash) {
+        return HibernateUtil.executeWithResult(session -> session.createMutationQuery(
+                        "UPDATE Account a SET a.passwordHash = :passwordHash, a.mustChangePassword = true WHERE a.id = :id")
+                .setParameter("passwordHash", newPasswordHash)
+                .setParameter("id", accountId)
+                .executeUpdate() > 0);
+    }
+
     // Khóa tài khoản nhân viên
     public boolean lockAccount(Integer accountId) {
         if (accountId == null) return false;

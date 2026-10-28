@@ -71,6 +71,15 @@ public final class DialogUtils {
         alert.showAndWait();
     }
 
+    public static boolean showConfirmation(Window owner, String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        configure(alert, owner);
+        alert.setTitle(title != null ? title : "Xác nhận");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        return alert.showAndWait().filter(b -> b == javafx.scene.control.ButtonType.OK).isPresent();
+    }
+
     public static void showError(String title, String message) {
         showError(null, title, message);
     }

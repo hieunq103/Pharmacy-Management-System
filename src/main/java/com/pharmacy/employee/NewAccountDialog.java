@@ -24,11 +24,20 @@ public final class NewAccountDialog {
     private NewAccountDialog() {
     }
 
-    public static void show(Window owner, String fullName, NewEmployeeAccount account) {
+    public static void showCreated(Window owner, String fullName, NewEmployeeAccount account) {
+        show(owner, "Tạo tài khoản thành công", "Đã tạo tài khoản cho nhân viên " + fullName, account);
+    }
+
+    public static void showReset(Window owner, String fullName, NewEmployeeAccount account) {
+        show(owner, "Cấp lại mật khẩu thành công", "Đã cấp mật khẩu mới cho nhân viên " + fullName
+                + "\nMật khẩu cũ không còn dùng được", account);
+    }
+
+    private static void show(Window owner, String title, String header, NewEmployeeAccount account) {
         Dialog<Void> dialog = new Dialog<>();
         DialogUtils.configure(dialog, owner);
-        dialog.setTitle("Tạo tài khoản thành công");
-        dialog.setHeaderText("Đã tạo tài khoản cho nhân viên " + fullName);
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
 
         GridPane grid = new GridPane();
         grid.setHgap(10);

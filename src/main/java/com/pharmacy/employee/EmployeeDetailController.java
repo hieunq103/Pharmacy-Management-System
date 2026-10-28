@@ -24,6 +24,7 @@ public class EmployeeDetailController {
 
     @FXML private Button btnClose;
     @FXML private Button btnViewHistory;
+    @FXML private Button btnResetPassword;
     @FXML private Button btnUpdateProfile;
     @FXML private HBox boxEditActions;
     @FXML private Button btnCancel;
@@ -86,6 +87,7 @@ public class EmployeeDetailController {
         this.employee = emp;
         this.onBackCallback = onBack;
         populateData();
+        updateResetPasswordButton(false);
     }
 
     private void populateData() {
@@ -234,6 +236,7 @@ public class EmployeeDetailController {
             btnUpdateProfile.setVisible(!editing);
             btnUpdateProfile.setManaged(!editing);
         }
+        updateResetPasswordButton(editing);
         if (boxEditActions != null) {
             boxEditActions.setVisible(editing);
             boxEditActions.setManaged(editing);
@@ -523,6 +526,47 @@ public class EmployeeDetailController {
             return btnClose.getScene().getWindow();
         }
         return DialogUtils.getActiveWindow();
+    }
+
+    // Chỉ cấp lại cho nhân viên khác, đang làm việc và đã có tài khoản; ẩn khi đang sửa hồ sơ
+    private void updateResetPasswordButton(boolean editing) {
+        if (btnResetPassword == null) return;
+        boolean show = !editing && employee != null && !isEditingSelf()
+                && employee.getStatus() != Employee.Status.INACTIVE && employee.getAccount() != null;
+        btnResetPassword.setVisible(show);
+        btnResetPassword.setManaged(show);
+    }
+
+    @FXML
+    private void handleResetPassword() {
+        if (employee == null) return;
+        Window owner = btnResetPassword.getScene() != null ? btnResetPassword.getScene().getWindow() : null;
+        if (!DialogUtils.showConfirmation(owner, "Cấp lại mật khẩu",
+                "Cấp mật khẩu mới cho " + employee.getFullName() + " (" + employee.getCode() + ")?\n"
+                        + "Mật khẩu hiện tại sẽ không dùng được nữa và nhân viên phải đổi mật khẩu khi đăng nhập.")) {
+            return;
+        }
+        btnResetPassword.setDisable(true);
+        Integer employeeId = employee.getId();
+        Task<NewEmployeeAccount> task = new Task<>() {
+            @Override
+            protected NewEmployeeAccount call() {
+                return employeeService.resetPassword(employeeId);
+            }
+        };
+        task.setOnSucceeded(e -> {
+            btnResetPassword.setDisable(false);
+            NewAccountDialog.showReset(owner, employee.getFullName(), task.getValue());
+        });
+        task.setOnFailed(e -> {
+            btnResetPassword.setDisable(false);
+            Throwable ex = task.getException();
+            log.error("Lỗi khi cấp lại mật khẩu: ", ex);
+            DialogUtils.showError(owner, "Không thể cấp lại mật khẩu",
+                    ex instanceof IllegalArgumentException || ex instanceof SecurityException
+                            ? ex.getMessage() : "Đã có lỗi xảy ra. Vui lòng thử lại.");
+        });
+        BackgroundTasks.run(task);
     }
 
     @FXML

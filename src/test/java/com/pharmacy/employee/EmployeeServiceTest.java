@@ -242,4 +242,41 @@ class EmployeeServiceTest {
         }
         assertTrue(seen.size() > 190, "Mật khẩu tạm phải ngẫu nhiên");
     }
+
+    @Test
+    void resetPasswordIssuesNewTemporaryPasswordAndInvalidatesOldOne() {
+        DbTestSupport.loginAsManager();
+        long n = System.nanoTime() % 100_000_000L;
+        Employee e = new Employee();
+        e.setFullName("Nhân viên Cấp Lại");
+        e.setDob(LocalDate.of(1998, 3, 3));
+        e.setGender(Employee.GENDER_FEMALE);
+        e.setNationalId(String.format("0797%08d", n));
+        e.setPhone(String.format("03%08d", n));
+        e.setHiredDate(LocalDate.now());
+        NewEmployeeAccount first = service.createEmployeeWithAccount(e, "STAFF").orElseThrow();
+
+        NewEmployeeAccount reset = service.resetPassword(e.getId());
+        assertEquals(first.username(), reset.username());
+        assertTrue(reset.temporaryPassword().matches("\\d{8}"));
+        DbTestSupport.logout();
+
+        var auth = new com.pharmacy.auth.AuthServiceImpl();
+        if (!first.temporaryPassword().equals(reset.temporaryPassword())) {
+            assertThrows(com.pharmacy.infra.exception.AuthenticationException.class,
+                    () -> auth.login(new com.pharmacy.auth.LoginRequest(reset.username(), first.temporaryPassword())),
+                    "Mật khẩu cũ phải hết hiệu lực");
+        }
+        var account = auth.login(new com.pharmacy.auth.LoginRequest(reset.username(), reset.temporaryPassword()));
+        assertTrue(account.isMustChangePassword(), "Sau khi cấp lại phải bắt đổi mật khẩu");
+    }
+
+    @Test
+    void resetPasswordRejectsSelfAndNonManager() {
+        var manager = DbTestSupport.loginAsManager();
+        Integer managerEmployeeId = manager.getEmployee().getId();
+        assertThrows(IllegalArgumentException.class, () -> service.resetPassword(managerEmployeeId));
+        DbTestSupport.loginAs(DbTestSupport.STAFF_USERNAME);
+        assertThrows(SecurityException.class, () -> service.resetPassword(managerEmployeeId));
+    }
 }

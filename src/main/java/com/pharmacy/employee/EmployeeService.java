@@ -10,6 +10,8 @@ public interface EmployeeService {
     Optional<Employee> findByIdWithDetails(Integer id);
     String generateNextEmployeeCode();
     Optional<NewEmployeeAccount> createEmployeeWithAccount(Employee employee, String role);
+
+    NewEmployeeAccount resetPassword(Integer employeeId);
     boolean markAsInactive(Integer employeeId);
     boolean lockAccount(Integer accountId);
     boolean unlockAccount(Integer accountId);
