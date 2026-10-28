@@ -124,8 +124,7 @@ public class LoginController {
 
             log.info("Xác thực thành công cho nhân viên [{}]", employeeName);
 
-            // Tài khoản mới / còn dùng mật khẩu khởi tạo: bắt buộc đổi mật khẩu trước khi
-            // vào hệ thống
+            // Tài khoản mới / còn dùng mật khẩu khởi tạo: bắt buộc đổi mật khẩu trước khi vào hệ thống
             Account account = loginTask.getValue();
             if (account != null && account.isMustChangePassword() && !promptForcedPasswordChange(account)) {
                 authService.logout();
@@ -156,8 +155,6 @@ public class LoginController {
                 showError(ErrorCode.DATABASE_CONNECTION_ERROR);
             }
 
-            // Xóa ô nhập mật khẩu dưới cờ chặn để listener không xóa thông báo lỗi vừa hiển
-            // thị
             isInternalUpdating = true;
             try {
                 if (txtPassword != null) {
@@ -176,8 +173,7 @@ public class LoginController {
     }
 
     /**
-     * Hiển thị hộp thoại đổi mật khẩu bắt buộc. Trả về true nếu người dùng đã đổi
-     * thành công.
+     * Hiển thị hộp thoại đổi mật khẩu bắt buộc. Trả về true nếu người dùng đã đổi thành công.
      */
     private boolean promptForcedPasswordChange(Account account) {
         boolean[] changed = { false };

@@ -26,7 +26,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Account login(LoginRequest request) {
-        // Tìm tài khoản duy nhất bằng tên đăng nhập (Mã nhân viên)
+        // Tìm tài khoản duy nhất bằng tên đăng nhập
         Account account = accountRepository.findByUsername(request.username())
                 .orElseThrow(() -> {
                     log.warn("Đăng nhập thất bại: Tài khoản không tồn tại [{}]", request.username());
@@ -39,8 +39,6 @@ public class AuthServiceImpl implements AuthService {
                 : "N/A";
         Integer accountId = account.getId();
 
-        // Kiểm tra mật khẩu trước trạng thái để không tiết lộ tình trạng tài khoản cho
-        // người không biết mật khẩu
         if (!PasswordEncoder.matches(request.password(), account.getPasswordHash())) {
             log.warn("Nhân viên [{}] - Mật khẩu không chính xác", employeeName);
             accountRepository.saveLoginHistory(accountId, "FAILED", CLIENT_INFO);
@@ -56,6 +54,14 @@ public class AuthServiceImpl implements AuthService {
                     "Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
         }
 
+<<<<<<< Updated upstream
+=======
+        // Tài khoản mới hoặc vẫn dùng mật khẩu khởi tạo mặc định -> bắt buộc đổi
+        if (request.password().equals(defaultPassword())) {
+            account.setMustChangePassword(true);
+        }
+
+>>>>>>> Stashed changes
         accountRepository.recordSuccessfulLogin(accountId, CLIENT_INFO);
         UserSession.start(account);
 
