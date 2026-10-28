@@ -161,4 +161,33 @@ class EmployeeServiceTest {
         String prefix = "PMS" + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyMM"));
         codes.forEach(c -> assertTrue(c.matches(prefix + "\\d{3,}"), "Sai định dạng mã: " + c));
     }
+
+    @Test
+    void failedHireDoesNotConsumeCodeNumber() {
+        DbTestSupport.loginAsManager();
+        EmployeeRepository repo = new EmployeeRepository();
+        String expected = repo.generateNextEmployeeCode();
+
+        Employee dup = new Employee();
+        dup.setFullName("Nhân viên Lỗi");
+        dup.setDob(LocalDate.of(1998, 3, 3));
+        dup.setGender(Employee.GENDER_MALE);
+        dup.setNationalId(service.getEmployeesPage(1, 1, null, null, null, null, null).getItems().get(0).getNationalId());
+        dup.setPhone("0700000001");
+        dup.setHiredDate(LocalDate.now());
+        assertFalse(repo.addEmployeeWithAccount(dup, "STAFF", "x"), "CCCD trùng phải làm lần lưu thất bại");
+
+        assertEquals(expected, repo.generateNextEmployeeCode(), "Lần lưu thất bại không được làm mất số thứ tự");
+
+        Employee ok = new Employee();
+        ok.setFullName("Nhân viên Hợp lệ");
+        ok.setDob(LocalDate.of(1998, 3, 3));
+        ok.setGender(Employee.GENDER_MALE);
+        long n = System.nanoTime() % 100_000_000L;
+        ok.setNationalId(String.format("0794%08d", n));
+        ok.setPhone(String.format("07%08d", n));
+        ok.setHiredDate(LocalDate.now());
+        assertTrue(service.createEmployeeWithAccount(ok, "STAFF"));
+        assertEquals(expected, ok.getCode(), "Nhân viên kế tiếp phải nhận đúng số đã dự kiến, không bị nhảy số");
+    }
 }
