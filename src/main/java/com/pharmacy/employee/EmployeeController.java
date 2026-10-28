@@ -214,7 +214,7 @@ public class EmployeeController implements Initializable {
     private void setupTableColumns() {
         if (colCode != null) {
             colCode.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCode() != null ? c.getValue().getCode() : ""));
-            colCode.setStyle("-fx-alignment: CENTER; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #1E293B;");
+            colCode.setStyle("-fx-alignment: CENTER-LEFT; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #1E293B;");
         }
         colName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getFullName() != null ? c.getValue().getFullName() : ""));
         colGender.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getGender() != null ? c.getValue().getGender() : ""));

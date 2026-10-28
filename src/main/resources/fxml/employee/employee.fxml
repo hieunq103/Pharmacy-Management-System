@@ -51,7 +51,7 @@
     </VBox.margin>
     <TableView fx:id="tableEmployee" HBox.hgrow="ALWAYS" styleClass="custom-employee-table">
         <columns>
-            <TableColumn fx:id="colCode" minWidth="135.0" prefWidth="145.0" resizable="true" sortable="false" text="Mã NV" />
+            <TableColumn fx:id="colCode" minWidth="150.0" prefWidth="160.0" resizable="true" sortable="false" text="Tên đăng nhập" />
             <TableColumn fx:id="colName" minWidth="175.0" prefWidth="195.0" resizable="true" sortable="false" text="Tên" />
             <TableColumn fx:id="colGender" minWidth="110.0" prefWidth="115.0" resizable="true" sortable="false" text="Giới tính" />
             <TableColumn fx:id="colPhone" minWidth="120.0" prefWidth="130.0" resizable="true" sortable="false" text="SĐT" />
