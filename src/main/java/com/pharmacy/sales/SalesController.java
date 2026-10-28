@@ -41,6 +41,7 @@ public class SalesController implements Initializable {
 
     // Màn hình chính và Lịch sử bán hàng
     @FXML private HBox viewSalesMain;
+    private static final double LINE_TOTAL_WIDTH = 104;
     @FXML private StackPane viewSalesHistory;
     /** Hành động của nút back trong Lịch sử bán hàng; null = quay lại trang Bán hàng. */
     private Runnable historyBackAction;
@@ -604,7 +605,10 @@ public class SalesController implements Initializable {
         // Thành tiền của món (không bao giờ bị cắt thành "145.0...")
         Label lblTotal = new Label(FormatUtils.formatCurrency(item.getLineTotal()));
         lblTotal.getStyleClass().add("cart-item-total");
-        lblTotal.setMinWidth(Region.USE_PREF_SIZE);
+        // Cột thành tiền rộng cố định (đủ tới hàng chục triệu) để ô số lượng các dòng luôn thẳng hàng
+        lblTotal.setMinWidth(LINE_TOTAL_WIDTH);
+        lblTotal.setPrefWidth(LINE_TOTAL_WIDTH);
+        lblTotal.setMaxWidth(LINE_TOTAL_WIDTH);
         lblTotal.setAlignment(Pos.CENTER_RIGHT);
 
         // Bộ nút tăng/giảm [-] [txtQty] [+]
