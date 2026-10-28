@@ -54,14 +54,6 @@ public class AuthServiceImpl implements AuthService {
                     "Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
         }
 
-<<<<<<< Updated upstream
-=======
-        // Tài khoản mới hoặc vẫn dùng mật khẩu khởi tạo mặc định -> bắt buộc đổi
-        if (request.password().equals(defaultPassword())) {
-            account.setMustChangePassword(true);
-        }
-
->>>>>>> Stashed changes
         accountRepository.recordSuccessfulLogin(accountId, CLIENT_INFO);
         UserSession.start(account);
 

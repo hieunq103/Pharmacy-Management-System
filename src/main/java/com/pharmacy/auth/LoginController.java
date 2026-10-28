@@ -124,7 +124,7 @@ public class LoginController {
 
             log.info("Xác thực thành công cho nhân viên [{}]", employeeName);
 
-            // Tài khoản mới / còn dùng mật khẩu khởi tạo: bắt buộc đổi mật khẩu trước khi vào hệ thống
+            // Tài khoản mới hoặc vừa được cấp lại mật khẩu tạm: bắt buộc đổi mật khẩu trước khi vào hệ thống
             Account account = loginTask.getValue();
             if (account != null && account.isMustChangePassword() && !promptForcedPasswordChange(account)) {
                 authService.logout();
@@ -183,7 +183,7 @@ public class LoginController {
                 account.getUsername(),
                 msg -> changed[0] = true);
         dialog.setTitle("Đổi mật khẩu lần đầu");
-        dialog.setHeaderText("Bạn đang dùng mật khẩu khởi tạo. Vui lòng đổi mật khẩu để tiếp tục.");
+        dialog.setHeaderText("Bạn đang dùng mật khẩu tạm do quản lý cấp. Vui lòng đổi mật khẩu để tiếp tục.");
         dialog.showAndWait();
         return changed[0];
     }
