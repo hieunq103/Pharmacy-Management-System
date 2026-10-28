@@ -1,14 +1,12 @@
 package com.pharmacy.common;
 
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.util.List;
-import java.util.Optional;
 
 public final class DialogUtils {
     private DialogUtils() {}
@@ -56,10 +54,6 @@ public final class DialogUtils {
         alert.showAndWait();
     }
 
-    public static void showSuccess(String title, String message) {
-        showSuccess(null, title, message);
-    }
-
     public static void showSuccess(Window owner, String title, String message) {
         showInfo(owner, title != null ? title : "Thành công", message);
     }
@@ -90,17 +84,4 @@ public final class DialogUtils {
         alert.showAndWait();
     }
 
-    public static boolean showConfirmation(String title, String message) {
-        return showConfirmation(null, title, message);
-    }
-
-    public static boolean showConfirmation(Window owner, String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        configure(alert, owner);
-        alert.setTitle(title != null ? title : "Xác nhận");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        Optional<ButtonType> result = alert.showAndWait();
-        return result.isPresent() && result.get() == ButtonType.OK;
-    }
 }

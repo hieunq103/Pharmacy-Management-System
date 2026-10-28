@@ -115,7 +115,4 @@ public class Account implements Serializable {
         return role != null && "MANAGER".equalsIgnoreCase(role.getCode());
     }
 
-    public boolean isStaff() {
-        return role != null && "STAFF".equalsIgnoreCase(role.getCode());
-    }
 }

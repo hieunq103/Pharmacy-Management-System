@@ -99,7 +99,4 @@ public final class UserSession {
         return account != null && account.isManager();
     }
 
-    public boolean isStaff() {
-        return account != null && account.isStaff();
-    }
 }

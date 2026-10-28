@@ -319,10 +319,6 @@ public class SearchableMedicinePicker extends VBox {
         return selectedMedicine;
     }
 
-    public ObjectProperty<MedicineInventoryDTO> selectedItemProperty() {
-        return selectedMedicine;
-    }
-
     public MedicineInventoryDTO getSelectedMedicine() {
         return selectedMedicine.get();
     }

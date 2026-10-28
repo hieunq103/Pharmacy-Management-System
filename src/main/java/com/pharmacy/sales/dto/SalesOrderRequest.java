@@ -31,30 +31,19 @@ public class SalesOrderRequest {
     public void setEmployeeId(Integer employeeId) { this.employeeId = employeeId; }
 
     public String getCustomerPhone() { return customerPhone; }
-    public void setCustomerPhone(String customerPhone) { this.customerPhone = customerPhone; }
 
     public BigDecimal getDiscount() {
         return CartTotals.clampDiscount(discount, getSubtotal());
     }
 
-    public void setDiscount(BigDecimal discount) {
-        this.discount = CartTotals.clampDiscount(discount, getSubtotal());
-    }
-
     public String getPaymentMethod() { return paymentMethod != null ? paymentMethod : "CASH"; }
-    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
 
     public boolean isPrescriptionConfirmed() { return prescriptionConfirmed; }
 
     public List<CartItem> getItems() { return items; }
-    public void setItems(List<CartItem> items) { this.items = items; }
 
     public BigDecimal getSubtotal() {
         return CartTotals.subtotal(items);
-    }
-
-    public BigDecimal getTotalAmount() {
-        return CartTotals.total(getSubtotal(), getDiscount());
     }
 
     public boolean hasPrescriptionItem() {

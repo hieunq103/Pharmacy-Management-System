@@ -5,7 +5,4 @@ public record MedicineTimelineDTO(
         long quantitySold,
         String tooltipText
 ) {
-    public MedicineTimelineDTO(String timeLabel, long quantitySold) {
-        this(timeLabel, quantitySold, null);
-    }
 }

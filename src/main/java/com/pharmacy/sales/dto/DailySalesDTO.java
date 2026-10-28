@@ -10,10 +10,6 @@ public class DailySalesDTO {
     private final long orderCount;
     private final long totalQuantity;
 
-    public DailySalesDTO(LocalDate date, String dayOfWeekLabel, BigDecimal amount, long orderCount) {
-        this(date, dayOfWeekLabel, amount, orderCount, 0L);
-    }
-
     public DailySalesDTO(LocalDate date, String dayOfWeekLabel, BigDecimal amount, long orderCount, long totalQuantity) {
         this.date = date;
         this.dayOfWeekLabel = dayOfWeekLabel;

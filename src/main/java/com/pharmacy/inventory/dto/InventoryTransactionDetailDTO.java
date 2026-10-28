@@ -48,92 +48,36 @@ public class InventoryTransactionDetailDTO {
         return expiryDate.format(FormatUtils.DATE_FORMATTER);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Integer getMedicineId() {
-        return medicineId;
-    }
-
-    public void setMedicineId(Integer medicineId) {
-        this.medicineId = medicineId;
-    }
-
     public String getMedicineCode() {
         return medicineCode != null ? medicineCode : "—";
-    }
-
-    public void setMedicineCode(String medicineCode) {
-        this.medicineCode = medicineCode;
     }
 
     public String getMedicineName() {
         return medicineName != null ? medicineName : "—";
     }
 
-    public void setMedicineName(String medicineName) {
-        this.medicineName = medicineName;
-    }
-
     public String getCategoryName() {
         return categoryName != null && !categoryName.isBlank() ? categoryName : "Chưa phân loại";
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
     }
 
     public String getUnit() {
         return unit != null && !unit.isBlank() ? unit : "Hộp";
     }
 
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
-
     public String getManufacturer() {
         return manufacturer != null && !manufacturer.isBlank() ? manufacturer : "—";
-    }
-
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
     }
 
     public String getLotNumber() {
         return lotNumber != null ? lotNumber : "—";
     }
 
-    public void setLotNumber(String lotNumber) {
-        this.lotNumber = lotNumber;
-    }
-
-    public LocalDate getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(LocalDate expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
     public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
     public BigDecimal getUnitPrice() {
         return unitPrice != null ? unitPrice : BigDecimal.ZERO;
-    }
-
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
     }
 
     public BigDecimal getTotalPrice() {
@@ -146,7 +90,4 @@ public class InventoryTransactionDetailDTO {
         return reason != null && !reason.isBlank() ? reason : "—";
     }
 
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
 }

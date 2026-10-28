@@ -103,10 +103,6 @@ public class ReportController {
         this.reportService = new ReportServiceImpl();
     }
 
-    public ReportController(ReportService reportService) {
-        this.reportService = reportService;
-    }
-
     private int currentTimelineCount = 7;
 
     @FXML

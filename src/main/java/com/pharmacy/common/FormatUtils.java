@@ -40,18 +40,6 @@ public final class FormatUtils {
         }
     }
 
-    public static String formatCurrency(double amount) {
-        synchronized (CURRENCY_FORMATTER) {
-            return CURRENCY_FORMATTER.format(amount);
-        }
-    }
-
-    public static String formatCurrency(long amount) {
-        synchronized (CURRENCY_FORMATTER) {
-            return CURRENCY_FORMATTER.format(amount);
-        }
-    }
-
     public static String getInitials(String fullName) {
         if (fullName == null || fullName.trim().isEmpty()) return "NV";
         String[] parts = fullName.trim().split("\\s+");

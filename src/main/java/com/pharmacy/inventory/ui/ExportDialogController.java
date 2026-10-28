@@ -86,7 +86,6 @@ public class ExportDialogController implements Initializable {
     @FXML private Button btnConfirmExport;
 
     private SearchableMedicinePicker medicinePicker;
-    private InventoryRepository repository;
     private InventoryService inventoryService;
     private Runnable onSuccessCallback;
     private Runnable onCloseCallback;
@@ -615,13 +614,8 @@ public class ExportDialogController implements Initializable {
         });
     }
 
-    public void initData(List<MedicineInventoryDTO> medicines, InventoryRepository repo, Runnable onSuccess) {
-        initData(medicines, repo, null, onSuccess);
-    }
-
     public void initData(List<MedicineInventoryDTO> medicines, InventoryRepository repo, MedicineInventoryDTO preselectedMedicine, Runnable onSuccess) {
-        this.repository = repo != null ? repo : new InventoryRepository();
-        this.inventoryService = new InventoryServiceImpl(this.repository);
+        this.inventoryService = new InventoryServiceImpl(repo != null ? repo : new InventoryRepository());
         this.onSuccessCallback = onSuccess;
         medicinePicker.setMedicines(medicines);
         if (preselectedMedicine != null) {
@@ -661,7 +655,7 @@ public class ExportDialogController implements Initializable {
         Task<List<MedicineLotDTO>> task = new Task<List<MedicineLotDTO>>() {
             @Override
             protected List<MedicineLotDTO> call() {
-                return repository.getLotsByMedicineId(med.getMedicineId());
+                return inventoryService.getLotsByMedicineId(med.getMedicineId());
             }
         };
 

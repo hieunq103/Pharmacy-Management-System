@@ -335,10 +335,6 @@ public final class TableSyncHelper {
         return Math.max(0.0, tableHeight - headerHeight - hBarHeight - 2.0);
     }
 
-    public static double calculateMaxAllowedScroll(TableView<?> table) {
-        return calculateMaxAllowedScroll(table, findVerticalScrollBar(table));
-    }
-
     public static double calculateMaxAllowedScroll(TableView<?> table, ScrollBar vBar) {
         if (table == null || table.getItems() == null || table.getItems().isEmpty()) return 0.0;
         if (vBar == null || vBar.getMax() <= vBar.getMin()) return 0.0;

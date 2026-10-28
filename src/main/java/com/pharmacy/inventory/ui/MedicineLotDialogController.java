@@ -6,6 +6,8 @@ import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.PaginationHelper;
 import com.pharmacy.common.TableSyncHelper;
 import com.pharmacy.inventory.InventoryRepository;
+import com.pharmacy.inventory.InventoryService;
+import com.pharmacy.inventory.InventoryServiceImpl;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.inventory.dto.MedicineLotDTO;
 
@@ -64,7 +66,7 @@ public class MedicineLotDialogController implements Initializable {
     @FXML private Label lblLotRecordRange;
 
     private MedicineInventoryDTO medicineDTO;
-    private InventoryRepository repository;
+    private InventoryService inventoryService;
 
     private final ObservableList<MedicineLotDTO> masterLots = FXCollections.observableArrayList();
     private FilteredList<MedicineLotDTO> filteredLots;
@@ -101,7 +103,7 @@ public class MedicineLotDialogController implements Initializable {
 
     public void setMedicineData(MedicineInventoryDTO dto, InventoryRepository repo) {
         this.medicineDTO = dto;
-        this.repository = repo != null ? repo : new InventoryRepository();
+        this.inventoryService = new InventoryServiceImpl(repo != null ? repo : new InventoryRepository());
 
         if (dto == null) return;
 
@@ -555,7 +557,7 @@ public class MedicineLotDialogController implements Initializable {
         Task<List<MedicineLotDTO>> task = new Task<>() {
             @Override
             protected List<MedicineLotDTO> call() {
-                return repository.getLotsByMedicineId(medicineId);
+                return inventoryService.getLotsByMedicineId(medicineId);
             }
         };
 

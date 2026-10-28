@@ -23,10 +23,6 @@ public class InventoryAlertDTO {
         this.alertType = alertType;
     }
 
-    public int getMedicineId() {
-        return medicineId;
-    }
-
     public String getTitle() {
         return title;
     }

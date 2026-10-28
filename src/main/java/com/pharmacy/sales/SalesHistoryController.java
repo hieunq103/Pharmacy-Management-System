@@ -90,7 +90,6 @@ public class SalesHistoryController implements Initializable {
     private boolean updatingControls = false;
     private String currentKeyword = "";
     private Integer filterEmployeeId = null;
-    private boolean isManager = true;
 
 
     private Task<PageResult<SalesOrderDTO>> runningTask;
@@ -116,11 +115,8 @@ public class SalesHistoryController implements Initializable {
 
     private void setupRoleAccess() {
         if (UserSession.isLoggedIn()) {
-            isManager = UserSession.getInstance().isManager();
-
             filterEmployeeId = UserSession.scopeEmployeeId(null);
         } else {
-            isManager = true;
             filterEmployeeId = null;
         }
     }

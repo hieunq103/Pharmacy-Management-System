@@ -71,7 +71,7 @@ public class SalesController implements Initializable {
     @FXML private Button btnCheckout;
 
     private final SalesService salesService = new SalesServiceImpl();
-    private CartOrder activeOrder = new CartOrder(1, "Hóa đơn");
+    private CartOrder activeOrder = new CartOrder();
 
     private static final int PAGE_SIZE = 6;
     private int currentPage = 1;
@@ -88,7 +88,7 @@ public class SalesController implements Initializable {
         if (btnDiscountPercent != null) {
             btnDiscountPercent.setText("%");
         }
-        activeOrder = new CartOrder(1, "Hóa đơn");
+        activeOrder = new CartOrder();
         setupSearchAndShortcuts();
         setupExtraFieldsListeners();
         setupCategoryComboBox();

@@ -42,40 +42,20 @@ public class SalesOrderDTO {
     }
 
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
     public String getCode() { return code; }
-    public void setCode(String code) { this.code = code; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 
     public Integer getEmployeeId() { return employeeId; }
-    public void setEmployeeId(Integer employeeId) { this.employeeId = employeeId; }
 
     public String getEmployeeName() { return employeeName; }
-    public void setEmployeeName(String employeeName) { this.employeeName = employeeName; }
 
     public String getEmployeeCode() { return employeeCode; }
 
     public String getCustomerPhone() { return customerPhone; }
-    public void setCustomerPhone(String customerPhone) { this.customerPhone = customerPhone; }
-
-    public int getItemCount() { return itemCount; }
-    public void setItemCount(int itemCount) { this.itemCount = itemCount; }
 
     public int getTotalQuantity() { return totalQuantity; }
-    public void setTotalQuantity(int totalQuantity) { this.totalQuantity = totalQuantity; }
-
-    public BigDecimal getSubtotal() { return subtotal; }
-
-    public BigDecimal getDiscount() { return discount; }
-    public void setDiscount(BigDecimal discount) { this.discount = discount; }
-
-    public BigDecimal getTotalAmount() { return totalAmount; }
-    public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
-
-    public String getPaymentMethod() { return paymentMethod; }
-    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
 
     public String getFormattedTime() {
         return FormatUtils.formatDateTime(createdAt);

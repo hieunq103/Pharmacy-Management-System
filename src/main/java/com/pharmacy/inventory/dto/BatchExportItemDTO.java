@@ -52,18 +52,6 @@ public class BatchExportItemDTO {
         return expiryDate != null ? expiryDate.format(FormatUtils.DATE_FORMATTER) : "";
     }
 
-    public String getFormattedImportPrice() {
-        return FormatUtils.formatCurrency(importPrice);
-    }
-
-    public String getFormattedLineTotal() {
-        return FormatUtils.formatCurrency(lineTotal);
-    }
-
-    public int getMedicineId() {
-        return medicineId;
-    }
-
     public void setMedicineId(int medicineId) {
         this.medicineId = medicineId;
     }
@@ -116,10 +104,6 @@ public class BatchExportItemDTO {
         this.lotNumber = lotNumber;
     }
 
-    public LocalDate getExpiryDate() {
-        return expiryDate;
-    }
-
     public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate = expiryDate;
     }
@@ -160,10 +144,6 @@ public class BatchExportItemDTO {
         if (importPrice != null) {
             this.lineTotal = importPrice.multiply(BigDecimal.valueOf(this.exportQuantity));
         }
-    }
-
-    public BigDecimal getLineTotal() {
-        return lineTotal;
     }
 
     public void setLineTotal(BigDecimal lineTotal) {

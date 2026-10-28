@@ -8,7 +8,4 @@ public record RevenueTimelineDTO(
         long orderCount,
         String tooltipText
 ) {
-    public RevenueTimelineDTO(String timeLabel, BigDecimal revenue, long orderCount) {
-        this(timeLabel, revenue, orderCount, null);
-    }
 }

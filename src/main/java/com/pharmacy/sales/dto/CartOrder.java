@@ -6,20 +6,10 @@ import javafx.collections.ObservableList;
 import java.math.BigDecimal;
 
 public class CartOrder {
-    private final int id;
-    private String name;
     private final ObservableList<CartItem> items = FXCollections.observableArrayList();
     private String customerPhone = "";
     private BigDecimal discount = BigDecimal.ZERO;
 
-    public CartOrder(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public int getId() { return id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
     public ObservableList<CartItem> getItems() { return items; }
     public String getCustomerPhone() { return customerPhone; }
     public void setCustomerPhone(String customerPhone) { this.customerPhone = customerPhone; }
@@ -29,10 +19,6 @@ public class CartOrder {
 
     public void setDiscount(BigDecimal discount) {
         this.discount = CartTotals.clampDiscount(discount, getSubtotal());
-    }
-
-    public int getItemCount() {
-        return items.stream().mapToInt(CartItem::getQuantity).sum();
     }
 
     public BigDecimal getSubtotal() {

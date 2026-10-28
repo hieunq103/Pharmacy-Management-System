@@ -243,23 +243,8 @@ public class SearchableStringPicker extends VBox {
         isUpdatingText = false;
     }
 
-    public void setText(String value) {
-        isUpdatingText = true;
-        debounceTimer.stop();
-        txtInput.setText(value != null ? value : "");
-        btnClear.setVisible(value != null && !value.isBlank());
-        btnClear.setManaged(value != null && !value.isBlank());
-        clearErrorStyle();
-        hideResults();
-        isUpdatingText = false;
-    }
-
     public String getText() {
         return txtInput.getText() != null ? txtInput.getText().trim() : "";
-    }
-
-    public String getValue() {
-        return getText();
     }
 
     public StringProperty textProperty() {
@@ -275,13 +260,6 @@ public class SearchableStringPicker extends VBox {
         clearErrorStyle();
         hideResults();
         isUpdatingText = false;
-    }
-
-    public void showErrorStyle() {
-        inputContainer.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #EF4444; -fx-border-width: 1.5px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12;");
-        if (!inputContainer.getStyleClass().contains("form-input-error")) {
-            inputContainer.getStyleClass().add("form-input-error");
-        }
     }
 
     public void clearErrorStyle() {

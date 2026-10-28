@@ -23,7 +23,6 @@ public class SoldMedicineDTO {
         this.totalRevenue = totalRevenue != null ? totalRevenue : BigDecimal.ZERO;
     }
 
-    public Integer getMedicineId() { return medicineId; }
     public String getMedicineCode() { return medicineCode; }
     public String getMedicineName() { return medicineName; }
     public String getCategoryName() { return categoryName; }

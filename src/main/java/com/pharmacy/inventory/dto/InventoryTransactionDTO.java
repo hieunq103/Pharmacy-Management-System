@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 
 public class InventoryTransactionDTO {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     private Long id;
     private String type;
@@ -45,11 +44,6 @@ public class InventoryTransactionDTO {
         return transactionAt.format(DATE_TIME_FORMATTER);
     }
 
-    public String getFormattedTime() {
-        if (transactionAt == null) return "N/A";
-        return transactionAt.format(TIME_FORMATTER);
-    }
-
     public String getTypeDisplayName() {
         if (type == null) return "Không xác định";
         return switch (type.toUpperCase()) {
@@ -64,76 +58,36 @@ public class InventoryTransactionDTO {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getType() {
         return type;
-    }
-
-    public LocalDateTime getTransactionAt() {
-        return transactionAt;
-    }
-
-    public void setTransactionAt(LocalDateTime transactionAt) {
-        this.transactionAt = transactionAt;
     }
 
     public Integer getEmployeeId() {
         return employeeId;
     }
 
-    public void setEmployeeId(Integer employeeId) {
-        this.employeeId = employeeId;
-    }
-
     public String getEmployeeName() {
         return employeeName != null && !employeeName.isBlank() ? employeeName : "N/A";
-    }
-
-    public void setEmployeeName(String employeeName) {
-        this.employeeName = employeeName;
     }
 
     public String getSupplierName() {
         return supplierName != null && !supplierName.isBlank() ? supplierName : "—";
     }
 
-    public void setSupplierName(String supplierName) {
-        this.supplierName = supplierName;
-    }
-
     public int getItemCount() {
         return itemCount;
-    }
-
-    public void setItemCount(int itemCount) {
-        this.itemCount = itemCount;
     }
 
     public int getTotalQuantity() {
         return totalQuantity;
     }
 
-    public void setTotalQuantity(int totalQuantity) {
-        this.totalQuantity = totalQuantity;
-    }
-
     public BigDecimal getTotalAmount() {
         return totalAmount != null ? totalAmount : BigDecimal.ZERO;
     }
 
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
     public String getNote() {
         return note != null && !note.isBlank() ? note : "—";
-    }
-
-    public void setNote(String note) {
-        this.note = note;
     }
 
     public String getExportTypeLabel() {

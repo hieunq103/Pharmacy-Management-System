@@ -1,30 +1,24 @@
 package com.pharmacy.infra.exception;
 
 public enum ErrorCode {
-    UNCATEGORIZED_EXCEPTION("SYS_001", "Đã xảy ra lỗi hệ thống không xác định."),
-    DATABASE_CONNECTION_ERROR("DB_001", "Không thể kết nối đến cơ sở dữ liệu."),
-    DATABASE_QUERY_ERROR("DB_002", "Lỗi thực thi truy vấn cơ sở dữ liệu."),
+    UNCATEGORIZED_EXCEPTION("Đã xảy ra lỗi hệ thống không xác định."),
+    DATABASE_CONNECTION_ERROR("Không thể kết nối đến cơ sở dữ liệu."),
+    DATABASE_QUERY_ERROR("Lỗi thực thi truy vấn cơ sở dữ liệu."),
 
-    INVALID_CREDENTIALS("AUTH_001", "Tên đăng nhập hoặc mật khẩu không chính xác."),
-    ACCOUNT_DISABLED("AUTH_003", "Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên."),
-    UNAUTHENTICATED("AUTH_004", "Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại."),
-    UNAUTHORIZED("AUTH_005", "Bạn không có quyền thực hiện chức năng này."),
-    PASSWORD_CHANGE_REQUIRED("AUTH_006", "Bạn cần đổi mật khẩu trong lần đăng nhập đầu tiên."),
+    INVALID_CREDENTIALS("Tên đăng nhập hoặc mật khẩu không chính xác."),
+    ACCOUNT_DISABLED("Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên."),
+    UNAUTHENTICATED("Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại."),
+    UNAUTHORIZED("Bạn không có quyền thực hiện chức năng này."),
+    PASSWORD_CHANGE_REQUIRED("Bạn cần đổi mật khẩu trong lần đăng nhập đầu tiên."),
 
-    EMPTY_LOGIN_FIELDS("VAL_001", "Vui lòng nhập tên đăng nhập và mật khẩu."),
-    EMPTY_IDENTIFIER("VAL_002", "Vui lòng nhập tên đăng nhập."),
-    EMPTY_PASSWORD("VAL_003", "Vui lòng nhập mật khẩu.");
+    EMPTY_LOGIN_FIELDS("Vui lòng nhập tên đăng nhập và mật khẩu."),
+    EMPTY_IDENTIFIER("Vui lòng nhập tên đăng nhập."),
+    EMPTY_PASSWORD("Vui lòng nhập mật khẩu.");
 
-    private final String code;
     private final String defaultMessage;
 
-    ErrorCode(String code, String defaultMessage) {
-        this.code = code;
+    ErrorCode(String defaultMessage) {
         this.defaultMessage = defaultMessage;
-    }
-
-    public String getCode() {
-        return code;
     }
 
     public String getDefaultMessage() {

@@ -8,7 +8,4 @@ public record LoginRequest(String username, String password) {
             password = password.trim();
     }
 
-    public String identifier() {
-        return username;
-    }
 }
