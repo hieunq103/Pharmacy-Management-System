@@ -84,11 +84,6 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public String getNextMedicineCode() {
-        return inventoryRepository.getNextMedicineCode();
-    }
-
-    @Override
     public PageResult<InventoryTransactionDTO> getImportTransactions(String keyword, LocalDate fromDate, LocalDate toDate,
                                                                      int page, int size) {
         return inventoryRepository.getImportTransactions(keyword, fromDate, toDate, page, size);

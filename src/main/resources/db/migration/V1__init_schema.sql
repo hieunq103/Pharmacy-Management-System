@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS `medicines` (
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `suppliers` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `name` VARCHAR(150) NOT NULL,
+    `name` VARCHAR(150) NOT NULL UNIQUE,
     `tax_code` VARCHAR(30) NULL UNIQUE,
     `address` VARCHAR(255) NULL,
     `contact_person` VARCHAR(100) NULL,

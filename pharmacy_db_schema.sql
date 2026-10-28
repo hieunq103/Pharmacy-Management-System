@@ -115,7 +115,7 @@ CREATE TABLE `medicines` (
 DROP TABLE IF EXISTS `suppliers`;
 CREATE TABLE `suppliers` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `name` VARCHAR(150) NOT NULL,
+    `name` VARCHAR(150) NOT NULL UNIQUE,
     `tax_code` VARCHAR(30) NULL UNIQUE,
     `address` VARCHAR(255) NULL,
     `contact_person` VARCHAR(100) NULL,
@@ -224,7 +224,7 @@ CREATE TABLE `sales_order_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------------------------------
--- 13. BỘ ĐẾM CẤP MÃ NHÂN VIÊN THEO THÁNG (CODE_SEQUENCES) - name: EMPLOYEE-YYMM
+-- 13. BỘ ĐẾM CẤP MÃ (CODE_SEQUENCES) - EMPLOYEE-YYMM: mã nhân viên theo tháng, MEDICINE: mã thuốc
 -- -----------------------------------------------------------------------------
 CREATE TABLE `code_sequences` (
     `name` VARCHAR(30) NOT NULL PRIMARY KEY,

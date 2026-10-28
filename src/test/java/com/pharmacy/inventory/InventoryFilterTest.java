@@ -131,6 +131,63 @@ public class InventoryFilterTest {
         assertNotEquals(details.get(1).getMedicineCode(), details.get(2).getMedicineCode(), "Hai thuốc mới phải có mã khác nhau");
     }
 
+    private static BatchImportItemDTO newMedicineItem(String tag, int quantity) {
+        return BatchImportItemDTO.fromNew(null, "Thuốc Đồng thời " + tag, "Vitamin & Khoáng chất", "Vitamin C",
+                "DHG", new BigDecimal("10000"), false, "LOT-CC-" + tag, LocalDate.now().plusYears(1), "Hộp", quantity, new BigDecimal("5000"));
+    }
+
+    private static int codeNumber(String code) {
+        assertTrue(code.matches("MED\\d{3,}"), "Sai định dạng mã thuốc: " + code);
+        return Integer.parseInt(code.substring(3));
+    }
+
+    @Test
+    void concurrentImportsOfNewMedicinesGetDistinctCodes() throws Exception {
+        Integer employeeId = DbTestSupport.loginAsManager().getEmployee().getId();
+        int threads = 6;
+        String suffix = String.valueOf(System.nanoTime());
+        var pool = java.util.concurrent.Executors.newFixedThreadPool(threads);
+        var start = new java.util.concurrent.CountDownLatch(1);
+        List<java.util.concurrent.Future<List<BatchImportItemDTO>>> results = new ArrayList<>();
+        for (int i = 0; i < threads; i++) {
+            final String tag = suffix + "-" + i;
+            results.add(pool.submit(() -> {
+                List<BatchImportItemDTO> items = List.of(newMedicineItem(tag + "a", 5), newMedicineItem(tag + "b", 5));
+                start.await();
+                assertTrue(repo.importBatchStock(null, employeeId, "Phiếu đồng thời " + tag, items));
+                return items;
+            }));
+        }
+        start.countDown();
+        java.util.Set<String> codes = new java.util.HashSet<>();
+        for (var f : results) {
+            for (BatchImportItemDTO it : f.get(60, java.util.concurrent.TimeUnit.SECONDS)) {
+                codeNumber(it.getMedicineCode());
+                codes.add(it.getMedicineCode());
+            }
+        }
+        pool.shutdown();
+        assertEquals(threads * 2, codes.size(), "Mỗi thuốc mới phải có mã khác nhau: " + codes);
+    }
+
+    @Test
+    void failedImportDoesNotConsumeMedicineCode() {
+        Integer employeeId = DbTestSupport.loginAsManager().getEmployee().getId();
+        String suffix = String.valueOf(System.nanoTime());
+        BatchImportItemDTO first = newMedicineItem(suffix + "-1", 5);
+        assertTrue(repo.importBatchStock(null, employeeId, null, List.of(first)));
+
+        BatchImportItemDTO failing = newMedicineItem(suffix + "-2", 0);
+        assertThrows(RuntimeException.class, () -> repo.importBatchStock(null, employeeId, null, List.of(failing)),
+                "Số lượng 0 vi phạm CHECK nên cả phiếu phải rollback");
+        assertFalse(failing.getMedicineCode().startsWith("MED"), "Phiếu lỗi không được ghi mã vào dòng thuốc");
+
+        BatchImportItemDTO next = newMedicineItem(suffix + "-3", 5);
+        assertTrue(repo.importBatchStock(null, employeeId, null, List.of(next)));
+        assertEquals(codeNumber(first.getMedicineCode()) + 1, codeNumber(next.getMedicineCode()),
+                "Phiếu lỗi không được làm mất số thứ tự mã thuốc");
+    }
+
     @Test
     void testImportRequiresManager() {
         DbTestSupport.loginAs(DbTestSupport.STAFF_USERNAME);

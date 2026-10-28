@@ -37,14 +37,24 @@ public class EmployeeRepository {
         }
     }
 
-    // Cấp mã thật trong giao dịch đang mở: khóa dòng bộ đếm của tháng đến khi commit nên hai người lưu cùng lúc xếp hàng
-    private static String allocateEmployeeCode(Session session) {
-        String prefix = employeeCodePrefix();
-        session.createNativeMutationQuery(
-                "INSERT INTO code_sequences (name, current_number) VALUES (:name, LAST_INSERT_ID(1)) "
-                        + "ON DUPLICATE KEY UPDATE current_number = LAST_INSERT_ID(current_number + 1)")
+    // Tạo dòng bộ đếm của tháng trong giao dịch riêng, ngắn, để giao dịch thêm nhân viên chỉ cần UPDATE dòng đã có
+    private static void ensureEmployeeSequence(String prefix) {
+        HibernateUtil.execute(session -> session.createNativeMutationQuery(
+                        "INSERT IGNORE INTO code_sequences (name, current_number) VALUES (:name, 0)")
+                .setParameter("name", sequenceName(prefix))
+                .executeUpdate());
+    }
+
+    // Cấp mã thật trong giao dịch đang mở: khóa dòng bộ đếm của tháng đến khi commit nên hai người lưu cùng lúc
+    // xếp hàng; rollback thì bộ đếm quay lại nên không mất số
+    private static String allocateEmployeeCode(Session session, String prefix) {
+        int updated = session.createNativeMutationQuery(
+                        "UPDATE code_sequences SET current_number = LAST_INSERT_ID(current_number + 1) WHERE name = :name")
                 .setParameter("name", sequenceName(prefix))
                 .executeUpdate();
+        if (updated != 1) {
+            throw new IllegalStateException("Thiếu bộ đếm mã nhân viên " + sequenceName(prefix));
+        }
         Number allocated = (Number) session.createNativeQuery("SELECT LAST_INSERT_ID()", Object.class).uniqueResult();
         return formatEmployeeCode(prefix, allocated.longValue());
     }
@@ -272,17 +282,24 @@ public class EmployeeRepository {
             roleCode = "STAFF";
         }
         final String code = roleCode;
+        final boolean needsCode = emp.getCode() == null || emp.getCode().isBlank();
+        final String prefix = employeeCodePrefix();
         try {
+            if (needsCode) {
+                ensureEmployeeSequence(prefix);
+            }
             return HibernateUtil.executeWithResult(session -> {
+                // Khóa bộ đếm trước mọi thao tác khác trong giao dịch
+                String allocatedCode = needsCode ? allocateEmployeeCode(session, prefix) : null;
                 Role role = session.createSelectionQuery("FROM Role r WHERE r.code = :code", Role.class)
                         .setParameter("code", code)
                         .uniqueResult();
                 if (role == null) {
-                    log.error("Không tìm thấy vai trò với mã: {}", code);
-                    return false;
+                    // Ném lỗi để rollback, trả mã vừa cấp lại cho bộ đếm
+                    throw new IllegalArgumentException("Không tìm thấy vai trò với mã: " + code);
                 }
-                if (emp.getCode() == null || emp.getCode().isBlank()) {
-                    emp.setCode(allocateEmployeeCode(session));
+                if (allocatedCode != null) {
+                    emp.setCode(allocatedCode);
                 }
                 session.persist(emp);
 
@@ -299,6 +316,10 @@ public class EmployeeRepository {
                 return true;
             });
         } catch (Exception e) {
+            if (needsCode) {
+                // Giao dịch đã rollback nên mã đã cấp không còn hiệu lực
+                emp.setCode(null);
+            }
             log.error("Lỗi khi thêm mới nhân viên và tài khoản: ", e);
             return false;
         }

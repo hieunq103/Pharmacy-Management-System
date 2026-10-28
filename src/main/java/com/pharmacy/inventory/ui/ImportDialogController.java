@@ -35,6 +35,9 @@ import java.util.ResourceBundle;
 public class ImportDialogController implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(ImportDialogController.class);
 
+    // Mã của thuốc mới chỉ được cấp khi lưu phiếu (bộ đếm trong CSDL) nên lúc lập phiếu chưa có mã thật
+    private static final String PENDING_CODE = "Tự cấp khi lưu";
+
     @FXML private StackPane supplierPickerContainer;
     @FXML private Label lblErrorSupplier;
     @FXML private TextField txtNote;
@@ -203,7 +206,9 @@ public class ImportDialogController implements Initializable {
                     setGraphic(null);
                 } else {
                     Label lbl = new Label(item);
-                    lbl.setStyle("-fx-font-size: 11px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-background-radius: 4px; -fx-padding: 2 6;");
+                    lbl.setStyle(PENDING_CODE.equals(item)
+                            ? "-fx-font-size: 11px; -fx-font-family: 'Inter 18pt Regular'; -fx-background-color: #F1F5F9; -fx-text-fill: #64748B; -fx-background-radius: 4px; -fx-padding: 2 6;"
+                            : "-fx-font-size: 11px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-background-radius: 4px; -fx-padding: 2 6;");
                     setGraphic(lbl);
                     setText(null);
                     setAlignment(Pos.CENTER_LEFT);
@@ -233,7 +238,6 @@ public class ImportDialogController implements Initializable {
                     BatchImportItemDTO item = getItem();
                     if (item != null) {
                         itemList.remove(item);
-                        reassignTempMedicineCodes();
                         updateSummary();
                         tableItems.refresh();
                     }
@@ -297,7 +301,7 @@ public class ImportDialogController implements Initializable {
         BigDecimal sellPrice = BigDecimal.ZERO;
         boolean rx = false;
         Integer existingId = null;
-        String code = "Tự động";
+        String code = PENDING_CODE;
 
         if (isNewMedicine) {
             medicineName = txtNewName.getText() != null ? txtNewName.getText().trim() : "";
@@ -406,30 +410,11 @@ public class ImportDialogController implements Initializable {
         }
 
         itemList.add(item);
-        reassignTempMedicineCodes();
         updateSummary();
         tableItems.refresh();
         tableItems.scrollTo(item);
 
         resetItemInputForm();
-    }
-
-    private void reassignTempMedicineCodes() {
-        String nextCodeFromDb = inventoryService != null ? inventoryService.getNextMedicineCode() : "MED001";
-        int baseNumber = 1;
-        if (nextCodeFromDb != null && nextCodeFromDb.startsWith("MED")) {
-            try {
-                baseNumber = Integer.parseInt(nextCodeFromDb.substring(3));
-            } catch (NumberFormatException ignored) {}
-        }
-
-        int currentNum = baseNumber;
-        for (BatchImportItemDTO it : itemList) {
-            if (it.isNewMedicine()) {
-                it.setMedicineCode(String.format("MED%03d", currentNum));
-                currentNum++;
-            }
-        }
     }
 
     private void resetItemInputForm() {
@@ -520,10 +505,16 @@ public class ImportDialogController implements Initializable {
             boolean success = Boolean.TRUE.equals(importTask.getValue());
             if (success) {
                 int count = itemList.size();
+                StringBuilder message = new StringBuilder("Đã lập phiếu nhập kho thành công cho " + count + " mặt hàng thuốc!");
+                List<BatchImportItemDTO> created = itemList.stream().filter(BatchImportItemDTO::isNewMedicine).toList();
+                if (!created.isEmpty()) {
+                    message.append("\n\nMã thuốc mới đã cấp:");
+                    created.forEach(it -> message.append("\n• ").append(it.getMedicineCode()).append(" – ").append(it.getMedicineName()));
+                }
                 DialogUtils.showInfo(
                         btnCancel != null && btnCancel.getScene() != null ? btnCancel.getScene().getWindow() : null,
                         "Nhập kho thành công",
-                        "Đã lập phiếu nhập kho thành công cho " + count + " mặt hàng thuốc!"
+                        message.toString()
                 );
 
                 if (onSuccessCallback != null) {

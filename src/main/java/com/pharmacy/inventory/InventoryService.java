@@ -27,8 +27,6 @@ public interface InventoryService {
 
     List<String> getAllCategoryNames();
 
-    String getNextMedicineCode();
-
     com.pharmacy.common.PageResult<com.pharmacy.inventory.dto.InventoryTransactionDTO> getImportTransactions(String keyword, java.time.LocalDate fromDate, java.time.LocalDate toDate, int page, int size);
 
     com.pharmacy.common.PageResult<com.pharmacy.inventory.dto.InventoryTransactionDTO> getExportTransactions(String keyword, java.time.LocalDate fromDate, java.time.LocalDate toDate, int page, int size);

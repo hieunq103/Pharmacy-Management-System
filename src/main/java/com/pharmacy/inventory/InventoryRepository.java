@@ -29,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -408,33 +409,48 @@ public class InventoryRepository {
         }
     }
 
-    // Sinh mã thuốc tiếp theo theo định dạng MEDxxx
-    public String getNextMedicineCode() {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.doReturningWork(InventoryRepository::nextMedicineCode);
-        } catch (Exception e) {
-            log.error("Lỗi khi sinh mã thuốc tiếp theo: ", e);
-            return "MED001";
+    private static volatile boolean medicineSequenceReady;
+
+    // Tạo dòng bộ đếm MEDICINE (khởi tạo từ mã MED lớn nhất hiện có) trong giao dịch riêng, ngắn,
+    // để giao dịch nhập kho chỉ cần UPDATE một dòng đã có
+    private static void ensureMedicineSequence() {
+        if (medicineSequenceReady) return;
+        HibernateUtil.execute(session -> session.doWork(conn -> {
+            // Đọc MAX bằng SELECT thường (không khóa bảng medicines) rồi mới chèn, tránh deadlock với phiếu nhập đang chạy
+            long lastNumber;
+            try (Statement st = conn.createStatement()) {
+                try (ResultSet rs = st.executeQuery("SELECT 1 FROM code_sequences WHERE name = 'MEDICINE'")) {
+                    if (rs.next()) return;
+                }
+                try (ResultSet rs = st.executeQuery(
+                        "SELECT COALESCE(MAX(CAST(SUBSTRING(code, 4) AS UNSIGNED)), 0) FROM medicines WHERE code REGEXP '^MED[0-9]+$'")) {
+                    rs.next();
+                    lastNumber = rs.getLong(1);
+                }
+            }
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "INSERT IGNORE INTO code_sequences (name, current_number) VALUES ('MEDICINE', ?)")) {
+                ps.setLong(1, lastNumber);
+                ps.executeUpdate();
+            }
+        }));
+        medicineSequenceReady = true;
+    }
+
+    // Giữ trước count số liên tiếp cho phiếu nhập và trả về số đầu tiên. Khóa dòng bộ đếm đến khi commit nên các phiếu
+    // nhập cùng lúc xếp hàng (luôn khóa đầu tiên nên không deadlock); rollback thì bộ đếm quay lại nên không mất số
+    private static long reserveMedicineCodes(Connection conn, int count) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "UPDATE code_sequences SET current_number = LAST_INSERT_ID(current_number + ?) WHERE name = 'MEDICINE'")) {
+            ps.setInt(1, count);
+            if (ps.executeUpdate() != 1) {
+                throw new SQLException("Thiếu bộ đếm mã thuốc trong bảng code_sequences");
+            }
         }
-    }
-
-    // Lấy mã thuốc tiếp theo trong kết nối CSDL
-    private static String nextMedicineCode(Connection conn) throws SQLException {
-        return formatMedicineCode(lastMedicineCodeNumber(conn) + 1);
-    }
-
-    // Lấy số thứ tự lớn nhất của mã thuốc hiện tại
-    private static int lastMedicineCodeNumber(Connection conn) throws SQLException {
-        try (Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(
-                     "SELECT MAX(CAST(SUBSTRING(code, 4) AS UNSIGNED)) FROM medicines WHERE code REGEXP '^MED[0-9]+$'")) {
-            return rs.next() ? rs.getInt(1) : 0;
+        try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery("SELECT LAST_INSERT_ID()")) {
+            rs.next();
+            return rs.getLong(1) - count + 1;
         }
-    }
-
-    // Định dạng số nguyên thành mã thuốc MEDxxx
-    private static String formatMedicineCode(int number) {
-        return String.format("MED%03d", number);
     }
 
     // Thực hiện giao dịch nhập kho thuốc theo lô
@@ -442,8 +458,13 @@ public class InventoryRepository {
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("Danh sách mặt hàng nhập kho không được rỗng!");
         }
+        Map<BatchImportItemDTO, String> allocatedCodes = new LinkedHashMap<>();
+        int newMedicineCount = (int) items.stream().filter(BatchImportItemDTO::isNewMedicine).count();
         try {
+            ensureMedicineSequence();
             HibernateUtil.execute(session -> session.doWork(conn -> {
+                allocatedCodes.clear();
+                long[] nextCodeNumber = {reserveMedicineCodes(conn, newMedicineCount)};
                 TransactionGuards.requireActiveEmployee(conn, employeeId);
                 Integer supplierId = hasText(supplierName) ? findOrCreateByName(conn, "suppliers", supplierName.trim()) : null;
 
@@ -459,7 +480,6 @@ public class InventoryRepository {
                 }
 
                 Map<String, Integer> categoryCache = new HashMap<>();
-                int[] nextCodeNumber = {-1};
                 try (PreparedStatement lotPs = conn.prepareStatement("""
                         INSERT INTO inventory_lots (medicine_id, transaction_id, lot_number, expiry_date, import_price, quantity_in, quantity_remaining)
                         VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -467,7 +487,7 @@ public class InventoryRepository {
                     for (BatchImportItemDTO item : items) {
                         int medicineId = (!item.isNewMedicine() && item.getExistingMedicineId() != null && item.getExistingMedicineId() > 0)
                                 ? item.getExistingMedicineId()
-                                : insertNewMedicine(conn, item, categoryCache, nextCodeNumber);
+                                : insertNewMedicine(conn, item, categoryCache, nextCodeNumber, allocatedCodes);
                         lotPs.setInt(1, medicineId);
                         lotPs.setLong(2, transactionId);
                         lotPs.setString(3, item.getLotNumber().trim());
@@ -480,6 +500,8 @@ public class InventoryRepository {
                     lotPs.executeBatch();
                 }
             }));
+            // Chỉ ghi mã thật vào phiếu sau khi commit thành công
+            allocatedCodes.forEach(BatchImportItemDTO::setMedicineCode);
             return true;
         } catch (Exception e) {
             log.error("Lỗi khi thực hiện giao dịch Nhập kho hàng loạt: ", e);
@@ -489,7 +511,7 @@ public class InventoryRepository {
 
     // Thêm mới thông tin thuốc chưa có trong danh mục khi nhập kho
     private int insertNewMedicine(Connection conn, BatchImportItemDTO item, Map<String, Integer> categoryCache,
-                                  int[] nextCodeNumber) throws SQLException {
+                                  long[] nextCodeNumber, Map<BatchImportItemDTO, String> allocatedCodes) throws SQLException {
         Integer categoryId = null;
         if (hasText(item.getCategoryName())) {
             String catName = item.getCategoryName().trim();
@@ -500,13 +522,8 @@ public class InventoryRepository {
             }
         }
 
-        String code = item.getMedicineCode() != null ? item.getMedicineCode().trim() : "";
-        if (code.isEmpty() || "Tự động".equalsIgnoreCase(code) || medicineCodeExists(conn, code)) {
-            if (nextCodeNumber[0] < 0) {
-                nextCodeNumber[0] = lastMedicineCodeNumber(conn) + 1;
-            }
-            code = formatMedicineCode(nextCodeNumber[0]++);
-        }
+        String code = String.format("MED%03d", nextCodeNumber[0]++);
+        allocatedCodes.put(item, code);
 
         try (PreparedStatement ps = conn.prepareStatement("""
                 INSERT INTO medicines (code, name, active_ingredient, unit, category_id, manufacturer, sell_price, requires_prescription, min_stock_threshold, status)
@@ -525,16 +542,6 @@ public class InventoryRepository {
         }
     }
 
-    // Kiểm tra mã thuốc đã tồn tại trong kết nối hiện tại chưa
-    private static boolean medicineCodeExists(Connection conn, String code) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM medicines WHERE code = ? LIMIT 1")) {
-            ps.setString(1, code);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        }
-    }
-
     // Tìm ID hoặc tạo mới bản ghi theo tên danh mục hoặc nhà cung cấp
     private static int findOrCreateByName(Connection conn, String table, String name) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement("SELECT id FROM " + table + " WHERE name = ? LIMIT 1")) {
@@ -543,7 +550,10 @@ public class InventoryRepository {
                 if (rs.next()) return rs.getInt(1);
             }
         }
-        try (PreparedStatement ps = conn.prepareStatement("INSERT INTO " + table + " (name) VALUES (?)", Statement.RETURN_GENERATED_KEYS)) {
+        // Hai quầy cùng tạo một tên mới: cột name là UNIQUE nên người sau nhận lại id đã có thay vì báo lỗi trùng
+        try (PreparedStatement ps = conn.prepareStatement(
+                "INSERT INTO " + table + " (name) VALUES (?) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id)",
+                Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, name);
             ps.executeUpdate();
             return (int) generatedKey(ps);
