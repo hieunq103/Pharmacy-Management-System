@@ -7,6 +7,6 @@ public final class SalesServiceImplAccess {
     }
 
     public static void validate(SalesOrderRequest request) {
-        SalesServiceImpl.validateCheckout(request);
+        SalesService.validateCheckout(request);
     }
 }

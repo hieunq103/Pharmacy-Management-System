@@ -4,9 +4,7 @@ import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.UserSession;
-import com.pharmacy.inventory.InventoryRepository;
 import com.pharmacy.inventory.InventoryService;
-import com.pharmacy.inventory.InventoryServiceImpl;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.inventory.dto.BatchImportItemDTO;
 
@@ -93,7 +91,6 @@ public class ImportDialogController implements Initializable {
     private SearchableStringPicker supplierPicker;
     private SearchableStringPicker categoryPicker;
 
-    private InventoryRepository repository;
     private InventoryService inventoryService;
     private Runnable onSuccessCallback;
     private Runnable onCloseCallback;
@@ -258,9 +255,8 @@ public class ImportDialogController implements Initializable {
         });
     }
 
-    public void initData(List<MedicineInventoryDTO> medicines, InventoryRepository repo, Runnable onSuccess) {
-        this.repository = repo != null ? repo : new InventoryRepository();
-        this.inventoryService = new InventoryServiceImpl(this.repository);
+    public void initData(List<MedicineInventoryDTO> medicines, InventoryService service, Runnable onSuccess) {
+        this.inventoryService = service != null ? service : new InventoryService();
         this.onSuccessCallback = onSuccess;
         medicinePicker.setMedicines(medicines);
 

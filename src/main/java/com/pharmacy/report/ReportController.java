@@ -100,7 +100,7 @@ public class ReportController {
     private int medPeriodMonth;
 
     public ReportController() {
-        this.reportService = new ReportServiceImpl();
+        this.reportService = new ReportService();
     }
 
     private int currentTimelineCount = 7;

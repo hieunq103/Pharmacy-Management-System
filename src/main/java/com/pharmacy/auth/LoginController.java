@@ -1,5 +1,6 @@
 package com.pharmacy.auth;
 
+import com.pharmacy.auth.dto.LoginRequest;
 import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.account.Account;
 import com.pharmacy.common.DialogUtils;
@@ -9,7 +10,7 @@ import com.pharmacy.common.UserSession;
 import com.pharmacy.infra.exception.AppException;
 import com.pharmacy.infra.exception.ErrorCode;
 import com.pharmacy.profile.ChangePasswordDialog;
-import com.pharmacy.profile.ProfileServiceImpl;
+import com.pharmacy.profile.ProfileService;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,6 +21,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Screen;
@@ -48,7 +50,7 @@ public class LoginController {
     @FXML
     private Button btnLogin;
 
-    private final AuthService authService = new AuthServiceImpl();
+    private final AuthService authService = new AuthService();
     private boolean isInternalUpdating = false;
 
     @FXML
@@ -83,12 +85,26 @@ public class LoginController {
                     clearError();
                 }
             });
+            txtPassword.setOnAction(e -> handleLogin());
         }
 
+        if (btnLogin != null) {
+            btnLogin.setDefaultButton(true);
+            btnLogin.setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.ENTER) {
+                    handleLogin();
+                    event.consume();
+                }
+            });
+        }
     }
 
     @FXML
     private void handleLogin() {
+        if (btnLogin != null && btnLogin.isDisabled()) {
+            return;
+        }
+
         String username = txtUsername != null ? txtUsername.getText().trim() : "";
         String password = txtPassword != null ? txtPassword.getText() : "";
 
@@ -179,7 +195,7 @@ public class LoginController {
         boolean[] changed = { false };
         ChangePasswordDialog dialog = new ChangePasswordDialog(
                 btnLogin != null && btnLogin.getScene() != null ? btnLogin.getScene().getWindow() : null,
-                new ProfileServiceImpl(),
+                new ProfileService(),
                 account.getUsername(),
                 msg -> changed[0] = true);
         dialog.setTitle("Đổi mật khẩu lần đầu");

@@ -27,7 +27,7 @@ public class AddEmployeeController implements Initializable {
 
     private Runnable onCloseCallback;
     private Consumer<Employee> onSaveSuccessCallback;
-    private final EmployeeService employeeService = new EmployeeServiceImpl();
+    private final EmployeeService employeeService = new EmployeeService();
     // Mã thật chỉ được cấp khi xác nhận thêm (bộ đếm trong CSDL), rồi hiện cùng mật khẩu ở hộp thoại kết quả
     private static final String PENDING_CODE = "Tự động cấp";
 

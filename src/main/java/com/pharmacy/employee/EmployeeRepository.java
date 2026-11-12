@@ -2,6 +2,9 @@ package com.pharmacy.employee;
 
 import com.pharmacy.account.Account;
 import com.pharmacy.account.Role;
+import com.pharmacy.employee.dto.EmployeeConflict;
+import com.pharmacy.employee.dto.EmployeeSummary;
+import com.pharmacy.employee.dto.EmployeeUpdateRequest;
 import com.pharmacy.infra.db.HibernateUtil;
 import org.hibernate.Session;
 import java.time.LocalDate;
@@ -46,8 +49,7 @@ public class EmployeeRepository {
                 .executeUpdate());
     }
 
-    // Cấp mã thật trong giao dịch đang mở: khóa dòng bộ đếm của tháng đến khi commit nên hai người lưu cùng lúc
-    // xếp hàng; rollback thì bộ đếm quay lại nên không mất số
+    // Cấp mã thật trong giao dịch đang mở
     private static String allocateEmployeeCode(Session session, String prefix) {
         int updated = session.createNativeMutationQuery(
                         "UPDATE code_sequences SET current_number = LAST_INSERT_ID(current_number + 1) WHERE name = :name")
@@ -60,7 +62,6 @@ public class EmployeeRepository {
         return formatEmployeeCode(prefix, allocated.longValue());
     }
 
-    // PMS + YYMM của tháng vào làm (giống dữ liệu seed), ví dụ vào làm 10/2026 -> PMS2610
     private static String employeeCodePrefix(LocalDate hiredDate) {
         return "PMS" + (hiredDate != null ? hiredDate : LocalDate.now()).format(YYMM);
     }
@@ -74,22 +75,22 @@ public class EmployeeRepository {
         return prefix + String.format("%03d", number);
     }
 
-    // Nhân viên khác (kể cả đã nghỉ) đang dùng số điện thoại này
+    // Nhân viên khác đang dùng số điện thoại này
     public Optional<EmployeeConflict> findByPhone(String phone, Integer excludeId) {
         return findConflict("phone", phone, excludeId, "số điện thoại");
     }
 
-    // Nhân viên khác (kể cả đã nghỉ) đang dùng CCCD này
+    // Nhân viên khác đang dùng CCCD này
     public Optional<EmployeeConflict> findByNationalId(String nationalId, Integer excludeId) {
         return findConflict("nationalId", nationalId, excludeId, "CCCD");
     }
 
-    // Tìm nhân viên có trường dữ liệu trùng giá trị (bỏ qua excludeId)
+    // Tìm nhân viên có trường dữ liệu trùng giá trị
     private Optional<EmployeeConflict> findConflict(String field, String value, Integer excludeId, String label) {
         if (value == null || value.isBlank()) return Optional.empty();
         try {
             return HibernateUtil.executeWithResult(session -> {
-                String hql = "SELECT new com.pharmacy.employee.EmployeeConflict(e.code, e.fullName, e.status) "
+                String hql = "SELECT new com.pharmacy.employee.dto.EmployeeConflict(e.code, e.fullName, e.status) "
                         + "FROM Employee e WHERE e." + field + " = :value"
                         + (excludeId != null ? " AND e.id <> :id" : "");
                 var query = session.createSelectionQuery(hql, EmployeeConflict.class).setParameter("value", value.trim());
@@ -153,16 +154,6 @@ public class EmployeeRepository {
                     .setParameter("accountId", accountId)
                     .list();
         });
-    }
-
-    public record EmployeeSummary(long totalEmployees, long activeEmployees) {
-        public long total() {
-            return totalEmployees;
-        }
-
-        public long active() {
-            return activeEmployees;
-        }
     }
 
     // Thống kê tổng số nhân viên và số nhân viên đang hoạt động
@@ -320,7 +311,6 @@ public class EmployeeRepository {
                 return true;
             });
         } catch (Exception e) {
-            // Giao dịch đã rollback: bỏ mã và id đã gán để lần lưu lại cấp mã mới và chèn như bản ghi mới
             if (needsCode) {
                 emp.setCode(null);
             }
@@ -350,7 +340,7 @@ public class EmployeeRepository {
         }
     }
 
-    // Cập nhật thông tin nhân viên, trạng thái và vai trò tài khoản bởi Quản lý
+    // Cập nhật thông tin nhân viên, trạng thái và vai trò tài khoản bởi quản lý
     public boolean updateEmployeeByManager(EmployeeUpdateRequest req) {
         try {
             return HibernateUtil.executeWithResult(session -> {

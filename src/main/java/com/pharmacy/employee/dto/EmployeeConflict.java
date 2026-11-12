@@ -1,4 +1,6 @@
-package com.pharmacy.employee;
+package com.pharmacy.employee.dto;
+
+import com.pharmacy.employee.Employee;
 
 public record EmployeeConflict(String code, String fullName, Employee.Status status) {
 
@@ -13,3 +15,4 @@ public record EmployeeConflict(String code, String fullName, Employee.Status sta
         return fieldLabel + " này đã thuộc về nhân viên " + who + ".";
     }
 }
+

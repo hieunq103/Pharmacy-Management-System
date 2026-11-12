@@ -3,6 +3,8 @@ package com.pharmacy.employee;
 import com.pharmacy.account.Account;
 import com.pharmacy.account.Role;
 import com.pharmacy.common.UserSession;
+import com.pharmacy.employee.dto.EmployeeConflict;
+import com.pharmacy.employee.dto.EmployeeUpdateRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class EmployeeServiceSelfEditTest {
     private FakeEmployeeRepository fakeRepository;
-    private EmployeeServiceImpl employeeService;
+    private EmployeeService employeeService;
     private Employee currentManager;
     private Account currentAccount;
 
@@ -48,7 +50,7 @@ class EmployeeServiceSelfEditTest {
     @BeforeEach
     void setUp() {
         fakeRepository = new FakeEmployeeRepository();
-        employeeService = new EmployeeServiceImpl(fakeRepository);
+        employeeService = new EmployeeService(fakeRepository);
 
         currentManager = new Employee();
         currentManager.setId(1);

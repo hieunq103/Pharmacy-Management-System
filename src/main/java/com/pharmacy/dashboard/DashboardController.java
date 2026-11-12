@@ -5,7 +5,7 @@ import com.pharmacy.common.FormatUtils;
 import com.pharmacy.dashboard.dto.DashboardStatsDTO;
 import com.pharmacy.inventory.dto.InventoryAlertDTO;
 import com.pharmacy.layout.MainLayoutController;
-import com.pharmacy.sales.dto.DailySalesDTO;
+import com.pharmacy.report.dto.DailySalesDTO;
 import com.pharmacy.sales.dto.SalesOrderDTO;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -55,7 +55,7 @@ public class DashboardController implements Initializable {
     private AlertTab currentAlertTab = AlertTab.EXPIRY;
     private List<InventoryAlertDTO> rawAlerts = new java.util.ArrayList<>();
 
-    private final DashboardService dashboardService = new DashboardServiceImpl();
+    private final DashboardService dashboardService = new DashboardService();
 
 
     @Override

@@ -76,7 +76,7 @@ public class QueryBench {
             run("Kho: getExportTransactions (hôm qua)", 3, () -> inv.getExportTransactions(null, today.minusDays(1), today.minusDays(1)));
             run("Dashboard: getRecentSalesOrders(10)", 3, () -> sales.getRecentSalesOrders(10));
             run("Dashboard: getTodaySalesSummary", 3, sales::getTodaySalesSummary);
-            run("Dashboard: get7DaysSalesUpTo", 3, () -> sales.get7DaysSalesUpTo(today, null));
+            run("Dashboard: get7DaysSalesUpTo", 3, () -> report.get7DaysSalesUpTo(today, null));
             run("Lịch sử bán: getSalesOrders(hôm nay, trang 1)", 3, () -> sales.getSalesOrders(today, null, "", 1, 20));
             run("Lịch sử bán: getSalesOrders(NV 2, trang 1)", 3, () -> sales.getSalesOrders(today, 2, "", 1, 20));
             run("Báo cáo: getReportSummary(tháng, NV 2)", 3, () -> report.getReportSummary(monthStart, today, 2));

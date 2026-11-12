@@ -1,6 +1,7 @@
 package com.pharmacy.employee;
 
 import com.pharmacy.common.DialogUtils;
+import com.pharmacy.employee.dto.NewEmployeeAccount;
 import javafx.animation.PauseTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

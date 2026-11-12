@@ -2,6 +2,8 @@ package com.pharmacy.employee;
 
 import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.account.Account;
+import com.pharmacy.employee.dto.EmployeeUpdateRequest;
+import com.pharmacy.employee.dto.NewEmployeeAccount;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
@@ -56,7 +58,7 @@ public class EmployeeDetailController {
 
     private Employee employee;
     private Runnable onBackCallback;
-    private final EmployeeService employeeService = new EmployeeServiceImpl();
+    private final EmployeeService employeeService = new EmployeeService();
 
     @FXML
     public void initialize() {

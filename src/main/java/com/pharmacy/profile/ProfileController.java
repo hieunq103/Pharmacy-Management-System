@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.FormValidator;
+import com.pharmacy.profile.dto.ProfileUpdateRequest;
 
 public class ProfileController {
     private static final Logger log = LoggerFactory.getLogger(ProfileController.class);
@@ -67,7 +68,7 @@ public class ProfileController {
     @FXML
     private Button btnChangePassword;
 
-    private final ProfileService profileService = new ProfileServiceImpl();
+    private final ProfileService profileService = new ProfileService();
     private PauseTransition statusTimer;
 
     @FXML

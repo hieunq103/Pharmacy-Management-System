@@ -1,4 +1,4 @@
-package com.pharmacy.sales.dto;
+package com.pharmacy.report.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -38,3 +38,4 @@ public class DailySalesDTO {
         return totalQuantity;
     }
 }
+

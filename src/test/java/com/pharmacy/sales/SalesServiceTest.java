@@ -20,7 +20,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SalesServiceTest {
-    private final SalesService salesService = new SalesServiceImpl();
+    private final SalesService salesService = new SalesService();
     private final InventoryRepository inventoryRepository = new InventoryRepository();
 
     @BeforeAll
@@ -154,7 +154,7 @@ public class SalesServiceTest {
         LocalDate from = LocalDate.of(2026, 3, 1);
         LocalDate to = from.withDayOfMonth(from.lengthOfMonth());
         var history = salesService.getSalesHistory(from, to, null, "", 1, 7);
-        var summary = new com.pharmacy.report.ReportServiceImpl().getSummary(from, to, null);
+        var summary = new com.pharmacy.report.ReportService().getSummary(from, to, null);
         assertTrue(history.getTotalElements() > 0);
         assertEquals(summary.totalOrders(), history.getTotalElements());
         for (var order : history.getItems()) {

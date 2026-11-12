@@ -2,6 +2,7 @@ package com.pharmacy.report;
 
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.infra.db.HibernateUtil;
+import com.pharmacy.report.dto.DailySalesDTO;
 import com.pharmacy.report.dto.MedicineTimelineDTO;
 import com.pharmacy.report.dto.ReportSummaryDTO;
 import com.pharmacy.report.dto.RevenueTimelineDTO;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,21 +31,23 @@ public class ReportRepository {
     public ReportSummaryDTO getReportSummary(LocalDate from, LocalDate to, Integer employeeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String sql = """
-                SELECT COUNT(*) AS total_orders,
-                       COALESCE(SUM(so.total_amount), 0) AS total_revenue,
-                       COALESCE(SUM(CASE WHEN so.payment_method = 'CASH' THEN so.total_amount END), 0) AS cash_revenue,
-                       COALESCE(SUM(CASE WHEN so.payment_method = 'TRANSFER' THEN so.total_amount END), 0) AS transfer_revenue,
-                       COALESCE(SUM(q.qty), 0) AS total_qty
-                FROM sales_orders so
-                LEFT JOIN LATERAL (
-                    SELECT SUM(soi.quantity) AS qty FROM sales_order_items soi WHERE soi.sales_order_id = so.id
-                ) q ON TRUE
-                WHERE so.created_at >= :startTime AND so.created_at < :endTime
-            """ + employeeFilter(employeeId);
+                        SELECT COUNT(*) AS total_orders,
+                               COALESCE(SUM(so.total_amount), 0) AS total_revenue,
+                               COALESCE(SUM(CASE WHEN so.payment_method = 'CASH' THEN so.total_amount END), 0) AS cash_revenue,
+                               COALESCE(SUM(CASE WHEN so.payment_method = 'TRANSFER' THEN so.total_amount END), 0) AS transfer_revenue,
+                               COALESCE(SUM(q.qty), 0) AS total_qty
+                        FROM sales_orders so
+                        LEFT JOIN LATERAL (
+                            SELECT SUM(soi.quantity) AS qty FROM sales_order_items soi WHERE soi.sales_order_id = so.id
+                        ) q ON TRUE
+                        WHERE so.created_at >= :startTime AND so.created_at < :endTime
+                    """
+                    + employeeFilter(employeeId);
             NativeQuery<Object[]> query = session.createNativeQuery(sql, Object[].class);
             bindRange(query, from, to, employeeId);
             Object[] r = query.uniqueResult();
-            return new ReportSummaryDTO(toLong(r[0]), toBigDecimal(r[1]), toBigDecimal(r[2]), toBigDecimal(r[3]), toLong(r[4]));
+            return new ReportSummaryDTO(toLong(r[0]), toBigDecimal(r[1]), toBigDecimal(r[2]), toBigDecimal(r[3]),
+                    toLong(r[4]));
         } catch (Exception e) {
             log.error("Lỗi khi lấy tổng hợp báo cáo: ", e);
             return ReportSummaryDTO.empty();
@@ -55,21 +59,25 @@ public class ReportRepository {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             boolean hasKeyword = keyword != null && !keyword.isBlank();
             String sql = """
-                SELECT m.id, m.code, m.name, COALESCE(mc.name, 'Chưa phân loại') AS category_name, m.unit,
-                       agg.quantity_sold, agg.total_revenue
-                FROM (
-                    SELECT soi.medicine_id, SUM(soi.quantity) AS quantity_sold, SUM(soi.line_total) AS total_revenue
-                    FROM sales_orders so
-                    JOIN sales_order_items soi ON soi.sales_order_id = so.id
-                    WHERE so.created_at >= :startTime AND so.created_at < :endTime
-            """ + employeeFilter(employeeId) + """
-                    GROUP BY soi.medicine_id
-                ) agg
-                JOIN medicines m ON m.id = agg.medicine_id
-                LEFT JOIN medicine_categories mc ON m.category_id = mc.id
-            """ + (hasKeyword ? " WHERE (m.code LIKE :keyword OR m.name LIKE :keyword OR mc.name LIKE :keyword) " : "") + """
-                ORDER BY agg.quantity_sold DESC, agg.total_revenue DESC
-            """;
+                        SELECT m.id, m.code, m.name, COALESCE(mc.name, 'Chưa phân loại') AS category_name, m.unit,
+                               agg.quantity_sold, agg.total_revenue
+                        FROM (
+                            SELECT soi.medicine_id, SUM(soi.quantity) AS quantity_sold, SUM(soi.line_total) AS total_revenue
+                            FROM sales_orders so
+                            JOIN sales_order_items soi ON soi.sales_order_id = so.id
+                            WHERE so.created_at >= :startTime AND so.created_at < :endTime
+                    """
+                    + employeeFilter(employeeId) + """
+                                    GROUP BY soi.medicine_id
+                                ) agg
+                                JOIN medicines m ON m.id = agg.medicine_id
+                                LEFT JOIN medicine_categories mc ON m.category_id = mc.id
+                            """
+                    + (hasKeyword ? " WHERE (m.code LIKE :keyword OR m.name LIKE :keyword OR mc.name LIKE :keyword) "
+                            : "")
+                    + """
+                                ORDER BY agg.quantity_sold DESC, agg.total_revenue DESC
+                            """;
             NativeQuery<Object[]> query = session.createNativeQuery(sql, Object[].class);
             bindRange(query, from, to, employeeId);
             if (hasKeyword) {
@@ -92,10 +100,10 @@ public class ReportRepository {
     public List<RevenueTimelineDTO> get12MonthsRevenueTimeline(int year, Integer employeeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String sql = """
-                SELECT MONTH(so.created_at) AS month_val, COALESCE(SUM(so.total_amount), 0), COUNT(*)
-                FROM sales_orders so
-                WHERE so.created_at >= :startTime AND so.created_at < :endTime
-            """ + employeeFilter(employeeId) + " GROUP BY MONTH(so.created_at)";
+                        SELECT MONTH(so.created_at) AS month_val, COALESCE(SUM(so.total_amount), 0), COUNT(*)
+                        FROM sales_orders so
+                        WHERE so.created_at >= :startTime AND so.created_at < :endTime
+                    """ + employeeFilter(employeeId) + " GROUP BY MONTH(so.created_at)";
             NativeQuery<Object[]> query = session.createNativeQuery(sql, Object[].class);
             bindRange(query, LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31), employeeId);
             Map<Integer, Object[]> byMonth = groupByMonth(query.list());
@@ -119,11 +127,11 @@ public class ReportRepository {
     public List<MedicineTimelineDTO> get12MonthsMedicineTimeline(int year, Integer employeeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String sql = """
-                SELECT MONTH(so.created_at) AS month_val, COALESCE(SUM(soi.quantity), 0)
-                FROM sales_orders so
-                JOIN sales_order_items soi ON so.id = soi.sales_order_id
-                WHERE so.created_at >= :startTime AND so.created_at < :endTime
-            """ + employeeFilter(employeeId) + " GROUP BY MONTH(so.created_at)";
+                        SELECT MONTH(so.created_at) AS month_val, COALESCE(SUM(soi.quantity), 0)
+                        FROM sales_orders so
+                        JOIN sales_order_items soi ON so.id = soi.sales_order_id
+                        WHERE so.created_at >= :startTime AND so.created_at < :endTime
+                    """ + employeeFilter(employeeId) + " GROUP BY MONTH(so.created_at)";
             NativeQuery<Object[]> query = session.createNativeQuery(sql, Object[].class);
             bindRange(query, LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31), employeeId);
             Map<Integer, Object[]> byMonth = groupByMonth(query.list());
@@ -140,6 +148,71 @@ public class ReportRepository {
             log.error("Lỗi khi lấy sản lượng thuốc 12 tháng: ", e);
             return Collections.emptyList();
         }
+    }
+
+    // Lấy doanh số và số lượng thuốc bán trong 7 ngày tính đến một ngày cụ thể
+    // (dùng chung cho Báo cáo và Dashboard)
+    public List<DailySalesDTO> get7DaysSalesUpTo(LocalDate endDate, Integer employeeId) {
+        LocalDate effectiveEnd = endDate != null ? endDate : LocalDate.now();
+        return getDailySales(effectiveEnd.minusDays(6), effectiveEnd, employeeId);
+    }
+
+    // Lấy thống kê doanh thu, số đơn hàng và số lượng bán theo từng ngày trong
+    // khoảng [from, to]
+    public List<DailySalesDTO> getDailySales(LocalDate from, LocalDate to, Integer employeeId) {
+        if (from == null || to == null || from.isAfter(to)) {
+            return Collections.emptyList();
+        }
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String sql = """
+                        SELECT DATE(so.created_at) AS order_date,
+                               COALESCE(SUM(so.total_amount), 0) AS total_rev,
+                               COUNT(*) AS total_orders,
+                               COALESCE(SUM(q.qty), 0) AS total_qty
+                        FROM sales_orders so
+                        LEFT JOIN LATERAL (
+                            SELECT SUM(soi.quantity) AS qty FROM sales_order_items soi WHERE soi.sales_order_id = so.id
+                        ) q ON TRUE
+                        WHERE so.created_at >= :startTime AND so.created_at < :endTime
+                    """ + employeeFilter(employeeId) + """
+                        GROUP BY DATE(so.created_at)
+                    """;
+            NativeQuery<Object[]> query = session.createNativeQuery(sql, Object[].class);
+            bindRange(query, from, to, employeeId);
+
+            Map<LocalDate, Object[]> byDate = new HashMap<>();
+            for (Object[] r : query.list()) {
+                LocalDate d = toLocalDate(r[0]);
+                if (d != null)
+                    byDate.put(d, r);
+            }
+
+            List<DailySalesDTO> result = new ArrayList<>();
+            for (LocalDate d = from; !d.isAfter(to); d = d.plusDays(1)) {
+                Object[] r = byDate.get(d);
+                String dowLabel = dayOfWeekLabel(d.getDayOfWeek());
+                result.add(r == null
+                        ? new DailySalesDTO(d, dowLabel, BigDecimal.ZERO, 0L, 0L)
+                        : new DailySalesDTO(d, dowLabel, toBigDecimal(r[1]), toLong(r[2]), toLong(r[3])));
+            }
+            return result;
+        } catch (Exception e) {
+            log.error("Lỗi khi truy vấn doanh số theo ngày trong ReportRepository: ", e);
+            return Collections.emptyList();
+        }
+    }
+
+    // Chuyển thứ trong tuần sang tên viết tắt tiếng Việt
+    private static String dayOfWeekLabel(DayOfWeek dow) {
+        return switch (dow) {
+            case MONDAY -> "T2";
+            case TUESDAY -> "T3";
+            case WEDNESDAY -> "T4";
+            case THURSDAY -> "T5";
+            case FRIDAY -> "T6";
+            case SATURDAY -> "T7";
+            case SUNDAY -> "CN";
+        };
     }
 
     // Gom nhóm kết quả truy vấn theo tháng

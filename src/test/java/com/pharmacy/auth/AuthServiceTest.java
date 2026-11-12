@@ -2,10 +2,10 @@ package com.pharmacy.auth;
 
 import com.pharmacy.account.Account;
 import com.pharmacy.account.AccountRepository;
+import com.pharmacy.auth.dto.LoginRequest;
 import com.pharmacy.common.FormValidator;
 import com.pharmacy.common.UserSession;
 import com.pharmacy.employee.EmployeeService;
-import com.pharmacy.employee.EmployeeServiceImpl;
 import com.pharmacy.infra.exception.AuthenticationException;
 import com.pharmacy.support.DbTestSupport;
 import org.junit.jupiter.api.AfterEach;
@@ -26,8 +26,8 @@ class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-        authService = new AuthServiceImpl();
-        employeeService = new EmployeeServiceImpl();
+        authService = new AuthService();
+        employeeService = new EmployeeService();
         UserSession.invalidate();
     }
 

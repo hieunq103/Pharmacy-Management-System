@@ -6,6 +6,8 @@ import com.pharmacy.account.Role;
 import com.pharmacy.common.UserSession;
 import com.pharmacy.employee.Employee;
 import com.pharmacy.employee.EmployeeRepository;
+import com.pharmacy.employee.dto.EmployeeConflict;
+import com.pharmacy.profile.dto.ProfileUpdateRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +18,7 @@ class ProfileServiceImplTest {
         String savedName, savedPhone, savedAddress;
 
         @Override
-        public java.util.Optional<com.pharmacy.employee.EmployeeConflict> findByPhone(String phone, Integer excludeId) {
+        public java.util.Optional<EmployeeConflict> findByPhone(String phone, Integer excludeId) {
             return java.util.Optional.empty();
         }
 
@@ -30,7 +32,7 @@ class ProfileServiceImplTest {
     }
 
     private final FakeEmployeeRepository repo = new FakeEmployeeRepository();
-    private final ProfileService service = new ProfileServiceImpl(repo, new AccountRepository());
+    private final ProfileService service = new ProfileService(repo, new AccountRepository());
 
     private static void login(String roleCode, int employeeId) {
         Employee e = new Employee();

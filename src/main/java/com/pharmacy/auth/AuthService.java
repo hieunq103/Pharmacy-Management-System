@@ -1,8 +1,70 @@
 package com.pharmacy.auth;
 
 import com.pharmacy.account.Account;
+import com.pharmacy.account.AccountRepository;
+import com.pharmacy.auth.dto.LoginRequest;
+import com.pharmacy.common.UserSession;
+import com.pharmacy.infra.exception.AuthenticationException;
+import com.pharmacy.infra.exception.ErrorCode;
+import com.pharmacy.infra.security.PasswordEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public interface AuthService {
-    Account login(LoginRequest request);
-    void logout();
+public class AuthService {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
+    private static final String CLIENT_INFO = "JavaFX Desktop Client";
+
+    private final AccountRepository accountRepository;
+
+    public AuthService() {
+        this(new AccountRepository());
+    }
+
+    public AuthService(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
+
+    public Account login(LoginRequest request) {
+        // Tìm tài khoản duy nhất bằng tên đăng nhập
+        Account account = accountRepository.findByUsername(request.username())
+                .orElseThrow(() -> {
+                    log.warn("Đăng nhập thất bại: Tài khoản không tồn tại [{}]", request.username());
+                    return new AuthenticationException(ErrorCode.INVALID_CREDENTIALS,
+                            "Tài khoản hoặc mật khẩu không chính xác.");
+                });
+
+        String employeeName = (account.getEmployee() != null && account.getEmployee().getFullName() != null)
+                ? account.getEmployee().getFullName()
+                : "N/A";
+        Integer accountId = account.getId();
+
+        if (!PasswordEncoder.matches(request.password(), account.getPasswordHash())) {
+            log.warn("Nhân viên [{}] - Mật khẩu không chính xác", employeeName);
+            accountRepository.saveLoginHistory(accountId, "FAILED", CLIENT_INFO);
+            throw new AuthenticationException(
+                    ErrorCode.INVALID_CREDENTIALS,
+                    "Tài khoản hoặc mật khẩu không chính xác.");
+        }
+
+        if (account.getStatus() == Account.Status.DISABLED) {
+            log.warn("Nhân viên [{}] - Tài khoản đã bị vô hiệu hóa", employeeName);
+            throw new AuthenticationException(
+                    ErrorCode.ACCOUNT_DISABLED,
+                    "Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
+        }
+
+        accountRepository.recordSuccessfulLogin(accountId, CLIENT_INFO);
+        UserSession.start(account);
+
+        log.info("Nhân viên [{}] đăng nhập thành công", UserSession.getInstance().getEmployeeName());
+        return account;
+    }
+
+    public void logout() {
+        if (UserSession.isLoggedIn()) {
+            log.info("Nhân viên [{}] đã đăng xuất", UserSession.getInstance().getEmployeeName());
+        }
+        UserSession.invalidate();
+    }
 }

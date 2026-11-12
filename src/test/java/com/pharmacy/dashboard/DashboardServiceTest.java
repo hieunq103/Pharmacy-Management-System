@@ -2,7 +2,7 @@ package com.pharmacy.dashboard;
 
 import com.pharmacy.dashboard.dto.DashboardStatsDTO;
 import com.pharmacy.inventory.dto.InventoryAlertDTO;
-import com.pharmacy.sales.dto.DailySalesDTO;
+import com.pharmacy.report.dto.DailySalesDTO;
 import com.pharmacy.sales.dto.SalesOrderDTO;
 import com.pharmacy.support.DbTestSupport;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,7 +20,7 @@ public class DashboardServiceTest {
 
     @Test
     void testDashboardDataRetrieval() {
-        DashboardService service = new DashboardServiceImpl();
+        DashboardService service = new DashboardService();
 
         DashboardStatsDTO stats = service.getStats();
         assertNotNull(stats, "Thống kê tổng quan không được null");

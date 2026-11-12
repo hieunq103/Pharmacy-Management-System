@@ -118,6 +118,15 @@ public class TogglePasswordField extends HBox {
         return passwordField.textProperty();
     }
 
+    public void setOnAction(javafx.event.EventHandler<javafx.event.ActionEvent> handler) {
+        passwordField.setOnAction(handler);
+        textField.setOnAction(handler);
+    }
+
+    public javafx.event.EventHandler<javafx.event.ActionEvent> getOnAction() {
+        return passwordField.getOnAction();
+    }
+
     @Override
     public void requestFocus() {
         if (textField.isVisible()) {

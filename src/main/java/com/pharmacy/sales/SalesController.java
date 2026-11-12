@@ -70,7 +70,7 @@ public class SalesController implements Initializable {
     @FXML private Label lblCartTotal;
     @FXML private Button btnCheckout;
 
-    private final SalesService salesService = new SalesServiceImpl();
+    private final SalesService salesService = new SalesService();
     private CartOrder activeOrder = new CartOrder();
 
     private static final int PAGE_SIZE = 6;

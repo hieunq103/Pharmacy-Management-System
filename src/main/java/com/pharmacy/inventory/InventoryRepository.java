@@ -8,6 +8,7 @@ import com.pharmacy.infra.db.TransactionGuards;
 import com.pharmacy.inventory.dto.BatchExportItemDTO;
 import com.pharmacy.inventory.dto.BatchImportItemDTO;
 import com.pharmacy.inventory.dto.InventoryAlertDTO;
+import com.pharmacy.inventory.dto.InventorySummaryDTO;
 import com.pharmacy.inventory.dto.InventoryTransactionDTO;
 import com.pharmacy.inventory.dto.InventoryTransactionDetailDTO;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
@@ -39,10 +40,8 @@ import static com.pharmacy.inventory.InventorySql.*;
 public class InventoryRepository {
     private static final Logger log = LoggerFactory.getLogger(InventoryRepository.class);
 
-    public record InventorySummary(long totalMedicines, long inStockMedicines, long lowStockMedicines, long nearExpiryMedicines) {}
-
     // Lấy thống kê tổng quan tồn kho cho Dashboard
-    public InventorySummary getInventorySummary() {
+    public InventorySummaryDTO getInventorySummary() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String sql = """
                 SELECT
@@ -62,10 +61,10 @@ public class InventoryRepository {
                 WHERE m.status = 'ACTIVE'
             """.formatted(LOW_STOCK_THRESHOLD, AppConstants.NEAR_EXPIRY_DAYS);
             Object[] row = session.createNativeQuery(sql, Object[].class).getSingleResult();
-            return new InventorySummary(toLong(row[0]), toLong(row[1]), toLong(row[2]), toLong(row[3]));
+            return new InventorySummaryDTO(toLong(row[0]), toLong(row[1]), toLong(row[2]), toLong(row[3]));
         } catch (Exception e) {
             log.error("Lỗi khi lấy thống kê kho: ", e);
-            return new InventorySummary(0L, 0L, 0L, 0L);
+            return new InventorySummaryDTO(0L, 0L, 0L, 0L);
         }
     }
 
@@ -220,7 +219,7 @@ public class InventoryRepository {
         }
     }
 
-    // Xây dựng điều kiện WHERE lọc theo trạng thái tồn kho và hạn dùng
+    // Xây dựng điều kiện lọc theo trạng thái tồn kho và hạn dùng
     private String buildFilterConditions(String stockFilter, String expiryFilter) {
         StringBuilder sb = new StringBuilder();
 
@@ -411,12 +410,9 @@ public class InventoryRepository {
 
     private static volatile boolean medicineSequenceReady;
 
-    // Tạo dòng bộ đếm MEDICINE (khởi tạo từ mã MED lớn nhất hiện có) trong giao dịch riêng, ngắn,
-    // để giao dịch nhập kho chỉ cần UPDATE một dòng đã có
     private static void ensureMedicineSequence() {
         if (medicineSequenceReady) return;
         HibernateUtil.execute(session -> session.doWork(conn -> {
-            // Đọc MAX bằng SELECT thường (không khóa bảng medicines) rồi mới chèn, tránh deadlock với phiếu nhập đang chạy
             long lastNumber;
             try (Statement st = conn.createStatement()) {
                 try (ResultSet rs = st.executeQuery("SELECT 1 FROM code_sequences WHERE name = 'MEDICINE'")) {
@@ -437,8 +433,6 @@ public class InventoryRepository {
         medicineSequenceReady = true;
     }
 
-    // Giữ trước count số liên tiếp cho phiếu nhập và trả về số đầu tiên. Khóa dòng bộ đếm đến khi commit nên các phiếu
-    // nhập cùng lúc xếp hàng (luôn khóa đầu tiên nên không deadlock); rollback thì bộ đếm quay lại nên không mất số
     private static long reserveMedicineCodes(Connection conn, int count) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(
                 "UPDATE code_sequences SET current_number = LAST_INSERT_ID(current_number + ?) WHERE name = 'MEDICINE'")) {
@@ -550,7 +544,6 @@ public class InventoryRepository {
                 if (rs.next()) return rs.getInt(1);
             }
         }
-        // Hai quầy cùng tạo một tên mới: cột name là UNIQUE nên người sau nhận lại id đã có thay vì báo lỗi trùng
         try (PreparedStatement ps = conn.prepareStatement(
                 "INSERT INTO " + table + " (name) VALUES (?) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id)",
                 Statement.RETURN_GENERATED_KEYS)) {
@@ -689,7 +682,7 @@ public class InventoryRepository {
              )
             """;
 
-    // Lấy 1 trang lịch sử nhập kho (phân trang trong SQL, LATERAL chỉ tính cho các phiếu của trang)
+    // Lấy 1 trang lịch sử nhập kho
     public PageResult<InventoryTransactionDTO> getImportTransactions(String keyword, LocalDate fromDate, LocalDate toDate,
                                                                      int page, int size) {
         int validPage = Math.max(1, page);
@@ -743,7 +736,7 @@ public class InventoryRepository {
         }
     }
 
-    // Lấy 1 trang lịch sử xuất kho (phân trang trong SQL, LATERAL chỉ tính cho các phiếu của trang)
+    // Lấy 1 trang lịch sử xuất kho
     public PageResult<InventoryTransactionDTO> getExportTransactions(String keyword, LocalDate fromDate, LocalDate toDate,
                                                                      int page, int size) {
         int validPage = Math.max(1, page);

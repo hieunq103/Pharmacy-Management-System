@@ -1,4 +1,4 @@
-package com.pharmacy.profile;
+package com.pharmacy.profile.dto;
 
 public record ProfileUpdateRequest(
         Integer employeeId,
@@ -7,3 +7,4 @@ public record ProfileUpdateRequest(
         String address
 ) {
 }
+

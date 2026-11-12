@@ -1,4 +1,4 @@
-package com.pharmacy.employee;
+package com.pharmacy.employee.dto;
 
 import java.time.LocalDate;
 
@@ -14,3 +14,4 @@ public record EmployeeUpdateRequest(
         String accountStatus,
         String roleName
 ) {}
+

@@ -48,7 +48,7 @@ import java.util.ResourceBundle;
 public class SalesHistoryController implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(SalesHistoryController.class);
 
-    private final SalesService salesService = new SalesServiceImpl();
+    private final SalesService salesService = new SalesService();
 
     private Runnable onCloseHistory;
 

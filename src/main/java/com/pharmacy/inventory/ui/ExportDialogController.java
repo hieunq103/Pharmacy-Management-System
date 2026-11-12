@@ -4,9 +4,7 @@ import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.UserSession;
-import com.pharmacy.inventory.InventoryRepository;
 import com.pharmacy.inventory.InventoryService;
-import com.pharmacy.inventory.InventoryServiceImpl;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.inventory.dto.MedicineLotDTO;
 import com.pharmacy.inventory.dto.BatchExportItemDTO;
@@ -614,8 +612,8 @@ public class ExportDialogController implements Initializable {
         });
     }
 
-    public void initData(List<MedicineInventoryDTO> medicines, InventoryRepository repo, MedicineInventoryDTO preselectedMedicine, Runnable onSuccess) {
-        this.inventoryService = new InventoryServiceImpl(repo != null ? repo : new InventoryRepository());
+    public void initData(List<MedicineInventoryDTO> medicines, InventoryService service, MedicineInventoryDTO preselectedMedicine, Runnable onSuccess) {
+        this.inventoryService = service != null ? service : new InventoryService();
         this.onSuccessCallback = onSuccess;
         medicinePicker.setMedicines(medicines);
         if (preselectedMedicine != null) {

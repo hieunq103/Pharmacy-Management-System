@@ -63,7 +63,7 @@ public class PaymentDialogController {
 
     @FXML private Button btnConfirmPayment;
 
-    private final SalesService salesService = new SalesServiceImpl();
+    private final SalesService salesService = new SalesService();
     private CartOrder currentOrder;
     private BigDecimal totalAmount = BigDecimal.ZERO;
     private String selectedMethod = "CASH";

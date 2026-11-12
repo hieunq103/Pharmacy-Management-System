@@ -6,7 +6,6 @@ import com.pharmacy.infra.db.TransactionGuards;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.sales.dto.CartItem;
 import com.pharmacy.sales.dto.CartTotals;
-import com.pharmacy.sales.dto.DailySalesDTO;
 import com.pharmacy.sales.dto.SalesOrderDTO;
 import com.pharmacy.sales.dto.SalesOrderDetailDTO;
 import com.pharmacy.sales.dto.SalesOrderRequest;
@@ -23,7 +22,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -447,72 +445,6 @@ public class SalesRepository {
             log.error("Lỗi khi thống kê doanh số hôm nay trong SalesRepository: ", e);
             return TodaySalesSummary.EMPTY;
         }
-    }
-
-    // Lấy doanh số bán hàng trong 7 ngày gần nhất tính đến hôm nay
-    public List<DailySalesDTO> getLast7DaysSales(Integer employeeId) {
-        return get7DaysSalesUpTo(LocalDate.now(), employeeId);
-    }
-
-    // Lấy doanh số bán hàng trong 7 ngày tính đến một ngày cụ thể
-    public List<DailySalesDTO> get7DaysSalesUpTo(LocalDate endDate, Integer employeeId) {
-        if (endDate == null) {
-            endDate = LocalDate.now();
-        }
-        LocalDate startDate = endDate.minusDays(6);
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String sql = """
-                SELECT DATE(so.created_at) AS order_date,
-                       COALESCE(SUM(so.total_amount), 0) AS total_rev,
-                       COUNT(*) AS total_orders,
-                       COALESCE(SUM(q.qty), 0) AS total_qty
-                FROM sales_orders so
-                LEFT JOIN LATERAL (
-                    SELECT SUM(soi.quantity) AS qty FROM sales_order_items soi WHERE soi.sales_order_id = so.id
-                ) q ON TRUE
-                WHERE so.created_at >= :startTime AND so.created_at < :endTime
-            """ + (employeeId != null ? " AND so.employee_id = :employeeId " : "") + """
-                GROUP BY DATE(so.created_at)
-            """;
-            var query = session.createNativeQuery(sql, Object[].class)
-                    .setParameter("startTime", Timestamp.valueOf(startDate.atStartOfDay()))
-                    .setParameter("endTime", Timestamp.valueOf(endDate.plusDays(1).atStartOfDay()));
-            if (employeeId != null) {
-                query.setParameter("employeeId", employeeId);
-            }
-
-            Map<LocalDate, Object[]> byDate = new HashMap<>();
-            for (Object[] r : query.list()) {
-                LocalDate d = toLocalDate(r[0]);
-                if (d != null) byDate.put(d, r);
-            }
-
-            List<DailySalesDTO> result = new ArrayList<>(7);
-            for (int i = 0; i < 7; i++) {
-                LocalDate d = startDate.plusDays(i);
-                Object[] r = byDate.get(d);
-                result.add(r == null
-                        ? new DailySalesDTO(d, dayOfWeekLabel(d.getDayOfWeek()), BigDecimal.ZERO, 0L, 0L)
-                        : new DailySalesDTO(d, dayOfWeekLabel(d.getDayOfWeek()), toBigDecimal(r[1]), toLong(r[2]), toLong(r[3])));
-            }
-            return result;
-        } catch (Exception e) {
-            log.error("Lỗi khi truy vấn doanh số 7 ngày gần nhất trong SalesRepository: ", e);
-            return Collections.emptyList();
-        }
-    }
-
-    // Chuyển thứ trong tuần sang tên viết tắt tiếng Việt
-    private static String dayOfWeekLabel(DayOfWeek dow) {
-        return switch (dow) {
-            case MONDAY -> "T2";
-            case TUESDAY -> "T3";
-            case WEDNESDAY -> "T4";
-            case THURSDAY -> "T5";
-            case FRIDAY -> "T6";
-            case SATURDAY -> "T7";
-            case SUNDAY -> "CN";
-        };
     }
 
     // Lấy danh sách các đơn bán hàng gần nhất cho Dashboard

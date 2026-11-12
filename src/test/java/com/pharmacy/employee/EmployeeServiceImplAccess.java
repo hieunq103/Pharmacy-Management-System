@@ -7,6 +7,6 @@ public final class EmployeeServiceImplAccess {
     }
 
     public static void validate(String fullName, String phone, String nationalId, LocalDate dob) {
-        EmployeeServiceImpl.validateEmployee(fullName, phone, nationalId, dob);
+        EmployeeService.validateEmployee(fullName, phone, nationalId, dob);
     }
 }

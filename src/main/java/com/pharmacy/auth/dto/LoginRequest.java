@@ -1,4 +1,4 @@
-package com.pharmacy.auth;
+package com.pharmacy.auth.dto;
 
 public record LoginRequest(String username, String password) {
     public LoginRequest {
@@ -9,3 +9,4 @@ public record LoginRequest(String username, String password) {
     }
 
 }
+

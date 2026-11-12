@@ -1,6 +1,7 @@
 package com.pharmacy.inventory;
 
 import com.pharmacy.common.BackgroundTasks;
+import com.pharmacy.inventory.dto.InventorySummaryDTO;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.inventory.ui.ExportDialogController;
 import com.pharmacy.inventory.ui.ImportDialogController;
@@ -76,7 +77,7 @@ public class InventoryController implements Initializable {
     @FXML private HBox paginationBox;
     @FXML private Label lblRecordRange;
 
-    private final InventoryService inventoryService = new InventoryServiceImpl();
+    private final InventoryService inventoryService = new InventoryService();
     private final ObservableList<MedicineInventoryDTO> pageData = FXCollections.observableArrayList();
 
     private final Map<String, String> activeFilters = new HashMap<>();
@@ -558,7 +559,7 @@ public class InventoryController implements Initializable {
             Parent root = loader.load();
 
             MedicineLotDialogController controller = loader.getController();
-            controller.setMedicineData(dto, inventoryService.getRepository());
+            controller.setMedicineData(dto, inventoryService);
 
             Stage dialogStage = new Stage();
             dialogStage.initModality(Modality.APPLICATION_MODAL);
@@ -644,7 +645,7 @@ public class InventoryController implements Initializable {
             importDrawerRoot = loader.load();
             importController = loader.getController();
 
-            importController.initData(List.of(), inventoryService.getRepository(), this::onStockUpdated);
+            importController.initData(List.of(), inventoryService, this::onStockUpdated);
             importController.setOnCloseCallback(drawerHelper::close);
 
             drawerHelper.registerDrawer(importDrawerRoot);
@@ -660,7 +661,7 @@ public class InventoryController implements Initializable {
             exportDrawerRoot = loader.load();
             exportController = loader.getController();
 
-            exportController.initData(List.of(), inventoryService.getRepository(), null, this::onStockUpdated);
+            exportController.initData(List.of(), inventoryService, null, this::onStockUpdated);
             exportController.setOnCloseCallback(drawerHelper::close);
 
             drawerHelper.registerDrawer(exportDrawerRoot);
@@ -837,14 +838,14 @@ public class InventoryController implements Initializable {
     }
 
     private void loadSummaryCounts() {
-        Task<InventoryRepository.InventorySummary> summaryTask = new Task<>() {
+        Task<InventorySummaryDTO> summaryTask = new Task<>() {
             @Override
-            protected InventoryRepository.InventorySummary call() {
+            protected InventorySummaryDTO call() {
                 return inventoryService.getInventorySummary();
             }
         };
         summaryTask.setOnSucceeded(e -> {
-            InventoryRepository.InventorySummary summary = summaryTask.getValue();
+            InventorySummaryDTO summary = summaryTask.getValue();
             if (summary != null) {
                 if (lblTotalMedicines != null) lblTotalMedicines.setText(String.valueOf(summary.totalMedicines()));
                 if (lblInStockMedicines != null) lblInStockMedicines.setText(String.valueOf(summary.inStockMedicines()));

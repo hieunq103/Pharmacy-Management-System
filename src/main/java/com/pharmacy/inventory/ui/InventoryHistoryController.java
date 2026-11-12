@@ -7,7 +7,6 @@ import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.PaginationHelper;
 import com.pharmacy.common.TableSyncHelper;
 import com.pharmacy.inventory.InventoryService;
-import com.pharmacy.inventory.InventoryServiceImpl;
 import com.pharmacy.inventory.dto.InventoryTransactionDTO;
 
 import javafx.application.Platform;
@@ -38,7 +37,7 @@ import java.util.ResourceBundle;
 public class InventoryHistoryController implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(InventoryHistoryController.class);
 
-    private final InventoryService inventoryService = new InventoryServiceImpl();
+    private final InventoryService inventoryService = new InventoryService();
 
     private Runnable onBackToInventory;
 

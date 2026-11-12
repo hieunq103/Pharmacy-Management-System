@@ -5,9 +5,7 @@ import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.PaginationHelper;
 import com.pharmacy.common.TableSyncHelper;
-import com.pharmacy.inventory.InventoryRepository;
 import com.pharmacy.inventory.InventoryService;
-import com.pharmacy.inventory.InventoryServiceImpl;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.inventory.dto.MedicineLotDTO;
 
@@ -101,9 +99,9 @@ public class MedicineLotDialogController implements Initializable {
         }
     }
 
-    public void setMedicineData(MedicineInventoryDTO dto, InventoryRepository repo) {
+    public void setMedicineData(MedicineInventoryDTO dto, InventoryService service) {
         this.medicineDTO = dto;
-        this.inventoryService = new InventoryServiceImpl(repo != null ? repo : new InventoryRepository());
+        this.inventoryService = service != null ? service : new InventoryService();
 
         if (dto == null) return;
 

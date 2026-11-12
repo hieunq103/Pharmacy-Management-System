@@ -2,7 +2,6 @@ package com.pharmacy.layout;
 
 import com.pharmacy.account.Account;
 import com.pharmacy.auth.AuthService;
-import com.pharmacy.auth.AuthServiceImpl;
 import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormatUtils;
@@ -38,7 +37,7 @@ public class MainLayoutController {
     }
 
     public MainLayoutController() {
-        this.authService = new AuthServiceImpl();
+        this.authService = new AuthService();
     }
 
     @FXML

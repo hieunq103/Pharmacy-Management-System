@@ -9,6 +9,6 @@ public final class InventoryServiceImplAccess {
     }
 
     public static void validate(List<BatchImportItemDTO> items) {
-        InventoryServiceImpl.validateImportItems(items);
+        InventoryService.validateImportItems(items);
     }
 }

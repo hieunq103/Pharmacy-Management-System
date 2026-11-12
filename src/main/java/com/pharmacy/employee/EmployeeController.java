@@ -3,6 +3,7 @@ package com.pharmacy.employee;
 import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.account.Account;
 import com.pharmacy.common.PageResult;
+import com.pharmacy.employee.dto.EmployeeSummary;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -71,7 +72,7 @@ public class EmployeeController implements Initializable {
     private Task<PageResult<Employee>> currentLoadTask;
 
 
-    private final EmployeeService employeeService = new EmployeeServiceImpl();
+    private final EmployeeService employeeService = new EmployeeService();
     private final Map<String, String> activeFilters = new HashMap<>();
 
     @Override
@@ -368,15 +369,15 @@ public class EmployeeController implements Initializable {
     }
 
     public void updateSummaryCounts() {
-        Task<EmployeeRepository.EmployeeSummary> task = new Task<>() {
+        Task<EmployeeSummary> task = new Task<>() {
             @Override
-            protected EmployeeRepository.EmployeeSummary call() {
+            protected EmployeeSummary call() {
                 return employeeService.getEmployeeSummary();
             }
         };
 
         task.setOnSucceeded(e -> {
-            EmployeeRepository.EmployeeSummary summary = task.getValue();
+            EmployeeSummary summary = task.getValue();
             if (summary != null) {
                 if (lblTotalEmployees != null) lblTotalEmployees.setText(String.valueOf(summary.total()));
                 if (lblActiveEmployees != null) lblActiveEmployees.setText(String.valueOf(summary.active()));

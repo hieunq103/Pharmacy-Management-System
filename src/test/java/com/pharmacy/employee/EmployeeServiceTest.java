@@ -1,6 +1,7 @@
 package com.pharmacy.employee;
 
 import com.pharmacy.common.PageResult;
+import com.pharmacy.employee.dto.NewEmployeeAccount;
 import com.pharmacy.support.DbTestSupport;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,7 +12,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EmployeeServiceTest {
-    private final EmployeeService service = new EmployeeServiceImpl();
+    private final EmployeeService service = new EmployeeService();
 
     @BeforeAll
     static void requireDb() {
@@ -226,8 +227,8 @@ class EmployeeServiceTest {
         assertTrue(created.temporaryPassword().matches("\\d{8}"), created.temporaryPassword());
         DbTestSupport.logout();
 
-        var account = new com.pharmacy.auth.AuthServiceImpl()
-                .login(new com.pharmacy.auth.LoginRequest(created.username(), created.temporaryPassword()));
+        var account = new com.pharmacy.auth.AuthService()
+                .login(new com.pharmacy.auth.dto.LoginRequest(created.username(), created.temporaryPassword()));
         assertTrue(account.isMustChangePassword(), "Lần đăng nhập đầu phải bắt đổi mật khẩu");
         assertNotEquals(created.temporaryPassword(), account.getPasswordHash(), "CSDL chỉ lưu bản băm");
     }
@@ -261,13 +262,13 @@ class EmployeeServiceTest {
         assertTrue(reset.temporaryPassword().matches("\\d{8}"));
         DbTestSupport.logout();
 
-        var auth = new com.pharmacy.auth.AuthServiceImpl();
+        var auth = new com.pharmacy.auth.AuthService();
         if (!first.temporaryPassword().equals(reset.temporaryPassword())) {
             assertThrows(com.pharmacy.infra.exception.AuthenticationException.class,
-                    () -> auth.login(new com.pharmacy.auth.LoginRequest(reset.username(), first.temporaryPassword())),
+                    () -> auth.login(new com.pharmacy.auth.dto.LoginRequest(reset.username(), first.temporaryPassword())),
                     "Mật khẩu cũ phải hết hiệu lực");
         }
-        var account = auth.login(new com.pharmacy.auth.LoginRequest(reset.username(), reset.temporaryPassword()));
+        var account = auth.login(new com.pharmacy.auth.dto.LoginRequest(reset.username(), reset.temporaryPassword()));
         assertTrue(account.isMustChangePassword(), "Sau khi cấp lại phải bắt đổi mật khẩu");
     }
 

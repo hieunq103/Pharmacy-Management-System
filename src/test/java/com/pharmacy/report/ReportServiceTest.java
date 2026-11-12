@@ -22,7 +22,7 @@ class ReportServiceTest {
     private static final LocalDate MARCH_START = LocalDate.of(2026, 3, 1);
     private static final LocalDate MARCH_END = MARCH_START.with(TemporalAdjusters.lastDayOfMonth());
 
-    private final ReportService reportService = new ReportServiceImpl();
+    private final ReportService reportService = new ReportService();
 
     @BeforeAll
     static void requireDb() {

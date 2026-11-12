@@ -3,6 +3,7 @@ package com.pharmacy.auth;
 import com.pharmacy.account.Account;
 import com.pharmacy.account.AccountRepository;
 import com.pharmacy.account.Role;
+import com.pharmacy.auth.dto.LoginRequest;
 import com.pharmacy.common.UserSession;
 import com.pharmacy.employee.Employee;
 import com.pharmacy.infra.exception.AuthenticationException;
@@ -23,7 +24,7 @@ class AuthServiceImplTest {
     private static final String STRONG_PASSWORD = "MatKhau@2026";
 
     private FakeAccountRepository repo;
-    private AuthServiceImpl service;
+    private AuthService service;
 
     static class FakeAccountRepository extends AccountRepository {
         Account account;
@@ -63,7 +64,7 @@ class AuthServiceImplTest {
     @BeforeEach
     void setUp() {
         repo = new FakeAccountRepository();
-        service = new AuthServiceImpl(repo);
+        service = new AuthService(repo);
     }
 
     @AfterEach

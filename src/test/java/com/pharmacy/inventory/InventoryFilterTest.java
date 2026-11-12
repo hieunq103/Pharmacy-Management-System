@@ -4,6 +4,7 @@ import com.pharmacy.common.PageResult;
 import com.pharmacy.inventory.dto.BatchImportItemDTO;
 import com.pharmacy.inventory.dto.InventoryTransactionDTO;
 import com.pharmacy.inventory.dto.InventoryTransactionDetailDTO;
+import com.pharmacy.inventory.dto.InventorySummaryDTO;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.inventory.dto.MedicineLotDTO;
 import com.pharmacy.support.DbTestSupport;
@@ -87,7 +88,7 @@ public class InventoryFilterTest {
     void testPickerAndSummary() {
         List<MedicineInventoryDTO> picker = repo.getMedicinesForPicker();
         assertEquals(allMedicines().size(), picker.size());
-        InventoryRepository.InventorySummary summary = repo.getInventorySummary();
+        InventorySummaryDTO summary = repo.getInventorySummary();
         assertEquals(picker.size(), summary.totalMedicines());
         assertTrue(summary.inStockMedicines() <= summary.totalMedicines());
     }
@@ -109,7 +110,7 @@ public class InventoryFilterTest {
     @Test
     void testBatchImportStockWithTwoNewMedicines() {
         Integer managerEmployeeId = DbTestSupport.loginAsManager().getEmployee().getId();
-        InventoryService service = new InventoryServiceImpl(repo);
+        InventoryService service = new InventoryService(repo);
         String suffix = String.valueOf(System.nanoTime());
         List<BatchImportItemDTO> items = new ArrayList<>();
         items.add(BatchImportItemDTO.fromExisting(1, "MED001", "Augmentin 635mg", "Kháng sinh", "GSK",
@@ -191,7 +192,7 @@ public class InventoryFilterTest {
     @Test
     void testImportRequiresManager() {
         DbTestSupport.loginAs(DbTestSupport.STAFF_USERNAME);
-        InventoryService service = new InventoryServiceImpl(repo);
+        InventoryService service = new InventoryService(repo);
         List<BatchImportItemDTO> items = List.of(BatchImportItemDTO.fromExisting(1, "MED001", "x", null, null,
                 "LOT-X", LocalDate.now().plusYears(1), "Hộp", 1, BigDecimal.ONE));
         assertThrows(SecurityException.class, () -> service.importBatchStock(null, null, null, items));
@@ -200,7 +201,7 @@ public class InventoryFilterTest {
     @Test
     void testExportRejectsOverQuantity() {
         DbTestSupport.loginAsManager();
-        InventoryService service = new InventoryServiceImpl(repo);
+        InventoryService service = new InventoryService(repo);
         MedicineLotDTO lot = allMedicines().stream()
                 .filter(m -> m.getTotalQuantity() > 0)
                 .flatMap(m -> repo.getLotsByMedicineId(m.getMedicineId()).stream())
@@ -225,7 +226,7 @@ public class InventoryFilterTest {
 
     @Test
     void testDashboardCountsMatchInventoryFilters() {
-        InventoryRepository.InventorySummary summary = repo.getInventorySummary();
+        InventorySummaryDTO summary = repo.getInventorySummary();
         assertEquals(summary.lowStockMedicines(),
                 repo.getInventoryPageResult(1, 7, null, "Sắp hết hàng,Hết hàng", null).getTotalElements());
         assertEquals(summary.nearExpiryMedicines(),
