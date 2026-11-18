@@ -41,21 +41,11 @@ public class MedicineInventoryDTO {
     }
 
     public enum InventoryStatus {
-        NORMAL("Bình thường"),
-        LOW_STOCK("Sắp hết hàng"),
-        HAS_NEAR_EXPIRY_LOT("Có lô cận hạn"),
-        HAS_EXPIRED_LOT("Có lô hết hạn"),
-        OUT_OF_STOCK("Hết hàng");
-
-        private String label;
-
-        InventoryStatus(String label) {
-            this.label = label;
-        }
-
-        public String getLabel() {
-            return label;
-        }
+        NORMAL,
+        LOW_STOCK,
+        HAS_NEAR_EXPIRY_LOT,
+        HAS_EXPIRED_LOT,
+        OUT_OF_STOCK
     }
 
     public MedicineInventoryDTO() {

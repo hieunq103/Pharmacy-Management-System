@@ -71,9 +71,8 @@ public class MainLayoutController {
     private Label lblHeaderSubtitle;
 
     private static final String REPORT_FXML = "/fxml/report/report.fxml";
-    private Parent reportView;
-    private com.pharmacy.report.ReportController reportController;
-    private boolean reportPreloading = false;
+    private final java.util.Map<String, Parent> viewCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private final java.util.Map<String, Object> controllerCache = new java.util.concurrent.ConcurrentHashMap<>();
     private boolean reportPendingShow = false;
 
     @FXML
@@ -88,7 +87,7 @@ public class MainLayoutController {
         } else {
             handleNavDashboard(null);
         }
-        Platform.runLater(this::preloadReportView);
+        Platform.runLater(this::preloadViews);
     }
 
     private void initUserInfoAndPermissions() {
@@ -144,6 +143,14 @@ public class MainLayoutController {
         }
         setActiveButton(btnDashboard);
         lblHeaderTitle.setText("Tổng quan");
+        Parent cached = viewCache.get("/fxml/dashboard/dashboard.fxml");
+        if (cached != null) {
+            contentArea.getChildren().setAll(cached);
+            if (controllerCache.get("/fxml/dashboard/dashboard.fxml") instanceof com.pharmacy.dashboard.DashboardController dashCtrl) {
+                dashCtrl.loadAllDashboardData();
+            }
+            return;
+        }
         loadCenterView("/fxml/dashboard/dashboard.fxml");
     }
 
@@ -151,6 +158,11 @@ public class MainLayoutController {
     private void handleNavSales(ActionEvent event) {
         setActiveButton(btnSales);
         lblHeaderTitle.setText("Bán hàng");
+        Parent cached = viewCache.get("/fxml/sales/sales.fxml");
+        if (cached != null) {
+            contentArea.getChildren().setAll(cached);
+            return;
+        }
         loadCenterView("/fxml/sales/sales.fxml");
     }
 
@@ -172,6 +184,14 @@ public class MainLayoutController {
         setActiveButton(btnInventory);
         if (lblHeaderTitle != null) {
             lblHeaderTitle.setText("Kho thuốc");
+        }
+        Parent cached = viewCache.get("/fxml/inventory/inventory.fxml");
+        if (cached != null) {
+            contentArea.getChildren().setAll(cached);
+            if (controllerCache.get("/fxml/inventory/inventory.fxml") instanceof com.pharmacy.inventory.InventoryController invCtrl) {
+                invCtrl.applyFilters(stockFilters, expiryFilters);
+            }
+            return;
         }
         FXMLLoader loader = loadCenterViewWithLoader("/fxml/inventory/inventory.fxml");
         if (loader != null && loader.getController() instanceof com.pharmacy.inventory.InventoryController invCtrl) {
@@ -206,15 +226,28 @@ public class MainLayoutController {
         if (lblHeaderTitle != null) {
             lblHeaderTitle.setText("Bán hàng");
         }
+        Parent cached = viewCache.get("/fxml/sales/sales.fxml");
+        if (cached != null) {
+            contentArea.getChildren().setAll(cached);
+            return (com.pharmacy.sales.SalesController) controllerCache.get("/fxml/sales/sales.fxml");
+        }
         FXMLLoader loader = loadCenterViewWithLoader("/fxml/sales/sales.fxml");
         return loader != null && loader.getController() instanceof com.pharmacy.sales.SalesController salesCtrl
                 ? salesCtrl
-                : null;
+                : (com.pharmacy.sales.SalesController) controllerCache.get("/fxml/sales/sales.fxml");
     }
 
     public void navigateToProfileFromEmployees() {
         if (lblHeaderTitle != null) {
             lblHeaderTitle.setText("Thông tin cá nhân");
+        }
+        Parent cached = viewCache.get("/fxml/profile/profile.fxml");
+        if (cached != null) {
+            contentArea.getChildren().setAll(cached);
+            if (controllerCache.get("/fxml/profile/profile.fxml") instanceof com.pharmacy.profile.ProfileController profileCtrl) {
+                profileCtrl.setOnBack(() -> handleNavEmployee(null));
+            }
+            return;
         }
         FXMLLoader loader = loadCenterViewWithLoader("/fxml/profile/profile.fxml");
         if (loader != null && loader.getController() instanceof com.pharmacy.profile.ProfileController profileCtrl) {
@@ -228,6 +261,11 @@ public class MainLayoutController {
             lblHeaderTitle.setText("Thông tin cá nhân");
         }
         setActiveButton(null);
+        Parent cached = viewCache.get("/fxml/profile/profile.fxml");
+        if (cached != null) {
+            contentArea.getChildren().setAll(cached);
+            return;
+        }
         loadCenterView("/fxml/profile/profile.fxml");
     }
 
@@ -240,6 +278,11 @@ public class MainLayoutController {
         }
         setActiveButton(btnEmployee);
         lblHeaderTitle.setText("Quản lý nhân viên");
+        Parent cached = viewCache.get("/fxml/employee/employee.fxml");
+        if (cached != null) {
+            contentArea.getChildren().setAll(cached);
+            return;
+        }
         loadCenterView("/fxml/employee/employee.fxml");
     }
 
@@ -247,15 +290,18 @@ public class MainLayoutController {
     private void handleNavReport(ActionEvent event) {
         setActiveButton(btnReport);
         lblHeaderTitle.setText("Báo cáo & Thống kê");
-        if (reportView == null) {
+        Parent cached = viewCache.get(REPORT_FXML);
+        if (cached == null) {
             reportPendingShow = true;
             contentArea.getChildren().setAll(createLoadingPlaceholder("Đang tải báo cáo..."));
-            preloadReportView();
+            preloadViews();
             return;
         }
         reportPendingShow = false;
-        contentArea.getChildren().setAll(reportView);
-        reportController.refresh();
+        contentArea.getChildren().setAll(cached);
+        if (controllerCache.get(REPORT_FXML) instanceof com.pharmacy.report.ReportController rc) {
+            rc.refresh();
+        }
     }
 
     private javafx.scene.Node createLoadingPlaceholder(String text) {
@@ -269,39 +315,44 @@ public class MainLayoutController {
         return box;
     }
 
-    private void preloadReportView() {
-        if (reportPreloading || reportView != null)
-            return;
-        reportPreloading = true;
-        BackgroundTasks.run(() -> {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(REPORT_FXML));
-                Parent view = loader.load();
-                Platform.runLater(() -> {
-                    reportPreloading = false;
-                    if (reportView == null) {
-                        reportView = view;
-                        reportController = loader.getController();
+    private void preloadViews() {
+        String[] viewsToPreload = {
+            "/fxml/dashboard/dashboard.fxml",
+            "/fxml/sales/sales.fxml",
+            "/fxml/inventory/inventory.fxml",
+            "/fxml/employee/employee.fxml",
+            REPORT_FXML
+        };
+        for (String fxmlPath : viewsToPreload) {
+            if (viewCache.containsKey(fxmlPath)) continue;
+            BackgroundTasks.run(() -> {
+                try {
+                    var resource = getClass().getResource(fxmlPath);
+                    if (resource != null) {
+                        FXMLLoader loader = new FXMLLoader(resource);
+                        Parent view = loader.load();
+                        Object controller = loader.getController();
+                        Platform.runLater(() -> {
+                            if (!viewCache.containsKey(fxmlPath)) {
+                                viewCache.put(fxmlPath, view);
+                                if (controller != null) {
+                                    controllerCache.put(fxmlPath, controller);
+                                }
+                            }
+                            if (REPORT_FXML.equals(fxmlPath) && reportPendingShow) {
+                                reportPendingShow = false;
+                                contentArea.getChildren().setAll(view);
+                                if (controller instanceof com.pharmacy.report.ReportController rc) {
+                                    rc.refresh();
+                                }
+                            }
+                        });
                     }
-
-                    if (reportPendingShow) {
-                        reportPendingShow = false;
-                        contentArea.getChildren().setAll(reportView);
-                    }
-                });
-            } catch (Exception e) {
-                log.error("Không nạp được trang Báo cáo: ", e);
-                Platform.runLater(() -> {
-                    reportPreloading = false;
-                    if (reportPendingShow) {
-                        reportPendingShow = false;
-                        Label error = new Label("Không tải được trang Báo cáo: " + e.getMessage());
-                        error.setStyle("-fx-font-size: 14px; -fx-text-fill: #DC2626;");
-                        contentArea.getChildren().setAll(error);
-                    }
-                });
-            }
-        });
+                } catch (Exception e) {
+                    log.debug("Preload view {} chưa sẵn sàng: {}", fxmlPath, e.getMessage());
+                }
+            });
+        }
     }
 
     @FXML
@@ -340,6 +391,8 @@ public class MainLayoutController {
 
     private void cleanupDashboardResources() {
         try {
+            viewCache.clear();
+            controllerCache.clear();
             if (contentArea != null) {
                 contentArea.getChildren().clear();
             }
@@ -391,6 +444,11 @@ public class MainLayoutController {
     }
 
     private FXMLLoader loadCenterViewWithLoader(String fxmlPath) {
+        Parent cached = viewCache.get(fxmlPath);
+        if (cached != null) {
+            contentArea.getChildren().setAll(cached);
+            return null;
+        }
         try {
             var resource = getClass().getResource(fxmlPath);
             if (resource == null) {
@@ -401,6 +459,10 @@ public class MainLayoutController {
             }
             FXMLLoader loader = new FXMLLoader(resource);
             Parent view = loader.load();
+            viewCache.put(fxmlPath, view);
+            if (loader.getController() != null) {
+                controllerCache.put(fxmlPath, loader.getController());
+            }
             contentArea.getChildren().setAll(view);
             return loader;
         } catch (IOException e) {

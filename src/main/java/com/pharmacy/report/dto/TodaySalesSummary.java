@@ -1,4 +1,4 @@
-package com.pharmacy.sales.dto;
+package com.pharmacy.report.dto;
 
 import java.math.BigDecimal;
 

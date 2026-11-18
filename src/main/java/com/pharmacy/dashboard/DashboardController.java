@@ -54,6 +54,7 @@ public class DashboardController implements Initializable {
     private enum AlertTab { EXPIRY, LOW_STOCK }
     private AlertTab currentAlertTab = AlertTab.EXPIRY;
     private List<InventoryAlertDTO> rawAlerts = new java.util.ArrayList<>();
+    private java.time.LocalDateTime latestTransactionTime;
 
     private final DashboardService dashboardService = new DashboardService();
 
@@ -82,28 +83,29 @@ public class DashboardController implements Initializable {
     }
 
     public void loadAllDashboardData() {
-        Task<Void> task = new Task<>() {
-            @Override
-            protected Void call() {
-                DashboardStatsDTO stats = dashboardService.getStats();
-                List<DailySalesDTO> weeklySales = dashboardService.getLast7DaysSales();
-                List<InventoryAlertDTO> alerts = dashboardService.getInventoryAlerts(6);
-                List<SalesOrderDTO> recentTx = dashboardService.getRecentTransactions(5);
+        var executor = BackgroundTasks.getExecutor();
+        var fStats = java.util.concurrent.CompletableFuture.supplyAsync(dashboardService::getStats, executor);
+        var fWeekly = java.util.concurrent.CompletableFuture.supplyAsync(dashboardService::getLast7DaysSales, executor);
+        var fAlerts = java.util.concurrent.CompletableFuture.supplyAsync(() -> dashboardService.getInventoryAlerts(6), executor);
+        var fRecentTx = java.util.concurrent.CompletableFuture.supplyAsync(() -> dashboardService.getRecentTransactions(5), executor);
 
-                Platform.runLater(() -> {
-                    updateStatsUI(stats);
-                    updateChartUI(weeklySales);
-                    rawAlerts = alerts != null ? alerts : java.util.Collections.emptyList();
-                    renderAlertsUI();
-                    updateTransactionsUI(recentTx);
-                });
+        java.util.concurrent.CompletableFuture.allOf(fStats, fWeekly, fAlerts, fRecentTx).thenRun(() -> {
+            DashboardStatsDTO stats = fStats.join();
+            List<DailySalesDTO> weeklySales = fWeekly.join();
+            List<InventoryAlertDTO> alerts = fAlerts.join();
+            List<SalesOrderDTO> recentTx = fRecentTx.join();
 
-                return null;
-            }
-        };
-
-        task.setOnFailed(e -> log.error("Lỗi khi tải dữ liệu tổng quan: ", task.getException()));
-        BackgroundTasks.run(task);
+            Platform.runLater(() -> {
+                updateStatsUI(stats);
+                updateChartUI(weeklySales);
+                rawAlerts = alerts != null ? alerts : java.util.Collections.emptyList();
+                renderAlertsUI();
+                updateTransactionsUI(recentTx);
+            });
+        }).exceptionally(e -> {
+            log.error("Lỗi khi tải dữ liệu tổng quan: ", e);
+            return null;
+        });
     }
 
     @FXML
@@ -269,10 +271,25 @@ public class DashboardController implements Initializable {
             return;
         }
 
+        // Lưu mốc thời gian của đơn hàng gần nhất để điều hướng lịch sử bán
+        for (SalesOrderDTO t : transactions) {
+            if (t != null && t.getCreatedAt() != null) {
+                latestTransactionTime = t.getCreatedAt();
+                break;
+            }
+        }
+
         for (SalesOrderDTO tx : transactions) {
             HBox row = new HBox();
             row.getStyleClass().add("recent-tx-row");
             row.setAlignment(Pos.CENTER_LEFT);
+            row.setStyle("-fx-cursor: hand;");
+            row.setOnMouseClicked(e -> {
+                if (tx.getCreatedAt() != null && MainLayoutController.getInstance() != null) {
+                    MainLayoutController layout = MainLayoutController.getInstance();
+                    layout.navigateToSalesHistoryForDate(tx.getCreatedAt().toLocalDate(), layout::navigateToDashboard);
+                }
+            });
 
             Label lblCode = new Label(tx.getCode());
             lblCode.setPrefWidth(160.0);
@@ -363,8 +380,24 @@ public class DashboardController implements Initializable {
     private void handleNavSalesHistory(ActionEvent event) {
         MainLayoutController layout = MainLayoutController.getInstance();
         if (layout != null) {
-            LocalDate today = LocalDate.now();
-            layout.navigateToSalesHistoryForMonth(today.getYear(), today.getMonthValue(), layout::navigateToDashboard);
+            int targetYear;
+            int targetMonth;
+            if (latestTransactionTime != null) {
+                targetYear = latestTransactionTime.getYear();
+                targetMonth = latestTransactionTime.getMonthValue();
+            } else {
+                var recent = dashboardService.getRecentTransactions(1);
+                if (recent != null && !recent.isEmpty() && recent.get(0).getCreatedAt() != null) {
+                    latestTransactionTime = recent.get(0).getCreatedAt();
+                    targetYear = latestTransactionTime.getYear();
+                    targetMonth = latestTransactionTime.getMonthValue();
+                } else {
+                    LocalDate today = LocalDate.now();
+                    targetYear = today.getYear();
+                    targetMonth = today.getMonthValue();
+                }
+            }
+            layout.navigateToSalesHistoryForMonth(targetYear, targetMonth, layout::navigateToDashboard);
         }
     }
 }

@@ -7,14 +7,12 @@ public class DailySalesDTO {
     private final LocalDate date;
     private final String dayOfWeekLabel;
     private final BigDecimal amount;
-    private final long orderCount;
     private final long totalQuantity;
 
-    public DailySalesDTO(LocalDate date, String dayOfWeekLabel, BigDecimal amount, long orderCount, long totalQuantity) {
+    public DailySalesDTO(LocalDate date, String dayOfWeekLabel, BigDecimal amount, long totalQuantity) {
         this.date = date;
         this.dayOfWeekLabel = dayOfWeekLabel;
         this.amount = amount != null ? amount : BigDecimal.ZERO;
-        this.orderCount = orderCount;
         this.totalQuantity = totalQuantity;
     }
 
@@ -28,10 +26,6 @@ public class DailySalesDTO {
 
     public BigDecimal getAmount() {
         return amount;
-    }
-
-    public long getOrderCount() {
-        return orderCount;
     }
 
     public long getTotalQuantity() {

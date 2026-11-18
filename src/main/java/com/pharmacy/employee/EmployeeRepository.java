@@ -5,7 +5,9 @@ import com.pharmacy.account.Role;
 import com.pharmacy.employee.dto.EmployeeConflict;
 import com.pharmacy.employee.dto.EmployeeSummary;
 import com.pharmacy.employee.dto.EmployeeUpdateRequest;
+import com.pharmacy.infra.db.CodeSequence;
 import com.pharmacy.infra.db.HibernateUtil;
+import jakarta.persistence.LockModeType;
 import org.hibernate.Session;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,39 +29,29 @@ public class EmployeeRepository {
         return findConflict("code", code, null, "mã nhân viên").isPresent();
     }
 
-    // Mã kế tiếp của tháng hiện tại (chỉ đọc, không giữ chỗ); mã thật được cấp khi lưu
-    public String generateNextEmployeeCode() {
-        String prefix = employeeCodePrefix(LocalDate.now());
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Number last = (Number) session.createNativeQuery(
-                    "SELECT current_number FROM code_sequences WHERE name = :name", Object.class)
-                    .setParameter("name", sequenceName(prefix)).uniqueResult();
-            return formatEmployeeCode(prefix, (last != null ? last.longValue() : 0) + 1);
-        } catch (Exception e) {
-            log.error("Lỗi khi sinh mã nhân viên tiếp theo: ", e);
-            throw new RuntimeException("Lỗi truy vấn cơ sở dữ liệu khi sinh mã nhân viên.", e);
+    // Tạo dòng bộ đếm của tháng trong giao dịch riêng, ngắn, để giao dịch thêm nhân viên chỉ cần khóa dòng đã có
+    private static void ensureEmployeeSequence(String prefix) {
+        String seqName = sequenceName(prefix);
+        try {
+            HibernateUtil.execute(session -> {
+                if (session.find(CodeSequence.class, seqName) == null) {
+                    session.persist(new CodeSequence(seqName, 0L));
+                }
+            });
+        } catch (Exception ignored) {
+            // Đã có luồng khác tạo dòng bộ đếm cùng thời điểm
         }
     }
 
-    // Tạo dòng bộ đếm của tháng trong giao dịch riêng, ngắn, để giao dịch thêm nhân viên chỉ cần UPDATE dòng đã có
-    private static void ensureEmployeeSequence(String prefix) {
-        HibernateUtil.execute(session -> session.createNativeMutationQuery(
-                        "INSERT IGNORE INTO code_sequences (name, current_number) VALUES (:name, 0)")
-                .setParameter("name", sequenceName(prefix))
-                .executeUpdate());
-    }
-
-    // Cấp mã thật trong giao dịch đang mở
+    // Cấp mã thật trong giao dịch đang mở (khóa bi quan PESSIMISTIC_WRITE tương đương SELECT ... FOR UPDATE)
     private static String allocateEmployeeCode(Session session, String prefix) {
-        int updated = session.createNativeMutationQuery(
-                        "UPDATE code_sequences SET current_number = LAST_INSERT_ID(current_number + 1) WHERE name = :name")
-                .setParameter("name", sequenceName(prefix))
-                .executeUpdate();
-        if (updated != 1) {
+        CodeSequence seq = session.find(CodeSequence.class, sequenceName(prefix), LockModeType.PESSIMISTIC_WRITE);
+        if (seq == null) {
             throw new IllegalStateException("Thiếu bộ đếm mã nhân viên " + sequenceName(prefix));
         }
-        Number allocated = (Number) session.createNativeQuery("SELECT LAST_INSERT_ID()", Object.class).uniqueResult();
-        return formatEmployeeCode(prefix, allocated.longValue());
+        long next = seq.getCurrentNumber() + 1;
+        seq.setCurrentNumber(next);
+        return formatEmployeeCode(prefix, next);
     }
 
     private static String employeeCodePrefix(LocalDate hiredDate) {
@@ -138,27 +130,9 @@ public class EmployeeRepository {
         });
     }
 
-    // Lấy danh sách lịch sử đăng nhập của tài khoản
-    public List<Object[]> getLoginHistory(Integer accountId) {
-        if (accountId == null)
-            return List.of();
-        return HibernateUtil.executeWithResult(session -> {
-            String sql = """
-                        SELECT login_at, result, client_info
-                        FROM login_history
-                        WHERE account_id = :accountId
-                        ORDER BY login_at DESC
-                        LIMIT 100
-                    """;
-            return session.createNativeQuery(sql, Object[].class)
-                    .setParameter("accountId", accountId)
-                    .list();
-        });
-    }
-
     // Thống kê tổng số nhân viên và số nhân viên đang hoạt động
     public EmployeeSummary getEmployeeSummary() {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        try (Session session = HibernateUtil.openReadOnlySession()) {
             String hql = """
                         SELECT
                             (SELECT COUNT(e.id) FROM Employee e),
@@ -177,7 +151,12 @@ public class EmployeeRepository {
     // Phân trang và lọc danh sách nhân viên theo nhiều tiêu chí
     public PageResult<Employee> getEmployeesPage(int page, int size, String keyword, String gender, String role,
             String status, String accountStatus) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        return getEmployeesPage(page, size, keyword, gender, role, status, accountStatus, null);
+    }
+
+    public PageResult<Employee> getEmployeesPage(int page, int size, String keyword, String gender, String role,
+            String status, String accountStatus, Long cachedTotal) {
+        try (Session session = HibernateUtil.openReadOnlySession()) {
             StringBuilder whereClause = new StringBuilder(" WHERE 1=1 ");
             Map<String, Object> params = new HashMap<>();
 
@@ -227,14 +206,19 @@ public class EmployeeRepository {
 
             boolean needAccountJoin = !roleCodes.isEmpty() || !accStatuses.isEmpty();
 
-            String countHql = needAccountJoin
-                    ? "SELECT COUNT(e.id) FROM Employee e LEFT JOIN e.account a LEFT JOIN a.role r "
-                            + whereClause
-                    : "SELECT COUNT(e.id) FROM Employee e " + whereClause;
-            var countQuery = session.createSelectionQuery(countHql, Long.class);
-            params.forEach(countQuery::setParameter);
-            Long totalCount = countQuery.getSingleResult();
-            long total = totalCount != null ? totalCount : 0L;
+            long total;
+            if (cachedTotal != null && cachedTotal >= 0) {
+                total = cachedTotal;
+            } else {
+                String countHql = needAccountJoin
+                        ? "SELECT COUNT(e.id) FROM Employee e LEFT JOIN e.account a LEFT JOIN a.role r "
+                                + whereClause
+                        : "SELECT COUNT(e.id) FROM Employee e " + whereClause;
+                var countQuery = session.createSelectionQuery(countHql, Long.class);
+                params.forEach(countQuery::setParameter);
+                Long totalCount = countQuery.getSingleResult();
+                total = totalCount != null ? totalCount : 0L;
+            }
 
             if (total == 0) {
                 return PageResult.empty(page, size);

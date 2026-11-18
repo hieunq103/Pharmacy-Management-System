@@ -10,7 +10,6 @@ public class InventoryTransactionDTO {
     private Long id;
     private String type;
     private LocalDateTime transactionAt;
-    private Integer employeeId;
     private String employeeName;
     private String supplierName;
     private int itemCount;
@@ -19,18 +18,14 @@ public class InventoryTransactionDTO {
     private String note;
     private String exportTypeLabel;
 
-    public InventoryTransactionDTO() {
-    }
-
     public InventoryTransactionDTO(Long id, String type, LocalDateTime transactionAt,
-                                  Integer employeeId, String employeeName,
+                                  String employeeName,
                                   String supplierName,
                                   int itemCount, int totalQuantity, BigDecimal totalAmount,
                                   String note) {
         this.id = id;
         this.type = type;
         this.transactionAt = transactionAt;
-        this.employeeId = employeeId;
         this.employeeName = employeeName;
         this.supplierName = supplierName;
         this.itemCount = itemCount;
@@ -60,10 +55,6 @@ public class InventoryTransactionDTO {
 
     public String getType() {
         return type;
-    }
-
-    public Integer getEmployeeId() {
-        return employeeId;
     }
 
     public String getEmployeeName() {

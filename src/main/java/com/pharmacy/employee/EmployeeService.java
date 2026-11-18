@@ -30,8 +30,12 @@ public class EmployeeService {
     }
 
     public PageResult<Employee> getEmployeesPage(int page, int size, String keyword, String gender, String role, String status, String accountStatus) {
+        return getEmployeesPage(page, size, keyword, gender, role, status, accountStatus, null);
+    }
+
+    public PageResult<Employee> getEmployeesPage(int page, int size, String keyword, String gender, String role, String status, String accountStatus, Long cachedTotal) {
         requireManager();
-        return employeeRepository.getEmployeesPage(page, size, keyword, gender, role, status, accountStatus);
+        return employeeRepository.getEmployeesPage(page, size, keyword, gender, role, status, accountStatus, cachedTotal);
     }
 
     public EmployeeSummary getEmployeeSummary() {
@@ -128,7 +132,7 @@ public class EmployeeService {
 
     public List<Object[]> getLoginHistory(Integer accountId) {
         requireManager();
-        return employeeRepository.getLoginHistory(accountId);
+        return accountRepository.getLoginHistory(accountId);
     }
 
     public boolean updateEmployeeByManager(EmployeeUpdateRequest req) {
@@ -211,7 +215,7 @@ public class EmployeeService {
         }
     }
 
-    static void validateEmployee(String fullName, String phone, String nationalId, java.time.LocalDate dob) {
+    public static void validateEmployee(String fullName, String phone, String nationalId, java.time.LocalDate dob) {
         if (fullName == null || fullName.isBlank()) {
             throw new IllegalArgumentException("Họ tên nhân viên không được để trống.");
         }

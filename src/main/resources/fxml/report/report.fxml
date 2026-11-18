@@ -27,13 +27,13 @@
 <StackPane stylesheets="@../../css/report.css, @../../css/inventory.css, @../../css/period_filter.css, @../../css/icon_buttons.css"
            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.pharmacy.report.ReportController">
-<ScrollPane fx:id="reportScrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER"
+<ScrollPane fx:id="reportScrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
             styleClass="report-scroll-pane">
 
     <content>
         <VBox spacing="10.0" styleClass="report-root">
             <padding>
-                <Insets bottom="12.0" left="18.0" right="18.0" top="8.0" />
+                <Insets bottom="80.0" left="18.0" right="18.0" top="8.0" />
             </padding>
 
             <!-- ==================== HÀNG 1: BỘ LỌC THỜI GIAN ==================== -->
@@ -163,7 +163,7 @@
                     <!-- TAB 2: BÁO CÁO SỐ THUỐC ĐÃ BÁN -->
                     <Tab fx:id="tabMedicines" text="Báo cáo số thuốc đã bán">
                         <content>
-                            <VBox spacing="10.0">
+                            <VBox fx:id="boxMedicinesTab" spacing="10.0">
                                 <padding>
                                     <Insets top="8.0" />
                                 </padding>
@@ -173,7 +173,7 @@
                                     <Label fx:id="lblMedChartTitle" styleClass="section-title" text="Biểu đồ sản lượng thuốc đã bán 7 ngày gần nhất" />
                                     <BarChart fx:id="barChartMedicines" legendVisible="false"
                                               styleClass="report-bar-chart, report-bar-chart-green"
-                                              minHeight="260.0" prefHeight="330.0"
+                                              minHeight="180.0" prefHeight="240.0"
                                               animated="false"
                                               categoryGap="24.0" barGap="4.0"
                                               horizontalGridLinesVisible="false" verticalGridLinesVisible="false">
@@ -204,15 +204,15 @@
                                     </HBox>
 
                                     <VBox styleClass="table-float-container">
-                                        <TableView fx:id="tblSoldMedicines" prefHeight="335.0" styleClass="custom-inventory-table, table-scrollable-data">
+                                        <TableView fx:id="tblSoldMedicines" prefHeight="336.0" styleClass="custom-inventory-table, table-scrollable-data">
                                             <columns>
-                                                <TableColumn fx:id="colMedIndex" minWidth="60.0" prefWidth="70.0" resizable="true" text="STT" style="-fx-alignment: CENTER-LEFT;" />
-                                                <TableColumn fx:id="colMedCode" minWidth="110.0" prefWidth="120.0" resizable="true" text="Mã thuốc" style="-fx-alignment: CENTER-LEFT;" />
-                                                <TableColumn fx:id="colMedName" minWidth="260.0" prefWidth="300.0" resizable="true" text="Tên thuốc" style="-fx-alignment: CENTER-LEFT;" />
-                                                <TableColumn fx:id="colMedCategory" minWidth="280.0" prefWidth="330.0" resizable="true" text="Nhóm thuốc" style="-fx-alignment: CENTER-LEFT;" />
-                                                <TableColumn fx:id="colMedUnit" minWidth="100.0" prefWidth="110.0" resizable="true" text="Đơn vị" style="-fx-alignment: CENTER-LEFT;" />
-                                                <TableColumn fx:id="colMedQtySold" minWidth="130.0" prefWidth="140.0" resizable="true" text="Số lượng bán" style="-fx-alignment: CENTER-LEFT;" />
-                                                <TableColumn fx:id="colMedRevenue" minWidth="150.0" prefWidth="170.0" resizable="true" sortable="false" text="Doanh thu" style="-fx-alignment: CENTER;" />
+                                                <TableColumn fx:id="colMedIndex" minWidth="50.0" prefWidth="60.0" resizable="true" text="STT" style="-fx-alignment: CENTER-LEFT;" />
+                                                <TableColumn fx:id="colMedCode" minWidth="90.0" prefWidth="110.0" resizable="true" text="Mã thuốc" style="-fx-alignment: CENTER-LEFT;" />
+                                                <TableColumn fx:id="colMedName" minWidth="200.0" prefWidth="250.0" resizable="true" text="Tên thuốc" style="-fx-alignment: CENTER-LEFT;" />
+                                                <TableColumn fx:id="colMedCategory" minWidth="200.0" prefWidth="250.0" resizable="true" text="Nhóm thuốc" style="-fx-alignment: CENTER-LEFT;" />
+                                                <TableColumn fx:id="colMedUnit" minWidth="80.0" prefWidth="90.0" resizable="true" text="Đơn vị" style="-fx-alignment: CENTER-LEFT;" />
+                                                <TableColumn fx:id="colMedQtySold" minWidth="110.0" prefWidth="130.0" resizable="true" text="Số lượng bán" style="-fx-alignment: CENTER-LEFT;" />
+                                                <TableColumn fx:id="colMedRevenue" minWidth="130.0" prefWidth="150.0" resizable="true" sortable="false" text="Doanh thu" style="-fx-alignment: CENTER;" />
                                             </columns>
                                             <columnResizePolicy>
                                                 <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />

@@ -1,11 +1,21 @@
 package com.pharmacy.infra.db;
 
 import com.pharmacy.account.Account;
+import com.pharmacy.account.LoginHistory;
 import com.pharmacy.account.Role;
 import com.pharmacy.employee.Employee;
 import com.pharmacy.infra.config.AppConfig;
+import com.pharmacy.inventory.entity.InventoryDisposalItem;
+import com.pharmacy.inventory.entity.InventoryLot;
+import com.pharmacy.inventory.entity.InventoryTransaction;
+import com.pharmacy.inventory.entity.Medicine;
+import com.pharmacy.inventory.entity.MedicineCategory;
+import com.pharmacy.inventory.entity.Supplier;
+import com.pharmacy.sales.entity.SalesOrder;
+import com.pharmacy.sales.entity.SalesOrderItem;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -54,12 +64,13 @@ public final class HibernateUtil {
             config.setUsername(AppConfig.get("db.username"));
             config.setPassword(AppConfig.get("db.password"));
 
-            config.setMaximumPoolSize(Integer.parseInt(AppConfig.get("db.pool.maxSize", "10")));
-            config.setMinimumIdle(Integer.parseInt(AppConfig.get("db.pool.minIdle", "2")));
-            config.setConnectionTimeout(Long.parseLong(AppConfig.get("db.pool.connectionTimeoutMs", "3000")));
-            config.setValidationTimeout(Long.parseLong(AppConfig.get("db.pool.validationTimeoutMs", "2000")));
+            config.setMaximumPoolSize(Integer.parseInt(AppConfig.get("db.pool.maxSize", "15")));
+            config.setMinimumIdle(Integer.parseInt(AppConfig.get("db.pool.minIdle", "5")));
+            config.setConnectionTimeout(Long.parseLong(AppConfig.get("db.pool.connectionTimeoutMs", "15000")));
+            config.setValidationTimeout(Long.parseLong(AppConfig.get("db.pool.validationTimeoutMs", "3000")));
             config.setMaxLifetime(Long.parseLong(AppConfig.get("db.pool.maxLifetimeMs", "1800000")));
             config.setIdleTimeout(Long.parseLong(AppConfig.get("db.pool.idleTimeoutMs", "600000")));
+            config.setKeepaliveTime(30000);
             config.setPoolName("PharmaOS-MainPool");
 
             config.addDataSourceProperty("rewriteBatchedStatements", "true");
@@ -87,6 +98,16 @@ public final class HibernateUtil {
             metadataSources.addAnnotatedClass(Role.class);
             metadataSources.addAnnotatedClass(Employee.class);
             metadataSources.addAnnotatedClass(Account.class);
+            metadataSources.addAnnotatedClass(LoginHistory.class);
+            metadataSources.addAnnotatedClass(CodeSequence.class);
+            metadataSources.addAnnotatedClass(MedicineCategory.class);
+            metadataSources.addAnnotatedClass(Medicine.class);
+            metadataSources.addAnnotatedClass(Supplier.class);
+            metadataSources.addAnnotatedClass(SalesOrder.class);
+            metadataSources.addAnnotatedClass(SalesOrderItem.class);
+            metadataSources.addAnnotatedClass(InventoryTransaction.class);
+            metadataSources.addAnnotatedClass(InventoryLot.class);
+            metadataSources.addAnnotatedClass(InventoryDisposalItem.class);
 
             sessionFactory = metadataSources.buildMetadata().buildSessionFactory();
             log.info("Hibernate SessionFactory đã sẵn sàng.");
@@ -115,6 +136,13 @@ public final class HibernateUtil {
         }
         String offset = zone.getRules().getOffset(Instant.now()).getId();
         return "Z".equals(offset) ? "+00:00" : offset;
+    }
+
+    public static Session openReadOnlySession() {
+        Session session = getSessionFactory().openSession();
+        session.setDefaultReadOnly(true);
+        session.setHibernateFlushMode(FlushMode.MANUAL);
+        return session;
     }
 
     public static <R> R executeWithResult(Function<Session, R> function) {

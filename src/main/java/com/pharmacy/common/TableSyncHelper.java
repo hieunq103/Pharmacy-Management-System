@@ -292,13 +292,10 @@ public final class TableSyncHelper {
             return;
         }
 
-        Runnable doReset = () -> {
+        Platform.runLater(() -> {
             resetSingleTable(mainTable);
             resetSingleTable(stickyTable);
-        };
-
-        doReset.run();
-        Platform.runLater(doReset);
+        });
     }
 
     public static void resetSingleTable(TableView<?> table) {

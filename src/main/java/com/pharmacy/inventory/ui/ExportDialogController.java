@@ -775,18 +775,15 @@ public class ExportDialogController implements Initializable {
                 sameLotAndReason.setExportQuantity(sameLotAndReason.getExportQuantity() + qty);
             } else {
                 BatchExportItemDTO newItem = BatchExportItemDTO.of(
-                        selectedMed.getMedicineId(),
                         selectedMed.getMedicineCode(),
                         selectedMed.getMedicineName(),
                         selectedMed.getCategoryName(),
-                        selectedMed.getManufacturer(),
                         lot.getId(),
                         lot.getLotNumber(),
                         lot.getExpiryDate(),
                         selectedMed.getUnit(),
                         total,
                         qty,
-                        lot.getImportPrice(),
                         reason
                 );
                 itemList.add(newItem);

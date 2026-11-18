@@ -87,6 +87,8 @@ public class InventoryController implements Initializable {
     private int totalPages = 1;
     private long totalRecords = 0;
     private Task<PageResult<MedicineInventoryDTO>> currentLoadTask;
+    private final java.util.Map<Integer, PageResult<MedicineInventoryDTO>> pageCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private String lastSearchState = "";
 
     private final DrawerHelper drawerHelper = new DrawerHelper();
     private Parent importDrawerRoot;
@@ -778,6 +780,7 @@ public class InventoryController implements Initializable {
 
                 editingMedicineId = null;
                 editDrafts.remove(dto.getMedicineId());
+                pageCache.clear();
 
                 inventoryTable.refresh();
                 if (tableActionSticky != null) {
@@ -806,38 +809,86 @@ public class InventoryController implements Initializable {
         String stockFilter = activeFilters.get("stockStatus");
         String expiryFilter = activeFilters.get("expiryStatus");
 
+        String currentSearchState = String.format("%s|%s|%s", keyword, stockFilter, expiryFilter);
+        if (!currentSearchState.equals(lastSearchState)) {
+            pageCache.clear();
+            lastSearchState = currentSearchState;
+            totalRecords = 0;
+        }
+
+        PageResult<MedicineInventoryDTO> cached = pageCache.get(currentPage);
+        if (cached != null) {
+            applyInventoryPageResult(cached);
+            prefetchNextPage(currentPage + 1, keyword, stockFilter, expiryFilter);
+            return;
+        }
+
         if (currentLoadTask != null && currentLoadTask.isRunning()) {
             currentLoadTask.cancel();
         }
 
+        if (inventoryTable != null) inventoryTable.setOpacity(0.65);
+        if (tableActionSticky != null) tableActionSticky.setOpacity(0.65);
+
+        Long cachedTotal = totalRecords > 0 ? totalRecords : null;
         Task<PageResult<MedicineInventoryDTO>> task = new Task<>() {
             @Override
             protected PageResult<MedicineInventoryDTO> call() {
-                return inventoryService.getInventoryPage(currentPage, pageSize, keyword, stockFilter, expiryFilter);
+                return inventoryService.getInventoryPage(currentPage, pageSize, keyword, stockFilter, expiryFilter, cachedTotal);
             }
         };
         currentLoadTask = task;
 
         task.setOnSucceeded(e -> {
+            if (inventoryTable != null) inventoryTable.setOpacity(1.0);
+            if (tableActionSticky != null) tableActionSticky.setOpacity(1.0);
             if (task != currentLoadTask) return;
             PageResult<MedicineInventoryDTO> result = task.getValue();
             if (result != null) {
-                pageData.setAll(result.getItems());
-                totalPages = result.getTotalPages();
-                totalRecords = result.getTotalElements();
-                renderPagination();
+                pageCache.put(currentPage, result);
+                applyInventoryPageResult(result);
+                prefetchNextPage(currentPage + 1, keyword, stockFilter, expiryFilter);
             }
         });
 
         task.setOnFailed(e -> {
+            if (inventoryTable != null) inventoryTable.setOpacity(1.0);
+            if (tableActionSticky != null) tableActionSticky.setOpacity(1.0);
             Throwable ex = task.getException();
             log.error("Lỗi khi tải dữ liệu kho: ", ex);
+        });
+
+        task.setOnCancelled(e -> {
+            if (inventoryTable != null) inventoryTable.setOpacity(1.0);
+            if (tableActionSticky != null) tableActionSticky.setOpacity(1.0);
         });
 
         BackgroundTasks.run(task);
     }
 
+    private void applyInventoryPageResult(PageResult<MedicineInventoryDTO> result) {
+        pageData.setAll(result.getItems());
+        totalPages = result.getTotalPages();
+        totalRecords = result.getTotalElements();
+        renderPagination();
+    }
+
+    private void prefetchNextPage(int nextPage, String keyword, String stockFilter, String expiryFilter) {
+        if (nextPage > totalPages || pageCache.containsKey(nextPage)) return;
+        BackgroundTasks.run(() -> {
+            try {
+                PageResult<MedicineInventoryDTO> prefetched = inventoryService.getInventoryPage(nextPage, pageSize, keyword, stockFilter, expiryFilter, totalRecords);
+                if (prefetched != null) {
+                    pageCache.put(nextPage, prefetched);
+                }
+            } catch (Exception ex) {
+                log.debug("Prefetch inventory page {} failed: {}", nextPage, ex.getMessage());
+            }
+        });
+    }
+
     private void loadSummaryCounts() {
+        pageCache.clear();
         Task<InventorySummaryDTO> summaryTask = new Task<>() {
             @Override
             protected InventorySummaryDTO call() {

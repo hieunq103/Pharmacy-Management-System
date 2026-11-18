@@ -9,7 +9,6 @@ public class SalesOrderDTO {
     private Long id;
     private String code;
     private LocalDateTime createdAt;
-    private Integer employeeId;
     private String employeeName;
     private String employeeCode;
     private String customerPhone;
@@ -20,16 +19,13 @@ public class SalesOrderDTO {
     private BigDecimal totalAmount;
     private String paymentMethod;
 
-    public SalesOrderDTO() {}
-
-    public SalesOrderDTO(Long id, String code, LocalDateTime createdAt, Integer employeeId,
+    public SalesOrderDTO(Long id, String code, LocalDateTime createdAt,
                          String employeeName, String employeeCode, String customerPhone,
                          int itemCount, int totalQuantity, BigDecimal subtotal,
                          BigDecimal discount, BigDecimal totalAmount, String paymentMethod) {
         this.id = id;
         this.code = code;
         this.createdAt = createdAt;
-        this.employeeId = employeeId;
         this.employeeName = employeeName != null ? employeeName : "—";
         this.employeeCode = employeeCode != null ? employeeCode : "";
         this.customerPhone = customerPhone != null && !customerPhone.isBlank() ? customerPhone : "Khách lẻ";
@@ -47,15 +43,11 @@ public class SalesOrderDTO {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 
-    public Integer getEmployeeId() { return employeeId; }
-
     public String getEmployeeName() { return employeeName; }
 
     public String getEmployeeCode() { return employeeCode; }
 
     public String getCustomerPhone() { return customerPhone; }
-
-    public int getTotalQuantity() { return totalQuantity; }
 
     public String getFormattedTime() {
         return FormatUtils.formatDateTime(createdAt);
@@ -91,10 +83,6 @@ public class SalesOrderDTO {
 
     public String getEmployeeInitials() {
         return FormatUtils.getInitials(employeeName);
-    }
-
-    public String getTimeOnly() {
-        return createdAt != null ? createdAt.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")) : "--:--";
     }
 
     public String getPaymentBadgeClass() {

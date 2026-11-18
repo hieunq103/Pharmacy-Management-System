@@ -7,6 +7,7 @@ import com.pharmacy.report.dto.MedicineTimelineDTO;
 import com.pharmacy.report.dto.ReportSummaryDTO;
 import com.pharmacy.report.dto.RevenueTimelineDTO;
 import com.pharmacy.report.dto.SoldMedicineDTO;
+import com.pharmacy.report.dto.TodaySalesSummary;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +25,10 @@ public class ReportService {
 
     public ReportService(ReportRepository repository) {
         this.repository = repository;
+    }
+
+    public TodaySalesSummary getTodaySalesSummary() {
+        return repository.getTodaySalesSummary(UserSession.scopeEmployeeId(null));
     }
 
     public ReportSummaryDTO getSummary(LocalDate from, LocalDate to, Integer employeeId) {
@@ -63,7 +68,7 @@ public class ReportService {
 
     public List<RevenueTimelineDTO> get7DaysRevenueTimelineUpTo(LocalDate endDate, Integer employeeId) {
         return getCached7DaysSales(endDate, employeeId).stream()
-                .map(d -> new RevenueTimelineDTO(d.getDate().format(SHORT_FMT), d.getAmount(), d.getOrderCount(),
+                .map(d -> new RevenueTimelineDTO(d.getDate().format(SHORT_FMT), d.getAmount(),
                         "Ngày " + d.getDate().format(FormatUtils.DATE_FORMATTER) + ": " + FormatUtils.formatCurrency(d.getAmount()) + " VNĐ"))
                 .toList();
     }

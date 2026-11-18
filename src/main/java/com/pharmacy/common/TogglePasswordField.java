@@ -93,10 +93,6 @@ public class TogglePasswordField extends HBox {
         return passwordField.getText() != null ? passwordField.getText().trim() : "";
     }
 
-    public void setText(String text) {
-        passwordField.setText(text);
-    }
-
     public void clear() {
         passwordField.clear();
     }
@@ -121,10 +117,6 @@ public class TogglePasswordField extends HBox {
     public void setOnAction(javafx.event.EventHandler<javafx.event.ActionEvent> handler) {
         passwordField.setOnAction(handler);
         textField.setOnAction(handler);
-    }
-
-    public javafx.event.EventHandler<javafx.event.ActionEvent> getOnAction() {
-        return passwordField.getOnAction();
     }
 
     @Override

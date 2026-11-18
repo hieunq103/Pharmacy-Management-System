@@ -70,6 +70,8 @@ public class EmployeeController implements Initializable {
     private int totalPages = 1;
     private long totalRecords = 0;
     private Task<PageResult<Employee>> currentLoadTask;
+    private final java.util.Map<Integer, PageResult<Employee>> pageCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private String lastSearchState = "";
 
 
     private final EmployeeService employeeService = new EmployeeService();
@@ -153,47 +155,94 @@ public class EmployeeController implements Initializable {
         String status = activeFilters.get("status");
         String accountStatus = activeFilters.get("statusAcount");
 
+        String currentSearchState = String.format("%s|%s|%s|%s|%s", keyword, gender, role, status, accountStatus);
+        if (!currentSearchState.equals(lastSearchState)) {
+            pageCache.clear();
+            lastSearchState = currentSearchState;
+            totalRecords = 0;
+        }
+
+        PageResult<Employee> cached = pageCache.get(currentPage);
+        if (cached != null) {
+            applyEmployeePageResult(cached);
+            prefetchNextPage(currentPage + 1, keyword, gender, role, status, accountStatus);
+            return;
+        }
+
         if (currentLoadTask != null && currentLoadTask.isRunning()) {
             currentLoadTask.cancel();
         }
 
+        if (tableEmployee != null) tableEmployee.setOpacity(0.65);
+        if (tableActionSticky != null) tableActionSticky.setOpacity(0.65);
+
+        Long cachedTotal = totalRecords > 0 ? totalRecords : null;
         Task<PageResult<Employee>> task = new Task<>() {
             @Override
             protected PageResult<Employee> call() {
-                return employeeService.getEmployeesPage(currentPage, pageSize, keyword, gender, role, status, accountStatus);
+                return employeeService.getEmployeesPage(currentPage, pageSize, keyword, gender, role, status, accountStatus, cachedTotal);
             }
         };
         currentLoadTask = task;
 
         task.setOnSucceeded(e -> {
+            if (tableEmployee != null) tableEmployee.setOpacity(1.0);
+            if (tableActionSticky != null) tableActionSticky.setOpacity(1.0);
             if (task != currentLoadTask) return;
             PageResult<Employee> result = task.getValue();
             if (result != null) {
-                totalRecords = result.getTotalElements();
-                totalPages = result.getTotalPages();
-                currentPage = result.getCurrentPage();
-                pageData.setAll(result.getItems());
-
-                if (lblRecordRange != null) {
-                    if (totalRecords == 0) {
-                        lblRecordRange.setText("0 - 0");
-                    } else {
-                        int fromIndex = (currentPage - 1) * pageSize + 1;
-                        int toIndex = (int) Math.min(fromIndex + pageSize - 1, totalRecords);
-                        lblRecordRange.setText(String.format("%d - %d", fromIndex, toIndex));
-                    }
-                }
-
-                renderPagination();
+                pageCache.put(currentPage, result);
+                applyEmployeePageResult(result);
+                prefetchNextPage(currentPage + 1, keyword, gender, role, status, accountStatus);
             }
         });
 
         task.setOnFailed(e -> {
+            if (tableEmployee != null) tableEmployee.setOpacity(1.0);
+            if (tableActionSticky != null) tableActionSticky.setOpacity(1.0);
             Throwable ex = task.getException();
             log.error("Lỗi nạp dữ liệu nhân viên: ", ex);
         });
 
+        task.setOnCancelled(e -> {
+            if (tableEmployee != null) tableEmployee.setOpacity(1.0);
+            if (tableActionSticky != null) tableActionSticky.setOpacity(1.0);
+        });
+
         BackgroundTasks.run(task);
+    }
+
+    private void applyEmployeePageResult(PageResult<Employee> result) {
+        totalRecords = result.getTotalElements();
+        totalPages = result.getTotalPages();
+        currentPage = result.getCurrentPage();
+        pageData.setAll(result.getItems());
+
+        if (lblRecordRange != null) {
+            if (totalRecords == 0) {
+                lblRecordRange.setText("0 - 0");
+            } else {
+                int fromIndex = (currentPage - 1) * pageSize + 1;
+                int toIndex = (int) Math.min(fromIndex + pageSize - 1, totalRecords);
+                lblRecordRange.setText(String.format("%d - %d", fromIndex, toIndex));
+            }
+        }
+
+        renderPagination();
+    }
+
+    private void prefetchNextPage(int nextPage, String keyword, String gender, String role, String status, String accountStatus) {
+        if (nextPage > totalPages || pageCache.containsKey(nextPage)) return;
+        BackgroundTasks.run(() -> {
+            try {
+                PageResult<Employee> prefetched = employeeService.getEmployeesPage(nextPage, pageSize, keyword, gender, role, status, accountStatus, totalRecords);
+                if (prefetched != null) {
+                    pageCache.put(nextPage, prefetched);
+                }
+            } catch (Exception ex) {
+                log.debug("Prefetch employee page {} failed: {}", nextPage, ex.getMessage());
+            }
+        });
     }
 
     private void renderPagination() {
@@ -369,6 +418,7 @@ public class EmployeeController implements Initializable {
     }
 
     public void updateSummaryCounts() {
+        pageCache.clear();
         Task<EmployeeSummary> task = new Task<>() {
             @Override
             protected EmployeeSummary call() {

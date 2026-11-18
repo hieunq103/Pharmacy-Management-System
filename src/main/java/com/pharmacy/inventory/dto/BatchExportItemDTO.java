@@ -2,15 +2,12 @@ package com.pharmacy.inventory.dto;
 
 import com.pharmacy.common.FormatUtils;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class BatchExportItemDTO {
-    private int medicineId;
     private String medicineCode;
     private String medicineName;
     private String categoryName;
-    private String manufacturer;
 
     private long lotId;
     private String lotNumber;
@@ -18,42 +15,32 @@ public class BatchExportItemDTO {
     private String unit;
     private int stockRemaining;
     private int exportQuantity;
-    private BigDecimal importPrice;
-    private BigDecimal lineTotal;
     private String reason;
 
     public BatchExportItemDTO() {
     }
 
     public static BatchExportItemDTO of(
-            int medicineId, String code, String name, String categoryName, String manufacturer,
+            String code, String name, String categoryName,
             long lotId, String lotNumber, LocalDate expiryDate, String unit,
-            int stockRemaining, int exportQuantity, BigDecimal importPrice, String reason
+            int stockRemaining, int exportQuantity, String reason
     ) {
         BatchExportItemDTO item = new BatchExportItemDTO();
-        item.setMedicineId(medicineId);
         item.setMedicineCode(code);
         item.setMedicineName(name);
         item.setCategoryName(categoryName);
-        item.setManufacturer(manufacturer);
         item.setLotId(lotId);
         item.setLotNumber(lotNumber);
         item.setExpiryDate(expiryDate);
         item.setUnit(unit != null && !unit.isBlank() ? unit : "Hộp");
         item.setStockRemaining(stockRemaining);
         item.setExportQuantity(exportQuantity);
-        item.setImportPrice(importPrice != null ? importPrice : BigDecimal.ZERO);
-        item.setLineTotal(item.getImportPrice().multiply(BigDecimal.valueOf(exportQuantity)));
         item.setReason(reason);
         return item;
     }
 
     public String getFormattedExpiryDate() {
         return expiryDate != null ? expiryDate.format(FormatUtils.DATE_FORMATTER) : "";
-    }
-
-    public void setMedicineId(int medicineId) {
-        this.medicineId = medicineId;
     }
 
     public String getMedicineCode() {
@@ -78,14 +65,6 @@ public class BatchExportItemDTO {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
-    }
-
-    public String getManufacturer() {
-        return manufacturer;
-    }
-
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
     }
 
     public long getLotId() {
@@ -130,24 +109,6 @@ public class BatchExportItemDTO {
 
     public void setExportQuantity(int exportQuantity) {
         this.exportQuantity = exportQuantity;
-        if (this.importPrice != null) {
-            this.lineTotal = this.importPrice.multiply(BigDecimal.valueOf(exportQuantity));
-        }
-    }
-
-    public BigDecimal getImportPrice() {
-        return importPrice;
-    }
-
-    public void setImportPrice(BigDecimal importPrice) {
-        this.importPrice = importPrice;
-        if (importPrice != null) {
-            this.lineTotal = importPrice.multiply(BigDecimal.valueOf(this.exportQuantity));
-        }
-    }
-
-    public void setLineTotal(BigDecimal lineTotal) {
-        this.lineTotal = lineTotal;
     }
 
     public String getReason() {

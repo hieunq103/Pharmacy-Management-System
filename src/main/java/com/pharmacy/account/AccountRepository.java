@@ -4,11 +4,11 @@ import com.pharmacy.infra.db.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public class AccountRepository {
 
-    // Tìm tài khoản theo tên đăng nhập kèm thông tin nhân viên và vai trò
     public Optional<Account> findByUsername(String username) {
         if (username == null || username.isBlank()) {
             return Optional.empty();
@@ -38,15 +38,27 @@ public class AccountRepository {
 
     // Thực thi câu lệnh insert bản ghi lịch sử đăng nhập
     private void saveLoginHistoryInternal(Session session, Integer accountId, String result, String clientInfo) {
-        String sql = """
-        INSERT INTO login_history (account_id, login_at, result, client_info)
-        VALUES (:accountId, NOW(), :result, :clientInfo)
-    """;
-        session.createNativeMutationQuery(sql)
-                .setParameter("accountId", accountId)
-                .setParameter("result", result)
-                .setParameter("clientInfo", clientInfo)
-                .executeUpdate();
+        Account accountRef = session.getReference(Account.class, accountId);
+        session.persist(new LoginHistory(accountRef, LoginHistory.Result.valueOf(result), clientInfo));
+    }
+
+    // Lấy danh sách lịch sử đăng nhập gần nhất của tài khoản
+    public List<Object[]> getLoginHistory(Integer accountId) {
+        if (accountId == null) {
+            return List.of();
+        }
+        try (Session session = HibernateUtil.openReadOnlySession()) {
+            String hql = """
+                        SELECT lh.loginAt, lh.result, lh.clientInfo
+                        FROM LoginHistory lh
+                        WHERE lh.account.id = :accountId
+                        ORDER BY lh.loginAt DESC
+                    """;
+            return session.createSelectionQuery(hql, Object[].class)
+                    .setParameter("accountId", accountId)
+                    .setMaxResults(100)
+                    .list();
+        }
     }
 
     // Cập nhật mật khẩu mới và tắt cờ bắt buộc đổi mật khẩu

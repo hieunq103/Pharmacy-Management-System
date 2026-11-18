@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 
 public class MedicineLotDTO {
     private Long id;
-    private Integer medicineId;
     private String lotNumber;
     private LocalDate expiryDate;
     private BigDecimal importPrice;
@@ -15,7 +14,6 @@ public class MedicineLotDTO {
     private LocalDateTime transactionAt;
     private String supplierName;
     private String manufacturer;
-    private String note;
 
     public enum LotStatus {
         ACTIVE("Còn hạn", "lot-badge-active"),
@@ -51,14 +49,6 @@ public class MedicineLotDTO {
         this.id = id;
     }
 
-    public Integer getMedicineId() {
-        return medicineId;
-    }
-
-    public void setMedicineId(Integer medicineId) {
-        this.medicineId = medicineId;
-    }
-
     public String getLotNumber() {
         return lotNumber;
     }
@@ -73,10 +63,6 @@ public class MedicineLotDTO {
 
     public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate = expiryDate;
-    }
-
-    public BigDecimal getImportPrice() {
-        return importPrice;
     }
 
     public void setImportPrice(BigDecimal importPrice) {
@@ -113,14 +99,6 @@ public class MedicineLotDTO {
 
     public void setSupplierName(String supplierName) {
         this.supplierName = supplierName;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
     }
 
     public LotStatus getStatus() {

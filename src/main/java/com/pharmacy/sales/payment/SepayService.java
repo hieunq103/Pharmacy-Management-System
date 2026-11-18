@@ -22,15 +22,13 @@ public class SepayService {
     public record PaymentResult(
             boolean matched,
             BigDecimal amount,
-            String content,
-            String transactionDate,
-            String referenceNumber) {
+            String content) {
         public static PaymentResult notMatched() {
-            return new PaymentResult(false, BigDecimal.ZERO, null, null, null);
+            return new PaymentResult(false, BigDecimal.ZERO, null);
         }
 
-        public static PaymentResult matched(BigDecimal amount, String content, String date, String ref) {
-            return new PaymentResult(true, amount, content, date, ref);
+        public static PaymentResult matched(BigDecimal amount, String content) {
+            return new PaymentResult(true, amount, content);
         }
     }
 
@@ -87,11 +85,10 @@ public class SepayService {
                         String normContent = content.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
 
                         if (normContent.contains(normCode)) {
-                            String txDate = tx.path("transaction_date").asText("");
                             String refNum = tx.path("reference_number").asText("");
                             log.info("Detected matching SePAY transaction! Order={}, Amount={}, Ref={}",
                                     orderCode, amountIn, refNum);
-                            return PaymentResult.matched(amountIn, content, txDate, refNum);
+                            return PaymentResult.matched(amountIn, content);
                         }
                     }
                 }

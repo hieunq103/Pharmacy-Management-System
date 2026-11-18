@@ -6,8 +6,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class SalesOrderDetailDTO {
-    private Long id;
-    private Integer medicineId;
     private String medicineCode;
     private String medicineName;
     private String categoryName;
@@ -19,15 +17,10 @@ public class SalesOrderDetailDTO {
     private BigDecimal unitPrice;
     private BigDecimal lineTotal;
 
-    public SalesOrderDetailDTO() {
-    }
-
-    public SalesOrderDetailDTO(Long id, Integer medicineId, String medicineCode, String medicineName,
+    public SalesOrderDetailDTO(String medicineCode, String medicineName,
             String categoryName, String activeIngredient, String unit,
             String lotNumber, LocalDate expiryDate, int quantity,
             BigDecimal unitPrice, BigDecimal lineTotal) {
-        this.id = id;
-        this.medicineId = medicineId;
         this.medicineCode = medicineCode;
         this.medicineName = medicineName;
         this.categoryName = categoryName != null ? categoryName : "—";

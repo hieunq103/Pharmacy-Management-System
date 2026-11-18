@@ -12,8 +12,6 @@ public class SalesOrderRequest {
     private List<CartItem> items;
     private String orderCode;
 
-    public SalesOrderRequest() {}
-
     public SalesOrderRequest(Integer employeeId, String customerPhone, BigDecimal discount,
                              String paymentMethod, boolean prescriptionConfirmed, List<CartItem> items) {
         this.employeeId = employeeId;

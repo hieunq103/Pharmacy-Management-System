@@ -81,6 +81,8 @@ public class SalesController implements Initializable {
     private String currentCategory = "Tất cả nhóm thuốc";
 
     private List<MedicineInventoryDTO> allLoadedMedicines = new ArrayList<>();
+    private final java.util.Map<Integer, PageResult<MedicineInventoryDTO>> pageCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private String lastSearchState = "";
 
 
     @Override
@@ -242,39 +244,83 @@ public class SalesController implements Initializable {
 
     public void loadMedicinesData() {
         int pageToLoad = currentPage;
-        String kw = currentKeyword;
-        String cat = currentCategory;
+        String kw = currentKeyword != null ? currentKeyword.trim() : "";
+        String cat = currentCategory != null ? currentCategory.trim() : "";
 
+        String currentSearchState = kw + "|" + cat;
+        if (!currentSearchState.equals(lastSearchState)) {
+            pageCache.clear();
+            lastSearchState = currentSearchState;
+            totalRecords = 0;
+        }
+
+        PageResult<MedicineInventoryDTO> cached = pageCache.get(pageToLoad);
+        if (cached != null) {
+            applySalesPageResult(cached);
+            prefetchNextPage(pageToLoad + 1, kw, cat);
+            return;
+        }
+
+        if (gridMedicineCards != null) gridMedicineCards.setOpacity(0.65);
+
+        Long cachedTotal = totalRecords > 0 ? totalRecords : null;
         Task<PageResult<MedicineInventoryDTO>> task = new Task<>() {
             @Override
             protected PageResult<MedicineInventoryDTO> call() {
-                return salesService.getMedicinesPage(pageToLoad, PAGE_SIZE, kw, cat);
+                return salesService.getMedicinesPage(pageToLoad, PAGE_SIZE, kw, cat, cachedTotal);
             }
         };
 
         task.setOnSucceeded(e -> {
+            if (gridMedicineCards != null) gridMedicineCards.setOpacity(1.0);
             PageResult<MedicineInventoryDTO> result = task.getValue();
             if (result != null) {
-                allLoadedMedicines = result.getItems();
-                currentPage = result.getCurrentPage();
-                totalPages = result.getTotalPages();
-                totalRecords = result.getTotalElements();
+                pageCache.put(pageToLoad, result);
+                applySalesPageResult(result);
+                prefetchNextPage(pageToLoad + 1, kw, cat);
             } else {
                 allLoadedMedicines = Collections.emptyList();
                 currentPage = 1;
                 totalPages = 1;
                 totalRecords = 0;
+                renderMedicineCards();
+                renderPagination();
             }
-
-            renderMedicineCards();
-            renderPagination();
         });
 
         task.setOnFailed(e -> {
+            if (gridMedicineCards != null) gridMedicineCards.setOpacity(1.0);
             log.error("Lỗi khi tải trang thuốc bán hàng: ", task.getException());
         });
 
+        task.setOnCancelled(e -> {
+            if (gridMedicineCards != null) gridMedicineCards.setOpacity(1.0);
+        });
+
         BackgroundTasks.run(task);
+    }
+
+    private void applySalesPageResult(PageResult<MedicineInventoryDTO> result) {
+        allLoadedMedicines = result.getItems();
+        currentPage = result.getCurrentPage();
+        totalPages = result.getTotalPages();
+        totalRecords = result.getTotalElements();
+        renderMedicineCards();
+        renderPagination();
+    }
+
+    private void prefetchNextPage(int nextPage, String kw, String cat) {
+        if (nextPage > totalPages || pageCache.containsKey(nextPage)) return;
+        BackgroundTasks.run(() -> {
+            try {
+                PageResult<MedicineInventoryDTO> prefetched = salesService.getMedicinesPage(nextPage, PAGE_SIZE, kw, cat, totalRecords);
+                if (prefetched != null) {
+                    pageCache.put(nextPage, prefetched);
+                }
+            } catch (Exception ex) {
+                log.debug("Prefetch sales page {} failed: {}", nextPage, ex.getMessage());
+            }
+        });
     }
 
     private void renderPagination() {
@@ -653,6 +699,7 @@ public class SalesController implements Initializable {
                 if (txtDiscount != null) txtDiscount.clear();
                 renderCartItems();
                 renderMedicineCards();
+                pageCache.clear();
                 loadMedicinesData();
             });
 

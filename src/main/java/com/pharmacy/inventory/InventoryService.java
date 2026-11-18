@@ -24,12 +24,12 @@ public class InventoryService {
         this.inventoryRepository = new InventoryRepository();
     }
 
-    public InventoryService(InventoryRepository inventoryRepository) {
-        this.inventoryRepository = inventoryRepository;
+    public PageResult<MedicineInventoryDTO> getInventoryPage(int page, int pageSize, String keyword, String stockFilter, String expiryFilter) {
+        return getInventoryPage(page, pageSize, keyword, stockFilter, expiryFilter, null);
     }
 
-    public PageResult<MedicineInventoryDTO> getInventoryPage(int page, int pageSize, String keyword, String stockFilter, String expiryFilter) {
-        return inventoryRepository.getInventoryPageResult(page, pageSize, keyword, stockFilter, expiryFilter);
+    public PageResult<MedicineInventoryDTO> getInventoryPage(int page, int pageSize, String keyword, String stockFilter, String expiryFilter, Long cachedTotal) {
+        return inventoryRepository.getInventoryPageResult(page, pageSize, keyword, stockFilter, expiryFilter, cachedTotal);
     }
 
     public InventorySummaryDTO getInventorySummary() {
@@ -118,7 +118,7 @@ public class InventoryService {
         return item.isNewMedicine() || item.getExistingMedicineId() == null || item.getExistingMedicineId() <= 0;
     }
 
-    static void validateImportItems(List<BatchImportItemDTO> items) {
+    public static void validateImportItems(List<BatchImportItemDTO> items) {
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("Danh sách mặt hàng nhập kho không được rỗng!");
         }

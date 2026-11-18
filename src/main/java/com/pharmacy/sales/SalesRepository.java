@@ -1,118 +1,166 @@
 package com.pharmacy.sales;
 
+import com.pharmacy.common.AppConstants;
+
 import com.pharmacy.common.PageResult;
+import com.pharmacy.employee.Employee;
 import com.pharmacy.infra.db.HibernateUtil;
 import com.pharmacy.infra.db.TransactionGuards;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
+import com.pharmacy.inventory.entity.InventoryLot;
+import com.pharmacy.inventory.entity.InventoryTransaction;
+import com.pharmacy.inventory.entity.Medicine;
 import com.pharmacy.sales.dto.CartItem;
 import com.pharmacy.sales.dto.CartTotals;
 import com.pharmacy.sales.dto.SalesOrderDTO;
 import com.pharmacy.sales.dto.SalesOrderDetailDTO;
 import com.pharmacy.sales.dto.SalesOrderRequest;
-import com.pharmacy.sales.dto.TodaySalesSummary;
+import com.pharmacy.sales.entity.SalesOrder;
+import com.pharmacy.sales.entity.SalesOrderItem;
+import jakarta.persistence.LockModeType;
 import org.hibernate.Session;
-import org.hibernate.query.NativeQuery;
+import org.hibernate.query.SelectionQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.pharmacy.common.SqlRows.*;
-import static com.pharmacy.inventory.InventorySql.*;
 
 public class SalesRepository {
     private static final Logger log = LoggerFactory.getLogger(SalesRepository.class);
 
-    private static final String ORDER_SUMMARY_SELECT = """
-            SELECT so.id, so.code, so.created_at, so.employee_id, e.full_name AS employee_name,
-                   so.customer_phone, agg.item_count, agg.total_qty, agg.subtotal,
-                   so.discount, so.total_amount, so.payment_method
-            FROM (%s) page_ids
-            JOIN sales_orders so ON so.id = page_ids.id
-            LEFT JOIN employees e ON so.employee_id = e.id
-            LEFT JOIN LATERAL (
-                SELECT COUNT(DISTINCT soi.medicine_id) AS item_count,
-                       COALESCE(SUM(soi.quantity), 0) AS total_qty,
-                       COALESCE(SUM(soi.line_total), 0) AS subtotal
-                FROM sales_order_items soi
-                WHERE soi.sales_order_id = so.id
-            ) agg ON TRUE
-            ORDER BY so.created_at DESC, so.id DESC
-            """;
+    private record LotStats(int sellableQty, int expiredCount, int nearExpiredCount) {
+        static final LotStats EMPTY = new LotStats(0, 0, 0);
+    }
+
+    private static final String KEYWORD_FILTER =
+            " AND (m.code LIKE :keyword OR m.name LIKE :keyword OR m.activeIngredient LIKE :keyword) ";
+
+    // Nạp nhanh thống kê lô chỉ cho đúng danh sách ID thuốc của trang hiện tại (tránh quét toàn bảng)
+    private static Map<Integer, LotStats> loadLotStatsByMedicineIds(Session session, Collection<Integer> medicineIds) {
+        if (medicineIds == null || medicineIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        LocalDate today = LocalDate.now();
+        String hql = """
+                SELECT il.medicine.id,
+                       COALESCE(SUM(CASE WHEN il.expiryDate > :today THEN il.quantityRemaining ELSE 0 END), 0),
+                       COALESCE(SUM(CASE WHEN il.expiryDate <= :today THEN 1 ELSE 0 END), 0),
+                       COALESCE(SUM(CASE WHEN il.expiryDate > :today AND il.expiryDate <= :nearExpiryDate THEN 1 ELSE 0 END), 0)
+                FROM InventoryLot il
+                WHERE il.medicine.id IN (:ids) AND il.quantityRemaining > 0
+                GROUP BY il.medicine.id
+                """;
+        List<Object[]> rows = session.createSelectionQuery(hql, Object[].class)
+                .setParameter("ids", medicineIds)
+                .setParameter("today", today)
+                .setParameter("nearExpiryDate", today.plusDays(AppConstants.NEAR_EXPIRY_DAYS))
+                .list();
+        Map<Integer, LotStats> map = new HashMap<>(rows.size() * 2);
+        for (Object[] r : rows) {
+            map.put(toInteger(r[0]), new LotStats(toInt(r[1]), toInt(r[2]), toInt(r[3])));
+        }
+        return map;
+    }
 
     // Lấy danh sách tên tất cả danh mục thuốc cho màn hình bán hàng
     public List<String> getAllCategories() {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createNativeQuery("SELECT name FROM medicine_categories ORDER BY id ASC", String.class).list();
+        try (Session session = HibernateUtil.openReadOnlySession()) {
+            return session.createSelectionQuery("SELECT mc.name FROM MedicineCategory mc ORDER BY mc.id ASC", String.class)
+                    .list();
         } catch (Exception e) {
             log.error("Lỗi khi lấy danh mục thuốc cho màn hình bán hàng: ", e);
             return Collections.emptyList();
         }
     }
 
-    // Phân trang danh sách thuốc bán kèm số lượng tồn khả dụng
+    // Phân trang danh sách thuốc bán kèm số lượng tồn khả dụng (2-step HQL pagination, tránh N+1)
     public PageResult<MedicineInventoryDTO> getMedicinesPage(int page, int size, String keyword, String categoryName) {
+        return getMedicinesPage(page, size, keyword, categoryName, null);
+    }
+
+    public PageResult<MedicineInventoryDTO> getMedicinesPage(int page, int size, String keyword, String categoryName, Long cachedTotal) {
         int validPage = Math.max(1, page);
         int validSize = Math.max(1, size);
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        try (Session session = HibernateUtil.openReadOnlySession()) {
             boolean hasKeyword = hasText(keyword);
             boolean hasCategory = hasText(categoryName)
                     && !"Tất cả".equalsIgnoreCase(categoryName)
                     && !"Tất cả nhóm thuốc".equalsIgnoreCase(categoryName);
 
-            String where = " WHERE m.status = 'ACTIVE' "
+            String where = " WHERE m.status = :active "
                     + (hasKeyword ? KEYWORD_FILTER : "")
-                    + (hasCategory ? " AND m.category_id = (SELECT id FROM medicine_categories WHERE name = :category) " : "");
+                    + (hasCategory ? " AND m.category.name = :category " : "");
 
-            var countQuery = session.createNativeQuery("SELECT COUNT(*) FROM medicines m " + where, Long.class);
-            bindMedicineFilter(countQuery, hasKeyword ? keyword : null, hasCategory ? categoryName : null);
-            long total = toLong(countQuery.uniqueResult());
+            long total;
+            if (cachedTotal != null && cachedTotal >= 0) {
+                total = cachedTotal;
+            } else {
+                SelectionQuery<Long> countQuery = session.createSelectionQuery("SELECT COUNT(m.id) FROM Medicine m " + where, Long.class)
+                        .setParameter("active", Medicine.Status.ACTIVE);
+                bindMedicineFilter(countQuery, hasKeyword ? keyword : null, hasCategory ? categoryName : null);
+                total = toLong(countQuery.uniqueResult());
+            }
             if (total == 0) {
                 return PageResult.empty(validPage, validSize);
             }
 
-            String pageIdsSql = """
-                SELECT m.id FROM medicines m %s
-                ORDER BY NOT EXISTS (
-                    SELECT 1 FROM inventory_lots il
-                    WHERE il.medicine_id = m.id AND il.quantity_remaining > 0 AND il.expiry_date > CURDATE()
-                ), m.name ASC, m.id ASC
-                LIMIT :limit OFFSET :offset
-            """.formatted(where);
-            String dataSql = """
-                SELECT %s,
-                       COALESCE(ls.total_qty, 0) - COALESCE(ls.expired_qty, 0) AS sellable_qty
-                FROM (%s) page_ids
-                JOIN medicines m ON m.id = page_ids.id
-                LEFT JOIN medicine_categories mc ON m.category_id = mc.id
-                %s
-                ORDER BY (COALESCE(ls.total_qty, 0) - COALESCE(ls.expired_qty, 0)) = 0, m.name ASC, m.id ASC
-            """.formatted(INVENTORY_COLUMNS, pageIdsSql, LOT_STATS_LATERAL);
+            // Bước 1: Lấy đúng ID các thuốc của trang hiện tại (ưu tiên thuốc còn hàng còn hạn lên trước)
+            LocalDate today = LocalDate.now();
+            String pageIdsHql = """
+                    SELECT m.id FROM Medicine m %s
+                    ORDER BY CASE WHEN EXISTS (
+                        SELECT 1 FROM InventoryLot il
+                        WHERE il.medicine.id = m.id AND il.quantityRemaining > 0 AND il.expiryDate > :today
+                    ) THEN 0 ELSE 1 END, m.name ASC, m.id ASC
+                    """.formatted(where);
+            SelectionQuery<Integer> idsQuery = session.createSelectionQuery(pageIdsHql, Integer.class)
+                    .setParameter("active", Medicine.Status.ACTIVE)
+                    .setParameter("today", today)
+                    .setFirstResult((validPage - 1) * validSize)
+                    .setMaxResults(validSize);
+            bindMedicineFilter(idsQuery, hasKeyword ? keyword : null, hasCategory ? categoryName : null);
+            List<Integer> pageIds = idsQuery.list();
+            if (pageIds.isEmpty()) {
+                return PageResult.empty(validPage, validSize);
+            }
 
-            NativeQuery<Object[]> query = session.createNativeQuery(dataSql, Object[].class);
-            bindMedicineFilter(query, hasKeyword ? keyword : null, hasCategory ? categoryName : null);
-            query.setParameter("limit", validSize);
-            query.setParameter("offset", (validPage - 1) * validSize);
+            // Bước 2: Lấy thông tin thuốc + thống kê lô chỉ cho đúng pageIds
+            String detailHql = """
+                    SELECT m.id, m.code, m.name, mc.name, m.requiresPrescription, m.unit, m.sellPrice,
+                           m.activeIngredient, m.manufacturer
+                    FROM Medicine m
+                    LEFT JOIN m.category mc
+                    WHERE m.id IN (:ids)
+                    """;
+            List<Object[]> rows = session.createSelectionQuery(detailHql, Object[].class)
+                    .setParameter("ids", pageIds)
+                    .list();
+            Map<Integer, Object[]> rowById = new HashMap<>(rows.size() * 2);
+            for (Object[] r : rows) {
+                rowById.put(toInteger(r[0]), r);
+            }
+            Map<Integer, LotStats> statsById = loadLotStatsByMedicineIds(session, pageIds);
 
-            List<MedicineInventoryDTO> list = new ArrayList<>();
-            for (Object[] row : query.list()) {
-                list.add(mapSalesMedicineRow(row));
+            List<MedicineInventoryDTO> list = new ArrayList<>(pageIds.size());
+            for (Integer id : pageIds) {
+                Object[] r = rowById.get(id);
+                if (r != null) {
+                    list.add(mapSalesMedicineRow(r, statsById.getOrDefault(id, LotStats.EMPTY)));
+                }
             }
             return new PageResult<>(list, total, validPage, validSize);
         } catch (Exception e) {
@@ -122,23 +170,20 @@ public class SalesRepository {
     }
 
     // Gán tham số tìm kiếm từ khóa và danh mục cho truy vấn thuốc bán
-    private static void bindMedicineFilter(NativeQuery<?> query, String keyword, String category) {
+    private static void bindMedicineFilter(SelectionQuery<?> query, String keyword, String category) {
         if (keyword != null) query.setParameter("keyword", likeParam(keyword));
         if (category != null) query.setParameter("category", category.trim());
     }
 
-    // Ánh xạ dòng kết quả truy vấn sang DTO thuốc bán
-    private static MedicineInventoryDTO mapSalesMedicineRow(Object[] row) {
-        int sellableQty = Math.max(0, toInt(row[13]));
-        int expiredCount = toInt(row[10]);
-        int nearExpiredCount = toInt(row[11]);
-
+    // Ánh xạ dòng kết quả truy vấn HQL sang DTO thuốc bán
+    private static MedicineInventoryDTO mapSalesMedicineRow(Object[] row, LotStats stats) {
+        int sellableQty = stats.sellableQty();
         MedicineInventoryDTO.InventoryStatus status = MedicineInventoryDTO.InventoryStatus.NORMAL;
         if (sellableQty == 0) {
             status = MedicineInventoryDTO.InventoryStatus.OUT_OF_STOCK;
-        } else if (expiredCount > 0) {
+        } else if (stats.expiredCount() > 0) {
             status = MedicineInventoryDTO.InventoryStatus.HAS_EXPIRED_LOT;
-        } else if (nearExpiredCount > 0) {
+        } else if (stats.nearExpiredCount() > 0) {
             status = MedicineInventoryDTO.InventoryStatus.HAS_NEAR_EXPIRY_LOT;
         }
 
@@ -150,7 +195,7 @@ public class SalesRepository {
         return dto;
     }
 
-    // Sinh mã hóa đơn tiếp theo theo định dạng HDB-yyMMdd-xxx
+    // Sinh mã hóa đơn tiếp theo theo định dạng HDB-CH01-yyMMdd-HHmmss-xx
     public String generateNextOrderCode() {
         String store = com.pharmacy.sales.payment.PaymentConfig.getStoreCode();
         String storeClean = hasText(store) ? store.trim().toUpperCase().replaceAll("[^A-Z0-9]", "") : "CH01";
@@ -162,7 +207,7 @@ public class SalesRepository {
         return String.format("HDB-%s-%s-%02d", storeClean, timestamp, randomSuffix);
     }
 
-    // Tạo mới đơn bán hàng, phân bổ lô thuốc theo FEFO và cập nhật tồn kho
+    // Tạo mới đơn bán hàng, khóa lô bằng HQL PESSIMISTIC_WRITE, phân bổ FEFO và cập nhật tồn kho
     public String createSalesOrder(SalesOrderRequest req) {
         if (req == null || req.getItems() == null || req.getItems().isEmpty()) {
             throw new IllegalArgumentException("Đơn hàng rỗng, không có sản phẩm nào để thanh toán.");
@@ -173,8 +218,8 @@ public class SalesRepository {
         String orderCode = hasText(req.getOrderCode()) ? req.getOrderCode().trim() : generateNextOrderCode();
 
         try {
-            HibernateUtil.execute(session -> session.doWork(conn -> {
-                TransactionGuards.requireActiveEmployee(conn, req.getEmployeeId());
+            HibernateUtil.execute(session -> {
+                TransactionGuards.requireActiveEmployee(session, req.getEmployeeId());
 
                 Map<Integer, Integer> qtyByMedicine = new LinkedHashMap<>();
                 Map<Integer, CartItem> cartByMedicine = new HashMap<>();
@@ -186,11 +231,13 @@ public class SalesRepository {
                     cartByMedicine.putIfAbsent(item.getMedicineId(), item);
                 }
 
-                Map<Integer, BigDecimal> prices = loadActivePrices(conn, qtyByMedicine.keySet());
-                Map<Integer, List<long[]>> lotsByMedicine = lockSellableLots(conn, qtyByMedicine.keySet());
+                Map<Integer, BigDecimal> prices = loadActivePrices(session, qtyByMedicine.keySet());
+                Map<Integer, List<InventoryLot>> lotsByMedicine = lockSellableLots(session, qtyByMedicine.keySet());
 
+                record OrderLinePlan(int medicineId, InventoryLot lot, int quantity, BigDecimal unitPrice, BigDecimal lineTotal) {}
                 BigDecimal subtotal = BigDecimal.ZERO;
-                List<Object[]> lines = new ArrayList<>();
+                List<OrderLinePlan> lines = new ArrayList<>();
+
                 for (Map.Entry<Integer, Integer> entry : qtyByMedicine.entrySet()) {
                     int medicineId = entry.getKey();
                     int needed = entry.getValue();
@@ -204,17 +251,17 @@ public class SalesRepository {
                                 + "' đã thay đổi. Vui lòng tải lại giỏ hàng trước khi thanh toán.");
                     }
 
-                    List<long[]> lots = lotsByMedicine.getOrDefault(medicineId, List.of());
-                    long available = lots.stream().mapToLong(l -> l[1]).sum();
+                    List<InventoryLot> lots = lotsByMedicine.getOrDefault(medicineId, List.of());
+                    long available = lots.stream().mapToLong(InventoryLot::getQuantityRemaining).sum();
                     if (available < needed) {
                         throw new IllegalStateException("Thuốc '" + cart.getMedicineName() + "' không đủ số lượng tồn còn hạn để bán (Còn "
                                 + available + ", yêu cầu " + needed + ").");
                     }
-                    for (long[] lot : lots) {
+                    for (InventoryLot lot : lots) {
                         if (needed <= 0) break;
-                        int deduct = (int) Math.min(lot[1], needed);
+                        int deduct = Math.min(lot.getQuantityRemaining(), needed);
                         BigDecimal lineTotal = unitPrice.multiply(BigDecimal.valueOf(deduct));
-                        lines.add(new Object[]{medicineId, lot[0], deduct, unitPrice, lineTotal});
+                        lines.add(new OrderLinePlan(medicineId, lot, deduct, unitPrice, lineTotal));
                         subtotal = subtotal.add(lineTotal);
                         needed -= deduct;
                     }
@@ -223,63 +270,38 @@ public class SalesRepository {
                 BigDecimal discount = CartTotals.clampDiscount(req.getDiscount(), subtotal);
                 BigDecimal totalAmount = CartTotals.total(subtotal, discount);
                 String phone = hasText(req.getCustomerPhone()) ? req.getCustomerPhone().trim() : null;
+                Employee empRef = session.getReference(Employee.class, req.getEmployeeId());
 
-                long orderId;
-                try (PreparedStatement ps = conn.prepareStatement("""
-                        INSERT INTO sales_orders (code, employee_id, customer_phone, total_amount, discount, payment_method, created_at)
-                        VALUES (?, ?, ?, ?, ?, ?, NOW())
-                        """, Statement.RETURN_GENERATED_KEYS)) {
-                    ps.setString(1, orderCode);
-                    ps.setInt(2, req.getEmployeeId());
-                    ps.setString(3, phone);
-                    ps.setBigDecimal(4, totalAmount);
-                    ps.setBigDecimal(5, discount);
-                    ps.setString(6, req.getPaymentMethod());
-                    ps.executeUpdate();
-                    try (ResultSet keys = ps.getGeneratedKeys()) {
-                        keys.next();
-                        orderId = keys.getLong(1);
-                    }
+                SalesOrder order = new SalesOrder();
+                order.setCode(orderCode);
+                order.setEmployee(empRef);
+                order.setCustomerPhone(phone);
+                order.setTotalAmount(totalAmount);
+                order.setDiscount(discount);
+                order.setPaymentMethod(SalesOrder.PaymentMethod.valueOf(req.getPaymentMethod().trim().toUpperCase()));
+                session.persist(order);
+
+                for (OrderLinePlan line : lines) {
+                    InventoryLot lot = line.lot();
+                    lot.setQuantityRemaining(lot.getQuantityRemaining() - line.quantity());
+
+                    SalesOrderItem orderItem = new SalesOrderItem();
+                    orderItem.setSalesOrder(order);
+                    orderItem.setMedicine(session.getReference(Medicine.class, line.medicineId()));
+                    orderItem.setInventoryLot(lot);
+                    orderItem.setQuantity(line.quantity());
+                    orderItem.setUnitPrice(line.unitPrice());
+                    orderItem.setLineTotal(line.lineTotal());
+                    session.persist(orderItem);
                 }
 
-                try (PreparedStatement itemPs = conn.prepareStatement("""
-                        INSERT INTO sales_order_items (sales_order_id, medicine_id, inventory_lot_id, quantity, unit_price, line_total)
-                        VALUES (?, ?, ?, ?, ?, ?)
-                        """);
-                     PreparedStatement lotPs = conn.prepareStatement(
-                             "UPDATE inventory_lots SET quantity_remaining = quantity_remaining - ? WHERE id = ? AND quantity_remaining >= ?")) {
-                    for (Object[] line : lines) {
-                        itemPs.setLong(1, orderId);
-                        itemPs.setInt(2, (Integer) line[0]);
-                        itemPs.setLong(3, (Long) line[1]);
-                        itemPs.setInt(4, (Integer) line[2]);
-                        itemPs.setBigDecimal(5, (BigDecimal) line[3]);
-                        itemPs.setBigDecimal(6, (BigDecimal) line[4]);
-                        itemPs.addBatch();
-
-                        lotPs.setInt(1, (Integer) line[2]);
-                        lotPs.setLong(2, (Long) line[1]);
-                        lotPs.setInt(3, (Integer) line[2]);
-                        lotPs.addBatch();
-                    }
-                    itemPs.executeBatch();
-                    for (int count : lotPs.executeBatch()) {
-                        if (count == 0) {
-                            throw new IllegalStateException("Tồn kho vừa thay đổi, vui lòng thử lại.");
-                        }
-                    }
-                }
-
-                try (PreparedStatement ps = conn.prepareStatement("""
-                        INSERT INTO inventory_transactions (type, sales_order_id, employee_id, transaction_at, note)
-                        VALUES ('EXPORT_SALE', ?, ?, NOW(), ?)
-                        """)) {
-                    ps.setLong(1, orderId);
-                    ps.setInt(2, req.getEmployeeId());
-                    ps.setString(3, "Bán lẻ tại quầy - Mã đơn " + orderCode);
-                    ps.executeUpdate();
-                }
-            }));
+                InventoryTransaction tx = new InventoryTransaction();
+                tx.setType(InventoryTransaction.Type.EXPORT_SALE);
+                tx.setSalesOrder(order);
+                tx.setEmployee(empRef);
+                tx.setNote("Bán lẻ tại quầy - Mã đơn " + orderCode);
+                session.persist(tx);
+            });
             return orderCode;
         } catch (Exception e) {
             log.error("Lỗi giao dịch thanh toán đơn hàng: ", e);
@@ -290,54 +312,45 @@ public class SalesRepository {
         }
     }
 
-    // Tạo chuỗi dấu hỏi chấm cho mệnh đề IN trong SQL
-    private static String placeholders(int n) {
-        return String.join(",", Collections.nCopies(n, "?"));
-    }
-
-    // Lấy giá bán hiện tại của các thuốc đang kinh doanh
-    private static Map<Integer, BigDecimal> loadActivePrices(Connection conn, java.util.Set<Integer> medicineIds) throws SQLException {
-        Map<Integer, BigDecimal> prices = new HashMap<>();
-        try (PreparedStatement ps = conn.prepareStatement("SELECT id, sell_price FROM medicines WHERE status = 'ACTIVE' AND id IN ("
-                + placeholders(medicineIds.size()) + ") FOR SHARE")) {
-            int i = 1;
-            for (Integer id : medicineIds) ps.setInt(i++, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) prices.put(rs.getInt(1), rs.getBigDecimal(2));
-            }
+    // Lấy giá bán hiện tại của các thuốc đang kinh doanh (khóa đọc chia sẻ PESSIMISTIC_READ = FOR SHARE)
+    private static Map<Integer, BigDecimal> loadActivePrices(Session session, Set<Integer> medicineIds) {
+        List<Object[]> rows = session.createSelectionQuery("""
+                SELECT m.id, m.sellPrice
+                FROM Medicine m
+                WHERE m.status = :active AND m.id IN (:ids)
+                """, Object[].class)
+                .setParameter("active", Medicine.Status.ACTIVE)
+                .setParameter("ids", medicineIds)
+                .setLockMode(LockModeType.PESSIMISTIC_READ)
+                .list();
+        Map<Integer, BigDecimal> prices = new HashMap<>(rows.size() * 2);
+        for (Object[] r : rows) {
+            prices.put(toInteger(r[0]), toBigDecimal(r[1]));
         }
         return prices;
     }
 
-    // Khóa và lấy danh sách lô thuốc còn hạn theo thứ tự ưu tiên FEFO
-    private static Map<Integer, List<long[]>> lockSellableLots(Connection conn, java.util.Set<Integer> medicineIds) throws SQLException {
-        Map<Integer, List<long[]>> result = new HashMap<>();
-        try (PreparedStatement ps = conn.prepareStatement("""
-                SELECT id, medicine_id, quantity_remaining
-                FROM inventory_lots
-                WHERE medicine_id IN (%s) AND quantity_remaining > 0 AND expiry_date > CURDATE()
-                ORDER BY medicine_id, expiry_date ASC, id ASC
-                FOR UPDATE
-                """.formatted(placeholders(medicineIds.size())))) {
-            int i = 1;
-            for (Integer id : medicineIds) ps.setInt(i++, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    result.computeIfAbsent(rs.getInt(2), k -> new ArrayList<>())
-                            .add(new long[]{rs.getLong(1), rs.getInt(3)});
-                }
-            }
+    // Khóa và lấy danh sách lô thuốc còn hạn theo thứ tự ưu tiên FEFO (PESSIMISTIC_WRITE = FOR UPDATE)
+    private static Map<Integer, List<InventoryLot>> lockSellableLots(Session session, Set<Integer> medicineIds) {
+        List<InventoryLot> lots = session.createSelectionQuery("""
+                SELECT il
+                FROM InventoryLot il
+                WHERE il.medicine.id IN (:ids) AND il.quantityRemaining > 0 AND il.expiryDate > :today
+                ORDER BY il.medicine.id ASC, il.expiryDate ASC, il.id ASC
+                """, InventoryLot.class)
+                .setParameter("ids", medicineIds)
+                .setParameter("today", LocalDate.now())
+                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                .list();
+        Map<Integer, List<InventoryLot>> result = new HashMap<>();
+        for (InventoryLot lot : lots) {
+            Integer medId = lot.getMedicine().getId();
+            result.computeIfAbsent(medId, k -> new ArrayList<>()).add(lot);
         }
         return result;
     }
 
-    // Lấy danh sách hóa đơn bán hàng theo một ngày cụ thể
-    public PageResult<SalesOrderDTO> getSalesOrders(LocalDate date, Integer employeeId, String keyword, int page, int size) {
-        if (date == null) date = LocalDate.now();
-        return getSalesOrders(date, date, employeeId, keyword, page, size);
-    }
-
-    // Phân trang danh sách hóa đơn bán hàng theo khoảng ngày và từ khóa
+    // Phân trang danh sách hóa đơn bán hàng theo khoảng ngày và từ khóa (2-step HQL pagination)
     public PageResult<SalesOrderDTO> getSalesOrders(LocalDate fromDate, LocalDate toDate, Integer employeeId, String keyword,
                                                     int page, int size) {
         if (fromDate == null) fromDate = LocalDate.now();
@@ -345,33 +358,30 @@ public class SalesRepository {
         int validPage = Math.max(1, page);
         int validSize = Math.max(1, size);
 
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        try (Session session = HibernateUtil.openReadOnlySession()) {
             boolean hasKeyword = hasText(keyword);
 
-            StringBuilder where = new StringBuilder(" WHERE so.created_at >= :fromTs AND so.created_at < :toTs ");
-            if (employeeId != null) where.append(" AND so.employee_id = :empId ");
+            StringBuilder where = new StringBuilder(" WHERE so.createdAt >= :fromTs AND so.createdAt < :toTs ");
+            if (employeeId != null) where.append(" AND so.employee.id = :empId ");
             if (hasKeyword) {
-                where.append(" AND (so.code LIKE :kw OR so.customer_phone LIKE :kw OR so.employee_id IN (SELECT id FROM employees WHERE full_name LIKE :kw)) ");
+                where.append(" AND (so.code LIKE :kw OR so.customerPhone LIKE :kw OR so.employee.id IN (SELECT e.id FROM Employee e WHERE e.fullName LIKE :kw)) ");
             }
 
-            var countQuery = session.createNativeQuery("SELECT COUNT(*) FROM sales_orders so " + where, Long.class);
+            SelectionQuery<Long> countQuery = session.createSelectionQuery("SELECT COUNT(so.id) FROM SalesOrder so " + where, Long.class);
             bindOrderFilter(countQuery, fromDate, toDate, employeeId, hasKeyword ? keyword : null);
             long totalRecords = toLong(countQuery.uniqueResult());
             if (totalRecords == 0) {
                 return new PageResult<>(Collections.emptyList(), 0L, validPage, validSize);
             }
 
-            String pageIds = "SELECT so.id FROM sales_orders so " + where
-                    + " ORDER BY so.created_at DESC, so.id DESC LIMIT :limit OFFSET :offset";
-            NativeQuery<Object[]> query = session.createNativeQuery(ORDER_SUMMARY_SELECT.formatted(pageIds), Object[].class);
-            bindOrderFilter(query, fromDate, toDate, employeeId, hasKeyword ? keyword : null);
-            query.setParameter("limit", validSize);
-            query.setParameter("offset", (validPage - 1) * validSize);
+            SelectionQuery<Long> idsQuery = session.createSelectionQuery(
+                    "SELECT so.id FROM SalesOrder so " + where + " ORDER BY so.createdAt DESC, so.id DESC", Long.class)
+                    .setFirstResult((validPage - 1) * validSize)
+                    .setMaxResults(validSize);
+            bindOrderFilter(idsQuery, fromDate, toDate, employeeId, hasKeyword ? keyword : null);
+            List<Long> pageIds = idsQuery.list();
 
-            List<SalesOrderDTO> list = new ArrayList<>();
-            for (Object[] r : query.list()) {
-                list.add(mapOrderRow(r));
-            }
+            List<SalesOrderDTO> list = loadOrderSummariesByIds(session, pageIds);
             return new PageResult<>(list, totalRecords, validPage, validSize);
         } catch (Exception e) {
             log.error("Lỗi khi truy vấn lịch sử bán hàng: ", e);
@@ -379,42 +389,80 @@ public class SalesRepository {
         }
     }
 
+    // Nạp chi tiết tổng hợp cho danh sách ID hóa đơn trong trang hiện tại (2 truy vấn HQL theo index)
+    private static List<SalesOrderDTO> loadOrderSummariesByIds(Session session, List<Long> orderIds) {
+        if (orderIds == null || orderIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Object[]> headerRows = session.createSelectionQuery("""
+                SELECT so.id, so.code, so.createdAt, e.id, e.fullName,
+                       so.customerPhone, so.discount, so.totalAmount, so.paymentMethod
+                FROM SalesOrder so
+                LEFT JOIN so.employee e
+                WHERE so.id IN (:ids)
+                ORDER BY so.createdAt DESC, so.id DESC
+                """, Object[].class)
+                .setParameter("ids", orderIds)
+                .list();
+
+        List<Object[]> aggRows = session.createSelectionQuery("""
+                SELECT soi.salesOrder.id, COUNT(DISTINCT soi.medicine.id),
+                       COALESCE(SUM(soi.quantity), 0), COALESCE(SUM(soi.lineTotal), 0)
+                FROM SalesOrderItem soi
+                WHERE soi.salesOrder.id IN (:ids)
+                GROUP BY soi.salesOrder.id
+                """, Object[].class)
+                .setParameter("ids", orderIds)
+                .list();
+        Map<Long, Object[]> aggByOrderId = new HashMap<>(aggRows.size() * 2);
+        for (Object[] a : aggRows) {
+            aggByOrderId.put(toLongObj(a[0]), a);
+        }
+
+        List<SalesOrderDTO> list = new ArrayList<>(headerRows.size());
+        for (Object[] r : headerRows) {
+            Long id = toLongObj(r[0]);
+            Object[] agg = aggByOrderId.get(id);
+            int itemCount = agg != null ? toInt(agg[1]) : 0;
+            int totalQty = agg != null ? toInt(agg[2]) : 0;
+            BigDecimal subtotal = agg != null ? toBigDecimal(agg[3]) : BigDecimal.ZERO;
+            String paymentMethod = r[8] != null ? r[8].toString() : null;
+            list.add(new SalesOrderDTO(
+                    id, toStr(r[1]), toLocalDateTime(r[2]), toStr(r[4]), null,
+                    toStr(r[5]), itemCount, totalQty, subtotal, toBigDecimal(r[6]),
+                    toBigDecimal(r[7]), paymentMethod));
+        }
+        return list;
+    }
+
     // Gán tham số bộ lọc cho truy vấn danh sách hóa đơn
-    private static void bindOrderFilter(NativeQuery<?> query, LocalDate fromDate, LocalDate toDate, Integer employeeId, String keyword) {
-        query.setParameter("fromTs", Timestamp.valueOf(fromDate.atStartOfDay()));
-        query.setParameter("toTs", Timestamp.valueOf(toDate.plusDays(1).atStartOfDay()));
+    private static void bindOrderFilter(SelectionQuery<?> query, LocalDate fromDate, LocalDate toDate, Integer employeeId, String keyword) {
+        query.setParameter("fromTs", fromDate.atStartOfDay());
+        query.setParameter("toTs", toDate.plusDays(1).atStartOfDay());
         if (employeeId != null) query.setParameter("empId", employeeId);
         if (keyword != null) query.setParameter("kw", likeParam(keyword));
     }
 
-    // Ánh xạ dòng dữ liệu SQL sang đối tượng SalesOrderDTO
-    private static SalesOrderDTO mapOrderRow(Object[] r) {
-        return new SalesOrderDTO(
-                toLongObj(r[0]), toStr(r[1]), toLocalDateTime(r[2]), toInteger(r[3]), toStr(r[4]), null,
-                toStr(r[5]), toInt(r[6]), toInt(r[7]), toBigDecimal(r[8]), toBigDecimal(r[9]),
-                toBigDecimal(r[10]), toStr(r[11]));
-    }
-
     // Lấy danh sách chi tiết các mặt hàng của một hóa đơn
     public List<SalesOrderDetailDTO> getSalesOrderItems(long orderId) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String sql = """
-                SELECT soi.id, soi.medicine_id, m.code, m.name, mc.name, m.active_ingredient, m.unit,
-                       il.lot_number, il.expiry_date, soi.quantity, soi.unit_price, soi.line_total
-                FROM sales_order_items soi
-                JOIN medicines m ON soi.medicine_id = m.id
-                LEFT JOIN medicine_categories mc ON m.category_id = mc.id
-                LEFT JOIN inventory_lots il ON soi.inventory_lot_id = il.id
-                WHERE soi.sales_order_id = :orderId
+        try (Session session = HibernateUtil.openReadOnlySession()) {
+            String hql = """
+                SELECT soi.id, m.id, m.code, m.name, mc.name, m.activeIngredient, m.unit,
+                       il.lotNumber, il.expiryDate, soi.quantity, soi.unitPrice, soi.lineTotal
+                FROM SalesOrderItem soi
+                JOIN soi.medicine m
+                LEFT JOIN m.category mc
+                LEFT JOIN soi.inventoryLot il
+                WHERE soi.salesOrder.id = :orderId
                 ORDER BY soi.id ASC
             """;
-            List<Object[]> rows = session.createNativeQuery(sql, Object[].class)
+            List<Object[]> rows = session.createSelectionQuery(hql, Object[].class)
                     .setParameter("orderId", orderId)
                     .list();
             List<SalesOrderDetailDTO> list = new ArrayList<>(rows.size());
             for (Object[] r : rows) {
                 list.add(new SalesOrderDetailDTO(
-                        toLongObj(r[0]), toInteger(r[1]), toStr(r[2]), toStr(r[3]), toStr(r[4]), toStr(r[5]), toStr(r[6]),
+                        toStr(r[2]), toStr(r[3]), toStr(r[4]), toStr(r[5]), toStr(r[6]),
                         toStr(r[7]), toLocalDate(r[8]), toInt(r[9]), toBigDecimal(r[10]), toBigDecimal(r[11])));
             }
             return list;
@@ -424,46 +472,18 @@ public class SalesRepository {
         }
     }
 
-    // Lấy thống kê tổng quan doanh thu và số đơn bán trong ngày hôm nay
-    public TodaySalesSummary getTodaySalesSummary(Integer employeeId) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            LocalDate today = LocalDate.now();
-            String sql = """
-                SELECT COALESCE(SUM(total_amount), 0), COUNT(*)
-                FROM sales_orders
-                WHERE created_at >= :todayStart AND created_at < :tomorrowStart
-            """ + (employeeId != null ? " AND employee_id = :employeeId" : "");
-            var query = session.createNativeQuery(sql, Object[].class)
-                    .setParameter("todayStart", Timestamp.valueOf(today.atStartOfDay()))
-                    .setParameter("tomorrowStart", Timestamp.valueOf(today.plusDays(1).atStartOfDay()));
-            if (employeeId != null) {
-                query.setParameter("employeeId", employeeId);
-            }
-            Object[] r = query.uniqueResult();
-            return new TodaySalesSummary(toBigDecimal(r[0]), toLong(r[1]));
-        } catch (Exception e) {
-            log.error("Lỗi khi thống kê doanh số hôm nay trong SalesRepository: ", e);
-            return TodaySalesSummary.EMPTY;
-        }
-    }
-
     // Lấy danh sách các đơn bán hàng gần nhất cho Dashboard
     public List<SalesOrderDTO> getRecentSalesOrders(int limit, Integer employeeId) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String pageIds = "SELECT so.id FROM sales_orders so"
-                    + (employeeId != null ? " WHERE so.employee_id = :employeeId" : "")
-                    + " ORDER BY so.created_at DESC, so.id DESC LIMIT :limit";
-            var query = session.createNativeQuery(ORDER_SUMMARY_SELECT.formatted(pageIds), Object[].class)
-                    .setParameter("limit", Math.max(1, limit));
+        try (Session session = HibernateUtil.openReadOnlySession()) {
+            String idsHql = "SELECT so.id FROM SalesOrder so"
+                    + (employeeId != null ? " WHERE so.employee.id = :employeeId" : "")
+                    + " ORDER BY so.createdAt DESC, so.id DESC";
+            SelectionQuery<Long> idsQuery = session.createSelectionQuery(idsHql, Long.class)
+                    .setMaxResults(Math.max(1, limit));
             if (employeeId != null) {
-                query.setParameter("employeeId", employeeId);
+                idsQuery.setParameter("employeeId", employeeId);
             }
-            List<Object[]> rows = query.list();
-            List<SalesOrderDTO> list = new ArrayList<>(rows.size());
-            for (Object[] r : rows) {
-                list.add(mapOrderRow(r));
-            }
-            return list;
+            return loadOrderSummariesByIds(session, idsQuery.list());
         } catch (Exception e) {
             log.error("Lỗi khi lấy giao dịch gần đây trong SalesRepository: ", e);
             return Collections.emptyList();

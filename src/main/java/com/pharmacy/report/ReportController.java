@@ -22,6 +22,9 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +67,7 @@ public class ReportController {
     @FXML private BarChart<String, Number> barChartMedicines;
     @FXML private CategoryAxis chartMedXAxis;
     @FXML private NumberAxis chartMedYAxis;
+    @FXML private VBox boxMedicinesTab;
     @FXML private TableView<SoldMedicineDTO> tblSoldMedicines;
     @FXML private TableColumn<SoldMedicineDTO, String> colMedIndex;
     @FXML private TableColumn<SoldMedicineDTO, String> colMedCode;
@@ -227,7 +231,76 @@ public class ReportController {
         emptyPlaceholder.setStyle("-fx-font-family: 'Inter 18pt'; -fx-font-size: 14px; -fx-text-fill: #64748B;");
         tblSoldMedicines.setPlaceholder(emptyPlaceholder);
 
+        tblSoldMedicines.setFixedCellSize(50.0);
         tblSoldMedicines.setItems(topSoldMedicines);
+
+        // Khóa cuộn dọc của bảng Top 5 và chuyển hướng cuộn dọc sang thanh cuộn trang chính
+        com.pharmacy.common.TableSyncHelper.attachVirtualFlowProtection(tblSoldMedicines);
+
+        tblSoldMedicines.addEventFilter(ScrollEvent.SCROLL, event -> {
+            double dy = event.getDeltaY();
+            double dx = event.getDeltaX();
+
+            if (Math.abs(dx) == 0 && event.isShiftDown() && Math.abs(dy) > 0) {
+                dx = dy;
+                dy = 0;
+            }
+
+            if (Math.abs(dx) > 0) {
+                com.pharmacy.common.TableSyncHelper.scrollTableHorizontally(tblSoldMedicines, dx);
+            }
+
+            if (Math.abs(dy) > 0 && reportScrollPane != null) {
+                double contentHeight = reportScrollPane.getContent() != null ? reportScrollPane.getContent().getBoundsInLocal().getHeight() : 0.0;
+                double spHeight = reportScrollPane.getHeight();
+                double scrollable = Math.max(100.0, contentHeight - spHeight);
+                double currentV = reportScrollPane.getVvalue();
+                double step = (dy * 2.5) / scrollable;
+                double newV = currentV - step;
+                reportScrollPane.setVvalue(Math.max(0.0, Math.min(1.0, newV)));
+            }
+
+            event.consume();
+        });
+
+        topSoldMedicines.addListener((javafx.collections.ListChangeListener<SoldMedicineDTO>) c -> {
+            updateSoldMedicinesTableHeight();
+            com.pharmacy.common.TableSyncHelper.resetSingleTable(tblSoldMedicines);
+        });
+
+        tblSoldMedicines.skinProperty().addListener((obs, o, n) -> {
+            if (n != null) {
+                Platform.runLater(() -> {
+                    ScrollBar hBar = com.pharmacy.common.TableSyncHelper.findHorizontalScrollBar(tblSoldMedicines);
+                    if (hBar != null) {
+                        hBar.visibleProperty().addListener((vObs, vOld, vNew) -> updateSoldMedicinesTableHeight());
+                    }
+                    updateSoldMedicinesTableHeight();
+                    com.pharmacy.common.TableSyncHelper.resetSingleTable(tblSoldMedicines);
+                });
+            }
+        });
+
+        tblSoldMedicines.widthProperty().addListener((obs, oldW, newW) -> {
+            Platform.runLater(this::updateSoldMedicinesTableHeight);
+        });
+    }
+
+    private void updateSoldMedicinesTableHeight() {
+        if (tblSoldMedicines == null) return;
+        int count = topSoldMedicines.size();
+
+        double height;
+        if (count == 0) {
+            height = 160.0;
+        } else {
+            // Header (52px) + mỗi hàng (50px) + thanh cuộn ngang & padding (34px)
+            height = 52.0 + (count * 50.0) + 34.0;
+        }
+
+        tblSoldMedicines.setPrefHeight(height);
+        tblSoldMedicines.setMinHeight(height);
+        tblSoldMedicines.setMaxHeight(height);
     }
 
     private void initFilterControls() {
@@ -268,7 +341,11 @@ public class ReportController {
             tabPaneReport.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
                 applyScrollForTab(newTab);
                 if (newTab == tabMedicines) {
-                    Platform.runLater(() -> adjustSingleChartGap(barChartMedicines));
+                    Platform.runLater(() -> {
+                        adjustSingleChartGap(barChartMedicines);
+                        updateSoldMedicinesTableHeight();
+                        com.pharmacy.common.TableSyncHelper.resetSingleTable(tblSoldMedicines);
+                    });
                     if (!medicinesLoadedForCurrentPeriod) {
                         loadMedicinesData();
                     }
@@ -751,6 +828,8 @@ public class ReportController {
                     : "Top " + TOP_LIMIT + " thuốc bán chạy nhất tháng " + month + "/" + year);
         }
         topSoldMedicines.setAll(masterSoldMedicines.subList(0, Math.min(TOP_LIMIT, masterSoldMedicines.size())));
+        updateSoldMedicinesTableHeight();
+        com.pharmacy.common.TableSyncHelper.resetSingleTable(tblSoldMedicines);
         if (btnViewFull != null) {
             btnViewFull.setDisable(masterSoldMedicines.isEmpty());
         }
@@ -773,6 +852,17 @@ public class ReportController {
         reportScrollPane.setFitToHeight(revenue);
         if (revenue) {
             reportScrollPane.setVvalue(0);
+            if (tabPaneReport != null) {
+                tabPaneReport.minHeightProperty().unbind();
+                tabPaneReport.setMinHeight(Region.USE_COMPUTED_SIZE);
+                tabPaneReport.prefHeightProperty().unbind();
+                tabPaneReport.setPrefHeight(Region.USE_COMPUTED_SIZE);
+            }
+        } else {
+            if (tabPaneReport != null && boxMedicinesTab != null) {
+                tabPaneReport.minHeightProperty().bind(boxMedicinesTab.heightProperty().add(60));
+                tabPaneReport.prefHeightProperty().bind(boxMedicinesTab.heightProperty().add(60));
+            }
         }
     }
 }

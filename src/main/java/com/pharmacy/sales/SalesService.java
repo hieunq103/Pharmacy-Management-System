@@ -8,7 +8,6 @@ import com.pharmacy.sales.dto.CartItem;
 import com.pharmacy.sales.dto.SalesOrderDTO;
 import com.pharmacy.sales.dto.SalesOrderDetailDTO;
 import com.pharmacy.sales.dto.SalesOrderRequest;
-import com.pharmacy.sales.dto.TodaySalesSummary;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,7 +31,11 @@ public class SalesService {
     }
 
     public PageResult<MedicineInventoryDTO> getMedicinesPage(int page, int size, String keyword, String categoryName) {
-        return salesRepository.getMedicinesPage(page, size, keyword, categoryName);
+        return getMedicinesPage(page, size, keyword, categoryName, null);
+    }
+
+    public PageResult<MedicineInventoryDTO> getMedicinesPage(int page, int size, String keyword, String categoryName, Long cachedTotal) {
+        return salesRepository.getMedicinesPage(page, size, keyword, categoryName, cachedTotal);
     }
 
     public String generateNextOrderCode() {
@@ -47,7 +50,7 @@ public class SalesService {
         return salesRepository.createSalesOrder(request);
     }
 
-    static void validateCheckout(SalesOrderRequest request) {
+    public static void validateCheckout(SalesOrderRequest request) {
         if (request == null || request.getItems() == null || request.getItems().isEmpty()) {
             throw new IllegalArgumentException("Đơn hàng rỗng, không có sản phẩm nào để thanh toán.");
         }
@@ -71,20 +74,12 @@ public class SalesService {
         }
     }
 
-    public PageResult<SalesOrderDTO> getSalesHistory(LocalDate date, Integer employeeId, String keyword, int page, int size) {
-        return salesRepository.getSalesOrders(date, UserSession.scopeEmployeeId(employeeId), keyword, page, size);
-    }
-
     public PageResult<SalesOrderDTO> getSalesHistory(LocalDate fromDate, LocalDate toDate, Integer employeeId, String keyword, int page, int size) {
         return salesRepository.getSalesOrders(fromDate, toDate, UserSession.scopeEmployeeId(employeeId), keyword, page, size);
     }
 
     public List<SalesOrderDetailDTO> getSalesOrderDetails(long orderId) {
         return salesRepository.getSalesOrderItems(orderId);
-    }
-
-    public TodaySalesSummary getTodaySalesSummary() {
-        return salesRepository.getTodaySalesSummary(UserSession.scopeEmployeeId(null));
     }
 
     public List<SalesOrderDTO> getRecentSalesOrders(int limit) {

@@ -7,12 +7,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class BackgroundTasks {
 
-    private static final int MAX_THREADS = 4;
-    private static final int IDLE_SECONDS = 30;
+    private static final int CORE_THREADS = 8;
+    private static final int MAX_THREADS = 16;
+    private static final int IDLE_SECONDS = 60;
     private static final AtomicInteger SEQ = new AtomicInteger();
 
     private static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(
-            MAX_THREADS, MAX_THREADS, IDLE_SECONDS, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
+            CORE_THREADS, MAX_THREADS, IDLE_SECONDS, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
             r -> {
                 Thread t = new Thread(r, "pharma-bg-" + SEQ.incrementAndGet());
                 t.setDaemon(true);
@@ -20,10 +21,14 @@ public final class BackgroundTasks {
             });
 
     static {
-        POOL.allowCoreThreadTimeOut(true);
+        POOL.prestartAllCoreThreads();
     }
 
     private BackgroundTasks() {
+    }
+
+    public static java.util.concurrent.Executor getExecutor() {
+        return POOL;
     }
 
     public static void run(Runnable task) {

@@ -1,6 +1,6 @@
 package com.pharmacy.dashboard.dto;
 
-import com.pharmacy.sales.dto.TodaySalesSummary;
+import com.pharmacy.report.dto.TodaySalesSummary;
 
 public record DashboardStatsDTO(TodaySalesSummary todaySales, long lowStockCount, long nearExpiryCount) {
     public DashboardStatsDTO {

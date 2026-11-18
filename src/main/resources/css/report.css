@@ -8,6 +8,31 @@
     -fx-fit-to-width: true;
 }
 
+.report-scroll-pane .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 6px;
+    -fx-max-width: 6px;
+    -fx-padding: 0;
+}
+
+.report-scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: #CBD5E1;
+    -fx-background-radius: 3px;
+}
+
+.report-scroll-pane .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #94A3B8;
+}
+
+.report-scroll-pane .scroll-bar:vertical .track,
+.report-scroll-pane .scroll-bar:vertical .increment-button,
+.report-scroll-pane .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+}
+
 .report-root {
     -fx-background-color: #F8FAFC;
     -fx-font-family: "Inter 18pt";
