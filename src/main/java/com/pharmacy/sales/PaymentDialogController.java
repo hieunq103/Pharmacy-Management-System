@@ -428,6 +428,13 @@ public class PaymentDialogController {
     }
 
     private void selectTransfer() {
+        if (PaymentConfig.getBankId().isBlank() || PaymentConfig.getAccountNo().isBlank()) {
+            DialogUtils.showWarning(
+                "Chưa cấu hình tài khoản nhận tiền",
+                "Chưa có thông tin ngân hàng để tạo mã QR. Vui lòng đặt PAYMENT_BANK_ID, PAYMENT_ACCOUNT_NO, PAYMENT_ACCOUNT_NAME trong file .env rồi khởi động lại ứng dụng."
+            );
+            return;
+        }
         selectedMethod = "TRANSFER";
 
         while (btnMethodCash.getStyleClass().remove("active")) {}

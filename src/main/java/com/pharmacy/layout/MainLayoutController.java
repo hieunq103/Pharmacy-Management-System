@@ -80,6 +80,7 @@ public class MainLayoutController {
 
     private String headerDateText;
     private javafx.animation.Timeline headerClock;
+    private com.pharmacy.common.IdleLogoutManager idleLogout;
 
     private static final String REPORT_FXML = "/fxml/report/report.fxml";
     private final java.util.Map<String, Parent> viewCache = new java.util.concurrent.ConcurrentHashMap<>();
@@ -92,6 +93,7 @@ public class MainLayoutController {
         initUserInfoAndPermissions();
         initHeaderDate();
         initUiScaling();
+        initIdleLogout();
 
         if (UserSession.isLoggedIn() && !UserSession.getInstance().isManager()) {
             handleNavSales(null);
@@ -125,6 +127,46 @@ public class MainLayoutController {
         applyNodeVisibility(btnDashboard, isManager);
         applyNodeVisibility(boxInventoryNav != null ? boxInventoryNav : btnInventory, isManager);
         applyNodeVisibility(btnEmployee, isManager);
+    }
+
+    // Tự đăng xuất khi không thao tác (cấu hình auth.sessionTimeoutMinutes, <= 0 là tắt)
+    private void initIdleLogout() {
+        if (rootPane == null) return;
+        Runnable start = () -> {
+            if (idleLogout != null || rootPane.getScene() == null || !UserSession.isLoggedIn()) return;
+            long minutes;
+            try {
+                minutes = Long.parseLong(com.pharmacy.infra.config.AppConfig.get("auth.sessionTimeoutMinutes", "30"));
+            } catch (NumberFormatException e) {
+                minutes = 30;
+            }
+            idleLogout = com.pharmacy.common.IdleLogoutManager.start(
+                rootPane.getScene(),
+                minutes * 60_000L,
+                this::logoutBecauseIdle
+            );
+        };
+        if (rootPane.getScene() != null) {
+            start.run();
+        } else {
+            rootPane.sceneProperty().addListener((obs, old, scene) -> start.run());
+        }
+    }
+
+    private void logoutBecauseIdle() {
+        try {
+            if (headerClock != null) headerClock.stop();
+            cleanupDashboardResources();
+            authService.logout();
+        } catch (Exception e) {
+            log.error("Lỗi khi tự động đăng xuất do không thao tác: ", e);
+        }
+        forceRedirectToLogin();
+        DialogUtils.showInfo(
+            null,
+            "Phiên đăng nhập đã hết hạn",
+            "Bạn không thao tác trong một thời gian nên hệ thống đã tự đăng xuất để bảo vệ dữ liệu. Vui lòng đăng nhập lại."
+        );
     }
 
     // Thứ, ngày tháng năm và giờ (chạy từng giây) nằm ở bên phải thanh tiêu đề
@@ -448,6 +490,7 @@ public class MainLayoutController {
     @FXML
     private void handleLogout(ActionEvent event) {
         if (headerClock != null) headerClock.stop();
+        if (idleLogout != null) idleLogout.stop();
         if (!UserSession.isLoggedIn()) {
             log.warn("Thao tác đăng xuất bị từ chối: Không tìm thấy phiên hợp lệ.");
             forceRedirectToLogin();
@@ -505,6 +548,7 @@ public class MainLayoutController {
     }
 
     private void forceRedirectToLogin() {
+        if (idleLogout != null) idleLogout.stop();
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth/login.fxml"));
             Parent root = loader.load();

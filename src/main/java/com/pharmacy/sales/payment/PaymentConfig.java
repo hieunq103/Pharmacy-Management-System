@@ -55,14 +55,19 @@ public class PaymentConfig {
                 sepayApiToken = envOr("SEPAY_API_TOKEN", sepayApiToken);
                 storeCode = envOr("PAYMENT_STORE_CODE", storeCode);
 
+                // Không ghi số tài khoản/tên chủ tài khoản vào log (thông tin cá nhân)
                 log.info(
-                    "Loaded payment configuration: StoreCode={}, Bank={}, AccountNo={}, AccountName={}, SePAY Token present={}",
+                    "Loaded payment configuration: StoreCode={}, Bank={}, AccountConfigured={}, SePAY Token present={}",
                     storeCode,
                     bankId,
-                    accountNo,
-                    accountName,
+                    !accountNo.isBlank(),
                     isSepayConfigured()
                 );
+                if (bankId.isBlank() || accountNo.isBlank()) {
+                    log.warn(
+                        "Chưa cấu hình tài khoản nhận tiền: đặt PAYMENT_BANK_ID, PAYMENT_ACCOUNT_NO, PAYMENT_ACCOUNT_NAME trong .env."
+                    );
+                }
             }
         } catch (Exception e) {
             log.error("Failed to load payment.properties: {}", e.getMessage());
