@@ -61,7 +61,7 @@
     </VBox>
 
     <VBox spacing="3.0">
-        <Label styleClass="field-label" style="-fx-font-size: 11.5px;" text="Phương thức thanh toán" />
+        <Label styleClass="field-label" style="-fx-font-size: 13px;" text="Phương thức thanh toán" />
         <HBox spacing="10.0">
             <Button fx:id="btnMethodCash" HBox.hgrow="ALWAYS" maxWidth="Infinity" minWidth="325.0" prefWidth="325.0" minHeight="34.0" prefHeight="34.0" maxHeight="34.0" onAction="#handleSelectCash" styleClass="payment-method-btn" text="Tiền mặt" />
             <Button fx:id="btnMethodTransfer" HBox.hgrow="ALWAYS" maxWidth="Infinity" minWidth="325.0" prefWidth="325.0" minHeight="34.0" prefHeight="34.0" maxHeight="34.0" onAction="#handleSelectTransfer" styleClass="payment-method-btn" text="Chuyển khoản" />

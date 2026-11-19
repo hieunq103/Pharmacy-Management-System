@@ -89,7 +89,7 @@
 
 .card-title {
     -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 13.5px;
+    -fx-font-size: 14px;
     -fx-text-fill: #0f172a;
 }
 
@@ -168,7 +168,7 @@
     -fx-background-color: transparent;
     -fx-text-fill: #64748b;
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-cursor: hand;
 }
 
@@ -228,13 +228,13 @@
 
 .cart-item-name {
     -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 13px;
+    -fx-font-size: 14px;
     -fx-text-fill: #0f172a;
 }
 
 .cart-item-unit-price {
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-text-fill: #64748b;
 }
 
@@ -251,7 +251,7 @@
     -fx-border-color: #cbd5e1;
     -fx-border-radius: 4px;
     -fx-border-width: 1px;
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-font-weight: bold;
     -fx-text-fill: #334155;
     -fx-padding: 0;
@@ -275,7 +275,7 @@
     -fx-border-radius: 4px;
     -fx-border-width: 1px;
     -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 12.5px;
+    -fx-font-size: 13px;
     -fx-text-fill: #0f172a;
     -fx-alignment: CENTER;
     -fx-padding: 2 4;
@@ -321,13 +321,13 @@
 
 .dialog-cart-name {
     -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 12.5px;
+    -fx-font-size: 13px;
     -fx-text-fill: #1e293b;
 }
 
 .dialog-cart-unit {
     -fx-font-family: "Inter 18pt Regular";
-    -fx-font-size: 11px;
+    -fx-font-size: 12px;
     -fx-text-fill: #64748b;
 }
 
@@ -340,7 +340,7 @@
 .btn-remove-item {
     -fx-background-color: transparent;
     -fx-text-fill: #94a3b8;
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-cursor: hand;
     -fx-padding: 4;
 }
@@ -366,7 +366,7 @@
 
 .banner-warning-text {
     -fx-font-family: "Inter 18pt Medium";
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-text-fill: #b45309;
 }
 
@@ -389,7 +389,7 @@
 
 .extra-field-name {
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-text-fill: #64748b;
     -fx-min-width: 85px;
 }
@@ -401,7 +401,7 @@
     -fx-border-radius: 6px;
     -fx-border-width: 1px;
     -fx-padding: 5 8;
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-text-fill: #0f172a;
 }
 
@@ -505,7 +505,7 @@
 
 .payment-summary-label {
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-text-fill: #64748b;
 }
 
@@ -557,13 +557,13 @@
 
 .prescription-warning-title-compact {
     -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 11.5px;
+    -fx-font-size: 12px;
     -fx-text-fill: #92400e;
 }
 
 .prescription-checkbox-compact {
     -fx-font-family: "Inter 18pt Medium";
-    -fx-font-size: 11.5px;
+    -fx-font-size: 12px;
     -fx-text-fill: #78350f;
     -fx-cursor: hand;
 }
@@ -704,7 +704,7 @@
 
 .change-card-title-compact {
     -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 12.5px;
+    -fx-font-size: 13px;
     -fx-text-fill: #854d0e;
 }
 
@@ -733,7 +733,7 @@
 
 .qr-scan-hint {
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 10px;
+    -fx-font-size: 12px;
     -fx-text-fill: #64748b;
     -fx-font-style: italic;
     -fx-padding: 2 0 0 0;
