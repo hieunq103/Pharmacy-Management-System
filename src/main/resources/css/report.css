@@ -390,3 +390,22 @@
 .report-loading-text .text {
     -fx-font-family: "Inter 18pt SemiBold";
 }
+
+/* Danh sách xổ xuống của các ô chọn (nhân viên, tháng): chữ 13px, rê chuột tới dòng nào thì dòng đó nền xanh chữ trắng */
+.combo-box-popup .list-view .list-cell {
+    -fx-font-family: "Inter 18pt";
+    -fx-font-size: 13px;
+    -fx-text-fill: #1e293b;
+    -fx-background-color: transparent;
+    -fx-padding: 8 12;
+}
+
+.combo-box-popup .list-view .list-cell:filled:selected {
+    -fx-background-color: #eff6ff;
+    -fx-text-fill: #0066ff;
+}
+
+.combo-box-popup .list-view .list-cell:filled:hover {
+    -fx-background-color: #0066ff;
+    -fx-text-fill: #ffffff;
+}
