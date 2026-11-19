@@ -41,30 +41,38 @@ final class CartQuantityControl {
             }
         });
 
+        // Hộp thoại cảnh báo (showAndWait) làm ô nhập mất focus → commit bị gọi lồng nhau và báo 2 lần
+        boolean[] committing = { false };
         Runnable commitQty = () -> {
-            String text = txtQty.getText() != null ? txtQty.getText().trim() : "";
-            if (text.isEmpty() || "0".equals(text)) {
-                txtQty.setText(String.valueOf(item.getQuantity()));
-                return;
-            }
+            if (committing[0]) return;
+            committing[0] = true;
             try {
-                int newQty = Integer.parseInt(text);
-                if (newQty <= 0) newQty = 1;
-                if (newQty > item.getMaxStock()) {
-                    DialogUtils.showWarning(
-                        "Vượt quá tồn kho",
-                        "Số lượng trong kho chỉ còn " + item.getMaxStock() + "."
-                    );
-                    newQty = item.getMaxStock();
+                String text = txtQty.getText() != null ? txtQty.getText().trim() : "";
+                if (text.isEmpty() || "0".equals(text)) {
+                    txtQty.setText(String.valueOf(item.getQuantity()));
+                    return;
                 }
-                if (newQty != item.getQuantity()) {
-                    item.setQuantity(newQty);
-                    onChanged.run();
-                } else {
-                    txtQty.setText(String.valueOf(newQty));
+                try {
+                    int newQty = Integer.parseInt(text);
+                    if (newQty <= 0) newQty = 1;
+                    if (newQty > item.getMaxStock()) {
+                        DialogUtils.showWarning(
+                            "Vượt quá tồn kho",
+                            "Số lượng trong kho chỉ còn " + item.getMaxStock() + "."
+                        );
+                        newQty = item.getMaxStock();
+                    }
+                    if (newQty != item.getQuantity()) {
+                        item.setQuantity(newQty);
+                        onChanged.run();
+                    } else {
+                        txtQty.setText(String.valueOf(newQty));
+                    }
+                } catch (NumberFormatException ex) {
+                    txtQty.setText(String.valueOf(item.getQuantity()));
                 }
-            } catch (NumberFormatException ex) {
-                txtQty.setText(String.valueOf(item.getQuantity()));
+            } finally {
+                committing[0] = false;
             }
         };
 

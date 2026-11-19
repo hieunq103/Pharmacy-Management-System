@@ -348,7 +348,7 @@ public class SalesRepository {
         }
     }
 
-    // Lấy giá bán hiện tại của các thuốc đang kinh doanh (khóa đọc chia sẻ PESSIMISTIC_READ = FOR SHARE)
+    // Lấy giá bán hiện tại của các thuốc đang kinh doanh (PESSIMISTIC_WRITE = FOR UPDATE; không dùng LOCK IN SHARE MODE vì TiDB không hỗ trợ)
     private static Map<Integer, BigDecimal> loadActivePrices(Session session, Set<Integer> medicineIds) {
         List<Object[]> rows = session
             .createSelectionQuery(
@@ -361,7 +361,7 @@ public class SalesRepository {
             )
             .setParameter("active", Medicine.Status.ACTIVE)
             .setParameter("ids", medicineIds)
-            .setLockMode(LockModeType.PESSIMISTIC_READ)
+            .setLockMode(LockModeType.PESSIMISTIC_WRITE)
             .list();
         Map<Integer, BigDecimal> prices = new HashMap<>(rows.size() * 2);
         for (Object[] r : rows) {
