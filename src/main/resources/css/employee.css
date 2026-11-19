@@ -470,8 +470,8 @@
     -fx-padding: 7 14;
     -fx-background-radius: 6px;
     -fx-background-color: transparent;
-    -fx-min-width: 160px;
-    -fx-pref-width: 160px;
+    -fx-min-width: 210px;
+    -fx-pref-width: 210px;
     -fx-alignment: CENTER_LEFT;
     -fx-cursor: hand;
 }
