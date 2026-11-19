@@ -1,8 +1,3 @@
-/* ===================================================================
-   PHARMAOS - STYLE DÙNG CHUNG GIỮA NHIỀU TRANG
-   (gộp từ các rule giống hệt nhau trước đây nằm rải ở nhiều file CSS)
-   =================================================================== */
-
 .page-btn:hover {
     -fx-background-color: #f8fafc;
     -fx-border-color: #cbd5e1;

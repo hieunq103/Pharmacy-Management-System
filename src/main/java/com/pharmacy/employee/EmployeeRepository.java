@@ -25,12 +25,10 @@ public class EmployeeRepository {
     private static final Logger log = LoggerFactory.getLogger(EmployeeRepository.class);
     private static final DateTimeFormatter YYMM = DateTimeFormatter.ofPattern("yyMM");
 
-    // Kiểm tra mã nhân viên đã tồn tại chưa
     public boolean existsByCode(String code) {
         return findConflict("code", code, null, "mã nhân viên").isPresent();
     }
 
-    // Tạo dòng bộ đếm của tháng trong giao dịch riêng, ngắn, để giao dịch thêm nhân viên chỉ cần khóa dòng đã có
     private static void ensureEmployeeSequence(String prefix) {
         String seqName = sequenceName(prefix);
         try {
@@ -63,22 +61,18 @@ public class EmployeeRepository {
         return "EMPLOYEE-" + prefix.substring(3);
     }
 
-    // Số thứ tự trong tháng có tối thiểu 3 chữ số: PMS2610001
     private static String formatEmployeeCode(String prefix, long number) {
         return prefix + String.format("%03d", number);
     }
 
-    // Nhân viên khác đang dùng số điện thoại này
     public Optional<EmployeeConflict> findByPhone(String phone, Integer excludeId) {
         return findConflict("phone", phone, excludeId, "số điện thoại");
     }
 
-    // Nhân viên khác đang dùng CCCD này
     public Optional<EmployeeConflict> findByNationalId(String nationalId, Integer excludeId) {
         return findConflict("nationalId", nationalId, excludeId, "CCCD");
     }
 
-    // Tìm nhân viên có trường dữ liệu trùng giá trị
     private Optional<EmployeeConflict> findConflict(String field, String value, Integer excludeId, String label) {
         if (value == null || value.isBlank()) return Optional.empty();
         try {
@@ -101,7 +95,6 @@ public class EmployeeRepository {
         }
     }
 
-    // Cập nhật thông tin hồ sơ cá nhân của nhân viên đang đăng nhập
     public boolean updateOwnProfile(Integer employeeId, String fullName, String phone, String address) {
         try {
             return HibernateUtil.executeWithResult(
@@ -125,7 +118,6 @@ public class EmployeeRepository {
         }
     }
 
-    // Tìm nhân viên theo ID kèm thông tin tài khoản và vai trò
     public Optional<Employee> findByIdWithDetails(Integer id) {
         if (id == null) return Optional.empty();
         return HibernateUtil.executeWithResult(session -> {
@@ -139,7 +131,6 @@ public class EmployeeRepository {
         });
     }
 
-    // Danh sách rút gọn (mã, họ tên) của mọi nhân viên, kể cả đã nghỉ vì họ vẫn có đơn bán trong quá khứ
     public List<com.pharmacy.employee.dto.EmployeeOption> findEmployeeOptions() {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             return session
@@ -154,7 +145,6 @@ public class EmployeeRepository {
         }
     }
 
-    // Thống kê tổng số nhân viên và số nhân viên đang hoạt động
     public EmployeeSummary getEmployeeSummary() {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             String hql = """
@@ -172,7 +162,6 @@ public class EmployeeRepository {
         }
     }
 
-    // Phân trang và lọc danh sách nhân viên theo nhiều tiêu chí
     public PageResult<Employee> getEmployeesPage(
         int page,
         int size,
@@ -282,7 +271,6 @@ public class EmployeeRepository {
         }
     }
 
-    // Chuyển chuỗi lọc nhiều giá trị phân tách bởi dấu phẩy thành danh sách
     private static List<String> parseMultiFilter(String raw) {
         if (raw == null || raw.isBlank()) return List.of();
         return java.util.Arrays.stream(raw.split(","))
@@ -292,7 +280,6 @@ public class EmployeeRepository {
             .toList();
     }
 
-    // Thêm mới nhân viên đồng thời tạo tài khoản đăng nhập
     public boolean addEmployeeWithAccount(Employee emp, String roleDisplayOrCode, String initialPasswordHash) {
         String roleCode = roleDisplayOrCode;
         if ("Quản lý".equalsIgnoreCase(roleDisplayOrCode) || "MANAGER".equalsIgnoreCase(roleDisplayOrCode)) {
@@ -311,7 +298,6 @@ public class EmployeeRepository {
                 ensureEmployeeSequence(prefix);
             }
             return HibernateUtil.executeWithResult(session -> {
-                // Khóa bộ đếm trước mọi thao tác khác trong giao dịch
                 String allocatedCode = needsCode ? allocateEmployeeCode(session, prefix) : null;
                 Role role = session
                     .createSelectionQuery("FROM Role r WHERE r.code = :code", Role.class)
@@ -348,7 +334,6 @@ public class EmployeeRepository {
         }
     }
 
-    // Đánh dấu nhân viên đã nghỉ việc và vô hiệu hóa tài khoản
     public boolean markAsInactive(Integer employeeId) {
         try {
             HibernateUtil.execute(session -> {
@@ -370,7 +355,6 @@ public class EmployeeRepository {
         }
     }
 
-    // Cập nhật thông tin nhân viên, trạng thái và vai trò tài khoản bởi quản lý
     public boolean updateEmployeeByManager(EmployeeUpdateRequest req) {
         try {
             return HibernateUtil.executeWithResult(session -> {

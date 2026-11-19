@@ -28,7 +28,6 @@
   </properties>
 
   <dependencies>
-    <!-- ===== JavaFX (Presentation layer) ===== -->
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
@@ -56,7 +55,6 @@
       <version>${controlsfx.version}</version>
     </dependency>
 
-    <!-- ===== Data Access (Repository layer) ===== -->
     <dependency>
       <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-core</artifactId>
@@ -84,7 +82,6 @@
       <version>${flyway.version}</version>
     </dependency>
 
-    <!-- ===== Security & Credentials Management (R85, R95) ===== -->
     <dependency>
       <groupId>org.mindrot</groupId>
       <artifactId>jbcrypt</artifactId>
@@ -96,7 +93,6 @@
       <version>${dotenv.version}</version>
     </dependency>
 
-    <!-- ===== Logging (mục 13.3 - log lỗi kèm context) ===== -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -108,7 +104,6 @@
       <version>${logback.version}</version>
     </dependency>
 
-    <!-- ===== Testing (mục 13.7) ===== -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>

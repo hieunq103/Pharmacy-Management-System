@@ -1,7 +1,3 @@
--- =============================================================================
--- CSDL HỆ THỐNG QUẢN LÝ NHÀ THUỐC (PHARMAOS) - FINAL CONSOLIDATED SCHEMA (V1 - V4)
--- Dùng để import trực tiếp vào MySQL / MySQL Workbench để Reverse Engineer sinh mô hình ERD
--- =============================================================================
 
 CREATE DATABASE IF NOT EXISTS `pharmacy_db`
     DEFAULT CHARACTER SET utf8mb4
@@ -12,9 +8,6 @@ USE `pharmacy_db`;
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
--- -----------------------------------------------------------------------------
--- 1. BẢNG VAI TRÒ (ROLES)
--- -----------------------------------------------------------------------------
 DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -22,9 +15,6 @@ CREATE TABLE `roles` (
     `name` VARCHAR(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 2. BẢNG HỒ SƠ NHÂN VIÊN (EMPLOYEES)
--- -----------------------------------------------------------------------------
 DROP TABLE IF EXISTS `employees`;
 CREATE TABLE `employees` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -43,9 +33,6 @@ CREATE TABLE `employees` (
     INDEX `idx_employees_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 3. BẢNG TÀI KHOẢN (ACCOUNTS)
--- -----------------------------------------------------------------------------
 DROP TABLE IF EXISTS `accounts`;
 CREATE TABLE `accounts` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -61,9 +48,6 @@ CREATE TABLE `accounts` (
     CONSTRAINT `fk_accounts_roles` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 4. BẢNG LỊCH SỬ ĐĂNG NHẬP (LOGIN_HISTORY)
--- -----------------------------------------------------------------------------
 DROP TABLE IF EXISTS `login_history`;
 CREATE TABLE `login_history` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -75,18 +59,12 @@ CREATE TABLE `login_history` (
     CONSTRAINT `fk_login_history_accounts` FOREIGN KEY (`account_id`) REFERENCES `accounts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 5. DANH MỤC THUỐC (MEDICINE_CATEGORIES)
--- -----------------------------------------------------------------------------
 DROP TABLE IF EXISTS `medicine_categories`;
 CREATE TABLE `medicine_categories` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(100) NOT NULL UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 6. THÔNG TIN THUỐC (MEDICINES)
--- -----------------------------------------------------------------------------
 DROP TABLE IF EXISTS `medicines`;
 CREATE TABLE `medicines` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -107,9 +85,6 @@ CREATE TABLE `medicines` (
     CONSTRAINT `chk_medicines_values` CHECK (`sell_price` >= 0 AND `min_stock_threshold` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 7. NHÀ CUNG CẤP (SUPPLIERS)
--- -----------------------------------------------------------------------------
 DROP TABLE IF EXISTS `suppliers`;
 CREATE TABLE `suppliers` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -120,9 +95,6 @@ CREATE TABLE `suppliers` (
     `phone` VARCHAR(15) NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 8. HÓA ĐƠN BÁN LẺ (SALES_ORDERS)
--- -----------------------------------------------------------------------------
 DROP TABLE IF EXISTS `sales_orders`;
 CREATE TABLE `sales_orders` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -140,9 +112,6 @@ CREATE TABLE `sales_orders` (
     CONSTRAINT `chk_sales_orders_amounts` CHECK (`total_amount` >= 0 AND `discount` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 9. GIAO DỊCH KHO (INVENTORY_TRANSACTIONS)
--- -----------------------------------------------------------------------------
 DROP TABLE IF EXISTS `inventory_transactions`;
 CREATE TABLE `inventory_transactions` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -161,9 +130,6 @@ CREATE TABLE `inventory_transactions` (
     CONSTRAINT `chk_transactions_sale_link` CHECK ((`type` = 'EXPORT_SALE') = (`sales_order_id` IS NOT NULL))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 10. LÔ THUỐC VÀ HẠN DÙNG (INVENTORY_LOTS - FEFO)
--- -----------------------------------------------------------------------------
 DROP TABLE IF EXISTS `inventory_lots`;
 CREATE TABLE `inventory_lots` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -185,9 +151,6 @@ CREATE TABLE `inventory_lots` (
     CONSTRAINT `chk_inventory_lots_price` CHECK (`import_price` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 11. LÔ THUỐC ĐEM ĐI HỦY (INVENTORY_DISPOSAL_ITEMS)
--- -----------------------------------------------------------------------------
 DROP TABLE IF EXISTS `inventory_disposal_items`;
 CREATE TABLE `inventory_disposal_items` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -200,9 +163,6 @@ CREATE TABLE `inventory_disposal_items` (
     CONSTRAINT `chk_disposal_items_quantity` CHECK (`quantity` > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 12. CHI TIẾT HÓA ĐƠN BÁN LẺ (SALES_ORDER_ITEMS)
--- -----------------------------------------------------------------------------
 DROP TABLE IF EXISTS `sales_order_items`;
 CREATE TABLE `sales_order_items` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -220,9 +180,6 @@ CREATE TABLE `sales_order_items` (
     CONSTRAINT `chk_so_items_values` CHECK (`quantity` > 0 AND `unit_price` >= 0 AND `line_total` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- -----------------------------------------------------------------------------
--- 13. BỘ ĐẾM CẤP MÃ (CODE_SEQUENCES) - EMPLOYEE-YYMM: mã nhân viên theo tháng, MEDICINE: mã thuốc
--- -----------------------------------------------------------------------------
 CREATE TABLE `code_sequences` (
     `name` VARCHAR(30) NOT NULL PRIMARY KEY,
     `current_number` BIGINT NOT NULL DEFAULT 0

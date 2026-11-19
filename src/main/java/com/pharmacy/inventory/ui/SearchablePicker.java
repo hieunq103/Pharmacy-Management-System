@@ -48,12 +48,6 @@ abstract class SearchablePicker<T> extends VBox {
     private final double maxListHeight;
     private boolean isUpdatingText = false;
 
-    /**
-     * @param listStyleClass  class CSS của danh sách
-     * @param boxStyleClass   class CSS của khung nhập
-     * @param rowHeight       chiều cao ước tính mỗi dòng (để tính chiều cao danh sách)
-     * @param maxListHeight   chiều cao tối đa của danh sách
-     */
     protected SearchablePicker(
         String promptText,
         String listStyleClass,
@@ -204,8 +198,6 @@ abstract class SearchablePicker<T> extends VBox {
         if (local == null || !contains(local)) hideResults();
     };
 
-    // ---- Phần lớp con phải khai báo ----
-
     /** Dựng nội dung một dòng gợi ý (lớp nền gắn kiểu dáng chung và sự kiện chọn). */
     protected abstract HBox renderRow(T item);
 
@@ -225,8 +217,6 @@ abstract class SearchablePicker<T> extends VBox {
     protected Node emptyResultNode() {
         return null;
     }
-
-    // ---- Phần dùng chung ----
 
     private void showResults() {
         resultsContainer.getChildren().clear();

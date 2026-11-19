@@ -1,7 +1,3 @@
-/* ===================================================================
-   PHARMAOS - PHÂN HỆ BÁO CÁO & THỐNG KÊ DOANH SỐ, THUỐC ĐÃ BÁN
-   =================================================================== */
-
 .report-scroll-pane {
     -fx-background-color: #f8fafc;
     -fx-border-color: transparent;
@@ -39,7 +35,6 @@
     -fx-font-size: 14px;
 }
 
-/* ==================== STAT CARDS (THẺ THỐNG KÊ) ==================== */
 .report-stat-card {
     -fx-background-color: #ffffff;
     -fx-background-radius: 14px;
@@ -121,7 +116,6 @@
     -fx-scale-y: 0.95;
 }
 
-/* ==================== TAB PANE (TAB "TAI THỎ" GẮN LIỀN KHUNG BIỂU ĐỒ) ==================== */
 .report-tab-pane {
     -fx-tab-min-height: 40px;
     -fx-tab-max-height: 40px;
@@ -182,7 +176,6 @@
     -fx-faint-focus-color: transparent !important;
 }
 
-/* ==================== CARD BÊN TRONG TAB ==================== */
 .content-card {
     -fx-background-color: #ffffff;
     -fx-background-radius: 14px;
@@ -221,7 +214,6 @@
     -fx-cell-size: 50px;
 }
 
-/* ==================== BIỂU ĐỒ DOANH SỐ ==================== */
 .chart-card {
     -fx-background-color: #ffffff;
     -fx-background-radius: 0 14px 14px 14px;
@@ -239,7 +231,6 @@
     -fx-padding: 4 0 0 0;
 }
 
-/* Chỉ giữ đường kẻ ngang mờ, bỏ đường dọc */
 .chart-vertical-grid-lines {
     -fx-stroke: transparent;
 }
@@ -283,7 +274,6 @@
     -fx-stroke: transparent;
 }
 
-/* CỘT BIỂU ĐỒ GỌN GÀNG, BO ĐỈNH, GIỚI HẠN ĐỘ RỘNG NHƯ THEO THÁNG */
 .report-bar-chart .chart-bar,
 .chart-bar {
     -fx-bar-fill: #10b981;
@@ -300,7 +290,6 @@
     -fx-cursor: hand;
 }
 
-/* BIỂU ĐỒ SỐ LƯỢNG THUỐC ĐÃ BÁN (XANH LÁ / EMERALD) */
 .report-bar-chart-green .chart-bar {
     -fx-bar-fill: #10b981;
     -fx-background-color: #10b981;
@@ -315,7 +304,6 @@
     -fx-cursor: hand;
 }
 
-/* ==================== MÀU SẮC RIÊNG CHO CỘT ĐƯỢC CHỌN (MÀU CAM) & CỘT CÒN LẠI ==================== */
 .chart-bar-orange {
     -fx-bar-fill: #f97316 !important;
     -fx-background-color: #f97316 !important;
@@ -346,7 +334,6 @@
     -fx-cursor: hand !important;
 }
 
-/* CĂN GIỮA CỘT DOANH THU TRONG BẢNG CHI TIẾT SẢN LƯỢNG */
 #colMedRevenue,
 #colMedRevenue .label,
 .table-view #colMedRevenue,
@@ -354,7 +341,6 @@
     -fx-alignment: CENTER;
 }
 
-/* Lớp phủ "Đang tải báo cáo..." */
 .report-loading-overlay {
     -fx-background-color: rgba(248, 250, 252, 0.72);
 }
@@ -373,7 +359,6 @@
     -fx-font-family: "Inter 18pt Bold";
 }
 
-/* Danh sách xổ xuống của các ô chọn (nhân viên, tháng): chữ 13px, rê chuột tới dòng nào thì dòng đó nền xanh chữ trắng */
 .combo-box-popup .list-view .list-cell {
     -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 14px;

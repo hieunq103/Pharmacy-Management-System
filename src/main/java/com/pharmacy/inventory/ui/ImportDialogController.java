@@ -32,7 +32,6 @@ public class ImportDialogController implements Initializable {
 
     private static final Logger log = LoggerFactory.getLogger(ImportDialogController.class);
 
-    // Mã của thuốc mới chỉ được cấp khi lưu phiếu (bộ đếm trong CSDL) nên lúc lập phiếu chưa có mã thật
     private static final String PENDING_CODE = "Tự cấp khi lưu";
 
     @FXML
@@ -566,7 +565,6 @@ public class ImportDialogController implements Initializable {
         resetItemInputForm();
     }
 
-    // Hỏi lại trước khi nhập kho: bảng mã thuốc + tên thuốc + số lô + số lượng của cả phiếu (cuộn được khi nhiều dòng)
     private static boolean confirmImport(
         javafx.stage.Window owner,
         List<BatchImportItemDTO> items,
@@ -600,7 +598,6 @@ public class ImportDialogController implements Initializable {
             .isPresent();
     }
 
-    // Bảng mã thuốc + tên thuốc + số lô + số lượng của cả phiếu; thuốc mới có nhãn "Mới", chưa có mã thì ghi "Cấp mã sau"
     private static TableView<BatchImportItemDTO> buildItemsTable(List<BatchImportItemDTO> items) {
         TableView<BatchImportItemDTO> table = new TableView<>(FXCollections.observableArrayList(items));
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
@@ -668,14 +665,12 @@ public class ImportDialogController implements Initializable {
         }
         table.getColumns().setAll(List.of(codeCol, nameCol, lotCol, qtyCol));
         table.setFixedCellSize(34);
-        // Tối đa 8 dòng, nhiều hơn thì cuộn trong bảng
         table.setPrefHeight(36 + 34 * Math.min(Math.max(items.size(), 1), 8) + 4);
         table.setPrefWidth(620);
 
         return table;
     }
 
-    // Kết quả nhập kho: bảng thuốc đã nhập kèm mã (thuốc mới được cấp mã sau khi nhập)
     private static void showImportResult(javafx.stage.Window owner, List<BatchImportItemDTO> items) {
         long newCount = items.stream().filter(BatchImportItemDTO::isNewMedicine).count();
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

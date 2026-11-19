@@ -257,7 +257,6 @@ public class DashboardController implements Initializable {
             return;
         }
 
-        // Lưu mốc thời gian của đơn hàng gần nhất để điều hướng lịch sử bán
         for (SalesOrderDTO t : transactions) {
             if (t != null && t.getCreatedAt() != null) {
                 latestTransactionTime = t.getCreatedAt();
@@ -360,7 +359,6 @@ public class DashboardController implements Initializable {
         openInventory(null, new String[] { "Có lô cận hạn" });
     }
 
-    // Mở Kho thuốc kèm bộ lọc; nút "Quay lại" ở Kho thuốc đưa người dùng về Tổng quan
     private void openInventory(String[] stockFilters, String[] expiryFilters) {
         MainLayoutController layout = MainLayoutController.getInstance();
         if (layout != null) {

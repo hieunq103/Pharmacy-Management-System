@@ -1,4 +1,3 @@
-/* Áp dụng font Inter cho toàn bộ các phần tử bên trong ScrollPane của Profile */
 .scroll-pane,
 .scroll-pane .text,
 .scroll-pane .text-field,
@@ -6,14 +5,12 @@
     -fx-font-family: "Inter 18pt Medium";
 }
 
-/* Áp dụng chung cho cả ô nhập (form-input) và toàn bộ các nhãn chữ (label) trong form */
 .form-input,
 .scroll-pane .label,
 .form-label {
     -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 14px;
 }
-/* Trạng thái CHỈ XEM (Read-only) */
 .form-input.readonly {
     -fx-background-color: #f1f5f9;
     -fx-border-color: #cbd5e1;
@@ -26,7 +23,6 @@
     -fx-text-fill: #1e293b;
 }
 
-/* Trạng thái CHỈNH SỬA (Editable) */
 .form-input.editable {
     -fx-background-color: #ffffff;
     -fx-border-color: #2563eb;
@@ -39,9 +35,6 @@
     -fx-text-fill: #0f172a;
 }
 
-/* ==================== CỤM NÚT THAO TÁC PROFILE ==================== */
-
-/* Cấu hình chung cho tất cả các nút: Font Inter 14px, chiều cao 38px, bo góc 6px */
 .btn-action {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
@@ -51,14 +44,12 @@
     -fx-cursor: hand;
 }
 
-/* 1. Nút "Chỉnh sửa thông tin liên hệ" (Xanh dương) */
 .btn-primary {
     -fx-background-color: #2563eb;
     -fx-text-fill: white;
     -fx-padding: 0 20;
 }
 
-/* 2. Nút "Hoàn tác" (Xám nhạt) */
 .btn-secondary {
     -fx-background-color: #f1f5f9;
     -fx-text-fill: #475569;
@@ -71,7 +62,6 @@
     -fx-text-fill: #1e293b;
 }
 
-/* 3. Nút "Lưu thay đổi" (Xanh lá) */
 .btn-success {
     -fx-background-color: #16a34a;
     -fx-text-fill: white;
@@ -93,27 +83,23 @@
     -fx-font-size: 14px;
 }
 
-/* Trạng thái khi click / focus (viền xanh giống ô CCCD đang active) */
 .combo-box.form-input:focused,
 .combo-box.form-input:showing {
     -fx-border-color: #2563eb;
     -fx-background-color: #ffffff;
 }
 
-/* Phần hiển thị text bên trong ComboBox */
 .combo-box.form-input .list-cell {
     -fx-background-color: transparent;
     -fx-text-fill: #1e293b;
     -fx-padding: 4 0 4 2;
 }
 
-/* Loại bỏ màu xám gradient mặc định của nút mũi tên */
 .combo-box.form-input .arrow-button {
     -fx-background-color: transparent;
     -fx-cursor: hand;
 }
 
-/* Tạo hình mũi tên gọn gàng, màu xám thanh lịch */
 .combo-box.form-input .arrow {
     -fx-background-color: #64748b;
     -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
@@ -123,15 +109,14 @@
 .combo-box-popup .list-view {
     -fx-background-color: #ffffff;
     -fx-background-insets: 0;
-    -fx-border-color: #71717a; /* Viền ngoài xám đậm rõ nét */
+    -fx-border-color: #71717a;
     -fx-border-width: 1px;
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
-    -fx-padding: 0; /* Bỏ toàn bộ lề để mục chọn tràn mép ngang */
+    -fx-padding: 0;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 6, 0, 0, 2);
 }
 
-/* Các dòng chưa chọn */
 .combo-box-popup .list-view .list-cell {
     -fx-background-color: transparent;
     -fx-text-fill: #18181b;
@@ -140,30 +125,25 @@
     -fx-font-size: 14px;
 }
 
-/* Rê chuột qua dòng chưa chọn */
 .combo-box-popup .list-view .list-cell:hover {
     -fx-background-color: #f4f4f5;
 }
 
-/* DÒNG ĐANG CHỌN (VD: Nam): NỀN XANH CYAN TRÀN VIỀN, CHỮ TRẮNG TINH */
 .combo-box-popup .list-view .list-cell:filled:selected,
 .combo-box-popup .list-view .list-cell:selected {
-    -fx-background: #0096d6; /* Màu xanh cyan chuẩn theo ảnh mẫu */
+    -fx-background: #0096d6;
     -fx-background-color: #0096d6;
     -fx-text-fill: #ffffff;
 }
 
-/* Bo 2 góc trên nếu mục chọn ở đầu danh sách */
 .combo-box-popup .list-view .list-cell:first-child:selected {
     -fx-background-radius: 3px 3px 0 0;
 }
 
-/* Bo 2 góc dưới nếu mục chọn ở cuối danh sách */
 .combo-box-popup .list-view .list-cell:last-child:selected {
     -fx-background-radius: 0 0 3px 3px;
 }
 
-/* Hover trên mục đang chọn */
 .combo-box-popup .list-view .list-cell:filled:selected:hover,
 .combo-box-popup .list-view .list-cell:selected:hover {
     -fx-background: #0085be;

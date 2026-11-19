@@ -235,7 +235,6 @@ public final class TableFilterHelper {
         }
     }
 
-    /** Đưa bộ lọc của cột về "Tất cả" (dùng khi đưa trang về trạng thái ban đầu). */
     @SuppressWarnings("unchecked")
     public static void resetColumnFilter(TableColumn<?, ?> column) {
         if (column == null) return;

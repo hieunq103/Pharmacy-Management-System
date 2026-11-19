@@ -249,10 +249,6 @@ public class InventoryController implements Initializable {
         loadInventoryData();
     }
 
-    /**
-     * Mở Kho thuốc từ Tổng quan: lưu lại bộ lọc/từ khóa hiện tại, áp bộ lọc được chọn, hiện nút Quay lại.
-     * Khi thoát ({@link #resetContext()}) mọi thứ được khôi phục như trước.
-     */
     public void enterFilteredContext(String[] stockFilters, String[] expiryFilters, Runnable onBack) {
         if (contextBack == null) {
             savedStockFilter = activeFilters.get("stockStatus");
@@ -267,7 +263,6 @@ public class InventoryController implements Initializable {
         applyFilterState(stockFilters, expiryFilters, "");
     }
 
-    /** Thoát ngữ cảnh mở từ Tổng quan: bỏ nút Quay lại và trả bộ lọc/từ khóa về trạng thái ban đầu. */
     public void resetContext() {
         if (contextBack == null) return;
         contextBack = null;
@@ -278,7 +273,6 @@ public class InventoryController implements Initializable {
         savedKeyword = null;
     }
 
-    /** Vào Kho thuốc bằng Menu: bỏ mọi bộ lọc/từ khóa, về danh sách mặt định (và màn hình chính nếu đang ở lịch sử). */
     public void resetToDefault() {
         resetContext();
         if (viewInventoryHistory != null && viewInventoryHistory.isVisible()) {
@@ -318,7 +312,6 @@ public class InventoryController implements Initializable {
         loadInventoryData();
     }
 
-    // Ô văn bản sửa trực tiếp trên dòng (hoạt chất, nhà sản xuất): hiện nhãn, khi dòng đang sửa thì hiện ô nhập gắn với bản nháp
     private final class InlineTextCell extends TableCell<MedicineInventoryDTO, MedicineInventoryDTO> {
 
         private final java.util.function.Function<MedicineInventoryDTO, String> display;

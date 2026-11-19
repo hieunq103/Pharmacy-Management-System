@@ -41,7 +41,6 @@ public class SalesRepository {
 
     private static final Logger log = LoggerFactory.getLogger(SalesRepository.class);
 
-    // Lấy danh sách tên tất cả danh mục thuốc cho màn hình bán hàng
     public List<String> getAllCategories() {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             return session
@@ -53,7 +52,6 @@ public class SalesRepository {
         }
     }
 
-    // Phân trang danh sách thuốc bán kèm số lượng tồn khả dụng (2-step HQL pagination, tránh N+1)
     public PageResult<MedicineInventoryDTO> getMedicinesPage(int page, int size, String keyword, String categoryName) {
         return getMedicinesPage(page, size, keyword, categoryName, null);
     }
@@ -93,7 +91,6 @@ public class SalesRepository {
                 return PageResult.empty(validPage, validSize);
             }
 
-            // Bước 1: Lấy đúng ID các thuốc của trang hiện tại (thuốc còn hàng còn hạn lên trước).
             // Không dùng ORDER BY CASE WHEN EXISTS(...) (subquery tương quan chạy cho mọi dòng + filesort toàn bảng mỗi lần
             // chuyển trang). Thay bằng 2 nhóm: nhóm có hàng (semi-join theo index lô) rồi tới nhóm còn lại, ghép theo offset.
             LocalDate today = LocalDate.now();
@@ -143,7 +140,6 @@ public class SalesRepository {
                 return PageResult.empty(validPage, validSize);
             }
 
-            // Bước 2: Lấy thông tin thuốc + thống kê lô chỉ cho đúng pageIds
             String detailHql = """
             SELECT m.id, m.code, m.name, mc.name, m.requiresPrescription, m.unit, m.sellPrice,
                    m.activeIngredient, m.manufacturer
@@ -175,13 +171,11 @@ public class SalesRepository {
         }
     }
 
-    // Gán tham số tìm kiếm từ khóa và danh mục cho truy vấn thuốc bán
     private static void bindMedicineFilter(SelectionQuery<?> query, SearchFilter search, String category) {
         search.bind(query);
         if (category != null) query.setParameter("category", category.trim());
     }
 
-    // Ánh xạ dòng kết quả truy vấn HQL sang DTO thuốc bán
     private static MedicineInventoryDTO mapSalesMedicineRow(Object[] row, LotStats stats) {
         int sellableQty = stats.sellableQty();
         MedicineInventoryDTO.InventoryStatus status = MedicineInventoryDTO.InventoryStatus.NORMAL;
@@ -209,14 +203,12 @@ public class SalesRepository {
         return dto;
     }
 
-    // Sinh mã hóa đơn tiếp theo theo định dạng HDB-yyMMdd-HHmmss-xx
     public String generateNextOrderCode() {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd-HHmmss"));
         int randomSuffix = ThreadLocalRandom.current().nextInt(10, 100);
         return String.format("HDB-%s-%02d", timestamp, randomSuffix);
     }
 
-    // Tạo mới đơn bán hàng, khóa lô bằng HQL PESSIMISTIC_WRITE, phân bổ FEFO và cập nhật tồn kho
     public String createSalesOrder(SalesOrderRequest req) {
         if (req == null || req.getItems() == null || req.getItems().isEmpty()) {
             throw new IllegalArgumentException("Đơn hàng rỗng, không có sản phẩm nào để thanh toán.");
@@ -342,7 +334,6 @@ public class SalesRepository {
         }
     }
 
-    // Lấy giá bán hiện tại của các thuốc đang kinh doanh (PESSIMISTIC_WRITE = FOR UPDATE; không dùng LOCK IN SHARE MODE vì TiDB không hỗ trợ)
     private static Map<Integer, BigDecimal> loadActivePrices(Session session, Set<Integer> medicineIds) {
         List<Object[]> rows = session
             .createSelectionQuery(
@@ -364,7 +355,6 @@ public class SalesRepository {
         return prices;
     }
 
-    // Khóa và lấy danh sách lô thuốc còn hạn theo thứ tự ưu tiên FEFO (PESSIMISTIC_WRITE = FOR UPDATE)
     private static Map<Integer, List<InventoryLot>> lockSellableLots(Session session, Set<Integer> medicineIds) {
         List<InventoryLot> lots = session
             .createSelectionQuery(
@@ -388,7 +378,6 @@ public class SalesRepository {
         return result;
     }
 
-    // Phân trang danh sách hóa đơn bán hàng theo khoảng ngày và từ khóa (2-step HQL pagination)
     public PageResult<SalesOrderDTO> getSalesOrders(
         LocalDate fromDate,
         LocalDate toDate,
@@ -403,7 +392,6 @@ public class SalesRepository {
         int validSize = Math.max(1, size);
 
         try (Session session = HibernateUtil.openReadOnlySession()) {
-            // Mỗi token khớp mã đơn / SĐT khách / tên thu ngân (nhân viên lập đơn); kết hợp (AND) với khoảng ngày/tháng
             SearchFilter search = SearchFilter.of(keyword, "kw")
                 .contains("so.code", "so.customerPhone")
                 .custom("so.employee.id IN (SELECT eS.id FROM Employee eS WHERE eS.fullName LIKE {p} ESCAPE '!')");
@@ -446,7 +434,6 @@ public class SalesRepository {
         }
     }
 
-    // Nạp chi tiết tổng hợp cho danh sách ID hóa đơn trong trang hiện tại (2 truy vấn HQL theo index)
     private static List<SalesOrderDTO> loadOrderSummariesByIds(Session session, List<Long> orderIds) {
         if (orderIds == null || orderIds.isEmpty()) {
             return Collections.emptyList();
@@ -512,7 +499,6 @@ public class SalesRepository {
         return list;
     }
 
-    // Gán tham số bộ lọc cho truy vấn danh sách hóa đơn
     private static void bindOrderFilter(
         SelectionQuery<?> query,
         LocalDate fromDate,
@@ -526,7 +512,6 @@ public class SalesRepository {
         search.bind(query);
     }
 
-    // Lấy danh sách chi tiết các mặt hàng của một hóa đơn
     public List<SalesOrderDetailDTO> getSalesOrderItems(long orderId) {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             String hql = """
@@ -567,7 +552,6 @@ public class SalesRepository {
         }
     }
 
-    // Lấy danh sách các đơn bán hàng gần nhất cho Dashboard
     public List<SalesOrderDTO> getRecentSalesOrders(int limit, Integer employeeId) {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             String idsHql =

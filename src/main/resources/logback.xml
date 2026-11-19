@@ -6,7 +6,6 @@
         </encoder>
     </appender>
 
-    <!-- Log xoay vòng theo ngày, giữ tối đa 30 ngày và tổng dung lượng không quá 500MB (mục 13.3, R23) -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/pharmacy.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

@@ -3,7 +3,6 @@ package com.pharmacy.employee.dto;
 import com.pharmacy.employee.Employee;
 
 public record EmployeeConflict(String code, String fullName, Employee.Status status) {
-    // Nhân viên đã nghỉ vẫn giữ SĐT/CCCD trong hồ sơ cũ
     public String message(String fieldLabel) {
         String who = code + " - " + fullName;
         if (status == Employee.Status.INACTIVE) {

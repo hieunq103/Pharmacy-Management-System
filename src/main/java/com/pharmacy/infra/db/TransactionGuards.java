@@ -8,7 +8,6 @@ public final class TransactionGuards {
 
     private TransactionGuards() {}
 
-    // Kiểm tra ngay trong giao dịch: nhân viên bị cho nghỉ/khóa tài khoản khi đang đăng nhập cũng không ghi được
     public static void requireActiveEmployee(Session session, Integer employeeId) {
         if (employeeId == null) {
             throw new IllegalArgumentException("Không xác định được nhân viên thực hiện giao dịch.");

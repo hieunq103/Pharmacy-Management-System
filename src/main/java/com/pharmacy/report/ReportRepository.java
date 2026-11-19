@@ -29,7 +29,6 @@ public class ReportRepository {
 
     private static final Logger log = LoggerFactory.getLogger(ReportRepository.class);
 
-    // Lấy thống kê nhanh doanh thu và số đơn bán trong ngày hôm nay
     public TodaySalesSummary getTodaySalesSummary(Integer employeeId) {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             LocalDate today = LocalDate.now();
@@ -49,7 +48,6 @@ public class ReportRepository {
         }
     }
 
-    // Lấy tổng quan báo cáo doanh số, số đơn hàng và số lượng thuốc bán (tách 2 truy vấn HQL theo index để tránh nhân dòng)
     public ReportSummaryDTO getReportSummary(LocalDate from, LocalDate to, Integer employeeId) {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             String orderHql =
@@ -92,7 +90,6 @@ public class ReportRepository {
         }
     }
 
-    // Lấy danh sách thuốc đã bán kèm số lượng và doanh thu (HQL DTO Constructor Projection)
     public List<SoldMedicineDTO> getSoldMedicines(LocalDate from, LocalDate to, String keyword, Integer employeeId) {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             SearchFilter search = SearchFilter.of(keyword, "kw").prefix("m.code").contains("m.name", "mc.name");
@@ -124,7 +121,6 @@ public class ReportRepository {
         }
     }
 
-    // Lấy biểu đồ doanh thu theo 12 tháng của năm
     public List<RevenueTimelineDTO> get12MonthsRevenueTimeline(int year, Integer employeeId) {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             String hql =
@@ -153,7 +149,6 @@ public class ReportRepository {
         }
     }
 
-    // Lấy biểu đồ số lượng thuốc bán theo 12 tháng của năm
     public List<MedicineTimelineDTO> get12MonthsMedicineTimeline(int year, Integer employeeId) {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             String hql =
@@ -183,13 +178,11 @@ public class ReportRepository {
         }
     }
 
-    // Lấy doanh số và số lượng thuốc bán trong 7 ngày tính đến một ngày cụ thể (dùng chung cho Báo cáo và Dashboard)
     public List<DailySalesDTO> get7DaysSalesUpTo(LocalDate endDate, Integer employeeId) {
         LocalDate effectiveEnd = endDate != null ? endDate : LocalDate.now();
         return getDailySales(effectiveEnd.minusDays(6), effectiveEnd, employeeId);
     }
 
-    // Lấy thống kê doanh thu, số đơn hàng và số lượng bán theo từng ngày trong khoảng [from, to]
     public List<DailySalesDTO> getDailySales(LocalDate from, LocalDate to, Integer employeeId) {
         if (from == null || to == null || from.isAfter(to)) {
             return Collections.emptyList();
@@ -245,7 +238,6 @@ public class ReportRepository {
         }
     }
 
-    // Chuyển thứ trong tuần sang tên viết tắt tiếng Việt
     private static String dayOfWeekLabel(DayOfWeek dow) {
         return switch (dow) {
             case MONDAY -> "T2";
@@ -258,7 +250,6 @@ public class ReportRepository {
         };
     }
 
-    // Gom nhóm kết quả truy vấn theo tháng
     private static Map<Integer, Object[]> groupByMonth(List<Object[]> rows) {
         Map<Integer, Object[]> byMonth = new HashMap<>();
         for (Object[] r : rows) {
@@ -267,12 +258,10 @@ public class ReportRepository {
         return byMonth;
     }
 
-    // Tạo điều kiện HQL lọc theo nhân viên nếu có
     private static String employeeFilter(Integer employeeId) {
         return employeeId != null ? " AND so.employee.id = :employeeId " : "";
     }
 
-    // Gán tham số khoảng ngày và nhân viên vào câu truy vấn HQL
     private static void bindRange(SelectionQuery<?> query, LocalDate from, LocalDate to, Integer employeeId) {
         query.setParameter("startTime", from.atStartOfDay());
         query.setParameter("endTime", to.plusDays(1).atStartOfDay());

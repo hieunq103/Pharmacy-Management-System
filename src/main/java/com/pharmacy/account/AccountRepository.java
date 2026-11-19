@@ -25,23 +25,19 @@ public class AccountRepository {
         });
     }
 
-    // Ghi nhận lịch sử đăng nhập thành công
     public void recordSuccessfulLogin(Integer accountId, String clientInfo) {
         saveLoginHistory(accountId, "SUCCESS", clientInfo);
     }
 
-    // Lưu lịch sử đăng nhập vào cơ sở dữ liệu
     public void saveLoginHistory(Integer accountId, String result, String clientInfo) {
         HibernateUtil.execute(session -> saveLoginHistoryInternal(session, accountId, result, clientInfo));
     }
 
-    // Thực thi câu lệnh insert bản ghi lịch sử đăng nhập
     private void saveLoginHistoryInternal(Session session, Integer accountId, String result, String clientInfo) {
         Account accountRef = session.getReference(Account.class, accountId);
         session.persist(new LoginHistory(accountRef, LoginHistory.Result.valueOf(result), clientInfo));
     }
 
-    // Lấy danh sách lịch sử đăng nhập gần nhất của tài khoản
     public List<Object[]> getLoginHistory(Integer accountId) {
         if (accountId == null) {
             return List.of();
@@ -61,7 +57,6 @@ public class AccountRepository {
         }
     }
 
-    // Cập nhật mật khẩu mới và tắt cờ bắt buộc đổi mật khẩu
     public boolean updatePassword(Integer accountId, String newPasswordHash) {
         return HibernateUtil.executeWithResult(session -> {
             String hql =
@@ -75,7 +70,6 @@ public class AccountRepository {
         });
     }
 
-    // Cấp lại mật khẩu tạm: thay bản băm và bật lại cờ bắt buộc đổi mật khẩu
     public boolean resetPassword(Integer accountId, String newPasswordHash) {
         return HibernateUtil.executeWithResult(
             session ->
@@ -89,7 +83,6 @@ public class AccountRepository {
         );
     }
 
-    // Khóa tài khoản nhân viên
     public boolean lockAccount(Integer accountId) {
         if (accountId == null) return false;
         return HibernateUtil.executeWithResult(session -> {
@@ -99,7 +92,6 @@ public class AccountRepository {
         });
     }
 
-    // Mở khóa tài khoản nhân viên
     public boolean unlockAccount(Integer accountId) {
         if (accountId == null) return false;
         return HibernateUtil.executeWithResult(session -> {

@@ -56,7 +56,6 @@ public final class SearchFilter {
         return tokens.isEmpty();
     }
 
-    /** Trả về chuỗi bắt đầu bằng " AND (...)" hoặc rỗng nếu không có từ khóa. */
     public String hql() {
         if (tokens.isEmpty()) return "";
         StringBuilder sb = new StringBuilder();

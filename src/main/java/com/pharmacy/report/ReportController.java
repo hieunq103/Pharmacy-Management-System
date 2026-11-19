@@ -66,7 +66,6 @@ public class ReportController {
     @FXML
     private ComboBox<com.pharmacy.employee.dto.EmployeeOption> cbEmployee;
 
-    // Quản lý chọn một nhân viên để xem báo cáo riêng người đó (null = tất cả)
     private Integer selectedEmployeeId;
     private EmployeeFilterCombo employeeFilter;
 
@@ -323,7 +322,6 @@ public class ReportController {
         tblSoldMedicines.setFixedCellSize(TABLE_ROW_HEIGHT);
         tblSoldMedicines.setItems(topSoldMedicines);
 
-        // Khóa cuộn dọc của bảng Top 5 và chuyển hướng cuộn dọc sang thanh cuộn trang chính
         com.pharmacy.common.TableSyncHelper.attachVirtualFlowProtection(tblSoldMedicines);
 
         tblSoldMedicines.addEventFilter(ScrollEvent.SCROLL, event -> {
@@ -545,7 +543,6 @@ public class ReportController {
                 selectedMonth = Integer.parseInt(val);
             } catch (NumberFormatException ignored) {}
             if (!filterControlsReady) return;
-            // Chọn tháng là tự chuyển sang chế độ "Theo tháng"
             boolean modeChanged = currentMode != PeriodMode.MONTH;
             currentMode = PeriodMode.MONTH;
             if (modeChanged) updateFilterButtonStyles(false);
@@ -634,7 +631,6 @@ public class ReportController {
         }
     }
 
-    // Nhân viên luôn bị giới hạn ở chính mình; Quản lý xem tất cả hoặc theo nhân viên đã chọn
     private Integer getCurrentEmployeeId() {
         return UserSession.scopeEmployeeId(selectedEmployeeId);
     }

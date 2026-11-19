@@ -1,4 +1,3 @@
-/* Bộ lọc kỳ thời gian (Theo ngày / Theo tháng) dùng chung cho Báo cáo và Lịch sử bán hàng */
 .filter-card {
     -fx-background-color: transparent;
     -fx-border-width: 0;
@@ -88,7 +87,6 @@
     -fx-text-fill: #1e293b;
 }
 
-/* Ô chọn có gõ để tìm (vd. chọn nhân viên ở trang Báo cáo): phần nhập chữ trong suốt, hòa vào khung combo */
 .combo-filter-box.combo-box-base:editable > .text-field {
     -fx-background-color: transparent;
     -fx-background-insets: 0;

@@ -129,7 +129,6 @@ public class SalesHistoryController implements Initializable {
     private boolean updatingControls = false;
     private String currentKeyword = "";
     private Integer filterEmployeeId = null;
-    // Quản lý mở từ báo cáo của một nhân viên: chỉ hiện đơn của người đó (Nhân viên luôn bị giới hạn ở chính mình)
     private Integer requestedEmployeeId = null;
 
     private Task<PageResult<SalesOrderDTO>> runningTask;

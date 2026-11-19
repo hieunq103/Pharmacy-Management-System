@@ -1,6 +1,3 @@
-/* ==========================================================================
-   DRAWER CONTAINER & SCROLL
-   ========================================================================== */
 .drawer-panel {
     -fx-background-color: #ffffff !important;
     -fx-font-family: "Inter 18pt Medium";
@@ -15,7 +12,6 @@
     -fx-background: #ffffff !important;
 }
 
-/* Nút X đóng Drawer */
 .btn-close-drawer {
     -fx-background-color: transparent;
     -fx-text-fill: #64748b;
@@ -31,9 +27,6 @@
     -fx-background-radius: 6px;
 }
 
-/* ==========================================================================
-   FORM LABELS & ERROR MESSAGES
-   ========================================================================== */
 .form-label {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13.5px;
@@ -45,9 +38,6 @@
     -fx-font-size: 12px;
 }
 
-/* ==========================================================================
-   INPUT FIELDS (TextField, ComboBox, DatePicker)
-   ========================================================================== */
 .form-input,
 .form-combobox {
     -fx-background-color: #ffffff;
@@ -65,7 +55,6 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.2), 4, 0, 0, 0);
 }
 
-/* Trạng thái lỗi viền đỏ kích hoạt bởi Controller */
 .form-input-error {
     -fx-border-color: #ef4444 !important;
     -fx-effect: dropshadow(three-pass-box, rgba(239, 68, 68, 0.2), 4, 0, 0, 0) !important;
@@ -112,20 +101,15 @@
     -fx-background-color: #eff6ff;
 }
 
-/* ==========================================================================
-   DATE PICKER FIX (Liền mạch 1 viền duy nhất, bo góc 8px)
-   ========================================================================== */
-
 .date-picker {
     -fx-background-color: #ffffff;
     -fx-border-color: #cbd5e1;
     -fx-border-width: 1px;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
-    -fx-padding: 0; /* Bỏ padding container ngoài để tránh hiệu ứng 2 viền */
+    -fx-padding: 0;
 }
 
-/* Hover & Focus cho DatePicker */
 .date-picker:hover {
     -fx-border-color: #94a3b8;
 }
@@ -136,7 +120,6 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.2), 4, 0, 0, 0);
 }
 
-/* Phần ô gõ chữ bên trong: Xóa hoàn toàn viền và nền riêng */
 .date-picker > .text-field {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
@@ -153,7 +136,6 @@
     -fx-border-width: 0;
 }
 
-/* Phần nút icon lịch bên phải */
 .date-picker > .arrow-button {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
@@ -171,16 +153,11 @@
     -fx-background-color: #64748b;
 }
 
-/* Trạng thái báo lỗi đỏ khi validate */
 .date-picker.form-input-error {
     -fx-border-color: #ef4444 !important;
     -fx-effect: dropshadow(three-pass-box, rgba(239, 68, 68, 0.2), 4, 0, 0, 0) !important;
 }
 
-/* ==========================================================================
-   BUTTONS (Nút Huỷ & Nút Lưu)
-   ========================================================================== */
-/* Nút Huỷ */
 .btn-secondary {
     -fx-background-color: #ffffff;
     -fx-border-color: #cbd5e1;
@@ -198,7 +175,6 @@
     -fx-text-fill: #0f172a;
 }
 
-/* Nút Lưu thông tin */
 .btn-primary-add {
     -fx-background-color: #0066ff;
     -fx-text-fill: #ffffff;
@@ -222,7 +198,6 @@
     -fx-effect: none;
 }
 
-/* Hỗ trợ ComboBox Editable */
 .form-combobox > .text-field {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
@@ -242,7 +217,6 @@
     -fx-background-color: #64748b;
 }
 
-/* Thẻ phụ trợ trong Drawer */
 .drawer-radio-button {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;

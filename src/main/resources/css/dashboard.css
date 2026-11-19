@@ -1,7 +1,3 @@
-/* ==========================================================================
-   DASHBOARD / TỔNG QUAN CSS — PharmaOS Medical Design (White & Blue)
-   ========================================================================== */
-
 .dashboard-root {
     -fx-background-color: #f8fafc;
 }
@@ -16,10 +12,6 @@
 .dashboard-scroll-pane > .viewport {
     -fx-background-color: #f8fafc;
 }
-
-/* ==========================================================================
-   1. 4 STAT CARDS (TOP ROW)
-   ========================================================================== */
 
 .dashboard-stat-card {
     -fx-background-color: #ffffff;
@@ -36,7 +28,6 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 102, 255, 0.08), 12, 0, 0, 4);
 }
 
-/* Thẻ Doanh số / Hóa đơn hôm nay: bấm để mở Lịch sử bán hàng của hôm nay */
 .dashboard-stat-card-link {
     -fx-cursor: hand;
 }
@@ -63,7 +54,6 @@
     -fx-text-fill: #dc2626;
 }
 
-/* Icon Pills */
 .stat-icon-pill {
     -fx-min-width: 32px;
     -fx-min-height: 32px;
@@ -101,10 +91,6 @@
     -fx-fill: #ef4444;
 }
 
-/* ==========================================================================
-   2. COMMON DASHBOARD CARDS
-   ========================================================================== */
-
 .dashboard-card {
     -fx-background-color: #ffffff;
     -fx-background-radius: 12px;
@@ -136,11 +122,6 @@
     -fx-underline: true;
 }
 
-/* ==========================================================================
-   4. INVENTORY ALERTS
-   ========================================================================== */
-
-/* Tab chuyển Hạn dùng / Tồn kho: tab gạch chân, tab đang chọn chữ xanh + gạch xanh */
 .alert-tab-bar {
     -fx-background-color: transparent;
     -fx-border-color: transparent transparent #e2e8f0 transparent;
@@ -251,10 +232,6 @@
     -fx-alignment: CENTER;
 }
 
-/* ==========================================================================
-   5. RECENT TRANSACTIONS TABLE
-   ========================================================================== */
-
 .recent-table-header {
     -fx-border-color: #e2e8f0;
     -fx-border-width: 0 0 1px 0;
@@ -309,7 +286,6 @@
     -fx-alignment: CENTER_LEFT;
 }
 
-/* Avatar Pill cho Nhân viên */
 .avatar-initials {
     -fx-min-width: 26px;
     -fx-min-height: 26px;
@@ -329,7 +305,6 @@
     -fx-text-fill: #1e293b;
 }
 
-/* Badges Phương thức thanh toán (gọn gàng, tinh tế) */
 .payment-badge {
     -fx-background-radius: 10px;
     -fx-padding: 2px 8px;
@@ -362,7 +337,6 @@
     -fx-border-width: 1px;
 }
 
-/* Bảng giao dịch gần đây: nền trong suốt, cuộn ngang khi cửa sổ hẹp để không bị cắt chữ */
 .tx-scroll-pane,
 .tx-scroll-pane > .viewport {
     -fx-background-color: transparent;
@@ -371,7 +345,6 @@
     -fx-padding: 0;
 }
 
-/* Ẩn thanh cuộn ngang của bảng giao dịch (vẫn vuốt/cuộn ngang được bằng trackpad hoặc Shift + lăn chuột) */
 .tx-scroll-pane .scroll-bar:horizontal,
 .tx-scroll-pane .scroll-bar:horizontal .track,
 .tx-scroll-pane .scroll-bar:horizontal .thumb,

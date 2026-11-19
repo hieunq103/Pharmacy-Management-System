@@ -53,7 +53,6 @@ public class InventoryRepository {
         return SearchFilter.of(keyword, "kw").prefix("m.code").contains("m.name", "m.activeIngredient");
     }
 
-    // Lấy thống kê tổng quan tồn kho cho Dashboard
     public InventorySummaryDTO getInventorySummary() {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             LocalDate today = LocalDate.now();
@@ -93,7 +92,6 @@ public class InventoryRepository {
         }
     }
 
-    // Lấy danh sách cảnh báo thuốc cận hạn và sắp hết hàng
     public List<InventoryAlertDTO> getInventoryAlerts(int limit) {
         List<InventoryAlertDTO> alerts = new ArrayList<>();
         try (Session session = HibernateUtil.openReadOnlySession()) {
@@ -169,7 +167,6 @@ public class InventoryRepository {
         return alerts;
     }
 
-    // Lấy danh sách thuốc rút gọn dùng cho bộ chọn thuốc
     public List<MedicineInventoryDTO> getMedicinesForPicker() {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             String hql = """
@@ -215,7 +212,6 @@ public class InventoryRepository {
         }
     }
 
-    // Phân trang và tìm kiếm danh sách thuốc trong kho theo tồn kho và hạn dùng (2-step HQL pagination)
     public PageResult<MedicineInventoryDTO> getInventoryPageResult(
         int page,
         int size,
@@ -247,7 +243,6 @@ public class InventoryRepository {
             List<Integer> pageIds;
 
             if (hasHaving) {
-                // Khi có lọc trạng thái tồn kho hoặc hạn dùng, gom nhóm tính toán và lọc HAVING
                 String filterHql =
                     "SELECT m.id FROM Medicine m LEFT JOIN InventoryLot il ON il.medicine.id = m.id AND il.quantityRemaining > 0 " +
                     " WHERE m.status = :active " +
@@ -293,7 +288,6 @@ public class InventoryRepository {
                 """;
                 rows = session.createSelectionQuery(dataHql, Object[].class).setParameter("ids", pageIds).list();
             } else {
-                // Không có lọc tồn kho/hạn dùng: phân trang đơn bảng siêu nhanh, gom lấy trực tiếp dữ liệu chỉ trong 1 lượt truy vấn
                 String where = " WHERE m.status = :active " + search.hql();
                 if (cachedTotal != null && cachedTotal >= 0) {
                     total = cachedTotal;
@@ -348,7 +342,6 @@ public class InventoryRepository {
         }
     }
 
-    // Xây dựng điều kiện HAVING HQL theo trạng thái tồn kho và hạn dùng
     private String buildHavingConditions(String stockFilter, String expiryFilter) {
         List<String> conditions = new ArrayList<>();
 
@@ -442,14 +435,12 @@ public class InventoryRepository {
         return dto;
     }
 
-    // Xác định trạng thái hạn dùng của thuốc dựa trên số lô hết hạn và cận hạn
     private static MedicineInventoryDTO.ExpiryStatus expiryStatus(int expiredCount, int nearExpiredCount) {
         if (expiredCount > 0) return MedicineInventoryDTO.ExpiryStatus.EXPIRED;
         if (nearExpiredCount > 0) return MedicineInventoryDTO.ExpiryStatus.NEAR_EXPIRY;
         return MedicineInventoryDTO.ExpiryStatus.NORMAL;
     }
 
-    // Cập nhật thông tin cơ bản và giá bán của thuốc (HQL Mutation Query)
     public boolean updateMedicine(
         int medicineId,
         String name,
@@ -484,7 +475,6 @@ public class InventoryRepository {
         }
     }
 
-    // Lấy danh sách các lô thuốc còn tồn theo ID thuốc
     public List<MedicineLotDTO> getLotsByMedicineId(int medicineId) {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             String hql = """
@@ -523,17 +513,14 @@ public class InventoryRepository {
         }
     }
 
-    // Lấy danh sách tên tất cả nhà cung cấp
     public List<String> getAllSupplierNames() {
         return listNames("SELECT s.name FROM Supplier s ORDER BY s.name ASC", "nhà cung cấp");
     }
 
-    // Lấy danh sách tên tất cả danh mục thuốc
     public List<String> getAllCategoryNames() {
         return listNames("SELECT mc.name FROM MedicineCategory mc ORDER BY mc.name ASC", "nhóm thuốc");
     }
 
-    // Truy vấn danh sách tên chuỗi bằng HQL
     private List<String> listNames(String hql, String label) {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             return session.createSelectionQuery(hql, String.class).list();
@@ -543,19 +530,16 @@ public class InventoryRepository {
         }
     }
 
-    // Kiểm tra tên thuốc đã tồn tại trong CSDL chưa
     public boolean existsMedicineByName(String name) {
         if (!hasText(name)) return false;
         return exists("SELECT COUNT(m.id) FROM Medicine m WHERE m.name = :v", name.trim());
     }
 
-    // Kiểm tra thuốc có tồn tại theo ID không
     public boolean existsMedicineById(Integer id) {
         if (id == null || id <= 0) return false;
         return exists("SELECT COUNT(m.id) FROM Medicine m WHERE m.id = :v", id);
     }
 
-    // Kiểm tra sự tồn tại bản ghi bằng HQL COUNT
     private boolean exists(String countHql, Object value) {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             Long count = session.createSelectionQuery(countHql, Long.class).setParameter("v", value).uniqueResult();
@@ -595,7 +579,6 @@ public class InventoryRepository {
         medicineSequenceReady = true;
     }
 
-    // Đặt trước count mã thuốc trong giao dịch hiện tại bằng khóa bi quan PESSIMISTIC_WRITE
     private static long reserveMedicineCodes(Session session, int count) {
         if (count <= 0) return 0;
         CodeSequence seq = session.find(CodeSequence.class, "MEDICINE", LockModeType.PESSIMISTIC_WRITE);
@@ -607,7 +590,6 @@ public class InventoryRepository {
         return start;
     }
 
-    // Thực hiện giao dịch nhập kho thuốc theo lô (Hibernate ORM + Pessimistic Lock)
     public boolean importBatchStock(
         String supplierName,
         Integer employeeId,
@@ -668,7 +650,6 @@ public class InventoryRepository {
         }
     }
 
-    // Thêm mới thông tin thuốc chưa có trong danh mục khi nhập kho
     private Medicine insertNewMedicine(
         Session session,
         BatchImportItemDTO item,
@@ -704,7 +685,6 @@ public class InventoryRepository {
         return med;
     }
 
-    // Tìm hoặc tạo mới nhà cung cấp theo tên bằng HQL
     private static Supplier findOrCreateSupplier(Session session, String name) {
         Supplier existing = session
             .createSelectionQuery("FROM Supplier s WHERE s.name = :name", Supplier.class)
@@ -717,7 +697,6 @@ public class InventoryRepository {
         return created;
     }
 
-    // Tìm hoặc tạo mới nhóm thuốc theo tên bằng HQL
     private static MedicineCategory findOrCreateCategory(Session session, String name) {
         MedicineCategory existing = session
             .createSelectionQuery("FROM MedicineCategory mc WHERE mc.name = :name", MedicineCategory.class)
@@ -730,7 +709,6 @@ public class InventoryRepository {
         return created;
     }
 
-    // Thực hiện giao dịch xuất hủy thuốc theo lô (HQL PESSIMISTIC_WRITE khóa lô)
     public boolean exportBatchStock(String reason, Integer employeeId, String note, List<BatchExportItemDTO> items) {
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("Danh sách mặt hàng xuất kho không được rỗng!");
@@ -798,7 +776,6 @@ public class InventoryRepository {
         }
     }
 
-    // Khóa và lấy các lô thuốc để xuất kho (PESSIMISTIC_WRITE = SELECT ... FOR UPDATE)
     private static Map<Long, InventoryLot> lockLots(Session session, Collection<Long> lotIds) {
         List<InventoryLot> lots = session
             .createSelectionQuery("FROM InventoryLot il WHERE il.id IN (:ids)", InventoryLot.class)
@@ -812,7 +789,6 @@ public class InventoryRepository {
         return result;
     }
 
-    // Mỗi token phải khớp người lập/NCC/ghi chú hoặc có mặt hàng (tên, mã thuốc, số lô) trong phiếu; dùng EXISTS theo index transaction_id
     private static SearchFilter importSearch(String keyword) {
         return SearchFilter.of(keyword, "kw")
             .contains("e.fullName", "s.name", "it.note")
@@ -836,7 +812,6 @@ public class InventoryRepository {
             );
     }
 
-    // Lấy 1 trang lịch sử nhập kho (2-step HQL pagination, tránh N+1 và nhân dòng)
     public PageResult<InventoryTransactionDTO> getImportTransactions(
         String keyword,
         LocalDate fromDate,
@@ -940,7 +915,6 @@ public class InventoryRepository {
         }
     }
 
-    // Lấy 1 trang lịch sử xuất kho (2-step HQL pagination, tách tổng hợp xuất hủy và xuất bán theo ID trang)
     public PageResult<InventoryTransactionDTO> getExportTransactions(
         String keyword,
         LocalDate fromDate,
@@ -1106,13 +1080,11 @@ public class InventoryRepository {
         return counter.getAsLong();
     }
 
-    // Thêm điều kiện lọc theo khoảng ngày vào câu lệnh HQL
     private static void appendDateRange(StringBuilder hql, LocalDate fromDate, LocalDate toDate) {
         if (fromDate != null) hql.append(" AND it.transactionAt >= :fromDt ");
         if (toDate != null) hql.append(" AND it.transactionAt < :toDt ");
     }
 
-    // Gán tham số tìm kiếm và khoảng ngày cho truy vấn lịch sử kho
     private static void bindHistoryParams(
         SelectionQuery<?> query,
         SearchFilter search,
@@ -1124,7 +1096,6 @@ public class InventoryRepository {
         if (toDate != null) query.setParameter("toDt", toDate.plusDays(1).atStartOfDay());
     }
 
-    // Lấy chi tiết các mặt hàng trong một giao dịch kho (HQL)
     public List<InventoryTransactionDetailDTO> getTransactionDetails(Long transactionId, String type) {
         if (transactionId == null) return Collections.emptyList();
         String hql;

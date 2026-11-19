@@ -14,8 +14,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
-// Hiện tên đăng nhập + mật khẩu tạm của nhân viên vừa tạo để quản lý sao chép gửi cho nhân viên.
-// Mật khẩu tạm không lưu ở đâu khác nên chỉ xem được một lần tại đây
 public final class NewAccountDialog {
 
     private static final String FIELD_STYLE =
@@ -67,7 +65,6 @@ public final class NewAccountDialog {
         ButtonType copyAll = new ButtonType("Sao chép cả hai", ButtonBar.ButtonData.LEFT);
         dialog.getDialogPane().getButtonTypes().addAll(copyAll, ButtonType.CLOSE);
         Button copyAllButton = (Button) dialog.getDialogPane().lookupButton(copyAll);
-        // Giữ hộp thoại mở khi bấm sao chép
         copyAllButton.addEventFilter(javafx.event.ActionEvent.ACTION, e -> {
             e.consume();
             copy("Tên đăng nhập: " + account.username() + "\nMật khẩu: " + account.temporaryPassword());

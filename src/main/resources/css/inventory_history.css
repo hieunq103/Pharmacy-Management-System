@@ -1,7 +1,3 @@
-/* ==========================================================================
-   INVENTORY HISTORY CSS — PharmaOS Medical Design
-   ========================================================================== */
-
 .history-main-title {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 19px;
@@ -14,7 +10,6 @@
     -fx-text-fill: #64748b;
 }
 
-/* Bộ lọc & DatePicker */
 .filter-label {
     -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13px;
@@ -37,7 +32,6 @@
     -fx-text-fill: #1e293b;
 }
 
-/* Nút phễu lọc theo ngày: Mặc định chưa lọc (Màu xám) */
 .btn-funnel-filter {
     -fx-background-color: #f1f5f9;
     -fx-background-radius: 6px;
@@ -68,7 +62,6 @@
     -fx-fill: #334155;
 }
 
-/* Trạng thái đang áp dụng lọc (Màu xanh thương hiệu) */
 .btn-funnel-filter.active {
     -fx-background-color: #0066ff;
     -fx-border-color: #0066ff;
@@ -89,7 +82,6 @@
     -fx-fill: #ffffff;
 }
 
-/* TABPANE TÙY BIẾN HIỆN ĐẠI */
 .custom-history-tabpane {
     -fx-tab-min-height: 38px;
     -fx-tab-max-height: 38px;
@@ -131,7 +123,6 @@
     -fx-background-insets: 0;
 }
 
-/* Xoá bỏ hoàn toàn 2 vạch dọc màu xanh (viền focus indicator bên trong) của JavaFX */
 .custom-history-tabpane .tab .focus-indicator,
 .custom-history-tabpane .tab:focused .focus-indicator {
     -fx-border-color: transparent !important;
@@ -160,7 +151,6 @@
     -fx-font-style: italic;
 }
 
-/* Master Table & Detail Table */
 .history-master-table .table-row-cell:selected,
 .history-detail-table .table-row-cell:selected {
     -fx-background-color: #e0edff !important;
@@ -181,7 +171,6 @@
     -fx-padding: 2 6;
 }
 
-/* Căn trái toàn bộ các cột và tiêu đề của bảng lịch sử kho & bảng chi tiết */
 .history-master-table .column-header .label,
 .history-detail-table .column-header .label,
 .history-master-table .column-header:last-visible .label,
@@ -194,7 +183,6 @@
     -fx-alignment: CENTER_LEFT !important;
 }
 
-/* Bảng chi tiết đơn bán: đệm ngang gọn hơn để nhiều cột vẫn đủ chữ trên màn hình nhỏ */
 .sales-detail-table .column-header {
     -fx-padding: 10 12;
 }

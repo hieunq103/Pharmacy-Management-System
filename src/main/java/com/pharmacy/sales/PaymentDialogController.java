@@ -338,10 +338,6 @@ public class PaymentDialogController {
         refreshConfirmState();
     }
 
-    /**
-     * Nút xác nhận chỉ bấm được khi: đơn có hàng; thuốc kê toa (nếu có) đã được tích xác nhận;
-     * và với chuyển khoản thì đã nhận được tín hiệu chuyển khoản thành công.
-     */
     private void refreshConfirmState() {
         boolean emptyCart = currentOrder == null || currentOrder.getItems().isEmpty();
         boolean prescriptionPending =
@@ -400,7 +396,6 @@ public class PaymentDialogController {
 
     @FXML
     private void handleSelectCash() {
-        // Đã nhận chuyển khoản thì không cho đổi sang tiền mặt (tránh ghi sai phương thức thanh toán)
         if (isPaymentReceived) return;
         selectCash();
     }

@@ -1,7 +1,3 @@
-/* ==========================================================================
-   TYPOGRAPHY & GLOBAL STYLES
-   ========================================================================== */
-
 .root {
     -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 14px;
@@ -12,12 +8,6 @@
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 18px;
 }
-
-/* ==========================================================================
-   CONTAINER & DUAL-TABLE LAYOUT
-   ========================================================================== */
-
-/* Khung bao viền ngoài cùng bo tròn góc chứa cả 2 bảng */
 
 .custom-employee-table {
     -fx-background-color: transparent;
@@ -30,16 +20,11 @@
     -fx-background-color: transparent;
 }
 
-/* Cột Thao tác ghim cố định bên phải */
 .sticky-action-col {
     -fx-border-width: 0 0 0 1px;
     -fx-border-color: #e2e8f0;
     -fx-background-insets: 0;
 }
-
-/* ==========================================================================
-   TABLE HEADER
-   ========================================================================== */
 
 .custom-employee-table .column-header-background {
     -fx-background-color: #f8fafc;
@@ -66,15 +51,10 @@
     -fx-text-overrun: clip;
 }
 
-/* Căn giữa tiêu đề cột Thao tác */
 .sticky-action-col .column-header .label,
 .custom-employee-table .column-header:last-visible .label {
     -fx-alignment: CENTER;
 }
-
-/* ==========================================================================
-   ROWS & CELLS
-   ========================================================================== */
 
 .custom-employee-table .table-row-cell {
     -fx-background-color: transparent;
@@ -109,7 +89,6 @@
     -fx-text-fill: #1e293b;
 }
 
-/* Chỉ đổi màu cho text trực tiếp của table-cell, không can thiệp label con hay badge */
 .custom-employee-table .table-row-cell:selected > .table-cell > .text,
 .custom-employee-table .table-row-cell:filled:selected > .table-cell > .text,
 .custom-employee-table .table-row-cell:filled:focused:selected > .table-cell > .text,
@@ -117,7 +96,6 @@
     -fx-fill: #1e293b;
 }
 
-/* Ẩn hoàn toàn viền và nền của các hàng trống */
 .custom-employee-table .table-row-cell:empty {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
@@ -134,13 +112,6 @@
     -fx-border-color: transparent;
 }
 
-/* ==========================================================================
-   BUTTONS & BADGES
-   ========================================================================== */
-
-/* Nút 3 chấm cột thao tác */
-
-/* Nút Thêm nhân viên */
 .btn-primary-add {
     -fx-background-color: #0066ff;
     -fx-text-fill: #ffffff;
@@ -162,7 +133,6 @@
     -fx-background-color: #0040a8;
 }
 
-/* Badge trạng thái tài khoản */
 .status-badge {
     -fx-background-radius: 16px;
     -fx-padding: 2 6;
@@ -236,10 +206,6 @@
     -fx-fill: #94a3b8;
 }
 
-/* ==========================================================================
-   PAGINATION
-   ========================================================================== */
-
 .page-btn {
     -fx-background-color: #ffffff;
     -fx-border-color: #e2e8f0;
@@ -286,12 +252,6 @@
     -fx-text-fill: #475569;
 }
 
-/* ==========================================================================
-   SCROLLBAR (ẨN THANH CUỘN DỌC BẢNG CHÍNH ĐỂ TRÁNH TRÙNG LẶP,
-   HIỂN THỊ THANH CUỘN DỌC MỎNG TINH TẾ Ở CỘT THAO TÁC NGOÀI CÙNG BÊN PHẢI)
-   ========================================================================== */
-
-/* Ẩn thanh cuộn dọc bảng chính để không bị hiện thanh cuộn ở giữa bảng */
 .custom-employee-table .scroll-bar:vertical {
     -fx-opacity: 0;
     -fx-pref-width: 0;
@@ -330,10 +290,6 @@
     -fx-pref-height: 0;
 }
 
-/* ==========================================================================
-   HEADER FILTER POPUP & ICONS
-   ========================================================================== */
-
 .custom-employee-table .column-header .btn-header-filter,
 .btn-header-filter {
     -fx-cursor: hand;
@@ -359,11 +315,6 @@
     -fx-font-family: "Inter 18pt Bold";
 }
 
-/* ==========================================================================
-   DRAWER OVERLAY
-   ========================================================================== */
-
-/* 1. Đổi màu nền của toàn bộ vùng trống trong bảng Thao tác */
 .sticky-action-col,
 .sticky-action-col .virtual-flow,
 .sticky-action-col .placeholder {

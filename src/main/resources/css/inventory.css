@@ -1,7 +1,3 @@
-/* ==========================================================================
-   TYPOGRAPHY & GLOBAL STYLES (ĐỒNG BỘ TRANG NHÂN VIÊN)
-   ========================================================================== */
-
 .root {
     -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 14px;
@@ -22,13 +18,6 @@
     -fx-text-fill: #1e293b;
 }
 
-/* ==========================================================================
-   HEADER BUTTONS & SEARCH INPUT
-   ========================================================================== */
-
-/* Ô nhập liệu tìm kiếm */
-
-/* Nút Nhập Kho - nền xanh lá (hàng vào kho), chữ trắng */
 .btn-primary-import {
     -fx-background-color: #16a34a;
     -fx-text-fill: #ffffff;
@@ -50,7 +39,6 @@
     -fx-background-color: #166534;
 }
 
-/* Nút Xuất Kho - nền xanh dương, chữ trắng */
 .btn-secondary-export {
     -fx-background-color: #0066ff;
     -fx-text-fill: #ffffff;
@@ -72,7 +60,6 @@
     -fx-background-color: #0040a8;
 }
 
-/* Nút Lịch sử Nhập / Xuất */
 .btn-secondary-history {
     -fx-background-color: #eff6ff;
     -fx-text-fill: #0066ff;
@@ -96,12 +83,6 @@
     -fx-background-color: #bfdbfe;
 }
 
-/* ==========================================================================
-   CONTAINER & TABLE STYLING
-   ========================================================================== */
-
-/* Khung bao viền ngoài cùng bo tròn góc chứa bảng */
-
 .custom-inventory-table {
     -fx-background-color: transparent;
     -fx-border-width: 0;
@@ -116,7 +97,6 @@
     -fx-background-color: transparent;
 }
 
-/* Cột Thao tác ghim cố định nổi bên phải */
 .sticky-action-col {
     -fx-border-width: 0 0 0 1.5px;
     -fx-border-color: #e2e8f0;
@@ -130,7 +110,6 @@
     -fx-background-color: #f8fafc;
 }
 
-/* Header bảng */
 .custom-inventory-table .column-header-background {
     -fx-background-color: #f8fafc;
     -fx-border-color: #cbd5e1;
@@ -156,18 +135,15 @@
     -fx-text-overrun: clip;
 }
 
-/* Căn giữa tiêu đề cột Thao tác */
 .sticky-action-col .column-header .label,
 .custom-inventory-table .column-header:last-visible .label {
     -fx-alignment: CENTER;
 }
 
-/* Bảng chi tiết lô hàng: Tiêu đề cột Nhà cung cấp (cột cuối) luôn căn trái */
 .lot-dialog-root .custom-inventory-table .column-header:last-visible .label {
     -fx-alignment: CENTER_LEFT;
 }
 
-/* Nút sắp xếp tiêu đề cột đồng bộ phong cách bảng Nhân viên */
 .btn-header-sort {
     -fx-cursor: hand;
     -fx-text-fill: #94a3b8;
@@ -185,7 +161,6 @@
     -fx-text-fill: #0066ff;
 }
 
-/* Icon sắp xếp tiêu đề cột mặc định của JavaFX */
 .custom-inventory-table .column-header .sort-order-dots-and-arrow {
     -fx-padding: 0 0 0 10px;
     -fx-alignment: CENTER_LEFT;
@@ -200,7 +175,6 @@
     -fx-background-color: #0066ff;
 }
 
-/* Ẩn dấu chấm sort order thừa */
 .custom-inventory-table .column-header .sort-order-dot {
     -fx-padding: 0;
     -fx-opacity: 0;
@@ -208,7 +182,6 @@
     -fx-max-width: 0;
 }
 
-/* Thanh cuộn: Ẩn thanh cuộn dọc bảng chính để tránh trùng lặp, hiển thị thanh cuộn dọc mỏng ở cột thao tác */
 .custom-inventory-table .scroll-bar:vertical {
     -fx-opacity: 0;
     -fx-pref-width: 0;
@@ -247,7 +220,6 @@
     -fx-pref-height: 0;
 }
 
-/* Các hàng và ô */
 .custom-inventory-table .table-row-cell {
     -fx-background-color: transparent;
     -fx-border-color: #e2e8f0;
@@ -271,7 +243,6 @@
     -fx-text-fill: #1e293b;
 }
 
-/* Chỉ áp dụng đổi màu cho text trực tiếp của table-cell (Mã, Nhóm, HSD, Số lượng), không đè lên badge hay label con */
 .custom-inventory-table .table-row-cell:selected > .table-cell > .text,
 .custom-inventory-table .table-row-cell:filled:selected > .table-cell > .text,
 .custom-inventory-table .table-row-cell:filled:focused:selected > .table-cell > .text,
@@ -283,10 +254,6 @@
     -fx-background-color: transparent;
     -fx-border-color: transparent;
 }
-
-/* ==========================================================================
-   STATUS BADGES (ĐỒNG BỘ MÀU PASTEL HIỆN ĐẠI CỦA TRANG NHÂN VIÊN)
-   ========================================================================== */
 
 .status-badge {
     -fx-background-radius: 16px;
@@ -304,7 +271,6 @@
     -fx-font-size: 13.5px;
 }
 
-/* Bình thường (Xanh lá pastel giống Active của nhân viên) */
 .status-badge-normal,
 .custom-inventory-table .status-badge-normal,
 .custom-inventory-table .table-row-cell:selected .status-badge-normal,
@@ -324,7 +290,6 @@
     -fx-fill: #16a34a;
 }
 
-/* Sắp hết hàng (Cam ấm pastel cảnh báo tồn kho ít) */
 .status-badge-low-stock,
 .custom-inventory-table .status-badge-low-stock,
 .custom-inventory-table .table-row-cell:selected .status-badge-low-stock,
@@ -344,7 +309,6 @@
     -fx-fill: #ea580c;
 }
 
-/* Có lô cận hạn (Vàng/Cam pastel cảnh báo) */
 .status-badge-near-expiry,
 .custom-inventory-table .status-badge-near-expiry,
 .custom-inventory-table .table-row-cell:selected .status-badge-near-expiry,
@@ -364,7 +328,6 @@
     -fx-fill: #d97706;
 }
 
-/* Có lô hết hạn (Đỏ pastel giống Inactive của nhân viên) */
 .status-badge-expired,
 .custom-inventory-table .status-badge-expired,
 .custom-inventory-table .table-row-cell:selected .status-badge-expired,
@@ -384,7 +347,6 @@
     -fx-fill: #d9483b;
 }
 
-/* Hết hàng (Xám pastel) */
 .status-badge-out-of-stock,
 .custom-inventory-table .status-badge-out-of-stock,
 .custom-inventory-table .table-row-cell:selected .status-badge-out-of-stock,
@@ -404,7 +366,6 @@
     -fx-fill: #64748b;
 }
 
-/* Nhãn thuốc kê toa */
 .lbl-prescription-tag,
 .custom-inventory-table .lbl-prescription-tag,
 .custom-inventory-table .table-row-cell:selected .lbl-prescription-tag,
@@ -425,14 +386,6 @@
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected .lbl-prescription-tag .text {
     -fx-fill: #ef4444;
 }
-
-/* ==========================================================================
-   TABLE ACTION BUTTONS
-   ========================================================================== */
-
-/* ==========================================================================
-   PAGINATION STYLING (ĐỒNG BỘ NÚT BẤM VÀ BADGE TRANG NHÂN VIÊN)
-   ========================================================================== */
 
 .page-btn {
     -fx-background-color: #ffffff;
@@ -480,19 +433,11 @@
     -fx-text-fill: #475569;
 }
 
-/* ==========================================================================
-   THAO TÁC (NÚT 3 CHẤM DỌC & BẢNG GHIM PHẢI)
-   ========================================================================== */
-
 .sticky-action-col,
 .sticky-action-col .virtual-flow,
 .sticky-action-col .placeholder {
     -fx-background-color: #f1f5f9;
 }
-
-/* ==========================================================================
-   HEADER FILTER POPUP & TAM GIÁC LỌC (GIỐNG TRANG NHÂN VIÊN)
-   ========================================================================== */
 
 .custom-inventory-table .column-header .btn-header-filter,
 .btn-header-filter {
@@ -552,10 +497,6 @@
     -fx-text-fill: #0066ff;
 }
 
-/* ==========================================================================
-   INLINE ROW EDITING (CHỈNH SỬA TRỰC TIẾP TRÊN BẢNG)
-   ========================================================================== */
-
 .table-cell-editor {
     -fx-background-color: #ffffff;
     -fx-border-color: #0066ff;
@@ -604,10 +545,6 @@
     -fx-background-color: #64748b;
 }
 
-/* ==========================================================================
-   MEDICINE LOT DETAILS MODAL / DIALOG
-   ========================================================================== */
-
 .lot-dialog-root {
     -fx-background-color: #ffffff;
 }
@@ -636,7 +573,6 @@
     -fx-text-fill: #0f172a;
 }
 
-/* Card chi tiết thông tin thuốc */
 .lot-info-card {
     -fx-background-color: #f8fafc;
     -fx-border-color: #e2e8f0;
@@ -663,7 +599,6 @@
     -fx-text-fill: #0066ff;
 }
 
-/* Bộ lọc ComboBox */
 .lot-filter-combo {
     -fx-background-color: #ffffff;
     -fx-border-color: #cbd5e1;
@@ -679,7 +614,6 @@
     -fx-border-color: #0066ff;
 }
 
-/* Badges trạng thái cho từng lô hàng */
 .lot-badge-pill {
     -fx-background-radius: 14px;
     -fx-padding: 3 10;
@@ -709,10 +643,6 @@
     -fx-text-fill: #64748b;
 }
 
-/* ==========================================================================
-   CĂN CHỈNH TIÊU ĐỀ & DỮ LIỆU CỘT BẢNG LÔ HÀNG
-   ========================================================================== */
-
 .custom-inventory-table .table-cell.lot-col-center,
 .table-cell.lot-col-center {
     -fx-alignment: CENTER;
@@ -723,11 +653,6 @@
     -fx-alignment: CENTER_LEFT;
 }
 
-/* ==========================================================================
-   MODAL DIALOGS (NHẬP KHO & XUẤT KHO) & SEARCHABLE PICKER
-   ========================================================================== */
-
-/* Searchable Medicine Picker Component */
 .medicine-picker-box:focused-within {
     -fx-border-color: #0066ff;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.15), 4, 0, 0, 0);
@@ -753,11 +678,6 @@
     -fx-background-color: #dbeafe;
 }
 
-/* ==========================================================================
-   BẢNG MẶT HÀNG NHẬP KHO & CĂN PHẢI TIỀN TỆ
-   ========================================================================== */
-
-/* Hiển thị thanh cuộn dọc & ngang mượt mà cho bảng nhập kho */
 .import-items-table .scroll-bar:vertical {
     -fx-opacity: 1 !important;
     -fx-pref-width: 8px !important;
@@ -790,7 +710,6 @@
     -fx-background-color: #94a3b8 !important;
 }
 
-/* Ô bảng tự xuống dòng (WrappingTextCell), vd. cột Lý do xuất */
 .wrapping-cell-text {
     -fx-text-fill: #334155;
     -fx-line-spacing: 1px;

@@ -822,7 +822,6 @@ public class SalesController implements Initializable {
         }
     }
 
-    /** Chuyển trang bằng Menu: đóng lịch sử bán (kể cả mở từ Tổng quan) và về màn hình bán hàng chính, bỏ nút Quay lại. */
     public void resetContext() {
         boolean historyShown = viewSalesHistory != null && viewSalesHistory.isVisible();
         if (historyBackAction == null && !historyShown) return;
@@ -831,7 +830,6 @@ public class SalesController implements Initializable {
         showSalesMainView();
     }
 
-    /** Vào Bán hàng bằng Menu: bỏ từ khóa, bộ lọc nhóm thuốc, về trang 1 (giỏ hàng đang lập được giữ nguyên). */
     public void resetToDefault() {
         resetContext();
         suppressReload = true;

@@ -625,7 +625,6 @@ public class EmployeeDetailController {
         return DialogUtils.getActiveWindow();
     }
 
-    // Chỉ cấp lại cho nhân viên khác, đang làm việc và đã có tài khoản; ẩn khi đang sửa hồ sơ
     private void updateResetPasswordButton(boolean editing) {
         if (btnResetPassword == null) return;
         boolean show =

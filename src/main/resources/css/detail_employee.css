@@ -11,7 +11,6 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.06), 10, 0, 0, 3);
 }
 
-/* Tiêu đề, nhãn và ô nhập đồng bộ với trang Hồ sơ cá nhân (profile.css) */
 .detail-title {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 16px;
@@ -24,13 +23,11 @@
     -fx-font-size: 14px;
 }
 
-/* app.css gán "Inter 18pt Medium" cho mọi node .text -> phải chỉ định lại cho phần chữ bên trong nhãn/tiêu đề */
 .detail-title .text,
 .form-label .text {
     -fx-font-family: "Inter 18pt Bold";
 }
 
-/* Trạng thái CHỈ XEM (Read-only) */
 .form-input-readonly {
     -fx-background-color: #f1f5f9;
     -fx-border-color: #cbd5e1;
@@ -45,7 +42,6 @@
     -fx-text-fill: #1e293b;
 }
 
-/* Trạng thái CHỈNH SỬA (Editable) */
 .form-input-editable {
     -fx-background-color: #ffffff;
     -fx-border-color: #2563eb;
@@ -145,8 +141,6 @@
     -fx-text-fill: #dc2626;
     -fx-font-size: 11px;
 }
-/* ==================== DANH SÁCH THẢ XUỐNG (Giới tính, Trạng thái làm việc, Vai trò, Trạng thái tài khoản) ====================
-   Mục đang chọn: nền xanh, chữ trắng; rê chuột qua mục khác: cũng nền xanh, chữ trắng */
 
 .combo-box-popup .list-view {
     -fx-background-color: #ffffff;

@@ -129,7 +129,6 @@ public class MainLayoutController {
         applyNodeVisibility(btnEmployee, isManager);
     }
 
-    // Tự đăng xuất khi không thao tác (cấu hình auth.sessionTimeoutMinutes, <= 0 là tắt)
     private void initIdleLogout() {
         if (rootPane == null) return;
         Runnable start = () -> {
@@ -169,7 +168,6 @@ public class MainLayoutController {
         );
     }
 
-    // Thứ, ngày tháng năm và giờ (chạy từng giây) nằm ở bên phải thanh tiêu đề
     private void initHeaderDate() {
         updateHeaderClock();
         headerClock = new javafx.animation.Timeline(
@@ -201,10 +199,6 @@ public class MainLayoutController {
         return FormatUtils.getInitials(fullName);
     }
 
-    /**
-     * Xóa các "ngữ cảnh điều hướng tạm" (nút Quay lại + bộ lọc áp từ Tổng quan, lịch sử bán mở từ Tổng quan...)
-     * khi người dùng chuyển trang bằng thanh Menu, để các trang trở về trạng thái ban đầu.
-     */
     private void resetContexts() {
         if (controllerCache.get("/fxml/sales/sales.fxml") instanceof com.pharmacy.sales.SalesController sales) {
             sales.resetContext();
@@ -275,7 +269,6 @@ public class MainLayoutController {
         }
     }
 
-    /** Mở Kho thuốc với bộ lọc có sẵn; {@code onBack} hiện thành nút Quay lại và khôi phục bộ lọc cũ khi thoát. */
     public void navigateToInventoryWithFilter(String[] stockFilters, String[] expiryFilters, Runnable onBack) {
         com.pharmacy.inventory.InventoryController ctrl = showInventoryPage();
         if (ctrl != null) {

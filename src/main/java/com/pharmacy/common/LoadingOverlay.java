@@ -88,7 +88,6 @@ public final class LoadingOverlay {
         return overlay;
     }
 
-    /** Theo dõi một tác vụ nền: hiện vòng quay khi bắt đầu, ẩn khi xong/lỗi/hủy. */
     public void track(Task<?> task) {
         pending++;
         if (pending == 1 && !box.isVisible()) {

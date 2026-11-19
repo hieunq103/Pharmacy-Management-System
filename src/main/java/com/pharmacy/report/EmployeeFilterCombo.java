@@ -29,7 +29,6 @@ final class EmployeeFilterCombo {
 
     // Chặn vòng lặp: mọi thay đổi do chương trình (đổi giá trị, đổi bộ lọc danh sách) không được kích hoạt lại sự kiện
     private boolean updating;
-    // Nhân viên đang được áp dụng cho báo cáo (null = tất cả)
     private Integer committedId;
 
     EmployeeFilterCombo(ComboBox<EmployeeOption> combo, Consumer<Integer> onChanged) {
@@ -59,13 +58,11 @@ final class EmployeeFilterCombo {
         );
         setSelected(EmployeeOption.ALL);
 
-        // Người dùng chọn một dòng trong danh sách
         combo.valueProperty().addListener((obs, old, chosen) -> {
             if (updating || chosen == null) return;
             commit(chosen);
         });
 
-        // Gõ → lọc danh sách và mở popup
         combo
             .getEditor()
             .textProperty()
@@ -79,7 +76,6 @@ final class EmployeeFilterCombo {
 
         combo.getEditor().setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
-                // Enter: đúng nhân viên vừa gõ, hoặc dòng đầu tiên đang hiển thị
                 EmployeeOption pick = combo.getConverter().fromString(combo.getEditor().getText());
                 if (pick == null && !filtered.isEmpty()) pick = filtered.get(0);
                 if (pick != null) {
@@ -93,7 +89,6 @@ final class EmployeeFilterCombo {
             }
         });
 
-        // Rời ô mà không chọn: trả lại chữ của người đang áp dụng; xóa trống = Tất cả nhân viên
         combo.focusedProperty().addListener((obs, was, focused) -> {
             if (focused) {
                 Platform.runLater(() -> combo.getEditor().selectAll());
@@ -189,7 +184,6 @@ final class EmployeeFilterCombo {
             .toList();
     }
 
-    // Bỏ dấu tiếng Việt và hạ chữ thường để gõ "hieu" vẫn ra "Hiếu"
     private static String normalize(String s) {
         String n = Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{M}+", "");
         return n.replace('đ', 'd').replace('Đ', 'D').toLowerCase(Locale.ROOT);

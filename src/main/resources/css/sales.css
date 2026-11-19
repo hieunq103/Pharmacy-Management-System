@@ -1,8 +1,3 @@
-/* ==========================================================================
-   SALES & POS MODULE CSS — PharmaOS Medical White & Blue Theme
-   ========================================================================== */
-
-/* Ô TÌM KIẾM NHANH */
 .search-box-container {
     -fx-background-color: #ffffff;
     -fx-background-radius: 8px;
@@ -31,8 +26,6 @@
     -fx-prompt-text-fill: #94a3b8;
 }
 
-/* HÀNG PILL DANH MỤC */
-/* COMBOBOX CHỌN NHÓM THUỐC */
 .sales-category-combo {
     -fx-background-color: #ffffff;
     -fx-border-color: #cbd5e1;
@@ -58,7 +51,6 @@
     -fx-padding: 4 8;
 }
 
-/* THẺ THUỐC (MEDICINE CARD - TỰ ĐỘNG GIÃN TRONG GRID 2 CỘT) */
 .medicine-card {
     -fx-background-color: #ffffff;
     -fx-background-radius: 12px;
@@ -106,7 +98,6 @@
     -fx-fill: #d9483b;
 }
 
-/* BADGE MÃ THUỐC (VD: MED001) */
 .badge-medicine-code {
     -fx-background-color: #eff6ff;
     -fx-border-color: #bfdbfe;
@@ -154,7 +145,6 @@
     -fx-text-fill: #64748b;
 }
 
-/* ==================== CỘT PHẢI: GIỎ HÀNG (POS TERMINAL PANEL) ==================== */
 .pos-cart-panel {
     -fx-background-color: #ffffff;
     -fx-background-radius: 16px;
@@ -177,7 +167,6 @@
     -fx-underline: true;
 }
 
-/* EMPTY STATE GIỎ HÀNG */
 .cart-empty-circle {
     -fx-background-color: #f1f5f9;
     -fx-background-radius: 32px;
@@ -195,7 +184,6 @@
     -fx-text-fill: #334155;
 }
 
-/* DANH SÁCH MẶT HÀNG TRONG GIỎ */
 .cart-items-scrollpane {
     -fx-background-color: transparent;
     -fx-background: transparent;
@@ -237,7 +225,6 @@
     -fx-text-fill: #0f172a;
 }
 
-/* NÚT TĂNG GIẢM SỐ LƯỢNG TRONG GIỎ */
 .btn-qty-control {
     -fx-background-color: #ffffff;
     -fx-background-radius: 4px;
@@ -279,7 +266,6 @@
     -fx-background-color: #ffffff;
 }
 
-/* DANH SÁCH THUỐC TRONG DIALOG THANH TOÁN */
 .dialog-cart-scrollpane {
     -fx-background-color: #f8fafc;
     -fx-background-radius: 8px;
@@ -342,7 +328,6 @@
     -fx-text-fill: #dc2626;
 }
 
-/* BANNER CẢNH BÁO THUỐC KÊ TOA */
 .cart-prescription-banner {
     -fx-background-color: #fef3c7;
     -fx-background-radius: 8px;
@@ -363,7 +348,6 @@
     -fx-text-fill: #b45309;
 }
 
-/* PHẦN GIẢM GIÁ & SĐT KHÁCH */
 .expand-trigger-row {
     -fx-cursor: hand;
 }
@@ -403,7 +387,6 @@
     -fx-border-color: #0066ff;
 }
 
-/* TỔNG TIỀN VÀ BIỂU THỨC TÍNH TIỀN TRONG GIỎ HÀNG */
 .cart-calc-box {
     -fx-border-color: #e2e8f0;
     -fx-border-width: 1px 0 0 0;
@@ -478,7 +461,6 @@
     -fx-opacity: 0.8;
 }
 
-/* ==================== PAYMENT DIALOG MODAL CSS ==================== */
 .payment-dialog-root {
     -fx-background-color: #ffffff;
     -fx-background-radius: 16px;
@@ -567,7 +549,6 @@
     -fx-text-fill: #475569;
 }
 
-/* NÚT CHỌN TIỀN MẶT / CHUYỂN KHOẢN (KÍCH THƯỚC CỐ ĐỊNH TUYỆT ĐỐI) */
 .payment-method-btn {
     -fx-background-color: #e2e8f0;
     -fx-background-radius: 8px;
@@ -609,7 +590,6 @@
     -fx-text-fill: #ffffff;
 }
 
-/* BỘ NÚT CHUYỂN ĐỔI GIẢM GIÁ (đ / %) */
 .discount-toggle-group {
     -fx-background-color: #f1f5f9;
     -fx-background-radius: 6px;
@@ -643,7 +623,6 @@
     -fx-text-fill: #ffffff;
 }
 
-/* KHUNG CHI TIẾT THANH TOÁN */
 .payment-detail-box {
     -fx-background-color: #f8fafc;
     -fx-background-radius: 10px;
@@ -653,7 +632,6 @@
     -fx-padding: 6 12;
 }
 
-/* KHUNG GỘP TIỀN KHÁCH ĐƯA & TIỀN THỪA TRONG 1 Ô COMPACT */
 .cash-combined-card {
     -fx-background-color: #ffffff;
     -fx-background-radius: 8px;
@@ -707,7 +685,6 @@
     -fx-text-fill: #d97706;
 }
 
-/* THÔNG TIN CHUYỂN KHOẢN */
 .transfer-info-title {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
@@ -799,7 +776,6 @@
     -fx-padding: 4 10;
 }
 
-/* FOOTER BUTTONS */
 .btn-modal-confirm {
     -fx-background-color: #0066ff;
     -fx-background-radius: 8px;
@@ -839,10 +815,6 @@
     -fx-padding: 0;
     -fx-alignment: CENTER;
 }
-
-/* ==========================================================================
-   PAGINATION STYLING (PHÂN TRANG 6 THUỐC)
-   ========================================================================== */
 
 .page-btn {
     -fx-background-color: #ffffff;

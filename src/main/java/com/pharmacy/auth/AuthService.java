@@ -26,7 +26,6 @@ public class AuthService {
     }
 
     public Account login(LoginRequest request) {
-        // Tìm tài khoản duy nhất bằng tên đăng nhập
         Account account = accountRepository.findByUsername(request.username()).orElseThrow(() -> {
             log.warn("Đăng nhập thất bại: Tài khoản không tồn tại [{}]", request.username());
             return new AuthenticationException(

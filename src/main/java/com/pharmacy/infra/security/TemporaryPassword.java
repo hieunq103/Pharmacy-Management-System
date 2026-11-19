@@ -2,7 +2,6 @@ package com.pharmacy.infra.security;
 
 import java.security.SecureRandom;
 
-// Mật khẩu tạm cấp cho tài khoản mới: 8 chữ số ngẫu nhiên, nhân viên bắt buộc đổi ở lần đăng nhập đầu
 public final class TemporaryPassword {
 
     private static final SecureRandom RANDOM = new SecureRandom();

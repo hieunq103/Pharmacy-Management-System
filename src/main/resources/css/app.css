@@ -43,12 +43,10 @@
     -fx-background-color: -fx-bg;
 }
 
-/* Chữ đậm */
 .bold {
     -fx-font-family: "Inter 18pt Bold";
 }
 
-/* Định nghĩa chung cỡ chữ và kiểu dáng cho toàn bộ nút menu */
 .nav-button {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
@@ -60,13 +58,11 @@
     -fx-padding: 0 10px;
 }
 
-/* Icon ở trạng thái mặc định: dùng SVGPath hoặc .shape */
 .nav-button SVGPath,
 .nav-button .shape {
     -fx-fill: #94a3b8;
 }
 
-/* Khi hover chuột */
 .nav-button:hover {
     -fx-background-color: #1e293b;
     -fx-text-fill: #e2e8f0;
@@ -76,7 +72,6 @@
     -fx-fill: #e2e8f0;
 }
 
-/* Kiểu dáng khi nút được chọn */
 .nav-button.active {
     -fx-background-color: #1e293b;
     -fx-text-fill: #38bdf8;
@@ -87,7 +82,6 @@
     -fx-fill: #38bdf8;
 }
 
-/* Màn che overlay nền mờ khi mở Drawer */
 .drawer-overlay {
     -fx-background-color: rgba(15, 23, 42, 0.45);
     -fx-cursor: hand;

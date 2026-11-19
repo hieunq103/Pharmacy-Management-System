@@ -114,7 +114,6 @@ public class EmployeeController implements Initializable {
         loadEmployeeData();
     }
 
-    /** Đưa trang về trạng thái ban đầu: bỏ từ khóa, mọi bộ lọc cột, về trang 1. */
     public void resetState() {
         suppressReload = true;
         try {
