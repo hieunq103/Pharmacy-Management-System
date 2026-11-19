@@ -102,8 +102,7 @@ public class EmployeeController implements Initializable {
     private int totalPages = 1;
     private long totalRecords = 0;
     private Task<PageResult<Employee>> currentLoadTask;
-    private final java.util.Map<Integer, PageResult<Employee>> pageCache =
-        new java.util.concurrent.ConcurrentHashMap<>();
+    private final com.pharmacy.common.PageCache<PageResult<Employee>> pageCache = new com.pharmacy.common.PageCache<>();
     private String lastSearchState = "";
 
     private final EmployeeService employeeService = new EmployeeService();

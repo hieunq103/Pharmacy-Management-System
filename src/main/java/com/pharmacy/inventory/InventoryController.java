@@ -135,8 +135,8 @@ public class InventoryController implements Initializable {
     private int totalPages = 1;
     private long totalRecords = 0;
     private Task<PageResult<MedicineInventoryDTO>> currentLoadTask;
-    private final java.util.Map<Integer, PageResult<MedicineInventoryDTO>> pageCache =
-        new java.util.concurrent.ConcurrentHashMap<>();
+    private final com.pharmacy.common.PageCache<PageResult<MedicineInventoryDTO>> pageCache =
+        new com.pharmacy.common.PageCache<>();
     private String lastSearchState = "";
 
     private final DrawerHelper drawerHelper = new DrawerHelper();

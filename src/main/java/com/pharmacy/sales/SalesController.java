@@ -128,8 +128,8 @@ public class SalesController implements Initializable {
     private String currentCategory = "Tất cả nhóm thuốc";
 
     private List<MedicineInventoryDTO> allLoadedMedicines = new ArrayList<>();
-    private final java.util.Map<Integer, PageResult<MedicineInventoryDTO>> pageCache =
-        new java.util.concurrent.ConcurrentHashMap<>();
+    private final com.pharmacy.common.PageCache<PageResult<MedicineInventoryDTO>> pageCache =
+        new com.pharmacy.common.PageCache<>();
     private String lastSearchState = "";
 
     @Override

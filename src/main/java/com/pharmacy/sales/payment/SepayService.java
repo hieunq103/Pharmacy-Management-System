@@ -92,12 +92,34 @@ public class SepayService {
                     }
                 }
             } else {
-                log.warn("SePAY API call failed with status: {}, body: {}", response.statusCode(), response.body());
+                logFailureThrottled(
+                    "SePAY API call failed with status: " + response.statusCode() + ", body: " + response.body()
+                );
             }
         } catch (Exception e) {
-            log.error("Error while querying SePAY API: {}", e.getMessage());
+            logFailureThrottled("Error while querying SePAY API: " + e.getMessage());
         }
 
         return PaymentResult.notMatched();
+    }
+
+    // Vòng chờ chuyển khoản gọi API mỗi vài giây: nếu cổng thanh toán lỗi kéo dài thì chỉ ghi log 1 lần/phút để không làm đầy file log
+    private static final long FAILURE_LOG_INTERVAL_MS = 60_000;
+    private static long lastFailureLogAt;
+    private static int suppressedFailures;
+
+    private static synchronized void logFailureThrottled(String message) {
+        long now = System.currentTimeMillis();
+        if (now - lastFailureLogAt < FAILURE_LOG_INTERVAL_MS) {
+            suppressedFailures++;
+            return;
+        }
+        if (suppressedFailures > 0) {
+            log.warn("{} (đã bỏ qua {} lần lỗi giống nhau trong 1 phút qua)", message, suppressedFailures);
+        } else {
+            log.warn(message);
+        }
+        suppressedFailures = 0;
+        lastFailureLogAt = now;
     }
 }

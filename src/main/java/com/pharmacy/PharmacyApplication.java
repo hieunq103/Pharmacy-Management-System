@@ -1,5 +1,6 @@
 package com.pharmacy;
 
+import com.pharmacy.infra.config.AppConfig;
 import com.pharmacy.infra.db.DatabaseHealthChecker;
 import com.pharmacy.infra.db.HibernateUtil;
 import com.pharmacy.infra.db.MigrationRunner;
@@ -57,13 +58,17 @@ public class PharmacyApplication {
             loadFont("/fonts/Inter_18pt-Regular.ttf");
             loadFont("/fonts/Inter_18pt-SemiBold.ttf");
 
-            DatabaseHealthChecker.startMonitoring(5, isAlive -> {
-                if (!isAlive) {
-                    log.warn("Mất kết nối tới máy chủ cơ sở dữ liệu! Vui lòng kiểm tra lại dịch vụ MySQL.");
-                } else {
-                    log.info("Kết nối cơ sở dữ liệu đã hoạt động bình thường.");
+            com.pharmacy.infra.MemoryMonitor.start();
+            DatabaseHealthChecker.startMonitoring(
+                Integer.parseInt(AppConfig.get("db.healthCheckSeconds", "30")),
+                isAlive -> {
+                    if (!isAlive) {
+                        log.warn("Mất kết nối tới máy chủ cơ sở dữ liệu! Vui lòng kiểm tra lại dịch vụ MySQL.");
+                    } else {
+                        log.info("Kết nối cơ sở dữ liệu đã hoạt động bình thường.");
+                    }
                 }
-            });
+            );
 
             try {
                 String fxmlPath = "/fxml/auth/login.fxml";

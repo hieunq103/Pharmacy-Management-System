@@ -68,7 +68,7 @@ public final class HibernateUtil {
             config.setValidationTimeout(Long.parseLong(AppConfig.get("db.pool.validationTimeoutMs", "3000")));
             config.setMaxLifetime(Long.parseLong(AppConfig.get("db.pool.maxLifetimeMs", "1800000")));
             config.setIdleTimeout(Long.parseLong(AppConfig.get("db.pool.idleTimeoutMs", "600000")));
-            config.setKeepaliveTime(30000);
+            config.setKeepaliveTime(Long.parseLong(AppConfig.get("db.pool.keepaliveMs", "300000")));
             config.setPoolName("PharmaOS-MainPool");
 
             config.addDataSourceProperty("rewriteBatchedStatements", "true");

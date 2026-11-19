@@ -6,12 +6,13 @@
         </encoder>
     </appender>
 
-    <!-- Log xoay vòng theo ngày, giữ tối đa 30 ngày (mục 13.3, R23) -->
+    <!-- Log xoay vòng theo ngày, giữ tối đa 30 ngày và tổng dung lượng không quá 500MB (mục 13.3, R23) -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/pharmacy.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/pharmacy-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
