@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
-<ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+<ScrollPane fx:id="dashboardScrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
             styleClass="dashboard-scroll-pane"
             stylesheets="@../../css/dashboard.css, @../../css/icon_buttons.css"
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
@@ -89,14 +89,12 @@
             <VBox spacing="12.0" styleClass="dashboard-card" prefHeight="380.0" minHeight="380.0">
                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                     <Label styleClass="card-header-title" text="Cảnh báo kho" />
-                    <HBox fx:id="boxAlertTabs" spacing="4.0" alignment="CENTER_LEFT">
-                        <Button fx:id="btnAlertTabExpiry" onAction="#handleTabExpiryAlerts" styleClass="pill-tab-btn, pill-tab-active" text="Hạn dùng" />
-                        <Button fx:id="btnAlertTabStock" onAction="#handleTabStockAlerts" styleClass="pill-tab-btn" text="Tồn kho" />
+                    <HBox fx:id="boxAlertTabs" spacing="2.0" alignment="CENTER_LEFT" styleClass="alert-tab-bar">
+                        <Button fx:id="btnAlertTabExpiry" onAction="#handleTabExpiryAlerts" styleClass="alert-tab-btn, alert-tab-active" text="Hạn dùng" />
+                        <Button fx:id="btnAlertTabStock" onAction="#handleTabStockAlerts" styleClass="alert-tab-btn" text="Tồn kho" />
                     </HBox>
                 </HBox>
-                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER" styleClass="alert-scroll-pane" VBox.vgrow="ALWAYS">
-                    <VBox fx:id="boxInventoryAlerts" spacing="6.0" styleClass="alert-items-container" />
-                </ScrollPane>
+                <VBox fx:id="boxInventoryAlerts" spacing="6.0" styleClass="alert-items-container" />
             </VBox>
 
             <VBox spacing="12.0" styleClass="dashboard-card">

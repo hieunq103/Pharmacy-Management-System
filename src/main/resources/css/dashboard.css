@@ -129,7 +129,7 @@
     -fx-background-color: transparent;
     -fx-text-fill: #0066ff;
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
-    -fx-font-size: 13px;
+    -fx-font-size: 15px;
     -fx-cursor: hand;
     -fx-padding: 4px 6px;
     -fx-border-color: transparent;
@@ -144,65 +144,41 @@
    4. INVENTORY ALERTS
    ========================================================================== */
 
-/* Mini Tabs cho Card Cảnh báo kho */
-.pill-tab-btn {
+/* Tab chuyển Hạn dùng / Tồn kho: thanh phân đoạn, tab đang chọn nền xanh chữ trắng */
+.alert-tab-bar {
     -fx-background-color: #f1f5f9;
-    -fx-text-fill: #64748b;
+    -fx-background-radius: 10px;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 10px;
+    -fx-padding: 3px;
+}
+
+.alert-tab-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #475569;
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
-    -fx-font-size: 13px;
-    -fx-background-radius: 12px;
-    -fx-padding: 3px 10px;
+    -fx-font-size: 14px;
+    -fx-background-radius: 8px;
+    -fx-padding: 6px 18px;
     -fx-cursor: hand;
     -fx-border-width: 0;
 }
 
-.pill-tab-btn:hover {
+.alert-tab-btn:hover {
     -fx-background-color: #e2e8f0;
-    -fx-text-fill: #1e293b;
+    -fx-text-fill: #0f172a;
 }
 
-.pill-tab-active,
-.pill-tab-btn.pill-tab-active {
+.alert-tab-active,
+.alert-tab-btn.alert-tab-active {
     -fx-background-color: #0066ff;
     -fx-text-fill: #ffffff;
 }
 
-.pill-tab-active:hover {
-    -fx-background-color: #2563eb;
+.alert-tab-active:hover,
+.alert-tab-btn.alert-tab-active:hover {
+    -fx-background-color: #0052cc;
     -fx-text-fill: #ffffff;
-}
-
-/* ScrollPane trong suốt cho Cảnh báo kho */
-.alert-scroll-pane {
-    -fx-background-color: transparent;
-    -fx-background: transparent;
-    -fx-border-color: transparent;
-    -fx-padding: 0;
-}
-
-.alert-scroll-pane > .viewport {
-    -fx-background-color: transparent;
-}
-
-.alert-scroll-pane .scroll-bar:vertical {
-    -fx-background-color: transparent;
-    -fx-pref-width: 6px;
-}
-
-.alert-scroll-pane .scroll-bar:vertical .thumb {
-    -fx-background-color: #cbd5e1;
-    -fx-background-radius: 3px;
-}
-
-.alert-scroll-pane .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: #94a3b8;
-}
-
-.alert-scroll-pane .scroll-bar:vertical .track,
-.alert-scroll-pane .scroll-bar:vertical .increment-button,
-.alert-scroll-pane .scroll-bar:vertical .decrement-button {
-    -fx-background-color: transparent;
-    -fx-pref-height: 0;
 }
 
 .alert-items-container {

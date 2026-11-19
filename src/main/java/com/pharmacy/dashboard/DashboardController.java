@@ -17,14 +17,13 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
-import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +42,9 @@ public class DashboardController implements Initializable {
 
     @FXML
     private Label lblNearExpiryCount;
+
+    @FXML
+    private ScrollPane dashboardScrollPane;
 
     @FXML
     private VBox boxInventoryAlerts;
@@ -73,6 +75,11 @@ public class DashboardController implements Initializable {
     }
 
     public void loadAllDashboardData() {
+        // View được cache: khi quay lại từ màn hình khác phải đưa thanh cuộn về đầu trang
+        if (dashboardScrollPane != null) {
+            dashboardScrollPane.setVvalue(0);
+            Platform.runLater(() -> dashboardScrollPane.setVvalue(0));
+        }
         var executor = BackgroundTasks.getExecutor();
         var fStats = java.util.concurrent.CompletableFuture.supplyAsync(dashboardService::getStats, executor);
         var fAlerts = java.util.concurrent.CompletableFuture.supplyAsync(
@@ -119,12 +126,12 @@ public class DashboardController implements Initializable {
 
     private void updateAlertTabStyles() {
         if (btnAlertTabExpiry != null) {
-            btnAlertTabExpiry.getStyleClass().remove("pill-tab-active");
-            if (currentAlertTab == AlertTab.EXPIRY) btnAlertTabExpiry.getStyleClass().add("pill-tab-active");
+            btnAlertTabExpiry.getStyleClass().remove("alert-tab-active");
+            if (currentAlertTab == AlertTab.EXPIRY) btnAlertTabExpiry.getStyleClass().add("alert-tab-active");
         }
         if (btnAlertTabStock != null) {
-            btnAlertTabStock.getStyleClass().remove("pill-tab-active");
-            if (currentAlertTab == AlertTab.LOW_STOCK) btnAlertTabStock.getStyleClass().add("pill-tab-active");
+            btnAlertTabStock.getStyleClass().remove("alert-tab-active");
+            if (currentAlertTab == AlertTab.LOW_STOCK) btnAlertTabStock.getStyleClass().add("alert-tab-active");
         }
     }
 
@@ -215,9 +222,7 @@ public class DashboardController implements Initializable {
         btnViewMore.setOnAction(this::handleNavInventory);
         btnViewMore.setMaxWidth(Double.MAX_VALUE);
         btnViewMore.setAlignment(Pos.CENTER);
-        btnViewMore.setStyle(
-            "-fx-padding: 8 0 4 0; -fx-font-size: 12px; -fx-text-fill: #0066FF; -fx-background-color: transparent; -fx-cursor: hand;"
-        );
+        btnViewMore.setStyle("-fx-padding: 10 0 4 0;");
         boxInventoryAlerts.getChildren().add(btnViewMore);
     }
 

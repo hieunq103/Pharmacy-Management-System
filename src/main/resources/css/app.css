@@ -51,7 +51,7 @@
 /* Định nghĩa chung cỡ chữ và kiểu dáng cho toàn bộ nút menu */
 .nav-button {
     -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 17px;
+    -fx-font-size: 14px;
     -fx-background-radius: 8px;
     -fx-cursor: hand;
     -fx-background-color: transparent;
