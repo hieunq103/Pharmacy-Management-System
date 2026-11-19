@@ -144,41 +144,37 @@
    4. INVENTORY ALERTS
    ========================================================================== */
 
-/* Tab chuyển Hạn dùng / Tồn kho: thanh phân đoạn, tab đang chọn nền xanh chữ trắng */
+/* Tab chuyển Hạn dùng / Tồn kho: tab gạch chân, tab đang chọn chữ xanh + gạch xanh */
 .alert-tab-bar {
-    -fx-background-color: #f1f5f9;
-    -fx-background-radius: 10px;
-    -fx-border-color: #e2e8f0;
-    -fx-border-radius: 10px;
-    -fx-padding: 3px;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #e2e8f0 transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 0 4px;
 }
 
 .alert-tab-btn {
     -fx-background-color: transparent;
-    -fx-text-fill: #475569;
+    -fx-background-radius: 0;
+    -fx-text-fill: #64748b;
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
     -fx-font-size: 14px;
-    -fx-background-radius: 8px;
-    -fx-padding: 6px 18px;
+    -fx-padding: 8px 2px 10px 2px;
     -fx-cursor: hand;
-    -fx-border-width: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 2px 0;
+    -fx-translate-y: 1px;
 }
 
 .alert-tab-btn:hover {
-    -fx-background-color: #e2e8f0;
     -fx-text-fill: #0f172a;
+    -fx-border-color: transparent transparent #cbd5e1 transparent;
 }
 
 .alert-tab-active,
-.alert-tab-btn.alert-tab-active {
-    -fx-background-color: #0066ff;
-    -fx-text-fill: #ffffff;
-}
-
-.alert-tab-active:hover,
+.alert-tab-btn.alert-tab-active,
 .alert-tab-btn.alert-tab-active:hover {
-    -fx-background-color: #0052cc;
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: #0066ff;
+    -fx-border-color: transparent transparent #0066ff transparent;
 }
 
 .alert-items-container {

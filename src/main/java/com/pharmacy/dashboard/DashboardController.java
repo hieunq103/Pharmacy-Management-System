@@ -336,35 +336,28 @@ public class DashboardController implements Initializable {
 
     @FXML
     private void handleNavInventory(ActionEvent event) {
-        if (MainLayoutController.getInstance() != null) {
-            if (currentAlertTab == AlertTab.EXPIRY) {
-                MainLayoutController.getInstance().navigateToInventoryWithFilter(null, new String[] {
-                    "Có lô cận hạn",
-                    "Có lô hết hạn",
-                });
-            } else {
-                MainLayoutController.getInstance().navigateToInventoryWithFilter(
-                    new String[] { "Sắp hết hàng", "Hết hàng" },
-                    null
-                );
-            }
+        if (currentAlertTab == AlertTab.EXPIRY) {
+            openInventory(null, new String[] { "Có lô cận hạn", "Có lô hết hạn" });
+        } else {
+            openInventory(new String[] { "Sắp hết hàng", "Hết hàng" }, null);
         }
     }
 
     @FXML
     private void handleOpenLowStockInventory(javafx.scene.input.MouseEvent event) {
-        if (MainLayoutController.getInstance() != null) {
-            MainLayoutController.getInstance().navigateToInventoryWithFilter(
-                new String[] { "Sắp hết hàng", "Hết hàng" },
-                null
-            );
-        }
+        openInventory(new String[] { "Sắp hết hàng", "Hết hàng" }, null);
     }
 
     @FXML
     private void handleOpenNearExpiryInventory(javafx.scene.input.MouseEvent event) {
-        if (MainLayoutController.getInstance() != null) {
-            MainLayoutController.getInstance().navigateToInventoryWithFilter(null, new String[] { "Có lô cận hạn" });
+        openInventory(null, new String[] { "Có lô cận hạn" });
+    }
+
+    // Mở Kho thuốc kèm bộ lọc; nút "Quay lại" ở Kho thuốc đưa người dùng về Tổng quan
+    private void openInventory(String[] stockFilters, String[] expiryFilters) {
+        MainLayoutController layout = MainLayoutController.getInstance();
+        if (layout != null) {
+            layout.navigateToInventoryWithFilter(stockFilters, expiryFilters, layout::navigateToDashboard);
         }
     }
 

@@ -121,6 +121,14 @@ public class InventoryController implements Initializable {
     private final ObservableList<MedicineInventoryDTO> pageData = FXCollections.observableArrayList();
 
     private final Map<String, String> activeFilters = new HashMap<>();
+    private boolean suppressReload;
+    private Runnable contextBack;
+    private String savedStockFilter;
+    private String savedExpiryFilter;
+    private String savedKeyword;
+
+    @FXML
+    private Button btnBackContext;
 
     private int pageSize = AppConstants.DEFAULT_PAGE_SIZE;
     private int currentPage = 1;
@@ -218,10 +226,7 @@ public class InventoryController implements Initializable {
             new String[] { "Sắp hết hàng", "Hết hàng", "Bình thường" },
             "stockStatus",
             activeFilters,
-            () -> {
-                currentPage = 1;
-                loadInventoryData();
-            }
+            this::onColumnFilterChanged
         );
 
         TableFilterHelper.setupMultiSelectColumnFilter(
@@ -230,10 +235,7 @@ public class InventoryController implements Initializable {
             new String[] { "Có lô cận hạn", "Có lô hết hạn", "Còn hạn" },
             "expiryStatus",
             activeFilters,
-            () -> {
-                currentPage = 1;
-                loadInventoryData();
-            }
+            this::onColumnFilterChanged
         );
 
         setupEvents();
@@ -241,13 +243,70 @@ public class InventoryController implements Initializable {
         loadSummaryCounts();
     }
 
-    public void applyFilters(String[] stockFilters, String[] expiryFilters) {
-        if (stockFilters != null && stockFilters.length > 0) {
-            TableFilterHelper.setMultiFilter(colStockStatus, stockFilters);
+    private void onColumnFilterChanged() {
+        if (suppressReload) return;
+        currentPage = 1;
+        loadInventoryData();
+    }
+
+    /**
+     * Mở Kho thuốc từ Tổng quan: lưu lại bộ lọc/từ khóa hiện tại, áp bộ lọc được chọn, hiện nút Quay lại.
+     * Khi thoát ({@link #resetContext()}) mọi thứ được khôi phục như trước.
+     */
+    public void enterFilteredContext(String[] stockFilters, String[] expiryFilters, Runnable onBack) {
+        if (contextBack == null) {
+            savedStockFilter = activeFilters.get("stockStatus");
+            savedExpiryFilter = activeFilters.get("expiryStatus");
+            savedKeyword = txtSearch != null ? txtSearch.getText() : null;
         }
-        if (expiryFilters != null && expiryFilters.length > 0) {
-            TableFilterHelper.setMultiFilter(colExpiryStatus, expiryFilters);
+        contextBack = onBack;
+        if (viewInventoryHistory != null && viewInventoryHistory.isVisible()) {
+            showInventoryView();
         }
+        setContextBackVisible(onBack != null);
+        applyFilterState(stockFilters, expiryFilters, "");
+    }
+
+    /** Thoát ngữ cảnh mở từ Tổng quan: bỏ nút Quay lại và trả bộ lọc/từ khóa về trạng thái ban đầu. */
+    public void resetContext() {
+        if (contextBack == null) return;
+        contextBack = null;
+        setContextBackVisible(false);
+        applyFilterState(splitFilter(savedStockFilter), splitFilter(savedExpiryFilter), savedKeyword);
+        savedStockFilter = null;
+        savedExpiryFilter = null;
+        savedKeyword = null;
+    }
+
+    @FXML
+    private void handleBackContext() {
+        Runnable back = contextBack;
+        resetContext();
+        if (back != null) back.run();
+    }
+
+    private void setContextBackVisible(boolean visible) {
+        if (btnBackContext != null) {
+            btnBackContext.setVisible(visible);
+            btnBackContext.setManaged(visible);
+        }
+    }
+
+    private static String[] splitFilter(String joined) {
+        return joined == null || joined.isBlank() ? new String[0] : joined.split(",");
+    }
+
+    private void applyFilterState(String[] stockFilters, String[] expiryFilters, String keyword) {
+        suppressReload = true;
+        try {
+            TableFilterHelper.setMultiFilter(colStockStatus, stockFilters != null ? stockFilters : new String[0]);
+            TableFilterHelper.setMultiFilter(colExpiryStatus, expiryFilters != null ? expiryFilters : new String[0]);
+            if (txtSearch != null) txtSearch.setText(keyword != null ? keyword : "");
+        } finally {
+            suppressReload = false;
+        }
+        currentPage = 1;
+        loadInventoryData();
     }
 
     private void setupTableColumns() {

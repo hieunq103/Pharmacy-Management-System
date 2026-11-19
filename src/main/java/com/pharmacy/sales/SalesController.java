@@ -816,13 +816,26 @@ public class SalesController implements Initializable {
         }
     }
 
+    /** Chuyển trang bằng Menu: đóng lịch sử bán (kể cả mở từ Tổng quan) và về màn hình bán hàng chính, bỏ nút Quay lại. */
+    public void resetContext() {
+        boolean historyShown = viewSalesHistory != null && viewSalesHistory.isVisible();
+        if (historyBackAction == null && !historyShown) return;
+        historyBackAction = null;
+        showSalesMainView();
+    }
+
     public void handleCloseSalesHistory() {
         if (historyBackAction != null) {
             Runnable back = historyBackAction;
-            historyBackAction = null;
+            resetContext();
             back.run();
             return;
         }
+        showSalesMainView();
+        loadMedicinesData();
+    }
+
+    private void showSalesMainView() {
         if (viewSalesHistory != null) {
             viewSalesHistory.setVisible(false);
             viewSalesHistory.setManaged(false);
@@ -831,7 +844,6 @@ public class SalesController implements Initializable {
             viewSalesMain.setVisible(true);
             viewSalesMain.setManaged(true);
         }
-        loadMedicinesData();
     }
 
     private void ensureHistoryViewLoaded() {

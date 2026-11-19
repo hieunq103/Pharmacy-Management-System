@@ -10,9 +10,10 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
 
 <StackPane style="-fx-background-color: #F8FAFC;"
-           stylesheets="@../../css/inventory.css, @../../css/inventory_history.css"
+           stylesheets="@../../css/inventory.css, @../../css/inventory_history.css, @../../css/icon_buttons.css"
            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.pharmacy.inventory.InventoryController">
 
@@ -21,16 +22,24 @@
             <Insets bottom="10.0" left="20.0" right="20.0" top="8.0" />
         </padding>
 
-        <VBox spacing="4.0">
-            <HBox spacing="6.0" alignment="CENTER_LEFT">
-                <Label styleClass="stat-label-primary" text="Tổng loại thuốc:" />
-                <Label fx:id="lblTotalMedicines" styleClass="stat-label-primary" text="0" />
-            </HBox>
-            <HBox spacing="6.0" alignment="CENTER_LEFT">
-                <Label styleClass="stat-label-primary" text="Còn hàng:" />
-                <Label fx:id="lblInStockMedicines" styleClass="stat-label-primary" text="0" />
-            </HBox>
-        </VBox>
+        <HBox alignment="TOP_LEFT">
+            <VBox spacing="4.0">
+                <HBox spacing="6.0" alignment="CENTER_LEFT">
+                    <Label styleClass="stat-label-primary" text="Tổng loại thuốc:" />
+                    <Label fx:id="lblTotalMedicines" styleClass="stat-label-primary" text="0" />
+                </HBox>
+                <HBox spacing="6.0" alignment="CENTER_LEFT">
+                    <Label styleClass="stat-label-primary" text="Còn hàng:" />
+                    <Label fx:id="lblInStockMedicines" styleClass="stat-label-primary" text="0" />
+                </HBox>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="btnBackContext" onAction="#handleBackContext" styleClass="btn-back" text="Quay lại" visible="false" managed="false">
+                <graphic>
+                    <SVGPath content="M 0 7 L 14 7 M 8 1 L 14 7 L 8 13" styleClass="btn-back-glyph" />
+                </graphic>
+            </Button>
+        </HBox>
 
         <HBox alignment="CENTER_LEFT" spacing="12.0">
             <Button fx:id="btnImport" mnemonicParsing="false"

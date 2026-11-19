@@ -144,8 +144,30 @@ public class MainLayoutController {
         return FormatUtils.getInitials(fullName);
     }
 
+    /**
+     * Xóa các "ngữ cảnh điều hướng tạm" (nút Quay lại + bộ lọc áp từ Tổng quan, lịch sử bán mở từ Tổng quan...)
+     * khi người dùng chuyển trang bằng thanh Menu, để các trang trở về trạng thái ban đầu.
+     */
+    private void resetContexts() {
+        if (controllerCache.get("/fxml/sales/sales.fxml") instanceof com.pharmacy.sales.SalesController sales) {
+            sales.resetContext();
+        }
+        if (
+            controllerCache.get("/fxml/inventory/inventory.fxml") instanceof
+                com.pharmacy.inventory.InventoryController inventory
+        ) {
+            inventory.resetContext();
+        }
+        if (
+            controllerCache.get("/fxml/profile/profile.fxml") instanceof com.pharmacy.profile.ProfileController profile
+        ) {
+            profile.setOnBack(null);
+        }
+    }
+
     @FXML
     private void handleNavDashboard(ActionEvent event) {
+        resetContexts();
         if (UserSession.isLoggedIn() && !UserSession.getInstance().isManager()) {
             log.warn("Nhân viên không có quyền truy cập màn hình Tổng quan! Điều hướng về Bán hàng.");
             handleNavSales(null);
@@ -169,6 +191,7 @@ public class MainLayoutController {
 
     @FXML
     private void handleNavSales(ActionEvent event) {
+        resetContexts();
         setActiveButton(btnSales);
         lblHeaderTitle.setText("Bán hàng");
         Parent cached = viewCache.get("/fxml/sales/sales.fxml");
@@ -185,14 +208,26 @@ public class MainLayoutController {
     }
 
     public void navigateToInventory() {
-        navigateToInventoryWithFilter(null, null);
+        resetContexts();
+        com.pharmacy.inventory.InventoryController ctrl = showInventoryPage();
+        if (ctrl != null) {
+            ctrl.resetContext();
+        }
     }
 
-    public void navigateToInventoryWithFilter(String[] stockFilters, String[] expiryFilters) {
+    /** Mở Kho thuốc với bộ lọc có sẵn; {@code onBack} hiện thành nút Quay lại và khôi phục bộ lọc cũ khi thoát. */
+    public void navigateToInventoryWithFilter(String[] stockFilters, String[] expiryFilters, Runnable onBack) {
+        com.pharmacy.inventory.InventoryController ctrl = showInventoryPage();
+        if (ctrl != null) {
+            ctrl.enterFilteredContext(stockFilters, expiryFilters, onBack);
+        }
+    }
+
+    private com.pharmacy.inventory.InventoryController showInventoryPage() {
         if (UserSession.isLoggedIn() && !UserSession.getInstance().isManager()) {
             log.warn("Nhân viên không có quyền truy cập màn hình Kho thuốc! Điều hướng về Bán hàng.");
             handleNavSales(null);
-            return;
+            return null;
         }
         setActiveButton(btnInventory);
         if (lblHeaderTitle != null) {
@@ -201,18 +236,12 @@ public class MainLayoutController {
         Parent cached = viewCache.get("/fxml/inventory/inventory.fxml");
         if (cached != null) {
             contentArea.getChildren().setAll(cached);
-            if (
-                controllerCache.get("/fxml/inventory/inventory.fxml") instanceof
-                    com.pharmacy.inventory.InventoryController invCtrl
-            ) {
-                invCtrl.applyFilters(stockFilters, expiryFilters);
-            }
-            return;
+            return (com.pharmacy.inventory.InventoryController) controllerCache.get("/fxml/inventory/inventory.fxml");
         }
         FXMLLoader loader = loadCenterViewWithLoader("/fxml/inventory/inventory.fxml");
-        if (loader != null && loader.getController() instanceof com.pharmacy.inventory.InventoryController invCtrl) {
-            invCtrl.applyFilters(stockFilters, expiryFilters);
-        }
+        return loader != null && loader.getController() instanceof com.pharmacy.inventory.InventoryController ctrl
+            ? ctrl
+            : (com.pharmacy.inventory.InventoryController) controllerCache.get("/fxml/inventory/inventory.fxml");
     }
 
     public void navigateToSalesHistoryForMonth(int year, int month, Runnable onBack) {
@@ -276,6 +305,7 @@ public class MainLayoutController {
 
     @FXML
     private void handleNavProfile(javafx.scene.input.MouseEvent event) {
+        resetContexts();
         if (lblHeaderTitle != null) {
             lblHeaderTitle.setText("Thông tin cá nhân");
         }
@@ -290,6 +320,7 @@ public class MainLayoutController {
 
     @FXML
     private void handleNavEmployee(ActionEvent event) {
+        resetContexts();
         if (UserSession.isLoggedIn() && !UserSession.getInstance().isManager()) {
             log.warn("Nhân viên không có quyền truy cập quản lý Nhân viên! Điều hướng về Bán hàng.");
             handleNavSales(null);
@@ -307,6 +338,7 @@ public class MainLayoutController {
 
     @FXML
     private void handleNavReport(ActionEvent event) {
+        resetContexts();
         setActiveButton(btnReport);
         lblHeaderTitle.setText("Báo cáo & Thống kê");
         Parent cached = viewCache.get(REPORT_FXML);
