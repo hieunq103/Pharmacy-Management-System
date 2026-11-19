@@ -27,13 +27,13 @@
 <StackPane stylesheets="@../../css/report.css, @../../css/inventory.css, @../../css/period_filter.css, @../../css/icon_buttons.css"
            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.pharmacy.report.ReportController">
-<ScrollPane fx:id="reportScrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+<ScrollPane fx:id="reportScrollPane" fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
             styleClass="report-scroll-pane">
 
     <content>
-        <VBox spacing="24.0" styleClass="report-root">
+        <VBox spacing="16.0" styleClass="report-root">
             <padding>
-                <Insets bottom="80.0" left="24.0" right="24.0" top="16.0" />
+                <Insets bottom="24.0" left="24.0" right="24.0" top="14.0" />
             </padding>
 
             <HBox alignment="CENTER_LEFT" minHeight="-Infinity" spacing="16.0" styleClass="filter-card">
@@ -51,7 +51,7 @@
                 </HBox>
             </HBox>
 
-            <GridPane hgap="20.0" minHeight="-Infinity" vgap="20.0">
+            <GridPane hgap="16.0" minHeight="-Infinity" vgap="20.0">
                 <columnConstraints>
                     <ColumnConstraints percentWidth="20.0" hgrow="ALWAYS" />
                     <ColumnConstraints percentWidth="20.0" hgrow="ALWAYS" />
@@ -60,10 +60,10 @@
                     <ColumnConstraints percentWidth="20.0" hgrow="ALWAYS" />
                 </columnConstraints>
                 <rowConstraints>
-                    <RowConstraints minHeight="104.0" prefHeight="104.0" valignment="CENTER" vgrow="ALWAYS" />
+                    <RowConstraints minHeight="84.0" prefHeight="84.0" valignment="CENTER" vgrow="ALWAYS" />
                 </rowConstraints>
 
-                <VBox spacing="10.0" styleClass="report-stat-card" GridPane.columnIndex="0">
+                <VBox spacing="6.0" styleClass="report-stat-card" GridPane.columnIndex="0">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Tổng doanh số" />
                         <Region HBox.hgrow="ALWAYS" />
@@ -74,7 +74,7 @@
                     <Label fx:id="lblTotalRevenue" styleClass="stat-value-highlight" text="0đ" />
                 </VBox>
 
-                <VBox spacing="10.0" styleClass="report-stat-card" GridPane.columnIndex="1">
+                <VBox spacing="6.0" styleClass="report-stat-card" GridPane.columnIndex="1">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Tiền mặt" />
                         <Region HBox.hgrow="ALWAYS" />
@@ -85,7 +85,7 @@
                     <Label fx:id="lblCashRevenue" styleClass="stat-value" text="0đ" />
                 </VBox>
 
-                <VBox spacing="10.0" styleClass="report-stat-card" GridPane.columnIndex="2">
+                <VBox spacing="6.0" styleClass="report-stat-card" GridPane.columnIndex="2">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Chuyển khoản" />
                         <Region HBox.hgrow="ALWAYS" />
@@ -96,7 +96,7 @@
                     <Label fx:id="lblTransferRevenue" styleClass="stat-value" text="0đ" />
                 </VBox>
 
-                <VBox spacing="10.0" styleClass="report-stat-card" GridPane.columnIndex="3">
+                <VBox spacing="6.0" styleClass="report-stat-card" GridPane.columnIndex="3">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Số thuốc đã bán" />
                         <Region HBox.hgrow="ALWAYS" />
@@ -107,7 +107,7 @@
                     <Label fx:id="lblTotalMedicinesSold" styleClass="stat-value-emerald" text="0 sản phẩm" />
                 </VBox>
 
-                <VBox spacing="10.0" styleClass="report-stat-card" GridPane.columnIndex="4">
+                <VBox spacing="6.0" styleClass="report-stat-card" GridPane.columnIndex="4">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Tổng hóa đơn" />
                         <Region HBox.hgrow="ALWAYS" />
@@ -119,16 +119,16 @@
                 </VBox>
             </GridPane>
 
-            <TabPane fx:id="tabPaneReport" styleClass="report-tab-pane" tabClosingPolicy="UNAVAILABLE" tabMinWidth="240.0" tabMaxWidth="240.0">
+            <TabPane fx:id="tabPaneReport" styleClass="report-tab-pane" tabClosingPolicy="UNAVAILABLE" tabMinWidth="230.0" tabMaxWidth="230.0" VBox.vgrow="ALWAYS">
                 <tabs>
                     <Tab fx:id="tabRevenue" text="Báo cáo doanh số">
                         <content>
                             <VBox spacing="10.0">
 
-                                <VBox spacing="8.0" styleClass="chart-card">
+                                <VBox spacing="8.0" styleClass="chart-card" VBox.vgrow="ALWAYS">
                                     <BarChart fx:id="barChartRevenue" legendVisible="false"
                                               styleClass="report-bar-chart"
-                                              minHeight="340.0" prefHeight="340.0" maxHeight="340.0"
+                                              minHeight="200.0" prefHeight="300.0" VBox.vgrow="ALWAYS"
                                               animated="false"
                                               categoryGap="24.0" barGap="4.0"
                                               horizontalGridLinesVisible="true" verticalGridLinesVisible="false">
@@ -147,12 +147,12 @@
 
                     <Tab fx:id="tabMedicines" text="Báo cáo số thuốc đã bán">
                         <content>
-                            <VBox fx:id="boxMedicinesTab" spacing="24.0">
+                            <VBox fx:id="boxMedicinesTab" spacing="16.0">
 
                                 <VBox spacing="8.0" styleClass="chart-card">
                                     <BarChart fx:id="barChartMedicines" legendVisible="false"
                                               styleClass="report-bar-chart, report-bar-chart-green"
-                                              minHeight="300.0" prefHeight="300.0" maxHeight="300.0"
+                                              minHeight="200.0" prefHeight="240.0"
                                               animated="false"
                                               categoryGap="24.0" barGap="4.0"
                                               horizontalGridLinesVisible="true" verticalGridLinesVisible="false">

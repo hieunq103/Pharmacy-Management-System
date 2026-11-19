@@ -38,6 +38,7 @@ public class ReportController {
     private static final Logger log = LoggerFactory.getLogger(ReportController.class);
     private final ReportService reportService;
 
+    private boolean filterControlsReady;
     private static final double TABLE_ROW_HEIGHT = 50.0;
     private static final double TABLE_HEADER_HEIGHT = 44.0;
     private Task<?> currentChartTask;
@@ -392,7 +393,7 @@ public class ReportController {
         if (txtFilterYear != null) {
             txtFilterYear.setText(String.valueOf(selectedYear));
             txtFilterYear.focusedProperty().addListener((obs, oldVal, newVal) -> {
-                if (!newVal) {
+                if (!newVal && !String.valueOf(selectedYear).equals(txtFilterYear.getText().trim())) {
                     handleYearAction(null);
                 }
             });
@@ -407,6 +408,7 @@ public class ReportController {
         }
 
         updateFilterButtonStyles(true);
+        filterControlsReady = true;
     }
 
     private void setupDatePickerFormat(DatePicker datePicker) {
@@ -517,9 +519,12 @@ public class ReportController {
             try {
                 selectedMonth = Integer.parseInt(val);
             } catch (NumberFormatException ignored) {}
-            if (currentMode == PeriodMode.MONTH) {
-                loadAllData();
-            }
+            if (!filterControlsReady) return;
+            // Chọn tháng là tự chuyển sang chế độ "Theo tháng"
+            boolean modeChanged = currentMode != PeriodMode.MONTH;
+            currentMode = PeriodMode.MONTH;
+            if (modeChanged) updateFilterButtonStyles(false);
+            loadAllData();
         }
     }
 
