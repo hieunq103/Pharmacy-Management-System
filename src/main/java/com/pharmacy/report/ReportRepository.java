@@ -1,6 +1,7 @@
 package com.pharmacy.report;
 
 import com.pharmacy.common.FormatUtils;
+import com.pharmacy.common.SearchFilter;
 import com.pharmacy.infra.db.HibernateUtil;
 import com.pharmacy.report.dto.DailySalesDTO;
 import com.pharmacy.report.dto.MedicineTimelineDTO;
@@ -84,7 +85,7 @@ public class ReportRepository {
     // Lấy danh sách thuốc đã bán kèm số lượng và doanh thu (HQL DTO Constructor Projection)
     public List<SoldMedicineDTO> getSoldMedicines(LocalDate from, LocalDate to, String keyword, Integer employeeId) {
         try (Session session = HibernateUtil.openReadOnlySession()) {
-            boolean hasKeyword = keyword != null && !keyword.isBlank();
+            SearchFilter search = SearchFilter.of(keyword, "kw").prefix("m.code").contains("m.name", "mc.name");
             String hql = """
                         SELECT new com.pharmacy.report.dto.SoldMedicineDTO(
                             m.code, m.name, COALESCE(mc.name, 'Chưa phân loại'), m.unit,
@@ -97,16 +98,14 @@ public class ReportRepository {
                         WHERE so.createdAt >= :startTime AND so.createdAt < :endTime
                     """
                     + employeeFilter(employeeId)
-                    + (hasKeyword ? " AND (m.code LIKE :keyword OR m.name LIKE :keyword OR mc.name LIKE :keyword) " : "")
+                    + search.hql()
                     + """
                         GROUP BY m.id, m.code, m.name, mc.name, m.unit
                         ORDER BY SUM(soi.quantity) DESC, SUM(soi.lineTotal) DESC
                     """;
             SelectionQuery<SoldMedicineDTO> query = session.createSelectionQuery(hql, SoldMedicineDTO.class);
             bindRange(query, from, to, employeeId);
-            if (hasKeyword) {
-                query.setParameter("keyword", "%" + keyword.trim() + "%");
-            }
+            search.bind(query);
             return query.list();
         } catch (Exception e) {
             log.error("Lỗi khi lấy danh sách thuốc đã bán: ", e);

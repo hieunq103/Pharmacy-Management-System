@@ -3,6 +3,7 @@ package com.pharmacy.inventory;
 import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.PageResult;
+import com.pharmacy.common.SearchFilter;
 import com.pharmacy.employee.Employee;
 import com.pharmacy.infra.db.CodeSequence;
 import com.pharmacy.infra.db.HibernateUtil;
@@ -46,8 +47,9 @@ public class InventoryRepository {
     private static final String LOW_STOCK_THRESHOLD =
             "CASE WHEN m.minStockThreshold > 0 THEN m.minStockThreshold ELSE " + AppConstants.DEFAULT_LOW_STOCK_THRESHOLD + " END";
 
-    private static final String KEYWORD_FILTER =
-            " AND (m.code LIKE :keyword OR m.name LIKE :keyword OR m.activeIngredient LIKE :keyword) ";
+    private static SearchFilter medicineSearch(String keyword) {
+        return SearchFilter.of(keyword, "kw").prefix("m.code").contains("m.name", "m.activeIngredient");
+    }
 
     // Lấy thống kê tổng quan tồn kho cho Dashboard
     public InventorySummaryDTO getInventorySummary() {
@@ -209,7 +211,7 @@ public class InventoryRepository {
         int validPage = Math.max(1, page);
         int validSize = Math.max(1, size);
         try (Session session = HibernateUtil.openReadOnlySession()) {
-            boolean hasKeyword = hasText(searchKeyword);
+            SearchFilter search = medicineSearch(searchKeyword);
             String havingClause = buildHavingConditions(stockFilter, expiryFilter);
             boolean hasHaving = !havingClause.isEmpty();
             LocalDate today = LocalDate.now();
@@ -221,11 +223,11 @@ public class InventoryRepository {
             if (hasHaving) {
                 // Khi có lọc trạng thái tồn kho hoặc hạn dùng, gom nhóm tính toán và lọc HAVING
                 String filterHql = "SELECT m.id FROM Medicine m LEFT JOIN InventoryLot il ON il.medicine.id = m.id AND il.quantityRemaining > 0 "
-                        + " WHERE m.status = :active " + (hasKeyword ? KEYWORD_FILTER : "")
+                        + " WHERE m.status = :active " + search.hql()
                         + " GROUP BY m.id, m.minStockThreshold " + havingClause + " ORDER BY m.id ASC";
                 SelectionQuery<Integer> query = session.createSelectionQuery(filterHql, Integer.class)
                         .setParameter("active", Medicine.Status.ACTIVE);
-                if (hasKeyword) query.setParameter("keyword", likeParam(searchKeyword));
+                search.bind(query);
                 if (havingClause.contains(":today")) query.setParameter("today", today);
                 if (havingClause.contains(":nearExpiryDate")) query.setParameter("nearExpiryDate", today.plusDays(AppConstants.NEAR_EXPIRY_DAYS));
 
@@ -260,13 +262,13 @@ public class InventoryRepository {
                         .list();
             } else {
                 // Không có lọc tồn kho/hạn dùng: phân trang đơn bảng siêu nhanh, gom lấy trực tiếp dữ liệu chỉ trong 1 lượt truy vấn
-                String where = " WHERE m.status = :active " + (hasKeyword ? KEYWORD_FILTER : "");
+                String where = " WHERE m.status = :active " + search.hql();
                 if (cachedTotal != null && cachedTotal >= 0) {
                     total = cachedTotal;
                 } else {
                     SelectionQuery<Long> countQuery = session.createSelectionQuery("SELECT COUNT(m.id) FROM Medicine m " + where, Long.class)
                             .setParameter("active", Medicine.Status.ACTIVE);
-                    if (hasKeyword) countQuery.setParameter("keyword", likeParam(searchKeyword));
+                    search.bind(countQuery);
                     total = toLong(countQuery.uniqueResult());
                 }
                 if (total == 0) {
@@ -283,7 +285,7 @@ public class InventoryRepository {
                         .setParameter("active", Medicine.Status.ACTIVE)
                         .setFirstResult((validPage - 1) * validSize)
                         .setMaxResults(validSize);
-                if (hasKeyword) dataQuery.setParameter("keyword", likeParam(searchKeyword));
+                search.bind(dataQuery);
                 rows = dataQuery.list();
 
                 pageIds = new ArrayList<>(rows.size());
@@ -718,36 +720,23 @@ public class InventoryRepository {
         return t.getMessage() != null ? t.getMessage() : e.getMessage();
     }
 
-    private static final String IMPORT_KEYWORD_FILTER = """
-             AND (
-                e.fullName LIKE :kw
-                OR s.name LIKE :kw
-                OR it.note LIKE :kw
-                OR it.id IN (
-                    SELECT ilSub.transaction.id FROM InventoryLot ilSub
-                    JOIN ilSub.medicine mSub
-                    WHERE mSub.name LIKE :kw OR mSub.code LIKE :kw OR ilSub.lotNumber LIKE :kw
-                )
-             )
-            """;
+    // Mỗi token phải khớp người lập/NCC/ghi chú hoặc có mặt hàng (tên, mã thuốc, số lô) trong phiếu; dùng EXISTS theo index transaction_id
+    private static SearchFilter importSearch(String keyword) {
+        return SearchFilter.of(keyword, "kw")
+                .contains("e.fullName", "s.name", "it.note")
+                .custom("EXISTS (SELECT 1 FROM InventoryLot ilS JOIN ilS.medicine mS WHERE ilS.transaction.id = it.id"
+                        + " AND (mS.name LIKE {p} ESCAPE '!' OR mS.code LIKE {p} ESCAPE '!' OR ilS.lotNumber LIKE {p} ESCAPE '!'))");
+    }
 
-    private static final String EXPORT_KEYWORD_FILTER = """
-             AND (
-                e.fullName LIKE :kw
-                OR it.note LIKE :kw
-                OR it.id IN (
-                    SELECT idiSub.transaction.id FROM InventoryDisposalItem idiSub
-                    JOIN idiSub.inventoryLot ilSub
-                    JOIN ilSub.medicine mSub
-                    WHERE mSub.name LIKE :kw OR mSub.code LIKE :kw OR ilSub.lotNumber LIKE :kw OR idiSub.reason LIKE :kw
-                )
-                OR it.salesOrder.id IN (
-                    SELECT soiSub.salesOrder.id FROM SalesOrderItem soiSub
-                    JOIN soiSub.medicine mSub2
-                    WHERE mSub2.name LIKE :kw OR mSub2.code LIKE :kw
-                )
-             )
-            """;
+    private static SearchFilter exportSearch(String keyword) {
+        return SearchFilter.of(keyword, "kw")
+                .contains("e.fullName", "it.note")
+                .custom("EXISTS (SELECT 1 FROM InventoryDisposalItem idiS JOIN idiS.inventoryLot ilS JOIN ilS.medicine mS"
+                        + " WHERE idiS.transaction.id = it.id AND (mS.name LIKE {p} ESCAPE '!' OR mS.code LIKE {p} ESCAPE '!'"
+                        + " OR ilS.lotNumber LIKE {p} ESCAPE '!' OR idiS.reason LIKE {p} ESCAPE '!'))")
+                .custom("EXISTS (SELECT 1 FROM SalesOrderItem soiS JOIN soiS.medicine mS2 WHERE it.salesOrder IS NOT NULL"
+                        + " AND soiS.salesOrder.id = it.salesOrder.id AND (mS2.name LIKE {p} ESCAPE '!' OR mS2.code LIKE {p} ESCAPE '!'))");
+    }
 
     // Lấy 1 trang lịch sử nhập kho (2-step HQL pagination, tránh N+1 và nhân dòng)
     public PageResult<InventoryTransactionDTO> getImportTransactions(String keyword, LocalDate fromDate, LocalDate toDate,
@@ -755,32 +744,30 @@ public class InventoryRepository {
         int validPage = Math.max(1, page);
         int validSize = Math.max(1, size);
         try (Session session = HibernateUtil.openReadOnlySession()) {
-            boolean hasKeyword = hasText(keyword);
+            SearchFilter search = importSearch(keyword);
             StringBuilder from = new StringBuilder("""
                 FROM InventoryTransaction it
                 LEFT JOIN it.employee e
                 LEFT JOIN it.supplier s
                 WHERE it.type = :importType
             """);
-            if (hasKeyword) from.append(IMPORT_KEYWORD_FILTER);
+            from.append(search.hql());
             appendDateRange(from, fromDate, toDate);
-
-            SelectionQuery<Long> countQuery = session.createSelectionQuery("SELECT COUNT(it.id) " + from, Long.class)
-                    .setParameter("importType", InventoryTransaction.Type.IMPORT);
-            bindHistoryParams(countQuery, hasKeyword ? keyword : null, fromDate, toDate);
-            long total = toLong(countQuery.uniqueResult());
-            if (total == 0) {
-                return PageResult.empty(validPage, validSize);
-            }
 
             SelectionQuery<Long> idsQuery = session.createSelectionQuery(
                     "SELECT it.id " + from + " ORDER BY it.transactionAt DESC, it.id DESC", Long.class)
                     .setParameter("importType", InventoryTransaction.Type.IMPORT)
                     .setFirstResult((validPage - 1) * validSize)
                     .setMaxResults(validSize);
-            bindHistoryParams(idsQuery, hasKeyword ? keyword : null, fromDate, toDate);
+            bindHistoryParams(idsQuery, search, fromDate, toDate);
             List<Long> pageIds = idsQuery.list();
-            if (pageIds.isEmpty()) {
+            long total = totalFor(pageIds, validPage, validSize, () -> {
+                SelectionQuery<Long> countQuery = session.createSelectionQuery("SELECT COUNT(it.id) " + from, Long.class)
+                        .setParameter("importType", InventoryTransaction.Type.IMPORT);
+                bindHistoryParams(countQuery, search, fromDate, toDate);
+                return toLong(countQuery.uniqueResult());
+            });
+            if (total == 0 || pageIds.isEmpty()) {
                 return PageResult.empty(validPage, validSize);
             }
 
@@ -833,7 +820,7 @@ public class InventoryRepository {
         int validPage = Math.max(1, page);
         int validSize = Math.max(1, size);
         try (Session session = HibernateUtil.openReadOnlySession()) {
-            boolean hasKeyword = hasText(keyword);
+            SearchFilter search = exportSearch(keyword);
             List<InventoryTransaction.Type> exportTypes = List.of(
                     InventoryTransaction.Type.EXPORT_SALE, InventoryTransaction.Type.EXPORT_DISPOSAL);
             StringBuilder from = new StringBuilder("""
@@ -841,25 +828,23 @@ public class InventoryRepository {
                 LEFT JOIN it.employee e
                 WHERE it.type IN (:exportTypes)
             """);
-            if (hasKeyword) from.append(EXPORT_KEYWORD_FILTER);
+            from.append(search.hql());
             appendDateRange(from, fromDate, toDate);
-
-            SelectionQuery<Long> countQuery = session.createSelectionQuery("SELECT COUNT(it.id) " + from, Long.class)
-                    .setParameter("exportTypes", exportTypes);
-            bindHistoryParams(countQuery, hasKeyword ? keyword : null, fromDate, toDate);
-            long total = toLong(countQuery.uniqueResult());
-            if (total == 0) {
-                return PageResult.empty(validPage, validSize);
-            }
 
             SelectionQuery<Long> idsQuery = session.createSelectionQuery(
                     "SELECT it.id " + from + " ORDER BY it.transactionAt DESC, it.id DESC", Long.class)
                     .setParameter("exportTypes", exportTypes)
                     .setFirstResult((validPage - 1) * validSize)
                     .setMaxResults(validSize);
-            bindHistoryParams(idsQuery, hasKeyword ? keyword : null, fromDate, toDate);
+            bindHistoryParams(idsQuery, search, fromDate, toDate);
             List<Long> pageIds = idsQuery.list();
-            if (pageIds.isEmpty()) {
+            long total = totalFor(pageIds, validPage, validSize, () -> {
+                SelectionQuery<Long> countQuery = session.createSelectionQuery("SELECT COUNT(it.id) " + from, Long.class)
+                        .setParameter("exportTypes", exportTypes);
+                bindHistoryParams(countQuery, search, fromDate, toDate);
+                return toLong(countQuery.uniqueResult());
+            });
+            if (total == 0 || pageIds.isEmpty()) {
                 return PageResult.empty(validPage, validSize);
             }
 
@@ -954,6 +939,14 @@ public class InventoryRepository {
         }
     }
 
+    // Tổng số dòng: trang chưa đầy thì suy ra từ chính trang đó, chỉ COUNT khi thật sự cần
+    private static long totalFor(List<Long> pageIds, int page, int size, java.util.function.LongSupplier counter) {
+        if (pageIds.size() < size && (page == 1 || !pageIds.isEmpty())) {
+            return (long) (page - 1) * size + pageIds.size();
+        }
+        return counter.getAsLong();
+    }
+
     // Thêm điều kiện lọc theo khoảng ngày vào câu lệnh HQL
     private static void appendDateRange(StringBuilder hql, LocalDate fromDate, LocalDate toDate) {
         if (fromDate != null) hql.append(" AND it.transactionAt >= :fromDt ");
@@ -961,8 +954,8 @@ public class InventoryRepository {
     }
 
     // Gán tham số tìm kiếm và khoảng ngày cho truy vấn lịch sử kho
-    private static void bindHistoryParams(SelectionQuery<?> query, String keyword, LocalDate fromDate, LocalDate toDate) {
-        if (keyword != null) query.setParameter("kw", likeParam(keyword));
+    private static void bindHistoryParams(SelectionQuery<?> query, SearchFilter search, LocalDate fromDate, LocalDate toDate) {
+        search.bind(query);
         if (fromDate != null) query.setParameter("fromDt", fromDate.atStartOfDay());
         if (toDate != null) query.setParameter("toDt", toDate.plusDays(1).atStartOfDay());
     }

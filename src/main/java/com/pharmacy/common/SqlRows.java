@@ -55,9 +55,6 @@ public final class SqlRows {
         return null;
     }
 
-    public static String likeParam(String keyword) {
-        return "%" + keyword.trim() + "%";
-    }
 
     public static boolean hasText(String s) {
         return s != null && !s.isBlank();

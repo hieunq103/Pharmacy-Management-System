@@ -3,6 +3,7 @@ package com.pharmacy.sales;
 import com.pharmacy.common.AppConstants;
 
 import com.pharmacy.common.PageResult;
+import com.pharmacy.common.SearchFilter;
 import com.pharmacy.employee.Employee;
 import com.pharmacy.infra.db.HibernateUtil;
 import com.pharmacy.infra.db.TransactionGuards;
@@ -43,8 +44,6 @@ import static com.pharmacy.common.SqlRows.*;
 public class SalesRepository {
     private static final Logger log = LoggerFactory.getLogger(SalesRepository.class);
 
-    private static final String KEYWORD_FILTER =
-            " AND (m.code LIKE :keyword OR m.name LIKE :keyword OR m.activeIngredient LIKE :keyword) ";
 
     // Lấy danh sách tên tất cả danh mục thuốc cho màn hình bán hàng
     public List<String> getAllCategories() {
@@ -66,13 +65,13 @@ public class SalesRepository {
         int validPage = Math.max(1, page);
         int validSize = Math.max(1, size);
         try (Session session = HibernateUtil.openReadOnlySession()) {
-            boolean hasKeyword = hasText(keyword);
+            SearchFilter search = SearchFilter.of(keyword, "kw").prefix("m.code").contains("m.name", "m.activeIngredient");
             boolean hasCategory = hasText(categoryName)
                     && !"Tất cả".equalsIgnoreCase(categoryName)
                     && !"Tất cả nhóm thuốc".equalsIgnoreCase(categoryName);
 
             String where = " WHERE m.status = :active "
-                    + (hasKeyword ? KEYWORD_FILTER : "")
+                    + search.hql()
                     + (hasCategory ? " AND m.category.name = :category " : "");
 
             long total;
@@ -81,7 +80,7 @@ public class SalesRepository {
             } else {
                 SelectionQuery<Long> countQuery = session.createSelectionQuery("SELECT COUNT(m.id) FROM Medicine m " + where, Long.class)
                         .setParameter("active", Medicine.Status.ACTIVE);
-                bindMedicineFilter(countQuery, hasKeyword ? keyword : null, hasCategory ? categoryName : null);
+                bindMedicineFilter(countQuery, search, hasCategory ? categoryName : null);
                 total = toLong(countQuery.uniqueResult());
             }
             if (total == 0) {
@@ -101,7 +100,7 @@ public class SalesRepository {
                             "SELECT COUNT(m.id) FROM Medicine m " + where + sellable, Long.class)
                     .setParameter("active", Medicine.Status.ACTIVE)
                     .setParameter("today", today);
-            bindMedicineFilter(sellableCount, hasKeyword ? keyword : null, hasCategory ? categoryName : null);
+            bindMedicineFilter(sellableCount, search, hasCategory ? categoryName : null);
             long sellableTotal = toLong(sellableCount.uniqueResult());
 
             List<Integer> pageIds = new ArrayList<>(validSize);
@@ -112,7 +111,7 @@ public class SalesRepository {
                         .setParameter("today", today)
                         .setFirstResult(offset)
                         .setMaxResults(validSize);
-                bindMedicineFilter(q, hasKeyword ? keyword : null, hasCategory ? categoryName : null);
+                bindMedicineFilter(q, search, hasCategory ? categoryName : null);
                 pageIds.addAll(q.list());
             }
             int remaining = validSize - pageIds.size();
@@ -125,7 +124,7 @@ public class SalesRepository {
                         .setParameter("today", today)
                         .setFirstResult((int) Math.max(0, offset - sellableTotal))
                         .setMaxResults(remaining);
-                bindMedicineFilter(q, hasKeyword ? keyword : null, hasCategory ? categoryName : null);
+                bindMedicineFilter(q, search, hasCategory ? categoryName : null);
                 pageIds.addAll(q.list());
             }
             if (pageIds.isEmpty()) {
@@ -164,8 +163,8 @@ public class SalesRepository {
     }
 
     // Gán tham số tìm kiếm từ khóa và danh mục cho truy vấn thuốc bán
-    private static void bindMedicineFilter(SelectionQuery<?> query, String keyword, String category) {
-        if (keyword != null) query.setParameter("keyword", likeParam(keyword));
+    private static void bindMedicineFilter(SelectionQuery<?> query, SearchFilter search, String category) {
+        search.bind(query);
         if (category != null) query.setParameter("category", category.trim());
     }
 
@@ -353,27 +352,36 @@ public class SalesRepository {
         int validSize = Math.max(1, size);
 
         try (Session session = HibernateUtil.openReadOnlySession()) {
-            boolean hasKeyword = hasText(keyword);
+            // Mỗi token khớp mã đơn / SĐT khách / tên nhân viên lập / tên-mã thuốc trong đơn
+            SearchFilter search = SearchFilter.of(keyword, "kw")
+                    .contains("so.code", "so.customerPhone")
+                    .custom("so.employee.id IN (SELECT eS.id FROM Employee eS WHERE eS.fullName LIKE {p} ESCAPE '!')")
+                    .custom("EXISTS (SELECT 1 FROM SalesOrderItem soiS JOIN soiS.medicine mS WHERE soiS.salesOrder.id = so.id"
+                            + " AND (mS.name LIKE {p} ESCAPE '!' OR mS.code LIKE {p} ESCAPE '!'))");
 
             StringBuilder where = new StringBuilder(" WHERE so.createdAt >= :fromTs AND so.createdAt < :toTs ");
             if (employeeId != null) where.append(" AND so.employee.id = :empId ");
-            if (hasKeyword) {
-                where.append(" AND (so.code LIKE :kw OR so.customerPhone LIKE :kw OR so.employee.id IN (SELECT e.id FROM Employee e WHERE e.fullName LIKE :kw)) ");
-            }
-
-            SelectionQuery<Long> countQuery = session.createSelectionQuery("SELECT COUNT(so.id) FROM SalesOrder so " + where, Long.class);
-            bindOrderFilter(countQuery, fromDate, toDate, employeeId, hasKeyword ? keyword : null);
-            long totalRecords = toLong(countQuery.uniqueResult());
-            if (totalRecords == 0) {
-                return new PageResult<>(Collections.emptyList(), 0L, validPage, validSize);
-            }
+            where.append(search.hql());
 
             SelectionQuery<Long> idsQuery = session.createSelectionQuery(
                     "SELECT so.id FROM SalesOrder so " + where + " ORDER BY so.createdAt DESC, so.id DESC", Long.class)
                     .setFirstResult((validPage - 1) * validSize)
                     .setMaxResults(validSize);
-            bindOrderFilter(idsQuery, fromDate, toDate, employeeId, hasKeyword ? keyword : null);
+            bindOrderFilter(idsQuery, fromDate, toDate, employeeId, search);
             List<Long> pageIds = idsQuery.list();
+
+            long totalRecords;
+            if (pageIds.size() < validSize && (validPage == 1 || !pageIds.isEmpty())) {
+                // Trang chưa đầy: biết ngay tổng số dòng, không cần COUNT
+                totalRecords = (long) (validPage - 1) * validSize + pageIds.size();
+            } else {
+                SelectionQuery<Long> countQuery = session.createSelectionQuery("SELECT COUNT(so.id) FROM SalesOrder so " + where, Long.class);
+                bindOrderFilter(countQuery, fromDate, toDate, employeeId, search);
+                totalRecords = toLong(countQuery.uniqueResult());
+            }
+            if (totalRecords == 0) {
+                return new PageResult<>(Collections.emptyList(), 0L, validPage, validSize);
+            }
 
             List<SalesOrderDTO> list = loadOrderSummariesByIds(session, pageIds);
             return new PageResult<>(list, totalRecords, validPage, validSize);
@@ -430,11 +438,11 @@ public class SalesRepository {
     }
 
     // Gán tham số bộ lọc cho truy vấn danh sách hóa đơn
-    private static void bindOrderFilter(SelectionQuery<?> query, LocalDate fromDate, LocalDate toDate, Integer employeeId, String keyword) {
+    private static void bindOrderFilter(SelectionQuery<?> query, LocalDate fromDate, LocalDate toDate, Integer employeeId, SearchFilter search) {
         query.setParameter("fromTs", fromDate.atStartOfDay());
         query.setParameter("toTs", toDate.plusDays(1).atStartOfDay());
         if (employeeId != null) query.setParameter("empId", employeeId);
-        if (keyword != null) query.setParameter("kw", likeParam(keyword));
+        search.bind(query);
     }
 
     // Lấy danh sách chi tiết các mặt hàng của một hóa đơn

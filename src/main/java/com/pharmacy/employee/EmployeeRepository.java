@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.pharmacy.common.PageResult;
+import com.pharmacy.common.SearchFilter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,17 +161,11 @@ public class EmployeeRepository {
             StringBuilder whereClause = new StringBuilder(" WHERE 1=1 ");
             Map<String, Object> params = new HashMap<>();
 
-            if (keyword != null && !keyword.trim().isEmpty()) {
-                String cleanKw = keyword.trim();
-                boolean isDigitsOnly = cleanKw.matches("^[0-9+]+$");
-                if (isDigitsOnly) {
-                    whereClause.append(" AND (e.phone LIKE :keyword OR e.nationalId LIKE :keyword OR e.code LIKE :keyword) ");
-                } else {
-                    whereClause.append(
-                            " AND (e.fullName LIKE :keyword OR e.phone LIKE :keyword OR e.nationalId LIKE :keyword OR e.code LIKE :keyword) ");
-                }
-                params.put("keyword", "%" + cleanKw + "%");
-            }
+            // Từ khóa chỉ gồm chữ số/dấu + → tìm theo SĐT/CCCD/mã (bỏ tên); còn lại thêm cả họ tên. Mã nhân viên khớp theo tiền tố.
+            boolean digitsOnly = keyword != null && keyword.trim().matches("^[0-9+\\s]+$");
+            SearchFilter search = SearchFilter.of(keyword, "kw").prefix("e.code").contains("e.phone", "e.nationalId");
+            if (!digitsOnly) search.contains("e.fullName");
+            whereClause.append(search.hql());
 
             List<String> genders = parseMultiFilter(gender);
             if (!genders.isEmpty()) {
@@ -216,6 +211,7 @@ public class EmployeeRepository {
                         : "SELECT COUNT(e.id) FROM Employee e " + whereClause;
                 var countQuery = session.createSelectionQuery(countHql, Long.class);
                 params.forEach(countQuery::setParameter);
+                search.bind(countQuery);
                 Long totalCount = countQuery.getSingleResult();
                 total = totalCount != null ? totalCount : 0L;
             }
@@ -228,6 +224,7 @@ public class EmployeeRepository {
                     + whereClause + " ORDER BY e.id DESC";
             var dataQuery = session.createSelectionQuery(dataHql, Employee.class);
             params.forEach(dataQuery::setParameter);
+            search.bind(dataQuery);
             dataQuery.setFirstResult((page - 1) * size);
             dataQuery.setMaxResults(size);
 
