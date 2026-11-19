@@ -390,9 +390,3 @@
 .report-loading-text .text {
     -fx-font-family: "Inter 18pt SemiBold";
 }
-
-.filter-field-label {
-    -fx-font-family: "Inter 18pt Medium";
-    -fx-font-size: 14px;
-    -fx-text-fill: #475569;
-}

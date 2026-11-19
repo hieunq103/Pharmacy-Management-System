@@ -36,6 +36,10 @@
                 <Insets bottom="24.0" left="24.0" right="24.0" top="14.0" />
             </padding>
 
+            <HBox fx:id="boxEmployeeFilter" alignment="CENTER_LEFT" minHeight="-Infinity" spacing="12.0">
+                <ComboBox fx:id="cbEmployee" prefWidth="340.0" styleClass="combo-filter-box" />
+            </HBox>
+
             <HBox alignment="CENTER_LEFT" minHeight="-Infinity" spacing="16.0" styleClass="filter-card">
                 <HBox alignment="CENTER_LEFT" spacing="8.0">
                     <Button fx:id="btnFilterDay" onAction="#handleSelectDayMode" styleClass="period-pill-btn, active" text="Theo ngày" />
@@ -50,12 +54,6 @@
                     <ComboBox fx:id="cbFilterMonth" prefWidth="110.0" promptText="Tháng" styleClass="combo-filter-box" onAction="#handleMonthChanged" />
                 </HBox>
             </HBox>
-
-            <HBox fx:id="boxEmployeeFilter" alignment="CENTER_LEFT" minHeight="-Infinity" spacing="12.0" styleClass="filter-card">
-                <Label styleClass="filter-field-label" text="Nhân viên" />
-                <ComboBox fx:id="cbEmployee" prefWidth="340.0" styleClass="combo-filter-box" />
-            </HBox>
-
 
             <GridPane hgap="16.0" minHeight="-Infinity" vgap="20.0">
                 <columnConstraints>
