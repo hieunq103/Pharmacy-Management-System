@@ -29,6 +29,10 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
+    public java.util.List<com.pharmacy.employee.dto.EmployeeOption> getEmployeeOptions() {
+        return employeeRepository.findEmployeeOptions();
+    }
+
     public PageResult<Employee> getEmployeesPage(
         int page,
         int size,

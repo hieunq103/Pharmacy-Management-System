@@ -785,6 +785,7 @@ public class SalesController implements Initializable {
     @FXML
     public void handleOpenSalesHistory() {
         historyBackAction = null;
+        if (historyController != null) historyController.setEmployeeFilter(null);
         showSalesHistoryView();
     }
 
@@ -803,18 +804,20 @@ public class SalesController implements Initializable {
         }
     }
 
-    public void openSalesHistoryForDate(LocalDate date, Runnable onBack) {
+    public void openSalesHistoryForDate(LocalDate date, Integer employeeId, Runnable onBack) {
         historyBackAction = onBack;
         showSalesHistoryView();
         if (historyController != null) {
+            historyController.setEmployeeFilter(employeeId);
             historyController.showDate(date);
         }
     }
 
-    public void openSalesHistoryForMonth(int year, int month, Runnable onBack) {
+    public void openSalesHistoryForMonth(int year, int month, Integer employeeId, Runnable onBack) {
         historyBackAction = onBack;
         showSalesHistoryView();
         if (historyController != null) {
+            historyController.setEmployeeFilter(employeeId);
             historyController.showMonth(year, month);
         }
     }
@@ -824,6 +827,7 @@ public class SalesController implements Initializable {
         boolean historyShown = viewSalesHistory != null && viewSalesHistory.isVisible();
         if (historyBackAction == null && !historyShown) return;
         historyBackAction = null;
+        if (historyController != null) historyController.setEmployeeFilter(null);
         showSalesMainView();
     }
 

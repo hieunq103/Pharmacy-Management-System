@@ -61,6 +61,16 @@ public class ReportController {
     private ComboBox<String> cbFilterMonth;
 
     @FXML
+    private javafx.scene.layout.HBox boxEmployeeFilter;
+
+    @FXML
+    private ComboBox<com.pharmacy.employee.dto.EmployeeOption> cbEmployee;
+
+    // Quản lý chọn một nhân viên để xem báo cáo riêng người đó (null = tất cả)
+    private Integer selectedEmployeeId;
+    private EmployeeFilterCombo employeeFilter;
+
+    @FXML
     private Label lblTotalRevenue;
 
     @FXML
@@ -184,6 +194,7 @@ public class ReportController {
         setupChartAxes();
         initTableColumns();
         initFilterControls();
+        initEmployeeFilter();
         initTabSelectionListener();
 
         Platform.runLater(() -> handleSelectDayMode(null));
@@ -623,8 +634,31 @@ public class ReportController {
         }
     }
 
+    // Nhân viên luôn bị giới hạn ở chính mình; Quản lý xem tất cả hoặc theo nhân viên đã chọn
     private Integer getCurrentEmployeeId() {
-        return UserSession.scopeEmployeeId(null);
+        return UserSession.scopeEmployeeId(selectedEmployeeId);
+    }
+
+    private void initEmployeeFilter() {
+        boolean manager = UserSession.isLoggedIn() && UserSession.getInstance().isManager();
+        if (boxEmployeeFilter != null) {
+            boxEmployeeFilter.setVisible(manager);
+            boxEmployeeFilter.setManaged(manager);
+        }
+        if (!manager || cbEmployee == null) return;
+
+        employeeFilter = new EmployeeFilterCombo(cbEmployee, id -> {
+            selectedEmployeeId = id;
+            loadAllData();
+        });
+        Task<java.util.List<com.pharmacy.employee.dto.EmployeeOption>> task = new Task<>() {
+            @Override
+            protected java.util.List<com.pharmacy.employee.dto.EmployeeOption> call() {
+                return new com.pharmacy.employee.EmployeeService().getEmployeeOptions();
+            }
+        };
+        task.setOnSucceeded(e -> employeeFilter.setEmployees(task.getValue()));
+        com.pharmacy.common.BackgroundTasks.run(task);
     }
 
     private void loadChartsAndSummaryData() {
@@ -973,9 +1007,14 @@ public class ReportController {
         com.pharmacy.layout.MainLayoutController layout = com.pharmacy.layout.MainLayoutController.getInstance();
         if (layout == null) return;
         if (medPeriodMode == PeriodMode.DAY) {
-            layout.navigateToSalesHistoryForDate(medPeriodDate, layout::navigateToReport);
+            layout.navigateToSalesHistoryForDate(medPeriodDate, selectedEmployeeId, layout::navigateToReport);
         } else {
-            layout.navigateToSalesHistoryForMonth(medPeriodYear, medPeriodMonth, layout::navigateToReport);
+            layout.navigateToSalesHistoryForMonth(
+                medPeriodYear,
+                medPeriodMonth,
+                selectedEmployeeId,
+                layout::navigateToReport
+            );
         }
     }
 

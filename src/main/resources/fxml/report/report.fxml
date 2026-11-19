@@ -44,6 +44,13 @@
 
                 <Region HBox.hgrow="ALWAYS" />
 
+                <HBox fx:id="boxEmployeeFilter" alignment="CENTER" spacing="8.0">
+                    <Label styleClass="filter-field-label" text="Nhân viên" />
+                    <ComboBox fx:id="cbEmployee" prefWidth="280.0" styleClass="combo-filter-box" />
+                </HBox>
+
+                <Region HBox.hgrow="ALWAYS" />
+
                 <HBox alignment="CENTER_RIGHT" spacing="8.0">
                     <Button fx:id="btnFilterMonth" onAction="#handleSelectMonthMode" styleClass="period-pill-btn" text="Theo tháng" />
                     <TextField fx:id="txtFilterYear" prefWidth="70.0" alignment="CENTER" promptText="Năm" styleClass="year-text-input" onAction="#handleYearAction" />

@@ -263,16 +263,25 @@ public class MainLayoutController {
     }
 
     public void navigateToSalesHistoryForMonth(int year, int month, Runnable onBack) {
-        com.pharmacy.sales.SalesController salesCtrl = showSalesPage();
-        if (salesCtrl != null) {
-            salesCtrl.openSalesHistoryForMonth(year, month, onBack);
-        }
+        navigateToSalesHistoryForMonth(year, month, null, onBack);
     }
 
     public void navigateToSalesHistoryForDate(java.time.LocalDate date, Runnable onBack) {
+        navigateToSalesHistoryForDate(date, null, onBack);
+    }
+
+    /** {@code employeeId}: chỉ hiện đơn của nhân viên này (Quản lý đang xem báo cáo riêng một người); null = tất cả. */
+    public void navigateToSalesHistoryForMonth(int year, int month, Integer employeeId, Runnable onBack) {
         com.pharmacy.sales.SalesController salesCtrl = showSalesPage();
         if (salesCtrl != null) {
-            salesCtrl.openSalesHistoryForDate(date, onBack);
+            salesCtrl.openSalesHistoryForMonth(year, month, employeeId, onBack);
+        }
+    }
+
+    public void navigateToSalesHistoryForDate(java.time.LocalDate date, Integer employeeId, Runnable onBack) {
+        com.pharmacy.sales.SalesController salesCtrl = showSalesPage();
+        if (salesCtrl != null) {
+            salesCtrl.openSalesHistoryForDate(date, employeeId, onBack);
         }
     }
 

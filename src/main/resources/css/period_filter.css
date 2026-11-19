@@ -87,3 +87,19 @@
     -fx-font-size: 13px;
     -fx-text-fill: #1e293b;
 }
+
+/* Ô chọn có gõ để tìm (vd. chọn nhân viên ở trang Báo cáo): phần nhập chữ trong suốt, hòa vào khung combo */
+.combo-filter-box.combo-box-base:editable > .text-field {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 13px;
+    -fx-text-fill: #1e293b;
+    -fx-prompt-text-fill: #94a3b8;
+    -fx-padding: 0 4 0 10;
+}
+
+.combo-filter-box:editable > .arrow-button {
+    -fx-background-color: transparent;
+}

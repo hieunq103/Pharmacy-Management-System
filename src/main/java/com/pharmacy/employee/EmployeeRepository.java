@@ -139,6 +139,21 @@ public class EmployeeRepository {
         });
     }
 
+    // Danh sách rút gọn (mã, họ tên) của mọi nhân viên, kể cả đã nghỉ vì họ vẫn có đơn bán trong quá khứ
+    public List<com.pharmacy.employee.dto.EmployeeOption> findEmployeeOptions() {
+        try (Session session = HibernateUtil.openReadOnlySession()) {
+            return session
+                .createSelectionQuery(
+                    "SELECT new com.pharmacy.employee.dto.EmployeeOption(e.id, e.code, e.fullName) FROM Employee e ORDER BY e.fullName ASC, e.code ASC",
+                    com.pharmacy.employee.dto.EmployeeOption.class
+                )
+                .list();
+        } catch (Exception e) {
+            log.error("Lỗi khi tải danh sách nhân viên: ", e);
+            return List.of();
+        }
+    }
+
     // Thống kê tổng số nhân viên và số nhân viên đang hoạt động
     public EmployeeSummary getEmployeeSummary() {
         try (Session session = HibernateUtil.openReadOnlySession()) {
