@@ -31,7 +31,7 @@
 
         <Region HBox.hgrow="ALWAYS" />
 
-        <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-back" text="Quay lại">
+        <Button onAction="#handleClose" styleClass="btn-back" text="Quay lại">
             <graphic>
                 <SVGPath content="M 0 7 L 14 7 M 8 1 L 14 7 L 8 13" styleClass="btn-back-glyph" />
             </graphic>

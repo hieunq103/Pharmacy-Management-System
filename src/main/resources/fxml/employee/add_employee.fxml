@@ -74,7 +74,7 @@
 
     <HBox alignment="CENTER_RIGHT" spacing="12" style="-fx-padding: 12 20; -fx-border-color: #E2E8F0; -fx-border-width: 1 0 0 0; -fx-background-color: #F8FAFC;">
         <Button text="Hủy" onAction="#handleCancel" styleClass="btn-secondary"/>
-        <Button fx:id="btnSave" text="Xác nhận thêm nhân viên" onAction="#handleSave" styleClass="btn-primary-add"/>
+        <Button text="Xác nhận thêm nhân viên" onAction="#handleSave" styleClass="btn-primary-add"/>
     </HBox>
 
 </VBox>

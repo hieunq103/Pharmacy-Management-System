@@ -2,7 +2,6 @@ package com.pharmacy.sales;
 
 import static com.pharmacy.common.SqlRows.*;
 
-import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.PageResult;
 import com.pharmacy.common.SearchFilter;
 import com.pharmacy.employee.Employee;
@@ -26,7 +25,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -341,9 +339,10 @@ public class SalesRepository {
             return orderCode;
         } catch (Exception e) {
             log.error("Lỗi giao dịch thanh toán đơn hàng: ", e);
-            Throwable root = e;
-            while (root.getCause() != null && root.getCause() != root) root = root.getCause();
-            String msg = root.getMessage() != null ? root.getMessage() : "Lỗi khi xử lý thanh toán đơn hàng.";
+            String msg = com.pharmacy.common.UserMessages.safeMessage(
+                e,
+                "Lỗi khi xử lý thanh toán đơn hàng. Vui lòng thử lại."
+            );
             throw new RuntimeException(msg, e);
         }
     }

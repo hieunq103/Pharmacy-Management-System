@@ -92,9 +92,7 @@ public class SepayService {
                     }
                 }
             } else {
-                logFailureThrottled(
-                    "SePAY API call failed with status: " + response.statusCode() + ", body: " + response.body()
-                );
+                logFailureThrottled("SePAY API call failed with status: " + response.statusCode());
             }
         } catch (Exception e) {
             logFailureThrottled("Error while querying SePAY API: " + e.getMessage());

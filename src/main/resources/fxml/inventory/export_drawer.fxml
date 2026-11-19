@@ -98,7 +98,7 @@
                             style="-fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 12px; -fx-padding: 7 14; -fx-border-color: #BFDBFE; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-cursor: hand;"/>
                     <Label fx:id="lblItemError" text="" styleClass="form-error-msg" visible="false" managed="false"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Button fx:id="btnAddItem" text="+ Thêm vào phiếu xuất" onAction="#handleAddItemToList"
+                    <Button text="+ Thêm vào phiếu xuất" onAction="#handleAddItemToList"
                             style="-fx-background-color: #0066FF; -fx-text-fill: #FFFFFF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px; -fx-background-radius: 6px; -fx-padding: 8 20; -fx-cursor: hand;"/>
                 </HBox>
             </VBox>
@@ -143,7 +143,7 @@
     <HBox alignment="CENTER_RIGHT" spacing="16" style="-fx-padding: 14 24; -fx-border-color: #E2E8F0; -fx-border-width: 1 0 0 0; -fx-background-color: #F8FAFC;">
         <Region HBox.hgrow="ALWAYS"/>
 
-        <Button fx:id="btnCancel" text="Hủy" onAction="#handleCancel" styleClass="btn-secondary"/>
+        <Button text="Hủy" onAction="#handleCancel" styleClass="btn-secondary"/>
         <Button fx:id="btnConfirmExport" text="Xác nhận Xuất Kho" onAction="#handleConfirmExport" styleClass="btn-primary-add"
                 style="-fx-background-color: #0066FF; -fx-text-fill: white; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 8px; -fx-cursor: hand;"/>
     </HBox>

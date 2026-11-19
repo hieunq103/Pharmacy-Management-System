@@ -115,7 +115,7 @@
                     </VBox>
                 </HBox>
 
-                <Button fx:id="btnLogout" contentDisplay="GRAPHIC_ONLY" onAction="#handleLogout"
+                <Button contentDisplay="GRAPHIC_ONLY" onAction="#handleLogout"
                         style="-fx-background-color: transparent; -fx-cursor: hand;" text="Đăng xuất">
                     <graphic>
                         <StackPane alignment="CENTER" prefWidth="20.0">

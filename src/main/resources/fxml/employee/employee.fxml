@@ -35,7 +35,7 @@
                        prefWidth="360.0"
                        styleClass="search-input" />
 
-            <Button fx:id="btnAddEmployee"
+            <Button
                     onAction="#handleOpenAddDialog"
                     styleClass="btn-primary-add"
                     text="+ Thêm nhân viên" />

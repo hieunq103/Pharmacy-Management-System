@@ -195,13 +195,6 @@
     -fx-text-fill: #334155;
 }
 
-.cart-empty-desc {
-    -fx-font-family: "Inter 18pt";
-    -fx-font-size: 12px;
-    -fx-text-fill: #94a3b8;
-    -fx-max-width: 240px;
-}
-
 /* DANH SÁCH MẶT HÀNG TRONG GIỎ */
 .cart-items-scrollpane {
     -fx-background-color: transparent;

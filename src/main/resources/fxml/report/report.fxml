@@ -213,7 +213,7 @@
 
 <VBox fx:id="loadingOverlay" alignment="CENTER" spacing="12.0" styleClass="report-loading-overlay"
       visible="false" managed="false">
-    <ProgressIndicator fx:id="loadingSpinner" prefWidth="54.0" prefHeight="54.0" styleClass="report-loading-spinner" />
+    <ProgressIndicator prefWidth="54.0" prefHeight="54.0" styleClass="report-loading-spinner" />
     <Label styleClass="report-loading-text" text="Đang tải báo cáo..." />
 </VBox>
 </StackPane>

@@ -661,7 +661,10 @@ public class InventoryRepository {
             return true;
         } catch (Exception e) {
             log.error("Lỗi khi thực hiện giao dịch Nhập kho hàng loạt: ", e);
-            throw new RuntimeException("Lỗi nhập kho hàng loạt: " + rootMessage(e), e);
+            throw new RuntimeException(
+                "Lỗi nhập kho hàng loạt: " + com.pharmacy.common.UserMessages.safeMessage(e, null),
+                e
+            );
         }
     }
 
@@ -791,7 +794,7 @@ public class InventoryRepository {
             return true;
         } catch (Exception e) {
             log.error("Lỗi khi thực hiện giao dịch Xuất kho hàng loạt: ", e);
-            throw new RuntimeException("Lỗi xuất kho: " + rootMessage(e), e);
+            throw new RuntimeException("Lỗi xuất kho: " + com.pharmacy.common.UserMessages.safeMessage(e, null), e);
         }
     }
 
@@ -807,12 +810,6 @@ public class InventoryRepository {
             result.put(lot.getId(), lot);
         }
         return result;
-    }
-
-    static String rootMessage(Throwable e) {
-        Throwable t = e;
-        while (t.getCause() != null && t.getCause() != t) t = t.getCause();
-        return t.getMessage() != null ? t.getMessage() : e.getMessage();
     }
 
     // Mỗi token phải khớp người lập/NCC/ghi chú hoặc có mặt hàng (tên, mã thuốc, số lô) trong phiếu; dùng EXISTS theo index transaction_id

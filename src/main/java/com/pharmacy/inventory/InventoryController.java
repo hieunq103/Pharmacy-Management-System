@@ -318,6 +318,61 @@ public class InventoryController implements Initializable {
         loadInventoryData();
     }
 
+    // Ô văn bản sửa trực tiếp trên dòng (hoạt chất, nhà sản xuất): hiện nhãn, khi dòng đang sửa thì hiện ô nhập gắn với bản nháp
+    private final class InlineTextCell extends TableCell<MedicineInventoryDTO, MedicineInventoryDTO> {
+
+        private final java.util.function.Function<MedicineInventoryDTO, String> display;
+        private final java.util.function.Function<EditDraft, String> draftValue;
+        private final Label lblText = new Label();
+        private final TextField txtField = new TextField();
+
+        InlineTextCell(
+            java.util.function.Function<MedicineInventoryDTO, String> display,
+            java.util.function.Function<EditDraft, String> draftValue,
+            java.util.function.BiConsumer<EditDraft, String> draftSetter
+        ) {
+            this.display = display;
+            this.draftValue = draftValue;
+            lblText.setStyle("-fx-text-fill: #1E293B;");
+            txtField.getStyleClass().add("table-cell-editor");
+            txtField.setOnAction(e -> {
+                MedicineInventoryDTO dto = getItem();
+                if (dto != null) saveRowEdit(dto);
+            });
+            txtField.setOnKeyPressed(e -> {
+                if (e.getCode() == KeyCode.ESCAPE) cancelEditing();
+            });
+            txtField.textProperty().addListener((obs, oldV, newV) -> {
+                MedicineInventoryDTO dto = getItem();
+                if (dto != null && editingMedicineId != null && editingMedicineId.equals(dto.getMedicineId())) {
+                    EditDraft draft = editDrafts.get(dto.getMedicineId());
+                    if (draft != null) draftSetter.accept(draft, newV);
+                }
+            });
+        }
+
+        @Override
+        protected void updateItem(MedicineInventoryDTO item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setText(null);
+                setGraphic(null);
+            } else if (editingMedicineId != null && editingMedicineId.equals(item.getMedicineId())) {
+                EditDraft draft = editDrafts.get(item.getMedicineId());
+                if (draft != null && !Objects.equals(txtField.getText(), draftValue.apply(draft))) {
+                    txtField.setText(draftValue.apply(draft));
+                }
+                setText(null);
+                setGraphic(txtField);
+            } else {
+                String value = display.apply(item);
+                lblText.setText(value != null ? value : "");
+                setText(null);
+                setGraphic(lblText);
+            }
+        }
+    }
+
     private void setupTableColumns() {
         colCode.setCellValueFactory(new PropertyValueFactory<>("medicineCode"));
         colCategory.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
@@ -382,96 +437,20 @@ public class InventoryController implements Initializable {
 
         colActiveIngredient.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
         colActiveIngredient.setCellFactory(param ->
-            new TableCell<MedicineInventoryDTO, MedicineInventoryDTO>() {
-                private final Label lblText = new Label();
-                private final TextField txtField = new TextField();
-
-                {
-                    lblText.setStyle("-fx-text-fill: #1E293B;");
-                    txtField.getStyleClass().add("table-cell-editor");
-                    txtField.setOnAction(e -> {
-                        MedicineInventoryDTO dto = getItem();
-                        if (dto != null) saveRowEdit(dto);
-                    });
-                    txtField.setOnKeyPressed(e -> {
-                        if (e.getCode() == KeyCode.ESCAPE) cancelEditing();
-                    });
-                    txtField.textProperty().addListener((obs, oldV, newV) -> {
-                        MedicineInventoryDTO dto = getItem();
-                        if (dto != null && editingMedicineId != null && editingMedicineId.equals(dto.getMedicineId())) {
-                            EditDraft draft = editDrafts.get(dto.getMedicineId());
-                            if (draft != null) draft.setActiveIngredient(newV);
-                        }
-                    });
-                }
-
-                @Override
-                protected void updateItem(MedicineInventoryDTO item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                        setGraphic(null);
-                    } else if (editingMedicineId != null && editingMedicineId.equals(item.getMedicineId())) {
-                        EditDraft draft = editDrafts.get(item.getMedicineId());
-                        if (draft != null && !Objects.equals(txtField.getText(), draft.getActiveIngredient())) {
-                            txtField.setText(draft.getActiveIngredient());
-                        }
-                        setText(null);
-                        setGraphic(txtField);
-                    } else {
-                        lblText.setText(item.getActiveIngredient() != null ? item.getActiveIngredient() : "");
-                        setText(null);
-                        setGraphic(lblText);
-                    }
-                }
-            }
+            new InlineTextCell(
+                MedicineInventoryDTO::getActiveIngredient,
+                EditDraft::getActiveIngredient,
+                EditDraft::setActiveIngredient
+            )
         );
 
         colManufacturer.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
         colManufacturer.setCellFactory(param ->
-            new TableCell<MedicineInventoryDTO, MedicineInventoryDTO>() {
-                private final Label lblText = new Label();
-                private final TextField txtField = new TextField();
-
-                {
-                    lblText.setStyle("-fx-text-fill: #1E293B;");
-                    txtField.getStyleClass().add("table-cell-editor");
-                    txtField.setOnAction(e -> {
-                        MedicineInventoryDTO dto = getItem();
-                        if (dto != null) saveRowEdit(dto);
-                    });
-                    txtField.setOnKeyPressed(e -> {
-                        if (e.getCode() == KeyCode.ESCAPE) cancelEditing();
-                    });
-                    txtField.textProperty().addListener((obs, oldV, newV) -> {
-                        MedicineInventoryDTO dto = getItem();
-                        if (dto != null && editingMedicineId != null && editingMedicineId.equals(dto.getMedicineId())) {
-                            EditDraft draft = editDrafts.get(dto.getMedicineId());
-                            if (draft != null) draft.setManufacturer(newV);
-                        }
-                    });
-                }
-
-                @Override
-                protected void updateItem(MedicineInventoryDTO item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty || item == null) {
-                        setText(null);
-                        setGraphic(null);
-                    } else if (editingMedicineId != null && editingMedicineId.equals(item.getMedicineId())) {
-                        EditDraft draft = editDrafts.get(item.getMedicineId());
-                        if (draft != null && !Objects.equals(txtField.getText(), draft.getManufacturer())) {
-                            txtField.setText(draft.getManufacturer());
-                        }
-                        setText(null);
-                        setGraphic(txtField);
-                    } else {
-                        lblText.setText(item.getManufacturer() != null ? item.getManufacturer() : "");
-                        setText(null);
-                        setGraphic(lblText);
-                    }
-                }
-            }
+            new InlineTextCell(
+                MedicineInventoryDTO::getManufacturer,
+                EditDraft::getManufacturer,
+                EditDraft::setManufacturer
+            )
         );
 
         colQuantity.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
