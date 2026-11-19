@@ -59,7 +59,7 @@
 
 .stat-subtext-danger {
     -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-text-fill: #dc2626;
 }
 
@@ -125,18 +125,6 @@
     -fx-text-fill: #0f172a;
 }
 
-.badge-week-filter {
-    -fx-background-color: #eff6ff;
-    -fx-text-fill: #0066ff;
-    -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
-    -fx-font-size: 12px;
-    -fx-background-radius: 6px;
-    -fx-border-color: #bfdbfe;
-    -fx-border-radius: 6px;
-    -fx-border-width: 1px;
-    -fx-padding: 3px 10px;
-}
-
 .link-action {
     -fx-background-color: transparent;
     -fx-text-fill: #0066ff;
@@ -153,60 +141,6 @@
 }
 
 /* ==========================================================================
-   3. 7-DAY SALES BAR CHART
-   ========================================================================== */
-
-.dashboard-bar-chart {
-    -fx-background-color: transparent;
-    -fx-padding: 0;
-}
-
-.dashboard-bar-chart .chart-plot-background {
-    -fx-background-color: transparent;
-}
-
-.dashboard-bar-chart .chart-vertical-grid-lines {
-    -fx-stroke: transparent;
-}
-
-.dashboard-bar-chart .chart-horizontal-grid-lines {
-    -fx-stroke: #f1f5f9;
-    -fx-stroke-dash-array: 3 3;
-}
-
-.dashboard-bar-chart .axis {
-    -fx-tick-label-font-family: "Inter 18pt", "Inter", sans-serif;
-    -fx-tick-label-font-size: 12px;
-    -fx-tick-label-fill: #64748b;
-}
-
-.dashboard-bar-chart .axis:left {
-    -fx-border-color: transparent;
-}
-
-.dashboard-bar-chart .axis:bottom {
-    -fx-border-color: #e2e8f0 transparent transparent transparent;
-    -fx-border-width: 1px;
-}
-
-/* Thanh bar màu xanh y tế đẹp mắt */
-.dashboard-bar-chart .chart-bar,
-.dashboard-bar-chart .default-color0.chart-bar {
-    -fx-bar-fill: #0066ff;
-    -fx-background-color: #0066ff;
-    -fx-background-radius: 6px 6px 0 0;
-    -fx-background-insets: 0;
-}
-
-.dashboard-bar-chart .chart-bar:hover,
-.dashboard-bar-chart .default-color0.chart-bar:hover {
-    -fx-bar-fill: #2563eb;
-    -fx-background-color: #2563eb;
-    -fx-effect: dropshadow(gaussian, rgba(0, 102, 255, 0.35), 8, 0, 0, 0);
-    -fx-cursor: hand;
-}
-
-/* ==========================================================================
    4. INVENTORY ALERTS
    ========================================================================== */
 
@@ -215,7 +149,7 @@
     -fx-background-color: #f1f5f9;
     -fx-text-fill: #64748b;
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
-    -fx-font-size: 11.5px;
+    -fx-font-size: 13px;
     -fx-background-radius: 12px;
     -fx-padding: 3px 10px;
     -fx-cursor: hand;
@@ -317,14 +251,14 @@
 
 .alert-title {
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
-    -fx-font-size: 13.5px;
+    -fx-font-size: 14px;
     -fx-text-fill: #1e293b;
     -fx-wrap-text: true;
 }
 
 .alert-subtitle {
     -fx-font-family: "Inter 18pt", "Inter", sans-serif;
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-text-fill: #64748b;
     -fx-wrap-text: true;
 }
@@ -333,7 +267,7 @@
     -fx-background-color: #fee2e2;
     -fx-text-fill: #dc2626;
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-background-radius: 12px;
     -fx-padding: 3px 10px;
     -fx-alignment: CENTER;
@@ -343,7 +277,7 @@
     -fx-background-color: #fef3c7;
     -fx-text-fill: #b45309;
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-background-radius: 12px;
     -fx-padding: 3px 10px;
     -fx-alignment: CENTER;
@@ -361,7 +295,7 @@
 
 .recent-th-label {
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-text-fill: #64748b;
 }
 
@@ -417,7 +351,7 @@
     -fx-background-color: #e0f2fe;
     -fx-text-fill: #0284c7;
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
-    -fx-font-size: 11px;
+    -fx-font-size: 12px;
     -fx-alignment: CENTER;
 }
 
@@ -432,7 +366,7 @@
     -fx-background-radius: 10px;
     -fx-padding: 2px 8px;
     -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
-    -fx-font-size: 11.5px;
+    -fx-font-size: 13px;
     -fx-alignment: CENTER;
 }
 

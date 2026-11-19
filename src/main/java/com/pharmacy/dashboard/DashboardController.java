@@ -5,7 +5,6 @@ import com.pharmacy.common.FormatUtils;
 import com.pharmacy.dashboard.dto.DashboardStatsDTO;
 import com.pharmacy.inventory.dto.InventoryAlertDTO;
 import com.pharmacy.layout.MainLayoutController;
-import com.pharmacy.report.dto.DailySalesDTO;
 import com.pharmacy.sales.dto.SalesOrderDTO;
 import java.net.URL;
 import java.time.LocalDate;
@@ -16,9 +15,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -49,12 +45,6 @@ public class DashboardController implements Initializable {
     private Label lblNearExpiryCount;
 
     @FXML
-    private BarChart<String, Number> chartWeeklySales;
-
-    @FXML
-    private NumberAxis axisSalesAmount;
-
-    @FXML
     private VBox boxInventoryAlerts;
 
     @FXML
@@ -79,33 +69,12 @@ public class DashboardController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        setupChartAxes();
         loadAllDashboardData();
-    }
-
-    private void setupChartAxes() {
-        if (axisSalesAmount != null) {
-            axisSalesAmount.setTickLabelFormatter(
-                new NumberAxis.DefaultFormatter(axisSalesAmount) {
-                    @Override
-                    public String toString(Number object) {
-                        double val = object.doubleValue();
-                        if (val >= 1_000_000) {
-                            return String.format("%.0fM", val / 1_000_000);
-                        } else if (val >= 1_000) {
-                            return String.format("%.0fK", val / 1_000);
-                        }
-                        return String.format("%.0f", val);
-                    }
-                }
-            );
-        }
     }
 
     public void loadAllDashboardData() {
         var executor = BackgroundTasks.getExecutor();
         var fStats = java.util.concurrent.CompletableFuture.supplyAsync(dashboardService::getStats, executor);
-        var fWeekly = java.util.concurrent.CompletableFuture.supplyAsync(dashboardService::getLast7DaysSales, executor);
         var fAlerts = java.util.concurrent.CompletableFuture.supplyAsync(
             () -> dashboardService.getInventoryAlerts(6),
             executor
@@ -115,16 +84,14 @@ public class DashboardController implements Initializable {
             executor
         );
 
-        java.util.concurrent.CompletableFuture.allOf(fStats, fWeekly, fAlerts, fRecentTx)
+        java.util.concurrent.CompletableFuture.allOf(fStats, fAlerts, fRecentTx)
             .thenRun(() -> {
                 DashboardStatsDTO stats = fStats.join();
-                List<DailySalesDTO> weeklySales = fWeekly.join();
                 List<InventoryAlertDTO> alerts = fAlerts.join();
                 List<SalesOrderDTO> recentTx = fRecentTx.join();
 
                 Platform.runLater(() -> {
                     updateStatsUI(stats);
-                    updateChartUI(weeklySales);
                     rawAlerts = alerts != null ? alerts : java.util.Collections.emptyList();
                     renderAlertsUI();
                     updateTransactionsUI(recentTx);
@@ -272,36 +239,6 @@ public class DashboardController implements Initializable {
         if (lblNearExpiryCount != null) {
             lblNearExpiryCount.setText(String.valueOf(stats.nearExpiryCount()));
         }
-    }
-
-    private void updateChartUI(List<DailySalesDTO> weeklySales) {
-        if (chartWeeklySales == null || weeklySales == null) return;
-
-        chartWeeklySales.getData().clear();
-
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        for (DailySalesDTO item : weeklySales) {
-            XYChart.Data<String, Number> data = new XYChart.Data<>(item.getDayOfWeekLabel(), item.getAmount());
-            series.getData().add(data);
-        }
-
-        chartWeeklySales.getData().add(series);
-
-        Platform.runLater(() -> {
-            for (XYChart.Data<String, Number> data : series.getData()) {
-                if (data.getNode() != null) {
-                    double amount = data.getYValue().doubleValue();
-                    String tooltipText = String.format(
-                        "%s: %s",
-                        data.getXValue(),
-                        FormatUtils.formatCurrency(java.math.BigDecimal.valueOf(amount))
-                    );
-                    Tooltip tooltip = new Tooltip(tooltipText);
-                    tooltip.setShowDelay(Duration.millis(80));
-                    Tooltip.install(data.getNode(), tooltip);
-                }
-            }
-        });
     }
 
     private void updateTransactionsUI(List<SalesOrderDTO> transactions) {

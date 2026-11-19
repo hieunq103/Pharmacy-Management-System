@@ -5,7 +5,6 @@ import com.pharmacy.inventory.InventoryService;
 import com.pharmacy.inventory.dto.InventoryAlertDTO;
 import com.pharmacy.inventory.dto.InventorySummaryDTO;
 import com.pharmacy.report.ReportService;
-import com.pharmacy.report.dto.DailySalesDTO;
 import com.pharmacy.report.dto.TodaySalesSummary;
 import com.pharmacy.sales.SalesService;
 import com.pharmacy.sales.dto.SalesOrderDTO;
@@ -31,10 +30,6 @@ public class DashboardService {
         TodaySalesSummary salesSummary = reportService.getTodaySalesSummary();
         InventorySummaryDTO invSummary = inventoryService.getInventorySummary();
         return new DashboardStatsDTO(salesSummary, invSummary.lowStockMedicines(), invSummary.nearExpiryMedicines());
-    }
-
-    public List<DailySalesDTO> getLast7DaysSales() {
-        return reportService.getLast7DaysSales();
     }
 
     public List<InventoryAlertDTO> getInventoryAlerts(int limit) {

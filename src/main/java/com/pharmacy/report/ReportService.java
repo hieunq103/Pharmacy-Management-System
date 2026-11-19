@@ -44,10 +44,6 @@ public class ReportService {
         return repository.get7DaysSalesUpTo(effectiveEnd, UserSession.scopeEmployeeId(employeeId));
     }
 
-    public List<DailySalesDTO> getLast7DaysSales() {
-        return get7DaysSalesUpTo(LocalDate.now(), null);
-    }
-
     private record CacheKey(LocalDate endDate, Integer employeeId) {}
 
     private CacheKey lastCacheKey;
