@@ -514,9 +514,9 @@ public class SalesHistoryController implements Initializable {
 
             dialogStage.setScene(scene);
             dialogStage.setResizable(true);
-            dialogStage.setWidth(1140);
+            dialogStage.setWidth(1260);
             dialogStage.setHeight(660);
-            dialogStage.setMinWidth(960);
+            dialogStage.setMinWidth(1160);
             dialogStage.setMinHeight(520);
             dialogStage.showAndWait();
         } catch (IOException ex) {

@@ -12,7 +12,7 @@
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.shape.SVGPath?>
 
-<VBox prefHeight="650.0" prefWidth="1120.0" spacing="14.0"
+<VBox prefHeight="650.0" prefWidth="1240.0" spacing="14.0"
       styleClass="lot-dialog-root"
       stylesheets="@../../css/inventory.css, @../../css/inventory_history.css, @../../css/sales.css, @../../css/icon_buttons.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
@@ -88,19 +88,19 @@
     <HBox minHeight="280.0" spacing="0.0" styleClass="table-float-container" VBox.vgrow="ALWAYS">
         <TableView fx:id="tableDetails" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, history-detail-table, table-scrollable-data">
             <columns>
-                <TableColumn fx:id="colIndex" minWidth="60.0" prefWidth="65.0" text="STT" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colMedCode" minWidth="110.0" prefWidth="120.0" text="Mã thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colMedName" minWidth="240.0" prefWidth="300.0" text="Tên thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colCategory" minWidth="280.0" prefWidth="300.0" text="Nhóm thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colLotNumber" minWidth="120.0" prefWidth="140.0" text="Số lô xuất" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colExpiryDate" minWidth="110.0" prefWidth="125.0" text="Hạn dùng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colUnit" minWidth="75.0" prefWidth="85.0" text="Đơn vị" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colQuantity" minWidth="80.0" prefWidth="95.0" text="Số lượng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colUnitPrice" minWidth="120.0" prefWidth="140.0" text="Đơn giá" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colTotalPrice" minWidth="130.0" prefWidth="160.0" text="Thành tiền" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colIndex" minWidth="56.0" prefWidth="60.0" text="STT" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colMedCode" minWidth="96.0" prefWidth="105.0" text="Mã thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colMedName" minWidth="150.0" prefWidth="230.0" text="Tên thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colCategory" minWidth="180.0" prefWidth="270.0" text="Nhóm thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colLotNumber" minWidth="105.0" prefWidth="115.0" text="Số lô xuất" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colExpiryDate" minWidth="115.0" prefWidth="120.0" text="Hạn dùng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colUnit" minWidth="80.0" prefWidth="85.0" text="Đơn vị" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colQuantity" minWidth="100.0" prefWidth="105.0" text="Số lượng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colUnitPrice" minWidth="110.0" prefWidth="115.0" text="Đơn giá" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colTotalPrice" minWidth="120.0" prefWidth="125.0" text="Thành tiền" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
             </columns>
             <columnResizePolicy>
-                <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
             </columnResizePolicy>
         </TableView>
     </HBox>
