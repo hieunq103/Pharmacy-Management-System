@@ -26,7 +26,7 @@
 .search-input-field {
     -fx-background-color: transparent;
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 14px;
+    -fx-font-size: 13px;
     -fx-text-fill: #0f172a;
     -fx-prompt-text-fill: #94a3b8;
 }

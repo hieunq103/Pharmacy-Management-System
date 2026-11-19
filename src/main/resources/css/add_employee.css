@@ -207,7 +207,7 @@
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-padding: 9 20;
-    -fx-font-size: 13.5px;
+    -fx-font-size: 14px;
     -fx-cursor: hand;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.25), 6, 0, 0, 2);
 }
