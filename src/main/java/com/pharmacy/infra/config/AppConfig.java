@@ -33,7 +33,18 @@ public final class AppConfig {
         override("DB_USER", "db.username");
         override("DB_PASSWORD", "db.password");
 
+        if (isBlank(properties.getProperty("db.url")) || isBlank(properties.getProperty("db.username"))) {
+            log.error(
+                "Thiếu cấu hình kết nối cơ sở dữ liệu: hãy tạo file .env (sao chép từ .env.example) " +
+                    "và điền DB_URL, DB_USER, DB_PASSWORD, hoặc đặt các biến môi trường tương ứng."
+            );
+        }
+
         log.info("AppConfig đã nạp xong cấu hình hệ thống.");
+    }
+
+    private static boolean isBlank(String s) {
+        return s == null || s.isBlank();
     }
 
     private static void override(String envKey, String propKey) {
