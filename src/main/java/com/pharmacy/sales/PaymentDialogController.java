@@ -147,12 +147,7 @@ public class PaymentDialogController {
         btnConfirmPayment.setText("Xác nhận thanh toán");
         btnConfirmPayment.setStyle(null);
 
-        chkPrescriptionConfirmed.selectedProperty().addListener((obs, oldV, isChecked) -> {
-            if (currentOrder != null && currentOrder.hasPrescriptionItem()) {
-                boolean confirmed = Boolean.TRUE.equals(isChecked);
-                btnConfirmPayment.setDisable(!confirmed);
-            }
-        });
+        chkPrescriptionConfirmed.selectedProperty().addListener((obs, oldV, isChecked) -> refreshConfirmState());
 
         renderDialogCartItems();
         updateTotalsAndStatus();
@@ -305,7 +300,7 @@ public class PaymentDialogController {
                 boxPrescriptionWarning.setVisible(false);
                 boxPrescriptionWarning.setManaged(false);
             }
-            btnConfirmPayment.setDisable(true);
+            refreshConfirmState();
             return;
         }
 
@@ -336,13 +331,23 @@ public class PaymentDialogController {
         if (hasPrescription) {
             boxPrescriptionWarning.setVisible(true);
             boxPrescriptionWarning.setManaged(true);
-            boolean confirmed = chkPrescriptionConfirmed.isSelected();
-            btnConfirmPayment.setDisable(!confirmed);
         } else {
             boxPrescriptionWarning.setVisible(false);
             boxPrescriptionWarning.setManaged(false);
-            btnConfirmPayment.setDisable(false);
         }
+        refreshConfirmState();
+    }
+
+    /**
+     * Nút xác nhận chỉ bấm được khi: đơn có hàng; thuốc kê toa (nếu có) đã được tích xác nhận;
+     * và với chuyển khoản thì đã nhận được tín hiệu chuyển khoản thành công.
+     */
+    private void refreshConfirmState() {
+        boolean emptyCart = currentOrder == null || currentOrder.getItems().isEmpty();
+        boolean prescriptionPending =
+            currentOrder != null && currentOrder.hasPrescriptionItem() && !chkPrescriptionConfirmed.isSelected();
+        boolean transferPending = "TRANSFER".equals(selectedMethod) && !isPaymentReceived;
+        btnConfirmPayment.setDisable(emptyCart || prescriptionPending || transferPending);
     }
 
     private void setupCashInput() {
@@ -395,6 +400,8 @@ public class PaymentDialogController {
 
     @FXML
     private void handleSelectCash() {
+        // Đã nhận chuyển khoản thì không cho đổi sang tiền mặt (tránh ghi sai phương thức thanh toán)
+        if (isPaymentReceived) return;
         selectCash();
     }
 
@@ -413,6 +420,7 @@ public class PaymentDialogController {
         }
         paneCash.setVisible(true);
         paneCash.setManaged(true);
+        refreshConfirmState();
         paneTransfer.setVisible(false);
         paneTransfer.setManaged(false);
 
@@ -430,6 +438,7 @@ public class PaymentDialogController {
         paneCash.setManaged(false);
         paneTransfer.setVisible(true);
         paneTransfer.setManaged(true);
+        refreshConfirmState();
 
         loadVietQrCode();
         startPolling();
@@ -536,10 +545,12 @@ public class PaymentDialogController {
             boxSuccessOverlay.setVisible(true);
         }
 
-        btnConfirmPayment.setDisable(false);
+        refreshConfirmState();
         btnConfirmPayment.setText("Xác nhận hoàn tất đơn");
         btnConfirmPayment.setStyle("-fx-background-color: #16A34A; -fx-text-fill: #FFFFFF;");
-        btnConfirmPayment.requestFocus();
+        if (!btnConfirmPayment.isDisabled()) {
+            btnConfirmPayment.requestFocus();
+        }
     }
 
     private void stopPolling() {
@@ -569,6 +580,15 @@ public class PaymentDialogController {
                 "Chưa xác nhận đơn thuốc",
                 "Vui lòng tích xác nhận đã kiểm tra đơn thuốc của khách hàng trước khi bán."
             );
+            return;
+        }
+
+        if ("TRANSFER".equals(selectedMethod) && !isPaymentReceived) {
+            DialogUtils.showWarning(
+                "Chưa nhận được chuyển khoản",
+                "Chỉ có thể xác nhận khi hệ thống đã nhận được tín hiệu chuyển khoản thành công."
+            );
+            startPolling();
             return;
         }
 
