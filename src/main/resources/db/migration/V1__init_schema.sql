@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS `employees` (
     `status` ENUM('ACTIVE', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    INDEX `idx_employees_code` (`code`),
     INDEX `idx_employees_full_name` (`full_name`),
     INDEX `idx_employees_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -34,7 +33,6 @@ CREATE TABLE IF NOT EXISTS `accounts` (
     `must_change_password` BOOLEAN NOT NULL DEFAULT FALSE,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    INDEX `idx_accounts_username` (`username`),
     CONSTRAINT `fk_accounts_employees` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT `fk_accounts_roles` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -79,8 +77,7 @@ CREATE TABLE IF NOT EXISTS `suppliers` (
     `tax_code` VARCHAR(30) NULL UNIQUE,
     `address` VARCHAR(255) NULL,
     `contact_person` VARCHAR(100) NULL,
-    `phone` VARCHAR(15) NULL,
-    INDEX `idx_suppliers_name` (`name`)
+    `phone` VARCHAR(15) NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `inventory_transactions` (
