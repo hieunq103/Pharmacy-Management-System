@@ -18,11 +18,18 @@ jobs:
           - os: macos-latest
             package-type: dmg
             icon: packaging/PharmaOS.icns
-            asset-label: macOS
+            asset-label: macOS-AppleSilicon
+            file-suffix: mac-apple-silicon
+          - os: macos-15-intel
+            package-type: dmg
+            icon: packaging/PharmaOS.icns
+            asset-label: macOS-Intel
+            file-suffix: mac-intel
           - os: windows-latest
             package-type: exe
             icon: packaging/PharmaOS.ico
             asset-label: Windows
+            file-suffix: windows
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -87,9 +94,14 @@ jobs:
             --add-modules java.base,java.desktop,java.logging,java.naming,java.sql,java.management,java.xml,java.net.http,java.prefs,java.security.jgss,java.security.sasl,java.instrument,java.compiler,java.transaction.xa,java.rmi,java.scripting,jdk.unsupported,jdk.crypto.ec,jdk.xml.dom,jdk.management \
             $EXTRA
 
-      - name: Liet ke file cai dat
+      - name: Doi ten file theo he dieu hanh
         shell: bash
-        run: ls -la target/installer
+        run: |
+          for f in target/installer/PharmaOS-*; do
+            ext="${f##*.}"
+            mv "$f" "target/installer/PharmaOS-${{ steps.version.outputs.value }}-${{ matrix.file-suffix }}.${ext}"
+          done
+          ls -la target/installer
 
       - uses: actions/upload-artifact@v4
         with:
