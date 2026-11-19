@@ -124,6 +124,7 @@ public class SalesController implements Initializable {
     private int totalPages = 1;
     private long totalRecords = 0;
     private String currentKeyword = "";
+    private boolean suppressReload;
     private String currentCategory = "Tất cả nhóm thuốc";
 
     private List<MedicineInventoryDTO> allLoadedMedicines = new ArrayList<>();
@@ -147,6 +148,7 @@ public class SalesController implements Initializable {
     private void setupSearchAndShortcuts() {
         if (txtSearch != null) {
             DebounceUtil.debounce(txtSearch, AppConstants.SEARCH_DEBOUNCE, text -> {
+                if (suppressReload) return;
                 currentKeyword = text != null ? text.trim() : "";
                 currentPage = 1;
                 loadMedicinesData();
@@ -285,6 +287,7 @@ public class SalesController implements Initializable {
         BackgroundTasks.run(task);
 
         cboCategory.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (suppressReload) return;
             currentCategory = newVal != null ? newVal : "Tất cả nhóm thuốc";
             currentPage = 1;
             loadMedicinesData();
@@ -822,6 +825,22 @@ public class SalesController implements Initializable {
         if (historyBackAction == null && !historyShown) return;
         historyBackAction = null;
         showSalesMainView();
+    }
+
+    /** Vào Bán hàng bằng Menu: bỏ từ khóa, bộ lọc nhóm thuốc, về trang 1 (giỏ hàng đang lập được giữ nguyên). */
+    public void resetToDefault() {
+        resetContext();
+        suppressReload = true;
+        try {
+            currentKeyword = "";
+            currentCategory = "Tất cả nhóm thuốc";
+            if (txtSearch != null) txtSearch.setText("");
+            if (cboCategory != null) cboCategory.setValue("Tất cả nhóm thuốc");
+        } finally {
+            suppressReload = false;
+        }
+        currentPage = 1;
+        loadMedicinesData();
     }
 
     public void handleCloseSalesHistory() {

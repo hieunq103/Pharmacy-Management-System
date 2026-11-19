@@ -212,6 +212,9 @@ public class MainLayoutController {
         Parent cached = viewCache.get("/fxml/sales/sales.fxml");
         if (cached != null) {
             contentArea.getChildren().setAll(cached);
+            if (controllerCache.get("/fxml/sales/sales.fxml") instanceof com.pharmacy.sales.SalesController sales) {
+                sales.resetToDefault();
+            }
             return;
         }
         loadCenterView("/fxml/sales/sales.fxml");
