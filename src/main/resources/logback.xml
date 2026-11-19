@@ -7,9 +7,9 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/pharmacy.log</file>
+        <file>${user.home}/.pharmaos/logs/pharmacy.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/pharmacy-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${user.home}/.pharmaos/logs/pharmacy-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
             <totalSizeCap>500MB</totalSizeCap>
         </rollingPolicy>

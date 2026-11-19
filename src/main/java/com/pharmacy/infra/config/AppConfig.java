@@ -2,6 +2,8 @@ package com.pharmacy.infra.config;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,19 +21,16 @@ public final class AppConfig {
     private AppConfig() {}
 
     private static void loadConfiguration() {
-        try (InputStream in = AppConfig.class.getResourceAsStream("/application.properties")) {
-            if (in != null) {
-                properties.load(in);
-            }
-        } catch (Exception e) {
-            log.error("Không thể đọc application.properties", e);
-        }
+        loadFromClasspath("/application.properties");
+        loadFromClasspath("/bundled-config.properties");
+        loadFromUserFile();
 
         dotenv = Dotenv.configure().ignoreIfMissing().load();
 
         override("DB_URL", "db.url");
         override("DB_USER", "db.username");
         override("DB_PASSWORD", "db.password");
+        override("DB_AUTO_MIGRATE", "db.autoMigrate");
 
         if (isBlank(properties.getProperty("db.url")) || isBlank(properties.getProperty("db.username"))) {
             log.error(
@@ -41,6 +40,38 @@ public final class AppConfig {
         }
 
         log.info("AppConfig đã nạp xong cấu hình hệ thống.");
+    }
+
+    private static void loadFromClasspath(String resource) {
+        try (InputStream in = AppConfig.class.getResourceAsStream(resource)) {
+            if (in != null) {
+                properties.load(in);
+            }
+        } catch (Exception e) {
+            log.error("Không thể đọc {}", resource, e);
+        }
+    }
+
+    private static void loadFromUserFile() {
+        Path file = userConfigFile();
+        if (!Files.isRegularFile(file)) return;
+        try (InputStream in = Files.newInputStream(file)) {
+            properties.load(in);
+        } catch (Exception e) {
+            log.error("Không thể đọc {}", file, e);
+        }
+    }
+
+    public static Path userConfigDir() {
+        return Path.of(System.getProperty("user.home"), ".pharmaos");
+    }
+
+    private static Path userConfigFile() {
+        return userConfigDir().resolve("config.properties");
+    }
+
+    public static boolean autoMigrate() {
+        return Boolean.parseBoolean(properties.getProperty("db.autoMigrate", "false"));
     }
 
     private static boolean isBlank(String s) {

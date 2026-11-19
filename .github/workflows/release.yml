@@ -1,0 +1,105 @@
+name: Build installers
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            package-type: dmg
+            icon: packaging/PharmaOS.icns
+            asset-label: macOS
+          - os: windows-latest
+            package-type: exe
+            icon: packaging/PharmaOS.ico
+            asset-label: Windows
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Tao cau hinh di kem tu Secrets
+        shell: bash
+        env:
+          DEMO_DB_URL: ${{ secrets.DEMO_DB_URL }}
+          DEMO_DB_USER: ${{ secrets.DEMO_DB_USER }}
+          DEMO_DB_PASSWORD: ${{ secrets.DEMO_DB_PASSWORD }}
+        run: |
+          if [ -z "$DEMO_DB_URL" ] || [ -z "$DEMO_DB_USER" ] || [ -z "$DEMO_DB_PASSWORD" ]; then
+            echo "Thieu Secrets DEMO_DB_URL / DEMO_DB_USER / DEMO_DB_PASSWORD" >&2
+            exit 1
+          fi
+          printf 'db.url=%s\ndb.username=%s\ndb.password=%s\n' "$DEMO_DB_URL" "$DEMO_DB_USER" "$DEMO_DB_PASSWORD" > src/main/resources/bundled-config.properties
+
+      - name: Xac dinh phien ban
+        id: version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "value=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=1.0.0" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build va gom thu vien
+        shell: bash
+        run: |
+          mvn -B -DskipTests package dependency:copy-dependencies -DoutputDirectory=target/dist -DincludeScope=runtime
+          cp target/pharmacy-desktop-*.jar target/dist/
+
+      - name: Dong goi bang jpackage
+        shell: bash
+        run: |
+          MAIN_JAR=$(basename target/pharmacy-desktop-*.jar)
+          mkdir -p target/installer
+          EXTRA=""
+          if [ "${{ matrix.package-type }}" = "exe" ]; then
+            EXTRA="--win-menu --win-shortcut --win-per-user-install --win-dir-chooser"
+          fi
+          jpackage \
+            --type ${{ matrix.package-type }} \
+            --name PharmaOS \
+            --app-version "${{ steps.version.outputs.value }}" \
+            --vendor "PharmaOS" \
+            --description "Phan mem quan ly nha thuoc PharmaOS" \
+            --icon ${{ matrix.icon }} \
+            --input target/dist \
+            --main-jar "$MAIN_JAR" \
+            --main-class com.pharmacy.PharmacyApplication \
+            --dest target/installer \
+            --java-options "-Dfile.encoding=UTF-8" \
+            --java-options "-Xmx512m" \
+            --add-modules java.base,java.desktop,java.logging,java.naming,java.sql,java.management,java.xml,java.net.http,java.prefs,java.security.jgss,java.security.sasl,java.instrument,java.compiler,java.transaction.xa,java.rmi,java.scripting,jdk.unsupported,jdk.crypto.ec,jdk.xml.dom,jdk.management \
+            $EXTRA
+
+      - name: Liet ke file cai dat
+        shell: bash
+        run: ls -la target/installer
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PharmaOS-${{ matrix.asset-label }}
+          path: target/installer/*
+          if-no-files-found: error
+
+      - name: Dinh kem vao Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/installer/*
+          generate_release_notes: true

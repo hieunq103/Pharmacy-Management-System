@@ -29,18 +29,22 @@ public class PharmacyApplication {
 
     public static class App extends Application {
 
+        private String startupError;
+
         @Override
         public void init() {
             Thread.setDefaultUncaughtExceptionHandler((thread, ex) ->
                 log.error("Uncaught exception trên thread '{}': ", thread.getName(), ex)
             );
 
-            try {
-                MigrationRunner.migrate();
-            } catch (Exception e) {
-                log.error("Khởi động thất bại do lỗi cấu trúc CSDL: ", e);
-                Platform.exit();
-                System.exit(1);
+            if (AppConfig.autoMigrate()) {
+                try {
+                    MigrationRunner.migrate();
+                } catch (Exception e) {
+                    log.error("Khởi động thất bại do lỗi cấu trúc CSDL: ", e);
+                    startupError = "Không thể cập nhật cấu trúc cơ sở dữ liệu.";
+                    return;
+                }
             }
 
             try {
@@ -48,13 +52,21 @@ public class PharmacyApplication {
                 log.info("Hibernate SessionFactory đã được khởi tạo thành công.");
             } catch (Exception e) {
                 log.error("Khởi động thất bại do không kết nối được Hibernate SessionFactory: ", e);
-                Platform.exit();
-                System.exit(1);
+                startupError =
+                    "Không thể kết nối tới máy chủ dữ liệu. Vui lòng kiểm tra kết nối mạng rồi mở lại ứng dụng.";
             }
         }
 
         @Override
         public void start(Stage primaryStage) {
+            if (startupError != null) {
+                com.pharmacy.common.DialogUtils.showError(
+                    "Không thể khởi động PharmaOS",
+                    startupError + "\n\nChi tiết lỗi được ghi tại thư mục .pharmaos/logs trong thư mục người dùng."
+                );
+                Platform.exit();
+                return;
+            }
             loadFont("/fonts/Inter_18pt-Medium.ttf");
             loadFont("/fonts/Inter_18pt-Bold.ttf");
 
