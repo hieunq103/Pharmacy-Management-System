@@ -16,13 +16,11 @@
            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.pharmacy.inventory.InventoryController">
 
-    <!-- 1. VIEW DANH SÁCH THUỐC TỒN KHO -->
     <VBox fx:id="viewMedicineInventory" spacing="10.0">
         <padding>
             <Insets bottom="10.0" left="20.0" right="20.0" top="8.0" />
         </padding>
 
-        <!-- Header hàng 1: Thống kê -->
         <VBox spacing="4.0">
             <HBox spacing="6.0" alignment="CENTER_LEFT">
                 <Label styleClass="stat-label-primary" text="Tổng loại thuốc:" />
@@ -34,37 +32,30 @@
             </HBox>
         </VBox>
 
-        <!-- Header hàng 2: Nút chức năng (sát trái) + Ô tìm kiếm (sát phải) -->
         <HBox alignment="CENTER_LEFT" spacing="12.0">
-            <!-- Nút Nhập Kho -->
             <Button fx:id="btnImport" mnemonicParsing="false"
                     styleClass="btn-primary-import"
                     text="+ Nhập Kho" />
 
-            <!-- Nút Xuất Kho -->
             <Button fx:id="btnExport" mnemonicParsing="false"
                     styleClass="btn-secondary-export"
                     text="Xuất Kho" />
 
-            <!-- Nút Lịch sử Nhập / Xuất -->
             <Button fx:id="btnHistory" mnemonicParsing="false"
                     styleClass="btn-secondary-history"
                     text="Lịch sử xuất nhập kho" />
 
             <Region HBox.hgrow="ALWAYS" />
 
-            <!-- Ô tìm kiếm -->
             <TextField fx:id="txtSearch" prefWidth="320.0"
                        promptText="Tìm theo mã, tên thuốc..."
                        styleClass="search-input" />
         </HBox>
 
-        <!-- Center: Bảng kép (Dual-table: Bảng dữ liệu cuộn ngang + Cột thao tác ghim cố định nổi bên phải) -->
         <HBox minHeight="300.0" spacing="0.0" styleClass="table-float-container" VBox.vgrow="ALWAYS">
             <VBox.margin>
                 <Insets top="20.0" />
             </VBox.margin>
-            <!-- Bảng thông tin chính cho cuộn ngang -->
             <TableView fx:id="inventoryTable" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, table-scrollable-data">
                 <columns>
                     <TableColumn fx:id="colCode" minWidth="95.0" prefWidth="105.0" resizable="true" sortable="false" text="Mã thuốc" />
@@ -82,7 +73,6 @@
                 </columnResizePolicy>
             </TableView>
 
-            <!-- Bảng cột thao tác ghim cố định bên phải (Sticky) -->
             <TableView fx:id="tableActionSticky"
                        minWidth="110.0" prefWidth="110.0" maxWidth="110.0"
                        styleClass="custom-inventory-table, sticky-action-col">
@@ -98,7 +88,6 @@
             </TableView>
         </HBox>
 
-        <!-- THANH ĐIỀU HƯỚNG PHÂN TRANG -->
         <HBox alignment="CENTER" prefHeight="36.0" spacing="12.0">
             <VBox.margin>
                 <Insets top="24.0" />
@@ -117,7 +106,6 @@
         </HBox>
     </VBox>
 
-    <!-- 2. VIEW LỊCH SỬ XUẤT NHẬP KHO (HIỂN THỊ TRÊN CÙNG MÀN HÌNH KHO THUỐC) -->
     <StackPane fx:id="viewInventoryHistory" visible="false" managed="false" />
 
 </StackPane>

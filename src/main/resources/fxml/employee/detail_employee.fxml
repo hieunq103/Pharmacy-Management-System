@@ -31,20 +31,17 @@
                 <ColumnConstraints percentWidth="50" />
             </columnConstraints>
 
-            <!-- Mã nhân viên (Khóa chết) -->
             <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
                 <Label text="Mã nhân viên" styleClass="form-label" />
                 <TextField fx:id="txtEmpId" editable="false" focusTraversable="false" mouseTransparent="true" styleClass="form-input-readonly" />
             </VBox>
 
-            <!-- Họ và tên -->
             <VBox spacing="6.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
                 <Label text="Họ và tên" styleClass="form-label" />
                 <TextField fx:id="txtFullName" editable="false" styleClass="form-input-readonly" />
                 <Label fx:id="lblErrFullName" visible="false" managed="false" styleClass="form-error-label" />
             </VBox>
 
-            <!-- Hàng 1: Ngày sinh - Giới tính -->
             <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
                 <Label text="Ngày sinh (dd/MM/yyyy)" styleClass="form-label" />
                 <TextField fx:id="txtDob" editable="false" styleClass="form-input-readonly" />
@@ -58,7 +55,6 @@
                 </StackPane>
             </VBox>
 
-            <!-- Hàng 2: Số CCCD - Số điện thoại -->
             <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
                 <Label text="Số CCCD" styleClass="form-label" />
                 <TextField fx:id="txtNationalId" editable="false" styleClass="form-input-readonly" />
@@ -70,7 +66,6 @@
                 <Label fx:id="lblErrPhone" visible="false" managed="false" styleClass="form-error-label" />
             </VBox>
 
-            <!-- Hàng 3: Ngày vào làm - Trạng thái làm việc -->
             <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="3">
                 <Label text="Ngày vào làm" styleClass="form-label" />
                 <TextField fx:id="txtHiredDate" editable="false" styleClass="form-input-readonly" />
@@ -83,7 +78,6 @@
                 </StackPane>
             </VBox>
 
-            <!-- Hàng 4: Vai trò hệ thống - Trạng thái tài khoản -->
             <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="4">
                 <Label text="Vai trò hệ thống" styleClass="form-label" />
                 <StackPane alignment="CENTER_LEFT">
@@ -106,7 +100,6 @@
             </VBox>
         </GridPane>
 
-        <!-- Footer Actions -->
         <HBox alignment="CENTER_LEFT" style="-fx-padding: 10 0 0 0;">
             <HBox spacing="10.0">
                 <Button fx:id="btnViewHistory" onAction="#handleViewLoginHistory" text="Lịch sử đăng nhập" styleClass="btn-primary" />

@@ -26,13 +26,11 @@
         <Insets bottom="10.0" left="20.0" right="20.0" top="8.0" />
     </padding>
 
-    <!-- HEADER: Tiêu đề + Nút quay về (bên phải) -->
     <HBox alignment="CENTER_LEFT" spacing="14.0">
         <Label styleClass="history-main-title" text="Lịch sử Xuất - Nhập kho" />
 
         <Region HBox.hgrow="ALWAYS" />
 
-        <!-- Nút quay về màn hình kho -->
         <Button fx:id="btnClose" onAction="#handleClose" styleClass="btn-back" text="Quay lại">
             <graphic>
                 <SVGPath content="M 0 7 L 14 7 M 8 1 L 14 7 L 8 13" styleClass="btn-back-glyph" />
@@ -40,18 +38,15 @@
         </Button>
     </HBox>
 
-    <!-- KHU VỰC BẢNG: TABPANE 2 TABS (NHẬP KHO & XUẤT KHO); cụm lọc ngày nằm cùng hàng tiêu đề tab, sát phải -->
     <StackPane VBox.vgrow="ALWAYS">
     <TabPane fx:id="historyTabPane" styleClass="custom-history-tabpane" tabClosingPolicy="UNAVAILABLE">
         <tabs>
-            <!-- ==================== TAB 1: LỊCH SỬ NHẬP KHO ==================== -->
             <Tab fx:id="tabImport" text="Lịch sử Nhập kho">
                 <VBox spacing="8.0" VBox.vgrow="ALWAYS">
                     <padding>
                         <Insets top="8.0" />
                     </padding>
 
-                    <!-- Bảng danh sách phiếu nhập kho (cho phép cuộn ngang và dọc, căn trái các cột, không có cột thao tác) -->
                     <HBox minHeight="300.0" spacing="0.0" styleClass="table-float-container" VBox.vgrow="ALWAYS">
                         <TableView fx:id="tableImport" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, history-master-table, table-scrollable-data">
                             <columns>
@@ -70,7 +65,6 @@
                         </TableView>
                     </HBox>
 
-                    <!-- THANH ĐIỀU HƯỚNG PHÂN TRANG NHẬP KHO -->
                     <HBox alignment="CENTER" prefHeight="36.0" spacing="12.0">
                         <VBox.margin>
                             <Insets top="20.0" />
@@ -90,14 +84,12 @@
                 </VBox>
             </Tab>
 
-            <!-- ==================== TAB 2: LỊCH SỬ XUẤT KHO ==================== -->
             <Tab fx:id="tabExport" text="Lịch sử Xuất kho">
                 <VBox spacing="8.0" VBox.vgrow="ALWAYS">
                     <padding>
                         <Insets top="8.0" />
                     </padding>
 
-                    <!-- Bảng danh sách phiếu xuất kho (cho phép cuộn ngang và dọc, căn trái các cột, không có cột thao tác) -->
                     <HBox minHeight="300.0" spacing="0.0" styleClass="table-float-container" VBox.vgrow="ALWAYS">
                         <TableView fx:id="tableExport" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, history-master-table, table-scrollable-data">
                             <columns>
@@ -115,7 +107,6 @@
                         </TableView>
                     </HBox>
 
-                    <!-- THANH ĐIỀU HƯỚNG PHÂN TRANG XUẤT KHO -->
                     <HBox alignment="CENTER" prefHeight="36.0" spacing="12.0">
                         <VBox.margin>
                             <Insets top="20.0" />

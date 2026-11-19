@@ -24,7 +24,6 @@
         <Insets bottom="10.0" left="20.0" right="20.0" top="8.0" />
     </padding>
 
-    <!-- HÀNG 1: Tiêu đề + Nút quay về (bên phải) -->
     <HBox alignment="CENTER_LEFT" spacing="14.0">
         <Label styleClass="history-main-title" text="Lịch sử bán hàng" />
         <Region HBox.hgrow="ALWAYS" />
@@ -35,14 +34,12 @@
         </Button>
     </HBox>
 
-    <!-- HÀNG 2: Ô tìm kiếm nhanh theo mã đơn, SĐT khách, tên thu ngân (sát bên trái) -->
     <HBox alignment="CENTER_LEFT">
         <TextField fx:id="txtSearch" prefWidth="360.0"
                    promptText="Tìm theo mã đơn, SĐT khách, thu ngân..."
                    styleClass="search-input" />
     </HBox>
 
-    <!-- HÀNG 3: Bộ lọc kỳ thời gian giống trang Báo cáo — Theo ngày (trái) / Theo tháng (phải) -->
     <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="filter-card">
         <HBox alignment="CENTER_LEFT" spacing="8.0">
             <Button fx:id="btnFilterDay" onAction="#handleSelectDayMode" styleClass="period-pill-btn, active" text="Theo ngày" />
@@ -56,7 +53,6 @@
         </HBox>
     </HBox>
 
-    <!-- KHU VỰC BẢNG LỊCH SỬ ĐƠN HÀNG -->
     <StackPane VBox.vgrow="ALWAYS">
         <HBox minHeight="320.0" spacing="0.0" styleClass="table-float-container" VBox.vgrow="ALWAYS">
             <TableView fx:id="tableSalesOrders" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, history-master-table, table-scrollable-data">
@@ -81,14 +77,11 @@
             </TableView>
         </HBox>
 
-        <!-- Trạng thái trống (Empty State khi không có đơn trong ngày) -->
         <VBox fx:id="paneEmptyHistory" alignment="CENTER" spacing="10.0" visible="false" mouseTransparent="true">
             <Label styleClass="empty-title" text="Không có đơn hàng nào trong ngày này" style="-fx-font-size: 15px; -fx-text-fill: #64748B; -fx-font-family: 'Inter 18pt SemiBold';" />
-            <Label text="Vui lòng chọn ngày khác hoặc thực hiện bán hàng mới." style="-fx-font-size: 13px; -fx-text-fill: #94A3B8;" />
         </VBox>
     </StackPane>
 
-    <!-- THANH ĐIỀU HƯỚNG PHÂN TRANG -->
     <HBox alignment="CENTER" prefHeight="36.0" spacing="12.0">
         <VBox.margin>
             <Insets top="12.0" />

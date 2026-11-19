@@ -23,7 +23,6 @@
         <Insets bottom="20.0" left="24.0" right="24.0" top="18.0" />
     </padding>
 
-    <!-- Header: Tiêu đề & (Mã thuốc + Tên thuốc + Nhãn kê toa trên cùng một dòng) -->
     <VBox spacing="6.0">
         <HBox alignment="CENTER_LEFT">
             <Label styleClass="lot-dialog-title" text="Chi tiết các lô hàng" />
@@ -44,7 +43,6 @@
         </HBox>
     </VBox>
 
-    <!-- Card thông tin thuốc chi tiết -->
     <VBox spacing="8.0" styleClass="lot-info-card">
         <HBox spacing="24.0" alignment="CENTER_LEFT">
             <HBox spacing="6.0" alignment="CENTER_LEFT">
@@ -70,7 +68,6 @@
         </HBox>
     </VBox>
 
-    <!-- Toolbar: Tìm kiếm lô, lọc trạng thái -->
     <HBox alignment="CENTER_LEFT" spacing="12.0">
         <TextField fx:id="txtSearchLot" prefWidth="280.0"
                    promptText="Tìm theo số lô, nhà cung cấp..."
@@ -81,7 +78,6 @@
                   styleClass="lot-filter-combo" />
     </HBox>
 
-    <!-- Bảng danh sách các lô hàng -->
     <TableView fx:id="tableLots" styleClass="custom-inventory-table, table-scrollable-data" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="colIndex" styleClass="lot-col-left" minWidth="70.0" prefWidth="75.0" resizable="false" sortable="false" text="STT" />
@@ -100,7 +96,6 @@
         </columnResizePolicy>
     </TableView>
 
-    <!-- THANH ĐIỀU HƯỚNG PHÂN TRANG CÁC LÔ HÀNG -->
     <HBox alignment="CENTER" prefHeight="36.0" spacing="12.0">
         <Region HBox.hgrow="ALWAYS" />
         <HBox fx:id="lotPaginationBox" alignment="CENTER" spacing="6.0" />

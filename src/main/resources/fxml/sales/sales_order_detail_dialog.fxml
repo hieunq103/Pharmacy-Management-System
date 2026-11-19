@@ -22,7 +22,6 @@
         <Insets bottom="16.0" left="24.0" right="24.0" top="18.0" />
     </padding>
 
-    <!-- Header: Tiêu đề + Mã hóa đơn + Ngày giờ + Nút X đóng -->
     <HBox alignment="CENTER_LEFT" spacing="12.0">
         <VBox spacing="4.0">
             <HBox alignment="CENTER_LEFT" spacing="10.0">
@@ -42,9 +41,7 @@
         </Button>
     </HBox>
 
-    <!-- Card thông tin tổng quan của đơn hàng -->
     <VBox spacing="10.0" styleClass="lot-info-card">
-        <!-- Hàng 1: Thu ngân, Khách hàng, Phương thức thanh toán -->
         <HBox spacing="28.0" alignment="CENTER_LEFT">
             <HBox spacing="6.0" alignment="CENTER_LEFT">
                 <Label styleClass="lot-info-label" text="Thu ngân bán hàng:" />
@@ -60,7 +57,6 @@
             </HBox>
         </HBox>
 
-        <!-- Hàng 2: Biểu thức tài chính (Tổng tiền hàng - Giảm giá = Tổng thanh toán) -->
         <HBox spacing="28.0" alignment="CENTER_LEFT">
             <HBox spacing="6.0" alignment="CENTER_LEFT">
                 <Label styleClass="lot-info-label" text="Số loại thuốc:" />
@@ -81,7 +77,6 @@
         </HBox>
     </VBox>
 
-    <!-- Thanh tìm kiếm thuốc trong đơn -->
     <HBox alignment="CENTER_LEFT" spacing="12.0">
         <TextField fx:id="txtSearchDetail" prefWidth="320.0"
                    promptText="Tìm kiếm thuốc trong đơn (mã, tên, số lô)..."
@@ -90,7 +85,6 @@
         <Label fx:id="lblRowCount" styleClass="hint-select-label" text="Danh sách các mặt hàng đã bán:" />
     </HBox>
 
-    <!-- Bảng danh sách mặt hàng thuốc trong đơn -->
     <HBox minHeight="280.0" spacing="0.0" styleClass="table-float-container" VBox.vgrow="ALWAYS">
         <TableView fx:id="tableDetails" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, history-detail-table, table-scrollable-data">
             <columns>

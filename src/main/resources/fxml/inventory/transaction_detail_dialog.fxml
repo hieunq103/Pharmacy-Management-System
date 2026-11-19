@@ -22,7 +22,6 @@
         <Insets bottom="16.0" left="24.0" right="24.0" top="18.0" />
     </padding>
 
-    <!-- Header: Tiêu đề + Mã phiếu + Ngày giờ -->
     <HBox alignment="CENTER_LEFT" spacing="12.0">
         <VBox spacing="4.0">
             <Label fx:id="lblDialogTitle" styleClass="lot-dialog-title" text="Chi tiết phiếu xuất nhập kho" />
@@ -39,7 +38,6 @@
         </Button>
     </HBox>
 
-    <!-- Card thông tin tổng quan của phiếu -->
     <VBox spacing="10.0" styleClass="lot-info-card">
         <HBox spacing="28.0" alignment="CENTER_LEFT">
             <HBox spacing="6.0" alignment="CENTER_LEFT">
@@ -72,7 +70,6 @@
         </HBox>
     </VBox>
 
-    <!-- Thanh tìm kiếm thuốc trong phiếu -->
     <HBox alignment="CENTER_LEFT" spacing="12.0">
         <TextField fx:id="txtSearchDetail" prefWidth="320.0"
                    promptText="Tìm kiếm thuốc theo mã, tên thuốc, số lô..."
@@ -81,7 +78,6 @@
         <Label fx:id="lblRowCount" styleClass="hint-select-label" text="Danh sách các mặt hàng:" />
     </HBox>
 
-    <!-- Bảng danh sách mặt hàng thuốc trong phiếu (cho phép cuộn ngang và cuộn dọc) -->
     <HBox minHeight="300.0" spacing="0.0" styleClass="table-float-container" VBox.vgrow="ALWAYS">
         <TableView fx:id="tableDetails" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, history-detail-table, table-scrollable-data">
             <columns>
@@ -104,7 +100,6 @@
         </TableView>
     </HBox>
 
-    <!-- THANH ĐIỀU HƯỚNG PHÂN TRANG CHI TIẾT PHIẾU -->
     <HBox alignment="CENTER" prefHeight="36.0" spacing="12.0">
         <Region HBox.hgrow="ALWAYS" />
         <HBox fx:id="detailPaginationBox" alignment="CENTER" spacing="6.0" />

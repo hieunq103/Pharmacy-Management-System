@@ -54,7 +54,6 @@
                      </children>
                   </VBox>
 
-                  <!-- Input Tên đăng nhập -->
                   <VBox spacing="6.0">
                      <children>
                         <Label style="-fx-font-family: 'Inter 18pt'; -fx-text-fill: #334155; -fx-font-size: 15px;" text="Tên đăng nhập" />
@@ -67,7 +66,6 @@
                      </children>
                   </VBox>
 
-                  <!-- Input Mật khẩu (Sử dụng component TogglePasswordField dùng chung) -->
                   <VBox spacing="6.0">
                      <children>
                         <Label style="-fx-font-family: 'Inter 18pt'; -fx-text-fill: #334155; -fx-font-size: 15px;" text="Mật khẩu" />
@@ -75,7 +73,6 @@
                      </children>
                   </VBox>
 
-                  <!-- Nút Đăng nhập -->
                   <Button fx:id="btnLogin"
                           defaultButton="true"
                           maxWidth="Infinity"

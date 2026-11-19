@@ -24,7 +24,6 @@
       stylesheets="@../../css/add_employee.css, @../../css/inventory.css"
       styleClass="drawer-panel">
 
-    <!-- ==================== HEADER ==================== -->
     <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 16 24; -fx-border-color: #E2E8F0; -fx-border-width: 0 0 1 0; -fx-background-color: #FFFFFF;">
         <VBox spacing="2">
             <Label text="Lập Phiếu Xuất Kho" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 18px; -fx-text-fill: #1E293B;"/>
@@ -32,12 +31,10 @@
         <Region HBox.hgrow="ALWAYS"/>
     </HBox>
 
-    <!-- ==================== BODY (SCROLLABLE) ==================== -->
     <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
                 style="-fx-background-color: #FFFFFF; -fx-background: #FFFFFF; -fx-border-width: 0;">
         <VBox spacing="16" style="-fx-padding: 18 24; -fx-background-color: #FFFFFF;">
 
-            <!-- 1. THÔNG TIN CHUNG PHIẾU XUẤT -->
             <VBox spacing="10" style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 12 16;">
                 <HBox alignment="CENTER_LEFT" spacing="12">
                     <Label text="1. Thông tin chung đợt xuất" styleClass="form-label" style="-fx-font-size: 14px; -fx-text-fill: #0F172A;"/>
@@ -48,26 +45,22 @@
                     </HBox>
                 </HBox>
 
-                <!-- Ghi chú chung đợt xuất -->
                 <VBox spacing="4">
                     <Label text="Ghi chú đợt xuất kho (Số quyết định, biên bản hủy, căn cứ văn bản...)" styleClass="form-label"/>
                     <TextField fx:id="txtNote" promptText="Nhập ghi chú chung cho đợt xuất kho này (nếu có)..." styleClass="form-input"/>
                 </VBox>
             </VBox>
 
-            <!-- 2. KHU VỰC THÊM MẶT HÀNG VÀO PHIẾU XUẤT -->
             <VBox spacing="12" style="-fx-background-color: #FFFFFF; -fx-border-color: #0066FF; -fx-border-width: 1.5px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 14 16;">
                 <HBox alignment="CENTER_LEFT" spacing="12">
                     <Label text="2. Thêm thuốc vào phiếu xuất" styleClass="form-label" style="-fx-font-size: 14px; -fx-text-fill: #0066FF;"/>
                 </HBox>
 
-                <!-- Tìm kiếm và chọn thuốc -->
                 <VBox spacing="6">
                     <Label text="Nhập mã thuốc hoặc tên thuốc cần xuất kho *" styleClass="form-label"/>
                     <StackPane fx:id="medicinePickerContainer"/>
                     <Label fx:id="lblErrorMedicine" text="" styleClass="form-error-msg" visible="false" managed="false"/>
 
-                    <!-- Card thông tin thuốc đã chọn -->
                     <HBox fx:id="boxMedicineInfo" alignment="CENTER_LEFT" spacing="16"
                           style="-fx-background-color: #EFF6FF; -fx-border-color: #BFDBFE; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 8 12;"
                           visible="false" managed="false">
@@ -85,7 +78,6 @@
                     </HBox>
                 </VBox>
 
-                <!-- Header tiêu đề các cột nhập lô -->
                 <GridPane hgap="12" alignment="CENTER_LEFT">
                     <columnConstraints>
                         <ColumnConstraints percentWidth="38.0"/>
@@ -99,10 +91,8 @@
                     <Label text="" GridPane.columnIndex="3"/>
                 </GridPane>
 
-                <!-- Container chứa các dòng lô động (mỗi lần bấm 'Xuất thêm lô khác' sẽ thêm 1 dòng 3 ô vào đây) -->
                 <VBox fx:id="lotRowsContainer" spacing="10"/>
 
-                <!-- Hàng nút Thao tác: Xuất thêm lô khác & Thêm vào phiếu xuất -->
                 <HBox alignment="CENTER_LEFT" spacing="12">
                     <Button fx:id="btnSelectAnotherLot" text="+ Xuất thêm lô khác" onAction="#handleSelectAnotherLot"
                             style="-fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 12px; -fx-padding: 7 14; -fx-border-color: #BFDBFE; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-cursor: hand;"/>
@@ -113,7 +103,6 @@
                 </HBox>
             </VBox>
 
-            <!-- 3. BẢNG DANH SÁCH CÁC MẶT HÀNG TRONG PHIẾU XUẤT -->
             <VBox spacing="6">
                 <HBox alignment="CENTER_LEFT" spacing="8">
                     <Label text="3. Danh sách mặt hàng đã thêm vào phiếu xuất" styleClass="form-label" style="-fx-font-size: 14px; -fx-text-fill: #0F172A;"/>
@@ -124,7 +113,6 @@
                             style="-fx-background-color: transparent; -fx-text-fill: #EF4444; -fx-cursor: hand; -fx-font-size: 12px;"/>
                 </HBox>
 
-                <!-- Khung bao viền ngoài bo góc chuẩn như bảng Kho thuốc (table-float-container) -->
                 <HBox minHeight="240.0" prefHeight="280.0" spacing="0.0" styleClass="table-float-container">
                     <TableView fx:id="tableItems" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, table-scrollable-data, import-items-table">
                         <columns>
@@ -147,13 +135,11 @@
                 </HBox>
             </VBox>
 
-            <!-- Error message tổng -->
             <Label fx:id="lblGeneralError" text="" styleClass="form-error-msg" visible="false" managed="false"/>
 
         </VBox>
     </ScrollPane>
 
-    <!-- ==================== FOOTER ==================== -->
     <HBox alignment="CENTER_RIGHT" spacing="16" style="-fx-padding: 14 24; -fx-border-color: #E2E8F0; -fx-border-width: 1 0 0 0; -fx-background-color: #F8FAFC;">
         <Region HBox.hgrow="ALWAYS"/>
 

@@ -36,9 +36,7 @@
                 <Insets bottom="80.0" left="18.0" right="18.0" top="8.0" />
             </padding>
 
-            <!-- ==================== HÀNG 1: BỘ LỌC THỜI GIAN ==================== -->
             <HBox alignment="CENTER_LEFT" minHeight="-Infinity" spacing="12.0" styleClass="filter-card">
-                <!-- Ô 1: BỘ LỌC THEO NGÀY (GIỮ NGUYÊN BÊN TRÁI) -->
                 <HBox alignment="CENTER_LEFT" spacing="8.0">
                     <Button fx:id="btnFilterDay" onAction="#handleSelectDayMode" styleClass="period-pill-btn, active" text="Theo ngày" />
                     <DatePicker fx:id="dpSelectedDate" prefWidth="135.0" promptText="dd/MM/yyyy" styleClass="date-filter-picker" onAction="#handleDatePicked" />
@@ -46,7 +44,6 @@
 
                 <Region HBox.hgrow="ALWAYS" />
 
-                <!-- Ô 2: BỘ LỌC THEO THÁNG (DẠT THẲNG HÀNG SÁT VỀ BÊN PHẢI) -->
                 <HBox alignment="CENTER_RIGHT" spacing="8.0">
                     <Button fx:id="btnFilterMonth" onAction="#handleSelectMonthMode" styleClass="period-pill-btn" text="Theo tháng" />
                     <TextField fx:id="txtFilterYear" prefWidth="70.0" alignment="CENTER" promptText="Năm" styleClass="year-text-input" onAction="#handleYearAction" />
@@ -54,7 +51,6 @@
                 </HBox>
             </HBox>
 
-            <!-- ==================== HÀNG 2: 5 THẺ THỐNG KÊ (STAT CARDS) ==================== -->
             <GridPane hgap="12.0" minHeight="-Infinity" vgap="12.0">
                 <columnConstraints>
                     <ColumnConstraints percentWidth="20.0" hgrow="ALWAYS" />
@@ -67,7 +63,6 @@
                     <RowConstraints minHeight="66.0" prefHeight="66.0" valignment="CENTER" vgrow="ALWAYS" />
                 </rowConstraints>
 
-                <!-- THẺ 1: TỔNG DOANH SỐ -->
                 <VBox spacing="4.0" styleClass="report-stat-card" GridPane.columnIndex="0">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Tổng doanh số" />
@@ -79,7 +74,6 @@
                     <Label fx:id="lblTotalRevenue" styleClass="stat-value-highlight" text="0đ" />
                 </VBox>
 
-                <!-- THẺ 2: TIỀN MẶT -->
                 <VBox spacing="4.0" styleClass="report-stat-card" GridPane.columnIndex="1">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Tiền mặt" />
@@ -91,7 +85,6 @@
                     <Label fx:id="lblCashRevenue" styleClass="stat-value" text="0đ" />
                 </VBox>
 
-                <!-- THẺ 3: CHUYỂN KHOẢN -->
                 <VBox spacing="4.0" styleClass="report-stat-card" GridPane.columnIndex="2">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Chuyển khoản" />
@@ -103,7 +96,6 @@
                     <Label fx:id="lblTransferRevenue" styleClass="stat-value" text="0đ" />
                 </VBox>
 
-                <!-- THẺ 4: SỐ THUỐC ĐÃ BÁN -->
                 <VBox spacing="4.0" styleClass="report-stat-card" GridPane.columnIndex="3">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Số thuốc đã bán" />
@@ -115,7 +107,6 @@
                     <Label fx:id="lblTotalMedicinesSold" styleClass="stat-value-emerald" text="0 sản phẩm" />
                 </VBox>
 
-                <!-- THẺ 5: TỔNG SỐ HÓA ĐƠN -->
                 <VBox spacing="4.0" styleClass="report-stat-card" GridPane.columnIndex="4">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Tổng hóa đơn" />
@@ -128,10 +119,8 @@
                 </VBox>
             </GridPane>
 
-            <!-- ==================== HÀNG 3: TABPANE CHI TIẾT ==================== -->
-            <TabPane fx:id="tabPaneReport" styleClass="report-tab-pane" tabClosingPolicy="UNAVAILABLE" tabMinWidth="220.0" tabMaxWidth="220.0" VBox.vgrow="ALWAYS">
+            <TabPane fx:id="tabPaneReport" styleClass="report-tab-pane" tabClosingPolicy="UNAVAILABLE" tabMinWidth="220.0" tabMaxWidth="220.0">
                 <tabs>
-                    <!-- TAB 1: BÁO CÁO DOANH SỐ -->
                     <Tab fx:id="tabRevenue" text="Báo cáo doanh số">
                         <content>
                             <VBox spacing="10.0">
@@ -139,15 +128,14 @@
                                     <Insets top="8.0" />
                                 </padding>
 
-                                <!-- Biểu đồ doanh số (co giãn vừa màn hình, tab này không cuộn dọc) -->
-                                <VBox spacing="8.0" styleClass="chart-card" VBox.vgrow="ALWAYS">
-                                    <Label fx:id="lblChartTitle" styleClass="section-title" text="Biểu đồ doanh số 7 ngày gần nhất" />
+                                <VBox spacing="12.0" styleClass="chart-card">
+                                    <Label fx:id="lblChartTitle" styleClass="section-title" text="Doanh số 7 ngày gần nhất" />
                                     <BarChart fx:id="barChartRevenue" legendVisible="false"
                                               styleClass="report-bar-chart"
-                                              minHeight="180.0" prefHeight="330.0" VBox.vgrow="ALWAYS"
+                                              minHeight="300.0" prefHeight="300.0" maxHeight="300.0"
                                               animated="false"
                                               categoryGap="24.0" barGap="4.0"
-                                              horizontalGridLinesVisible="false" verticalGridLinesVisible="false">
+                                              horizontalGridLinesVisible="true" verticalGridLinesVisible="false">
                                         <xAxis>
                                             <CategoryAxis fx:id="chartXAxis" animated="false" />
                                         </xAxis>
@@ -160,7 +148,6 @@
                         </content>
                     </Tab>
 
-                    <!-- TAB 2: BÁO CÁO SỐ THUỐC ĐÃ BÁN -->
                     <Tab fx:id="tabMedicines" text="Báo cáo số thuốc đã bán">
                         <content>
                             <VBox fx:id="boxMedicinesTab" spacing="10.0">
@@ -168,15 +155,14 @@
                                     <Insets top="8.0" />
                                 </padding>
 
-                                <!-- Biểu đồ số thuốc đã bán -->
-                                <VBox spacing="8.0" styleClass="chart-card">
-                                    <Label fx:id="lblMedChartTitle" styleClass="section-title" text="Biểu đồ sản lượng thuốc đã bán 7 ngày gần nhất" />
+                                <VBox spacing="12.0" styleClass="chart-card">
+                                    <Label fx:id="lblMedChartTitle" styleClass="section-title" text="Sản lượng thuốc bán 7 ngày gần nhất" />
                                     <BarChart fx:id="barChartMedicines" legendVisible="false"
                                               styleClass="report-bar-chart, report-bar-chart-green"
-                                              minHeight="180.0" prefHeight="240.0"
+                                              minHeight="260.0" prefHeight="260.0" maxHeight="260.0"
                                               animated="false"
                                               categoryGap="24.0" barGap="4.0"
-                                              horizontalGridLinesVisible="false" verticalGridLinesVisible="false">
+                                              horizontalGridLinesVisible="true" verticalGridLinesVisible="false">
                                         <xAxis>
                                             <CategoryAxis fx:id="chartMedXAxis" animated="false" />
                                         </xAxis>
@@ -186,7 +172,6 @@
                                     </BarChart>
                                 </VBox>
 
-                                <!-- Bảng chi tiết sản lượng từng thuốc -->
                                 <VBox spacing="12.0" styleClass="content-card">
                                     <padding>
                                         <Insets bottom="16.0" left="16.0" right="16.0" top="14.0" />
@@ -195,7 +180,6 @@
                                     <HBox alignment="CENTER_LEFT" spacing="12.0">
                                         <Label fx:id="lblMedTableTitle" styleClass="section-title" text="Top 5 thuốc bán chạy nhất" />
                                         <Region HBox.hgrow="ALWAYS" />
-                                        <!-- Mở Lịch sử bán hàng lọc đúng ngày/tháng đang xem -->
                                         <Button fx:id="btnViewFull" onAction="#handleViewFull" styleClass="btn-view-full" text="Xem đầy đủ">
                                             <graphic>
                                                 <SVGPath content="M 0 5 L 10 5 M 6 1 L 10 5 L 6 9" styleClass="btn-view-full-glyph" />
@@ -204,18 +188,18 @@
                                     </HBox>
 
                                     <VBox styleClass="table-float-container">
-                                        <TableView fx:id="tblSoldMedicines" prefHeight="336.0" styleClass="custom-inventory-table, table-scrollable-data">
+                                        <TableView fx:id="tblSoldMedicines" prefHeight="296.0" styleClass="custom-inventory-table, table-scrollable-data">
                                             <columns>
-                                                <TableColumn fx:id="colMedIndex" minWidth="50.0" prefWidth="60.0" resizable="true" text="STT" style="-fx-alignment: CENTER-LEFT;" />
-                                                <TableColumn fx:id="colMedCode" minWidth="90.0" prefWidth="110.0" resizable="true" text="Mã thuốc" style="-fx-alignment: CENTER-LEFT;" />
-                                                <TableColumn fx:id="colMedName" minWidth="200.0" prefWidth="250.0" resizable="true" text="Tên thuốc" style="-fx-alignment: CENTER-LEFT;" />
-                                                <TableColumn fx:id="colMedCategory" minWidth="200.0" prefWidth="250.0" resizable="true" text="Nhóm thuốc" style="-fx-alignment: CENTER-LEFT;" />
-                                                <TableColumn fx:id="colMedUnit" minWidth="80.0" prefWidth="90.0" resizable="true" text="Đơn vị" style="-fx-alignment: CENTER-LEFT;" />
-                                                <TableColumn fx:id="colMedQtySold" minWidth="110.0" prefWidth="130.0" resizable="true" text="Số lượng bán" style="-fx-alignment: CENTER-LEFT;" />
-                                                <TableColumn fx:id="colMedRevenue" minWidth="130.0" prefWidth="150.0" resizable="true" sortable="false" text="Doanh thu" style="-fx-alignment: CENTER;" />
+                                                <TableColumn fx:id="colMedIndex" minWidth="50.0" prefWidth="60.0" text="STT" />
+                                                <TableColumn fx:id="colMedCode" minWidth="90.0" prefWidth="110.0" text="Mã thuốc" />
+                                                <TableColumn fx:id="colMedName" minWidth="180.0" prefWidth="260.0" text="Tên thuốc" />
+                                                <TableColumn fx:id="colMedCategory" minWidth="180.0" prefWidth="240.0" text="Nhóm thuốc" />
+                                                <TableColumn fx:id="colMedUnit" minWidth="70.0" prefWidth="90.0" text="Đơn vị" />
+                                                <TableColumn fx:id="colMedQtySold" minWidth="100.0" prefWidth="130.0" text="Số lượng bán" />
+                                                <TableColumn fx:id="colMedRevenue" minWidth="120.0" prefWidth="150.0" sortable="false" text="Doanh thu" />
                                             </columns>
                                             <columnResizePolicy>
-                                                <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
+                                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                             </columnResizePolicy>
                                         </TableView>
                                     </VBox>
@@ -229,7 +213,6 @@
     </content>
 </ScrollPane>
 
-<!-- Lớp phủ "Đang tải" khi lấy số liệu báo cáo (chỉ hiện nếu tải lâu hơn ~150 ms để tránh nháy) -->
 <VBox fx:id="loadingOverlay" alignment="CENTER" spacing="12.0" styleClass="report-loading-overlay"
       visible="false" managed="false">
     <ProgressIndicator fx:id="loadingSpinner" prefWidth="54.0" prefHeight="54.0" styleClass="report-loading-spinner" />

@@ -28,7 +28,6 @@
                 <Insets bottom="24.0" left="24.0" right="24.0" top="16.0" />
             </padding>
 
-            <!-- ==================== HÀNG 1: 4 THẺ THỐNG KÊ (STAT CARDS) ==================== -->
             <GridPane hgap="16.0" vgap="16.0">
                 <columnConstraints>
                     <ColumnConstraints percentWidth="25.0" hgrow="ALWAYS" />
@@ -40,7 +39,6 @@
                     <RowConstraints minHeight="115.0" valignment="CENTER" vgrow="ALWAYS" />
                 </rowConstraints>
 
-                <!-- THẺ 1: DOANH SỐ HÔM NAY -->
                 <VBox onMouseClicked="#handleOpenTodaySalesHistory" spacing="6.0" styleClass="dashboard-stat-card, dashboard-stat-card-link" GridPane.columnIndex="0">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Doanh số hôm nay" />
@@ -53,7 +51,6 @@
                     <Label fx:id="lblTodayRevenue" styleClass="stat-value" text="0đ" />
                 </VBox>
 
-                <!-- THẺ 2: HÓA ĐƠN HÔM NAY -->
                 <VBox onMouseClicked="#handleOpenTodaySalesHistory" spacing="6.0" styleClass="dashboard-stat-card, dashboard-stat-card-link" GridPane.columnIndex="1">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Hóa đơn hôm nay" />
@@ -66,7 +63,6 @@
                     <Label fx:id="lblTodayOrders" styleClass="stat-value" text="0" />
                 </VBox>
 
-                <!-- THẺ 3: SẮP HẾT HÀNG -->
                 <VBox onMouseClicked="#handleOpenLowStockInventory" spacing="6.0" styleClass="dashboard-stat-card, dashboard-stat-card-link" GridPane.columnIndex="2">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Sắp hết hàng" />
@@ -79,7 +75,6 @@
                     <Label fx:id="lblLowStockCount" styleClass="stat-value" text="0" />
                 </VBox>
 
-                <!-- THẺ 4: CẬN HẠN SỬ DỤNG -->
                 <VBox onMouseClicked="#handleOpenNearExpiryInventory" spacing="6.0" styleClass="dashboard-stat-card, dashboard-stat-card-link" GridPane.columnIndex="3">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Cận hạn sử dụng" />
@@ -94,9 +89,7 @@
                 </VBox>
             </GridPane>
 
-            <!-- ==================== HÀNG 2: BIỂU ĐỒ 7 NGÀY & CẢNH BÁO KHO ==================== -->
             <HBox spacing="16.0" prefHeight="380.0" minHeight="380.0">
-                <!-- CỘT TRÁI: DOANH SỐ 7 NGÀY GẦN NHẤT -->
                 <VBox spacing="12.0" styleClass="dashboard-card" HBox.hgrow="ALWAYS" prefHeight="380.0" minHeight="380.0">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="card-header-title" text="Doanh số 7 ngày gần nhất" />
@@ -114,24 +107,20 @@
                     </BarChart>
                 </VBox>
 
-                <!-- CỘT PHẢI: CẢNH BÁO KHO (Cố định chiều cao đồng bộ, cuộn mượt không giật layout) -->
                 <VBox spacing="12.0" styleClass="dashboard-card" HBox.hgrow="ALWAYS" minWidth="460.0" prefWidth="520.0" prefHeight="380.0" minHeight="380.0">
                     <HBox alignment="CENTER_LEFT" spacing="10.0">
                         <Label styleClass="card-header-title" text="Cảnh báo kho" />
-                        <!-- Mini Tabs: Hạn dùng / Tồn kho -->
                         <HBox fx:id="boxAlertTabs" spacing="4.0" alignment="CENTER_LEFT">
                             <Button fx:id="btnAlertTabExpiry" onAction="#handleTabExpiryAlerts" styleClass="pill-tab-btn, pill-tab-active" text="Hạn dùng" />
                             <Button fx:id="btnAlertTabStock" onAction="#handleTabStockAlerts" styleClass="pill-tab-btn" text="Tồn kho" />
                         </HBox>
                     </HBox>
-                    <!-- Danh sách cảnh báo kho: tối đa 4 thuốc + link xem tất cả, không cuộn -->
                     <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER" styleClass="alert-scroll-pane" VBox.vgrow="ALWAYS">
                         <VBox fx:id="boxInventoryAlerts" spacing="6.0" styleClass="alert-items-container" />
                     </ScrollPane>
                 </VBox>
             </HBox>
 
-            <!-- ==================== HÀNG 3: GIAO DỊCH GẦN ĐÂY ==================== -->
             <VBox spacing="12.0" styleClass="dashboard-card">
                 <HBox alignment="CENTER_LEFT">
                     <Label styleClass="card-header-title" text="Giao dịch gần đây" />
@@ -143,7 +132,6 @@
                     </Button>
                 </HBox>
 
-                <!-- Tiêu đề các cột bảng: Căn trái toàn bộ -->
                 <HBox alignment="CENTER_LEFT" styleClass="recent-table-header">
                     <Label prefWidth="160.0" styleClass="recent-th-label" text="Mã HĐ" />
                     <Label prefWidth="170.0" styleClass="recent-th-label" text="Khách hàng" />
@@ -154,7 +142,6 @@
                     <Label alignment="CENTER_LEFT" prefWidth="140.0" styleClass="recent-th-label" text="Tổng tiền" />
                 </HBox>
 
-                <!-- Danh sách các hàng giao dịch gần đây -->
                 <VBox fx:id="boxRecentTransactions" spacing="0.0" />
             </VBox>
         </VBox>

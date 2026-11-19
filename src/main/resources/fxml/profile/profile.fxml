@@ -24,7 +24,6 @@
                 <HBox alignment="CENTER_LEFT">
                     <Label style="-fx-font-size: 16px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0F172A;" text="Hồ sơ cá nhân" />
                     <Region HBox.hgrow="ALWAYS" />
-                    <!-- Chỉ hiện khi mở từ danh sách Nhân viên (chọn chính mình) -> quay về trang Nhân viên -->
                     <Button fx:id="btnBack" onAction="#handleBack" styleClass="btn-back" text="Quay lại" visible="false" managed="false">
                         <graphic>
                             <SVGPath content="M 0 7 L 14 7 M 8 1 L 14 7 L 8 13" styleClass="btn-back-glyph" />
@@ -33,7 +32,6 @@
                 </HBox>
                 <Label style="-fx-font-size: 13px; -fx-text-fill: #64748B;" text="Bạn chỉ có thể cập nhật Họ và tên, Số điện thoại và Địa chỉ. Các thông tin khác do Quản lý cửa hàng cập nhật." />
 
-                <!-- Thông báo trạng thái -->
                 <Label fx:id="lblStatusMessage" managed="false" visible="false"
                        style="-fx-font-size: 13px; -fx-padding: 8 12; -fx-background-radius: 6;" />
 
@@ -43,7 +41,6 @@
                         <ColumnConstraints percentWidth="50.0" />
                     </columnConstraints>
 
-                    <!-- Hàng 0: Mã nhân viên (Luôn khóa) & Họ tên (CHO PHÉP SỬA) -->
                     <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
                         <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #475569;" text="Mã nhân viên" />
                         <TextField fx:id="txtEmployeeCode" editable="false" focusTraversable="false" styleClass="form-input, readonly" />
@@ -54,7 +51,6 @@
                         <TextField fx:id="txtFullName" editable="false" styleClass="form-input, readonly" />
                     </VBox>
 
-                    <!-- Hàng 1: Ngày sinh & Giới tính (Khóa) -->
                     <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
                         <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #475569;" text="Ngày sinh" />
                         <TextField fx:id="txtDob" editable="false" styleClass="form-input, readonly" />
@@ -65,7 +61,6 @@
                         <TextField fx:id="txtGender" editable="false" styleClass="form-input, readonly" />
                     </VBox>
 
-                    <!-- Hàng 2: Số CCCD (Khóa) & Số điện thoại (CHO PHÉP SỬA) -->
                     <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
                         <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #475569;" text="Số CCCD" />
                         <TextField fx:id="txtNationalId" editable="false" styleClass="form-input, readonly" />
@@ -77,7 +72,6 @@
                                    styleClass="form-input, readonly" />
                     </VBox>
 
-                    <!-- Hàng 3: Ngày vào làm & Vai trò (Khóa) -->
                     <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.rowIndex="3">
                         <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #475569;" text="Ngày vào làm" />
                         <TextField fx:id="txtHiredDate" editable="false" focusTraversable="false" styleClass="form-input, readonly" />
@@ -88,7 +82,6 @@
                         <TextField fx:id="txtRole" editable="false" styleClass="form-input, readonly" />
                     </VBox>
 
-                    <!-- Hàng 4: Địa chỉ (CHO PHÉP SỬA) -->
                     <VBox spacing="6.0" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="4">
                         <Label style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #1E293B;" text="Địa chỉ thường trú" />
                         <TextField fx:id="txtAddress" editable="false" promptText="Nhập địa chỉ cư trú..."
@@ -96,7 +89,6 @@
                     </VBox>
                 </GridPane>
 
-                <!-- KHU VỰC NÚT ĐIỀU KHIỂN -->
                 <HBox alignment="CENTER_RIGHT" spacing="12.0" style="-fx-padding: 16 0 0 0;">
                     <Button fx:id="btnChangePassword" onAction="#handleChangePassword"
                             styleClass="btn-action, btn-primary"

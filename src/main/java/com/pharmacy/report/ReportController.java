@@ -38,6 +38,8 @@ public class ReportController {
     private static final Logger log = LoggerFactory.getLogger(ReportController.class);
     private final ReportService reportService;
 
+    private static final double TABLE_ROW_HEIGHT = 50.0;
+    private static final double TABLE_HEADER_HEIGHT = 44.0;
     private Task<?> currentChartTask;
     private Task<?> currentMedTask;
 
@@ -305,7 +307,7 @@ public class ReportController {
         emptyPlaceholder.setStyle("-fx-font-family: 'Inter 18pt'; -fx-font-size: 14px; -fx-text-fill: #64748B;");
         tblSoldMedicines.setPlaceholder(emptyPlaceholder);
 
-        tblSoldMedicines.setFixedCellSize(50.0);
+        tblSoldMedicines.setFixedCellSize(TABLE_ROW_HEIGHT);
         tblSoldMedicines.setItems(topSoldMedicines);
 
         // Khóa cuộn dọc của bảng Top 5 và chuyển hướng cuộn dọc sang thanh cuộn trang chính
@@ -371,10 +373,9 @@ public class ReportController {
 
         double height;
         if (count == 0) {
-            height = 160.0;
+            height = TABLE_HEADER_HEIGHT + 2 * TABLE_ROW_HEIGHT;
         } else {
-            // Header (52px) + mỗi hàng (50px) + thanh cuộn ngang & padding (34px)
-            height = 52.0 + count * 50.0 + 34.0;
+            height = TABLE_HEADER_HEIGHT + count * TABLE_ROW_HEIGHT + 2.0;
         }
 
         tblSoldMedicines.setPrefHeight(height);
@@ -629,12 +630,8 @@ public class ReportController {
                     revTimeline = reportService.get7DaysRevenueTimelineUpTo(targetDate, empId);
                     medTimeline = reportService.get7DaysMedicineTimelineUpTo(targetDate, empId);
 
-                    revChartTitle =
-                        "Biểu đồ doanh số 7 ngày (tính đến " + targetDate.format(FormatUtils.DATE_FORMATTER) + ")";
-                    medChartTitle =
-                        "Biểu đồ sản lượng thuốc đã bán 7 ngày (tính đến " +
-                        targetDate.format(FormatUtils.DATE_FORMATTER) +
-                        ")";
+                    revChartTitle = "Doanh số 7 ngày đến " + targetDate.format(FormatUtils.DATE_FORMATTER);
+                    medChartTitle = "Sản lượng thuốc bán 7 ngày đến " + targetDate.format(FormatUtils.DATE_FORMATTER);
                 } else {
                     LocalDate firstDay = LocalDate.of(targetYear, targetMonth, 1);
                     LocalDate lastDay = firstDay.with(TemporalAdjusters.lastDayOfMonth());
@@ -643,9 +640,8 @@ public class ReportController {
                     revTimeline = reportService.get12MonthsRevenueTimeline(targetYear, empId);
                     medTimeline = reportService.get12MonthsMedicineTimeline(targetYear, empId);
 
-                    revChartTitle = "Biểu đồ doanh số 12 tháng năm " + targetYear + " (Tháng " + targetMonth + " )";
-                    medChartTitle =
-                        "Biểu đồ sản lượng thuốc đã bán 12 tháng năm " + targetYear + " (Tháng " + targetMonth + " )";
+                    revChartTitle = "Doanh số 12 tháng năm " + targetYear;
+                    medChartTitle = "Sản lượng thuốc bán 12 tháng năm " + targetYear;
                 }
                 return null;
             }
@@ -653,27 +649,6 @@ public class ReportController {
             @Override
             protected void succeeded() {
                 updateStatCards(summary);
-
-                boolean hasYearRevenue =
-                    revTimeline != null &&
-                    revTimeline
-                        .stream()
-                        .anyMatch(p -> p.revenue() != null && p.revenue().compareTo(BigDecimal.ZERO) > 0);
-                boolean hasMedQty = medTimeline != null && medTimeline.stream().anyMatch(p -> p.quantitySold() > 0);
-                boolean hasYearData = hasYearRevenue || hasMedQty;
-
-                if (mode == PeriodMode.MONTH) {
-                    if (!hasYearData) {
-                        revChartTitle += " (Chưa có dữ liệu)";
-                        medChartTitle += " (Chưa có dữ liệu)";
-                    }
-                } else {
-                    boolean hasDayData = summary != null && summary.totalOrders() > 0;
-                    if (!hasDayData && !hasYearRevenue) {
-                        revChartTitle += " (Chưa có dữ liệu)";
-                        medChartTitle += " (Chưa có dữ liệu)";
-                    }
-                }
 
                 if (lblChartTitle != null) {
                     lblChartTitle.setText(revChartTitle);
@@ -962,8 +937,8 @@ public class ReportController {
         if (lblMedTableTitle != null) {
             lblMedTableTitle.setText(
                 mode == PeriodMode.DAY
-                    ? "Top " + TOP_LIMIT + " thuốc bán chạy nhất ngày " + date.format(FormatUtils.DATE_FORMATTER)
-                    : "Top " + TOP_LIMIT + " thuốc bán chạy nhất tháng " + month + "/" + year
+                    ? "Top " + TOP_LIMIT + " thuốc bán chạy ngày " + date.format(FormatUtils.DATE_FORMATTER)
+                    : "Top " + TOP_LIMIT + " thuốc bán chạy tháng " + month + "/" + year
             );
         }
         topSoldMedicines.setAll(masterSoldMedicines.subList(0, Math.min(TOP_LIMIT, masterSoldMedicines.size())));
