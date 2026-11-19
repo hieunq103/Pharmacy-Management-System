@@ -590,6 +590,18 @@ public class ImportDialogController implements Initializable {
         ((Button) alert.getDialogPane().lookupButton(ButtonType.OK)).setText("Nhập kho");
         ((Button) alert.getDialogPane().lookupButton(ButtonType.CANCEL)).setText("Kiểm tra lại");
 
+        TableView<BatchImportItemDTO> table = buildItemsTable(items);
+        alert.getDialogPane().setContent(table);
+        alert.getDialogPane().setPrefWidth(660);
+        alert.setResizable(true);
+        return alert
+            .showAndWait()
+            .filter(bt -> bt == ButtonType.OK)
+            .isPresent();
+    }
+
+    // Bảng mã thuốc + tên thuốc + số lô + số lượng của cả phiếu; thuốc mới có nhãn "Mới", chưa có mã thì ghi "Cấp mã sau"
+    private static TableView<BatchImportItemDTO> buildItemsTable(List<BatchImportItemDTO> items) {
         TableView<BatchImportItemDTO> table = new TableView<>(FXCollections.observableArrayList(items));
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         table.setPlaceholder(new Label(""));
@@ -660,13 +672,25 @@ public class ImportDialogController implements Initializable {
         table.setPrefHeight(36 + 34 * Math.min(Math.max(items.size(), 1), 8) + 4);
         table.setPrefWidth(620);
 
-        alert.getDialogPane().setContent(table);
+        return table;
+    }
+
+    // Kết quả nhập kho: bảng thuốc đã nhập kèm mã (thuốc mới được cấp mã sau khi nhập)
+    private static void showImportResult(javafx.stage.Window owner, List<BatchImportItemDTO> items) {
+        long newCount = items.stream().filter(BatchImportItemDTO::isNewMedicine).count();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        DialogUtils.configure(alert, owner);
+        alert.setTitle("Nhập kho thành công");
+        alert.setHeaderText(
+            "Đã lập phiếu nhập kho thành công cho " +
+                items.size() +
+                " mặt hàng thuốc" +
+                (newCount > 0 ? "\nTrong đó " + newCount + " thuốc mới đã được cấp mã" : "")
+        );
+        alert.getDialogPane().setContent(buildItemsTable(items));
         alert.getDialogPane().setPrefWidth(660);
         alert.setResizable(true);
-        return alert
-            .showAndWait()
-            .filter(bt -> bt == ButtonType.OK)
-            .isPresent();
+        alert.showAndWait();
     }
 
     private void resetItemInputForm() {
@@ -745,7 +769,8 @@ public class ImportDialogController implements Initializable {
             .reduce(BigDecimal.ZERO, BigDecimal::add);
         javafx.stage.Window owner =
             btnCancel != null && btnCancel.getScene() != null ? btnCancel.getScene().getWindow() : null;
-        if (!confirmImport(owner, List.copyOf(itemList), supplier, grandTotal)) {
+        final List<BatchImportItemDTO> importedItems = List.copyOf(itemList);
+        if (!confirmImport(owner, importedItems, supplier, grandTotal)) {
             return;
         }
 
@@ -766,6 +791,8 @@ public class ImportDialogController implements Initializable {
 
             boolean success = Boolean.TRUE.equals(importTask.getValue());
             if (success) {
+                showImportResult(owner, importedItems);
+
                 if (onSuccessCallback != null) {
                     onSuccessCallback.run();
                 }
