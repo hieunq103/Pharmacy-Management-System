@@ -12,7 +12,7 @@
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.shape.SVGPath?>
 
-<VBox prefHeight="650.0" prefWidth="1240.0" spacing="14.0"
+<VBox prefHeight="650.0" prefWidth="1400.0" spacing="14.0"
       styleClass="lot-dialog-root"
       stylesheets="@../../css/inventory.css, @../../css/inventory_history.css, @../../css/sales.css, @../../css/icon_buttons.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
@@ -89,11 +89,11 @@
         <TableView fx:id="tableDetails" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, history-detail-table, table-scrollable-data">
             <columns>
                 <TableColumn fx:id="colIndex" minWidth="56.0" prefWidth="60.0" text="STT" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colMedCode" minWidth="96.0" prefWidth="105.0" text="Mã thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colMedName" minWidth="150.0" prefWidth="230.0" text="Tên thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colCategory" minWidth="180.0" prefWidth="270.0" text="Nhóm thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colLotNumber" minWidth="105.0" prefWidth="115.0" text="Số lô xuất" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colExpiryDate" minWidth="115.0" prefWidth="120.0" text="Hạn dùng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colMedCode" minWidth="90.0" prefWidth="100.0" text="Mã thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colMedName" minWidth="150.0" prefWidth="210.0" text="Tên thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colCategory" minWidth="300.0" prefWidth="340.0" text="Nhóm thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colLotNumber" minWidth="170.0" prefWidth="190.0" text="Số lô xuất" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colExpiryDate" minWidth="112.0" prefWidth="118.0" text="Hạn dùng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
                 <TableColumn fx:id="colUnit" minWidth="80.0" prefWidth="85.0" text="Đơn vị" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
                 <TableColumn fx:id="colQuantity" minWidth="100.0" prefWidth="105.0" text="Số lượng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
                 <TableColumn fx:id="colUnitPrice" minWidth="110.0" prefWidth="115.0" text="Đơn giá" style="-fx-alignment: CENTER_LEFT;" sortable="false" />

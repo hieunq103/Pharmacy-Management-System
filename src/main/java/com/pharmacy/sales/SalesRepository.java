@@ -409,14 +409,10 @@ public class SalesRepository {
         int validSize = Math.max(1, size);
 
         try (Session session = HibernateUtil.openReadOnlySession()) {
-            // Mỗi token khớp mã đơn / SĐT khách / tên nhân viên lập / tên-mã thuốc trong đơn
+            // Mỗi token khớp mã đơn / SĐT khách / tên thu ngân (nhân viên lập đơn); kết hợp (AND) với khoảng ngày/tháng
             SearchFilter search = SearchFilter.of(keyword, "kw")
                 .contains("so.code", "so.customerPhone")
-                .custom("so.employee.id IN (SELECT eS.id FROM Employee eS WHERE eS.fullName LIKE {p} ESCAPE '!')")
-                .custom(
-                    "EXISTS (SELECT 1 FROM SalesOrderItem soiS JOIN soiS.medicine mS WHERE soiS.salesOrder.id = so.id" +
-                        " AND (mS.name LIKE {p} ESCAPE '!' OR mS.code LIKE {p} ESCAPE '!'))"
-                );
+                .custom("so.employee.id IN (SELECT eS.id FROM Employee eS WHERE eS.fullName LIKE {p} ESCAPE '!')");
 
             StringBuilder where = new StringBuilder(" WHERE so.createdAt >= :fromTs AND so.createdAt < :toTs ");
             if (employeeId != null) where.append(" AND so.employee.id = :empId ");

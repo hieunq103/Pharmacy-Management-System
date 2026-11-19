@@ -71,12 +71,19 @@ public final class SearchFilter {
     }
 
     public void bind(SelectionQuery<?> query) {
+        boolean usesPrefix = !prefixFields.isEmpty();
+        boolean usesContains = !containsFields.isEmpty() || !customTemplates.isEmpty();
         for (int i = 0; i < tokens.size(); i++) {
             String escaped = escape(tokens.get(i));
-            // Token toàn chữ số (vd. "003" trong MED003) là phần đuôi của mã → phải khớp chứa, không chỉ tiền tố
-            boolean digitsOnly = tokens.get(i).chars().allMatch(Character::isDigit);
-            query.setParameter(param + i + "p", digitsOnly ? "%" + escaped + "%" : escaped + "%");
-            query.setParameter(param + i + "c", "%" + escaped + "%");
+            // Chỉ gán tham số thực sự có trong câu HQL (gán thừa sẽ ném IllegalArgumentException)
+            if (usesPrefix) {
+                // Token toàn chữ số (vd. "003" trong MED003) là phần đuôi của mã → phải khớp chứa, không chỉ tiền tố
+                boolean digitsOnly = tokens.get(i).chars().allMatch(Character::isDigit);
+                query.setParameter(param + i + "p", digitsOnly ? "%" + escaped + "%" : escaped + "%");
+            }
+            if (usesContains) {
+                query.setParameter(param + i + "c", "%" + escaped + "%");
+            }
         }
     }
 
