@@ -32,7 +32,7 @@ public final class LoadingOverlay {
         spinner.setMaxSize(48, 48);
         spinner.setStyle("-fx-progress-color: #0066ff;");
         Label text = new Label("Đang tải...");
-        text.setStyle("-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 14px; -fx-text-fill: #475569;");
+        text.setStyle("-fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 14px; -fx-text-fill: #475569;");
         box.setAlignment(Pos.CENTER);
         box.setStyle("-fx-background-color: rgba(248, 250, 252, 0.72);");
         box.getChildren().addAll(spinner, text);

@@ -19,10 +19,10 @@ import javafx.util.Duration;
 public final class NewAccountDialog {
 
     private static final String FIELD_STYLE =
-        "-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 15px; -fx-text-fill: #0F172A; " +
+        "-fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 15px; -fx-text-fill: #0F172A; " +
         "-fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 6 10;";
     private static final String COPY_STYLE =
-        "-fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt SemiBold'; " +
+        "-fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt Bold'; " +
         "-fx-border-color: #BFDBFE; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 6 14; -fx-cursor: hand;";
 
     private NewAccountDialog() {}

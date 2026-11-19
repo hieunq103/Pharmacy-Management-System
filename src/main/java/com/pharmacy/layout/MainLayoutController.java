@@ -441,7 +441,7 @@ public class MainLayoutController {
         spinner.setPrefSize(54, 54);
         spinner.setStyle("-fx-progress-color: #0066FF;");
         Label label = new Label(text);
-        label.setStyle("-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 14px; -fx-text-fill: #475569;");
+        label.setStyle("-fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 14px; -fx-text-fill: #475569;");
         javafx.scene.layout.VBox box = new javafx.scene.layout.VBox(12, spinner, label);
         box.setAlignment(javafx.geometry.Pos.CENTER);
         return box;

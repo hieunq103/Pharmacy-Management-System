@@ -47,7 +47,7 @@ public class TogglePasswordField extends HBox {
         passwordField.textProperty().bindBidirectional(textField.textProperty());
 
         String inputStyle =
-            "-fx-font-family: 'Inter 18pt'; -fx-background-color: transparent; -fx-text-fill: #0f172a; -fx-prompt-text-fill: #94a3b8; -fx-font-size: 15px;";
+            "-fx-font-family: 'Inter 18pt Medium'; -fx-background-color: transparent; -fx-text-fill: #0f172a; -fx-prompt-text-fill: #94a3b8; -fx-font-size: 15px;";
         passwordField.setStyle(inputStyle);
         textField.setStyle(inputStyle);
 

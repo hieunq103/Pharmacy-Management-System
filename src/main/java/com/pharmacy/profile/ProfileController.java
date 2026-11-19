@@ -340,7 +340,7 @@ public class ProfileController {
                     "-fx-text-fill: #DC2626; " +
                     "-fx-padding: 8 12; " +
                     "-fx-background-radius: 6; " +
-                    "-fx-font-family: 'Inter 18pt SemiBold'; " +
+                    "-fx-font-family: 'Inter 18pt Bold'; " +
                     "-fx-font-size: 13.5px;"
             );
             case SUCCESS -> {
@@ -349,7 +349,7 @@ public class ProfileController {
                         "-fx-text-fill: #16A34A; " +
                         "-fx-padding: 8 12; " +
                         "-fx-background-radius: 6; " +
-                        "-fx-font-family: 'Inter 18pt SemiBold'; " +
+                        "-fx-font-family: 'Inter 18pt Bold'; " +
                         "-fx-font-size: 13.5px;"
                 );
                 statusTimer = new PauseTransition(Duration.seconds(3));
@@ -362,7 +362,7 @@ public class ProfileController {
                         "-fx-text-fill: #2563EB; " +
                         "-fx-padding: 8 12; " +
                         "-fx-background-radius: 6; " +
-                        "-fx-font-family: 'Inter 18pt SemiBold'; " +
+                        "-fx-font-family: 'Inter 18pt Bold'; " +
                         "-fx-font-size: 13.5px;"
                 );
                 statusTimer = new PauseTransition(Duration.seconds(3));

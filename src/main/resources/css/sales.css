@@ -25,7 +25,7 @@
 
 .search-input-field {
     -fx-background-color: transparent;
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13px;
     -fx-text-fill: #0f172a;
     -fx-prompt-text-fill: #94a3b8;
@@ -52,7 +52,7 @@
 }
 
 .sales-category-combo .list-cell {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13px;
     -fx-text-fill: #0f172a;
     -fx-padding: 4 8;
@@ -88,7 +88,7 @@
 }
 
 .card-title {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-text-fill: #0f172a;
 }
@@ -96,7 +96,7 @@
 .card-badge-prescription {
     -fx-background-color: #feeceb;
     -fx-background-radius: 12px;
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 12px;
     -fx-text-fill: #d9483b;
     -fx-padding: 2 8;
@@ -113,7 +113,7 @@
     -fx-border-width: 1px;
     -fx-border-radius: 10px;
     -fx-background-radius: 10px;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 12px;
     -fx-text-fill: #0066ff;
     -fx-padding: 2 7;
@@ -125,7 +125,7 @@
 }
 
 .card-unit {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13px;
     -fx-text-fill: #64748b;
 }
@@ -143,13 +143,13 @@
 }
 
 .card-price {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 15px;
     -fx-text-fill: #0066ff;
 }
 
 .card-stock {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13px;
     -fx-text-fill: #64748b;
 }
@@ -167,7 +167,7 @@
 .btn-clear-cart {
     -fx-background-color: transparent;
     -fx-text-fill: #64748b;
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13px;
     -fx-cursor: hand;
 }
@@ -190,7 +190,7 @@
 }
 
 .cart-empty-title {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 15px;
     -fx-text-fill: #334155;
 }
@@ -220,19 +220,19 @@
 }
 
 .cart-item-name {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-text-fill: #0f172a;
 }
 
 .cart-item-unit-price {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13px;
     -fx-text-fill: #64748b;
 }
 
 .cart-item-total {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-text-fill: #0f172a;
 }
@@ -245,7 +245,7 @@
     -fx-border-radius: 4px;
     -fx-border-width: 1px;
     -fx-font-size: 13px;
-    -fx-font-weight: bold;
+    -fx-font-family: "Inter 18pt Bold";
     -fx-text-fill: #334155;
     -fx-padding: 0;
     -fx-min-width: 26px;
@@ -267,7 +267,7 @@
     -fx-border-color: #cbd5e1;
     -fx-border-radius: 4px;
     -fx-border-width: 1px;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-text-fill: #0f172a;
     -fx-alignment: CENTER;
@@ -313,13 +313,13 @@
 }
 
 .dialog-cart-name {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-text-fill: #1e293b;
 }
 
 .dialog-cart-unit {
-    -fx-font-family: "Inter 18pt Regular";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 12px;
     -fx-text-fill: #64748b;
 }
@@ -369,7 +369,7 @@
 }
 
 .expand-icon {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-text-fill: #0066ff;
 }
@@ -381,7 +381,7 @@
 }
 
 .extra-field-name {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13px;
     -fx-text-fill: #64748b;
     -fx-min-width: 85px;
@@ -415,13 +415,13 @@
 }
 
 .cart-summary-title {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 15px;
     -fx-text-fill: #64748b;
 }
 
 .cart-summary-val {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 15px;
     -fx-text-fill: #1e293b;
 }
@@ -442,7 +442,7 @@
 }
 
 .cart-total-label {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 15px;
     -fx-text-fill: #1e293b;
 }
@@ -457,7 +457,7 @@
     -fx-background-color: #0066ff;
     -fx-background-radius: 8px;
     -fx-text-fill: #ffffff;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 16px;
     -fx-cursor: hand;
     -fx-border-width: 0;
@@ -497,19 +497,19 @@
 }
 
 .payment-summary-label {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13px;
     -fx-text-fill: #64748b;
 }
 
 .payment-summary-value {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-text-fill: #0f172a;
 }
 
 .payment-summary-discount {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-text-fill: #dc2626;
 }
@@ -522,7 +522,7 @@
 }
 
 .payment-header-sub {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13.5px;
     -fx-text-fill: #1e293b;
 }
@@ -549,7 +549,7 @@
 }
 
 .prescription-warning-title-compact {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 12px;
     -fx-text-fill: #92400e;
 }
@@ -574,7 +574,7 @@
     -fx-border-color: #cbd5e1;
     -fx-border-radius: 8px;
     -fx-border-width: 1.5px;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-text-fill: #64748b;
     -fx-cursor: hand;
@@ -623,7 +623,7 @@
     -fx-background-color: transparent;
     -fx-background-radius: 4px;
     -fx-border-width: 0;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-text-fill: #64748b;
     -fx-min-width: 28px;
@@ -664,7 +664,7 @@
 }
 
 .cash-entry-label {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-text-fill: #1e293b;
 }
@@ -696,7 +696,7 @@
 }
 
 .change-card-title-compact {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-text-fill: #854d0e;
 }
@@ -709,7 +709,7 @@
 
 /* THÔNG TIN CHUYỂN KHOẢN */
 .transfer-info-title {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-text-fill: #1e293b;
 }
@@ -725,7 +725,7 @@
 }
 
 .qr-scan-hint {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 12px;
     -fx-text-fill: #64748b;
     -fx-font-style: italic;
@@ -747,7 +747,7 @@
 }
 
 .qr-success-text {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 15px;
     -fx-text-fill: #16a34a;
 }
@@ -762,7 +762,7 @@
 }
 
 .transfer-field-name {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13.5px;
     -fx-text-fill: #64748b;
     -fx-min-width: 105px;
@@ -804,7 +804,7 @@
     -fx-background-color: #0066ff;
     -fx-background-radius: 8px;
     -fx-border-width: 0;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-text-fill: #ffffff;
     -fx-cursor: hand;
@@ -856,17 +856,12 @@
     -fx-pref-height: 36px;
     -fx-max-height: 36px;
     -fx-border-width: 1.5px;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-text-fill: #475569;
     -fx-alignment: CENTER;
     -fx-cursor: hand;
     -fx-padding: 0;
-}
-
-.page-btn:hover {
-    -fx-background-color: #f8fafc;
-    -fx-border-color: #cbd5e1;
 }
 
 .page-btn-active {
@@ -877,7 +872,7 @@
 }
 
 .page-dots {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-text-fill: #64748b;
     -fx-min-width: 24px;
@@ -890,7 +885,7 @@
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-padding: 0 14;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-text-fill: #475569;
     -fx-border-width: 1.5px;

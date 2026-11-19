@@ -156,12 +156,12 @@ public class ExportDialogController implements Initializable {
         if (btnSelectAnotherLot != null) {
             btnSelectAnotherLot.setOnMouseEntered(ev ->
                 btnSelectAnotherLot.setStyle(
-                    "-fx-background-color: #DBEAFE; -fx-text-fill: #1E40AF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 12px; -fx-padding: 7 14; -fx-border-color: #93C5FD; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-cursor: hand;"
+                    "-fx-background-color: #DBEAFE; -fx-text-fill: #1E40AF; -fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 12px; -fx-padding: 7 14; -fx-border-color: #93C5FD; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-cursor: hand;"
                 )
             );
             btnSelectAnotherLot.setOnMouseExited(ev ->
                 btnSelectAnotherLot.setStyle(
-                    "-fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 12px; -fx-padding: 7 14; -fx-border-color: #BFDBFE; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-cursor: hand;"
+                    "-fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 12px; -fx-padding: 7 14; -fx-border-color: #BFDBFE; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-cursor: hand;"
                 )
             );
         }
@@ -241,7 +241,7 @@ public class ExportDialogController implements Initializable {
             txtReason.setPromptText("-- Nhập hoặc chọn gợi ý lý do --");
             txtReason.getStyleClass().add("form-input");
             txtReason.setStyle(
-                "-fx-padding: 7 26 7 10; -fx-font-size: 13px; -fx-font-family: 'Inter 18pt'; -fx-text-fill: #0F172A;"
+                "-fx-padding: 7 26 7 10; -fx-font-size: 13px; -fx-font-family: 'Inter 18pt Medium'; -fx-text-fill: #0F172A;"
             );
             txtReason.setMaxWidth(Double.MAX_VALUE);
 
@@ -316,7 +316,7 @@ public class ExportDialogController implements Initializable {
 
             btnRemoveRow = new Button("✕");
             btnRemoveRow.setStyle(
-                "-fx-background-color: #FEE2E2; -fx-text-fill: #DC2626; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px; -fx-padding: 6 10; -fx-background-radius: 6px; -fx-cursor: hand;"
+                "-fx-background-color: #FEE2E2; -fx-text-fill: #DC2626; -fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 13px; -fx-padding: 6 10; -fx-background-radius: 6px; -fx-cursor: hand;"
             );
             btnRemoveRow.setTooltip(new Tooltip("Xóa dòng lô này"));
             btnRemoveRow.setOnAction(e -> removeLotRow(this));
@@ -657,7 +657,7 @@ public class ExportDialogController implements Initializable {
                     } else {
                         Label lbl = new Label(item);
                         lbl.setStyle(
-                            "-fx-font-size: 11px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-background-radius: 4px; -fx-padding: 2 6;"
+                            "-fx-font-size: 11px; -fx-font-family: 'Inter 18pt Bold'; -fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-background-radius: 4px; -fx-padding: 2 6;"
                         );
                         setGraphic(lbl);
                         setText(null);
@@ -681,7 +681,7 @@ public class ExportDialogController implements Initializable {
                         setText(null);
                     } else {
                         setText(item);
-                        setStyle("-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #1E293B;");
+                        setStyle("-fx-font-family: 'Inter 18pt Bold'; -fx-text-fill: #1E293B;");
                         setAlignment(Pos.CENTER_LEFT);
                     }
                 }
@@ -707,7 +707,7 @@ public class ExportDialogController implements Initializable {
                     } else {
                         setText(String.valueOf(item));
                         setStyle(
-                            "-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #DC2626; -fx-alignment: CENTER_LEFT;"
+                            "-fx-font-family: 'Inter 18pt Bold'; -fx-text-fill: #DC2626; -fx-alignment: CENTER_LEFT;"
                         );
                         setAlignment(Pos.CENTER_LEFT);
                     }
@@ -725,16 +725,16 @@ public class ExportDialogController implements Initializable {
 
                 {
                     btnDelete.setStyle(
-                        "-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;"
+                        "-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt Bold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;"
                     );
                     btnDelete.setOnMouseEntered(ev ->
                         btnDelete.setStyle(
-                            "-fx-background-color: #FCA5A5; -fx-text-fill: #991B1B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #F87171; -fx-border-radius: 4px; -fx-background-radius: 4px;"
+                            "-fx-background-color: #FCA5A5; -fx-text-fill: #991B1B; -fx-font-family: 'Inter 18pt Bold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #F87171; -fx-border-radius: 4px; -fx-background-radius: 4px;"
                         )
                     );
                     btnDelete.setOnMouseExited(ev ->
                         btnDelete.setStyle(
-                            "-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;"
+                            "-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt Bold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;"
                         )
                     );
                     btnDelete.setTooltip(new Tooltip("Xóa mặt hàng này khỏi phiếu xuất"));

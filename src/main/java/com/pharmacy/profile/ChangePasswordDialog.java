@@ -103,7 +103,7 @@ public class ChangePasswordDialog extends Dialog<ButtonType> {
 
     private VBox createFieldBox(String labelText, TogglePasswordField field) {
         Label label = new Label(labelText);
-        label.setStyle("-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px; -fx-text-fill: #334155;");
+        label.setStyle("-fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 13px; -fx-text-fill: #334155;");
         return new VBox(6, label, field);
     }
 
@@ -115,7 +115,7 @@ public class ChangePasswordDialog extends Dialog<ButtonType> {
         btnCancel.setText("Hủy");
 
         String btnBase =
-            "-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 14px; -fx-pref-height: 38px; -fx-min-height: 38px; -fx-background-radius: 6; -fx-cursor: hand; ";
+            "-fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 14px; -fx-pref-height: 38px; -fx-min-height: 38px; -fx-background-radius: 6; -fx-cursor: hand; ";
 
         String btnSuccessStyle =
             btnBase + "-fx-background-color: #16A34A !important; -fx-text-fill: white !important; -fx-padding: 0 20;";
@@ -223,7 +223,7 @@ public class ChangePasswordDialog extends Dialog<ButtonType> {
 
     private void showError(String message) {
         lblDialogStatus.setText(message);
-        lblDialogStatus.setStyle("-fx-text-fill: #ef4444; -fx-font-family: 'Inter 18pt'; -fx-font-size: 13px;");
+        lblDialogStatus.setStyle("-fx-text-fill: #ef4444; -fx-font-family: 'Inter 18pt Medium'; -fx-font-size: 13px;");
         lblDialogStatus.setVisible(true);
         lblDialogStatus.setManaged(true);
     }

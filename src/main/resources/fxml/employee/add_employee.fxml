@@ -14,7 +14,7 @@
 
     <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 20 24; -fx-border-color: #E2E8F0; -fx-border-width: 0 0 1 0; -fx-background-color: #FFFFFF;">
         <VBox spacing="2">
-            <Label text="Thêm nhân viên mới" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 18px; -fx-text-fill: #1E293B;"/>
+            <Label text="Thêm nhân viên mới" style="-fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 18px; -fx-text-fill: #1E293B;"/>
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
         <Button text="✕" onAction="#handleCancel" styleClass="btn-close-drawer"/>
@@ -26,7 +26,7 @@
 
             <VBox spacing="6">
                 <Label text="Mã nhân viên" styleClass="form-label"/>
-                <TextField fx:id="txtEmployeeCode" editable="false" focusTraversable="false" mouseTransparent="true" text="Tự động cấp" styleClass="form-input" style="-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-font-family: 'Inter 18pt SemiBold';"/>
+                <TextField fx:id="txtEmployeeCode" editable="false" focusTraversable="false" mouseTransparent="true" text="Tự động cấp" styleClass="form-input" style="-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-font-family: 'Inter 18pt Bold';"/>
             </VBox>
 
             <VBox spacing="6">

@@ -16,7 +16,7 @@
 
 <VBox prefWidth="720.0" spacing="6.0"
       styleClass="payment-dialog-root"
-      stylesheets="@../../css/sales.css, @../../css/icon_buttons.css"
+      stylesheets="@../../css/common.css, @../../css/sales.css, @../../css/icon_buttons.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.pharmacy.sales.PaymentDialogController">
 
@@ -25,7 +25,7 @@
     </padding>
 
     <HBox alignment="CENTER_LEFT">
-        <Label fx:id="lblDialogOrderCode" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px; -fx-text-fill: #475569;" text="Mã hóa đơn: HDB..." />
+        <Label fx:id="lblDialogOrderCode" style="-fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 13px; -fx-text-fill: #475569;" text="Mã hóa đơn: HDB..." />
     </HBox>
 
     <VBox spacing="3.0">

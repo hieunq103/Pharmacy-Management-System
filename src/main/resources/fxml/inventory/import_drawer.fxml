@@ -25,12 +25,12 @@
       prefWidth="1040.0"
       maxWidth="1080.0"
       style="-fx-background-color: #FFFFFF; -fx-background: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 0 0 0 1px; -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 25, 0, -6, 0);"
-      stylesheets="@../../css/add_employee.css, @../../css/inventory.css"
+      stylesheets="@../../css/common.css, @../../css/add_employee.css, @../../css/inventory.css"
       styleClass="drawer-panel">
 
     <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 16 24; -fx-border-color: #E2E8F0; -fx-border-width: 0 0 1 0; -fx-background-color: #FFFFFF;">
         <VBox spacing="2">
-            <Label text="Lập Phiếu Nhập Kho Dược Phẩm" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 18px; -fx-text-fill: #1E293B;"/>
+            <Label text="Lập Phiếu Nhập Kho Dược Phẩm" style="-fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 18px; -fx-text-fill: #1E293B;"/>
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
     </HBox>
@@ -85,15 +85,15 @@
                           visible="false" managed="false">
                         <HBox alignment="CENTER_LEFT" spacing="6">
                             <Label text="Thuốc:" style="-fx-text-fill: #64748B; -fx-font-size: 12.5px;"/>
-                            <Label fx:id="lblSelectedMedName" text="—" style="-fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px;"/>
+                            <Label fx:id="lblSelectedMedName" text="—" style="-fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 13px;"/>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="6">
                             <Label text="Nhóm:" style="-fx-text-fill: #64748B; -fx-font-size: 12.5px;"/>
-                            <Label fx:id="lblSelectedCategory" text="—" style="-fx-text-fill: #0F172A; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 12.5px;"/>
+                            <Label fx:id="lblSelectedCategory" text="—" style="-fx-text-fill: #0F172A; -fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 12.5px;"/>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" spacing="6">
                             <Label text="Tồn hiện tại:" style="-fx-text-fill: #64748B; -fx-font-size: 12.5px;"/>
-                            <Label fx:id="lblSelectedStock" text="0" style="-fx-text-fill: #059669; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px;"/>
+                            <Label fx:id="lblSelectedStock" text="0" style="-fx-text-fill: #059669; -fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 13px;"/>
                         </HBox>
                     </HBox>
                 </VBox>
@@ -101,7 +101,7 @@
                 <VBox fx:id="boxNewMedicine" spacing="10"
                       style="-fx-background-color: #FEFCE8; -fx-border-color: #FEF08A; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 12 14;"
                       visible="false" managed="false">
-                    <Label text="★ KHAI BÁO THÔNG TIN THUỐC MỚI VÀO DANH MỤC" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 12.5px; -fx-text-fill: #854D0E;"/>
+                    <Label text="★ KHAI BÁO THÔNG TIN THUỐC MỚI VÀO DANH MỤC" style="-fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 12.5px; -fx-text-fill: #854D0E;"/>
 
                     <GridPane hgap="14" vgap="8">
                         <columnConstraints>
@@ -178,7 +178,7 @@
                     <Label fx:id="lblItemError" text="" styleClass="form-error-msg" visible="false" managed="false"/>
                     <Region HBox.hgrow="ALWAYS"/>
                     <Button text="+ Thêm vào phiếu nhập" onAction="#handleAddItemToList"
-                            style="-fx-background-color: #0066FF; -fx-text-fill: #FFFFFF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px; -fx-background-radius: 6px; -fx-padding: 8 20; -fx-cursor: hand;"/>
+                            style="-fx-background-color: #0066FF; -fx-text-fill: #FFFFFF; -fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 13px; -fx-background-radius: 6px; -fx-padding: 8 20; -fx-cursor: hand;"/>
                 </HBox>
             </VBox>
 
@@ -186,7 +186,7 @@
                 <HBox alignment="CENTER_LEFT" spacing="8">
                     <Label text="3. Danh sách mặt hàng đã thêm vào phiếu" styleClass="form-label" style="-fx-font-size: 14px; -fx-text-fill: #0F172A;"/>
                     <Label fx:id="lblItemCountBadge" text="0 mặt hàng"
-                           style="-fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 11.5px; -fx-padding: 2 8; -fx-background-radius: 10px;"/>
+                           style="-fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 11.5px; -fx-padding: 2 8; -fx-background-radius: 10px;"/>
                     <Region HBox.hgrow="ALWAYS"/>
                     <Button text="Xóa tất cả" onAction="#handleClearAllItems"
                             style="-fx-background-color: transparent; -fx-text-fill: #EF4444; -fx-cursor: hand; -fx-font-size: 12px;"/>
@@ -224,11 +224,11 @@
         <VBox spacing="2">
             <HBox spacing="8" alignment="CENTER_LEFT">
                 <Label text="Tổng số lượng:" style="-fx-font-size: 13px; -fx-text-fill: #64748B;"/>
-                <Label fx:id="lblSummaryTotalQuantity" text="0 sản phẩm" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px; -fx-text-fill: #0F172A;"/>
+                <Label fx:id="lblSummaryTotalQuantity" text="0 sản phẩm" style="-fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 13px; -fx-text-fill: #0F172A;"/>
             </HBox>
             <HBox spacing="8" alignment="CENTER_LEFT">
-                <Label text="Tổng tiền thanh toán:" style="-fx-font-size: 14px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #1E293B;"/>
-                <Label fx:id="lblGrandTotal" text="0 đ" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 18px; -fx-text-fill: #0066FF;"/>
+                <Label text="Tổng tiền thanh toán:" style="-fx-font-size: 14px; -fx-font-family: 'Inter 18pt Bold'; -fx-text-fill: #1E293B;"/>
+                <Label fx:id="lblGrandTotal" text="0 đ" style="-fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 18px; -fx-text-fill: #0066FF;"/>
             </HBox>
         </VBox>
 
@@ -236,7 +236,7 @@
 
         <Button fx:id="btnCancel" text="Hủy" onAction="#handleCancel" styleClass="btn-secondary"/>
         <Button fx:id="btnConfirmImport" text="Xác nhận Nhập Kho" onAction="#handleConfirmImport" styleClass="btn-primary-add"
-                style="-fx-background-color: #0066FF; -fx-text-fill: white; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 8px; -fx-cursor: hand;"/>
+                style="-fx-background-color: #0066FF; -fx-text-fill: white; -fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 14px; -fx-padding: 10 24; -fx-background-radius: 8px; -fx-cursor: hand;"/>
     </HBox>
 
 </VBox>

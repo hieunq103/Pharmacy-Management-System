@@ -55,8 +55,8 @@ public class PharmacyApplication {
 
         @Override
         public void start(Stage primaryStage) {
-            loadFont("/fonts/Inter_18pt-Regular.ttf");
-            loadFont("/fonts/Inter_18pt-SemiBold.ttf");
+            loadFont("/fonts/Inter_18pt-Medium.ttf");
+            loadFont("/fonts/Inter_18pt-Bold.ttf");
 
             com.pharmacy.infra.MemoryMonitor.start();
             DatabaseHealthChecker.startMonitoring(

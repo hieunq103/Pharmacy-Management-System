@@ -3,13 +3,13 @@
    ========================================================================== */
 
 .history-main-title {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 19px;
     -fx-text-fill: #0f172a;
 }
 
 .history-sub-title {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13px;
     -fx-text-fill: #64748b;
 }
@@ -145,7 +145,7 @@
 }
 
 .custom-history-tabpane .tab .tab-label {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-text-fill: #64748b;
 }
@@ -169,11 +169,11 @@
 .history-master-table .table-row-cell:selected .text,
 .history-detail-table .table-row-cell:selected .text {
     -fx-fill: #0040a8 !important;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
 }
 
 .code-pill {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 12px;
     -fx-text-fill: #0066ff;
     -fx-background-color: #eff6ff;

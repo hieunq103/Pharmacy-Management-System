@@ -3,13 +3,13 @@
    ========================================================================== */
 
 .root {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 14px;
 }
 
 .stat-label-primary,
 .stat-label-secondary {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 18px;
 }
 
@@ -18,13 +18,6 @@
    ========================================================================== */
 
 /* Khung bao viền ngoài cùng bo tròn góc chứa cả 2 bảng */
-.table-float-container {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #cbd5e1;
-    -fx-border-width: 1px;
-    -fx-border-radius: 10px;
-    -fx-background-radius: 10px;
-}
 
 .custom-employee-table {
     -fx-background-color: transparent;
@@ -35,12 +28,6 @@
 .custom-employee-table .virtual-flow,
 .custom-employee-table .placeholder {
     -fx-background-color: transparent;
-}
-
-/* Bảng dữ liệu chính */
-.table-scrollable-data {
-    -fx-border-width: 0;
-    -fx-background-insets: 0;
 }
 
 /* Cột Thao tác ghim cố định bên phải */
@@ -72,7 +59,7 @@
 }
 
 .custom-employee-table .column-header .label {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 15px;
     -fx-text-fill: #334155;
     -fx-alignment: CENTER_LEFT;
@@ -137,7 +124,7 @@
 }
 
 .custom-employee-table .table-cell {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 14.5px;
     -fx-text-fill: #1e293b;
     -fx-alignment: CENTER_LEFT;
@@ -152,28 +139,12 @@
    ========================================================================== */
 
 /* Nút 3 chấm cột thao tác */
-.btn-action-more {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #cbd5e1;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
-    -fx-padding: 4 10;
-    -fx-cursor: hand;
-    -fx-text-fill: #475569;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 15px;
-}
-
-.btn-action-more:hover {
-    -fx-background-color: #f1f5f9;
-    -fx-border-color: #94a3b8;
-}
 
 /* Nút Thêm nhân viên */
 .btn-primary-add {
     -fx-background-color: #0066ff;
     -fx-text-fill: #ffffff;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-background-radius: 10px;
     -fx-border-radius: 10px;
@@ -189,28 +160,6 @@
 
 .btn-primary-add:pressed {
     -fx-background-color: #0040a8;
-}
-
-/* Ô nhập liệu tìm kiếm */
-.search-input {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #cbd5e1;
-    -fx-border-width: 1px;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
-    -fx-padding: 8 14;
-    -fx-font-size: 13px;
-    -fx-text-fill: #1e293b;
-    -fx-prompt-text-fill: #94a3b8;
-}
-
-.search-input:hover {
-    -fx-border-color: #94a3b8;
-}
-
-.search-input:focused {
-    -fx-border-color: #2563eb;
-    -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.15), 4, 0, 0, 0);
 }
 
 /* Badge trạng thái tài khoản */
@@ -303,17 +252,12 @@
     -fx-pref-height: 38px;
     -fx-max-height: 38px;
     -fx-border-width: 1.5px;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-text-fill: #475569;
     -fx-alignment: CENTER;
     -fx-cursor: hand;
     -fx-padding: 0;
-}
-
-.page-btn:hover {
-    -fx-background-color: #f8fafc;
-    -fx-border-color: #cbd5e1;
 }
 
 .page-btn-active {
@@ -324,7 +268,7 @@
 }
 
 .page-dots {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-text-fill: #64748b;
     -fx-min-width: 28px;
@@ -337,7 +281,7 @@
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-padding: 0 16;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-text-fill: #475569;
 }
@@ -352,41 +296,6 @@
     -fx-opacity: 0;
     -fx-pref-width: 0;
     -fx-max-width: 0;
-    -fx-padding: 0;
-}
-
-/* Thanh cuộn dọc ở cột Thao tác (ngoài cùng bên phải) mỏng, thanh lịch */
-.sticky-action-col .scroll-bar:vertical {
-    -fx-background-color: transparent;
-    -fx-pref-width: 7px;
-    -fx-max-width: 7px;
-    -fx-padding: 0;
-    -fx-opacity: 1;
-}
-
-.sticky-action-col .scroll-bar:vertical .thumb {
-    -fx-background-color: #cbd5e1;
-    -fx-background-radius: 4px;
-}
-
-.sticky-action-col .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: #94a3b8;
-}
-
-.sticky-action-col .scroll-bar:vertical .track,
-.sticky-action-col .scroll-bar:vertical .increment-button,
-.sticky-action-col .scroll-bar:vertical .decrement-button {
-    -fx-background-color: transparent;
-    -fx-pref-width: 0;
-    -fx-pref-height: 0;
-    -fx-opacity: 0;
-}
-
-/* Ẩn hoàn toàn thanh cuộn ngang ở cột thao tác */
-.sticky-action-col .scroll-bar:horizontal {
-    -fx-opacity: 0;
-    -fx-pref-height: 0;
-    -fx-max-height: 0;
     -fx-padding: 0;
 }
 
@@ -430,7 +339,7 @@
     -fx-cursor: hand;
     -fx-text-fill: #94a3b8;
     -fx-font-size: 21px;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-alignment: CENTER;
 }
 
@@ -444,85 +353,15 @@
     -fx-text-fill: #0066ff;
 }
 
-.filter-context-menu {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 8px;
-    -fx-border-color: #cbd5e1;
-    -fx-border-radius: 8px;
-    -fx-padding: 4px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
-}
-
-.filter-context-menu .custom-filter-menu-item {
-    -fx-padding: 0;
-    -fx-background-color: transparent;
-}
-
-.filter-context-menu .custom-filter-menu-item:focused,
-.filter-context-menu .custom-filter-menu-item:hover {
-    -fx-background-color: transparent;
-}
-
-.filter-item-label {
-    -fx-font-family: "Inter 18pt";
-    -fx-font-size: 13.5px;
-    -fx-text-fill: #334155;
-    -fx-padding: 7 14;
-    -fx-background-radius: 6px;
-    -fx-background-color: transparent;
-    -fx-min-width: 210px;
-    -fx-pref-width: 210px;
-    -fx-alignment: CENTER_LEFT;
-    -fx-cursor: hand;
-}
-
-.filter-context-menu .custom-filter-menu-item:hover .filter-item-label {
-    -fx-background-color: #f8fafc;
-}
-
 .filter-item-label.filter-item-active {
     -fx-background-color: #eff6ff;
     -fx-text-fill: #0066ff;
-    -fx-font-family: "Inter 18pt SemiBold";
-}
-
-/* Ô tích của bộ lọc đa chọn (Giới tính, Vai trò, Tài khoản) — giống bộ lọc ở trang Kho thuốc */
-.filter-checkbox {
-    -fx-font-family: "Inter 18pt";
-    -fx-font-size: 13.5px;
-    -fx-text-fill: #334155;
-    -fx-cursor: hand;
-}
-
-.filter-checkbox:hover {
-    -fx-text-fill: #0f172a;
-}
-
-.filter-checkbox .box {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #cbd5e1;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
-    -fx-border-width: 1.5px;
-}
-
-.filter-checkbox:selected .box {
-    -fx-background-color: #0066ff;
-    -fx-border-color: #0066ff;
-}
-
-.filter-checkbox:selected .mark {
-    -fx-background-color: #ffffff;
+    -fx-font-family: "Inter 18pt Bold";
 }
 
 /* ==========================================================================
    DRAWER OVERLAY
    ========================================================================== */
-
-.drawer-overlay {
-    -fx-background-color: rgba(15, 23, 42, 0.45);
-    -fx-cursor: hand;
-}
 
 /* 1. Đổi màu nền của toàn bộ vùng trống trong bảng Thao tác */
 .sticky-action-col,

@@ -3,14 +3,14 @@
 .scroll-pane .text,
 .scroll-pane .text-field,
 .scroll-pane .button {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
 }
 
 /* Áp dụng chung cho cả ô nhập (form-input) và toàn bộ các nhãn chữ (label) trong form */
 .form-input,
 .scroll-pane .label,
 .form-label {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 14px;
 }
 /* Trạng thái CHỈ XEM (Read-only) */
@@ -43,7 +43,7 @@
 
 /* Cấu hình chung cho tất cả các nút: Font Inter 14px, chiều cao 38px, bo góc 6px */
 .btn-action {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-pref-height: 38px;
     -fx-min-height: 38px;
@@ -56,9 +56,6 @@
     -fx-background-color: #2563eb;
     -fx-text-fill: white;
     -fx-padding: 0 20;
-}
-.btn-primary:hover {
-    -fx-background-color: #1d4ed8;
 }
 
 /* 2. Nút "Hoàn tác" (Xám nhạt) */
@@ -80,9 +77,6 @@
     -fx-text-fill: white;
     -fx-padding: 0 20;
 }
-.btn-success:hover {
-    -fx-background-color: #15803d;
-}
 
 .scroll-pane .combo-box.form-input {
     -fx-background-color: #ffffff;
@@ -95,7 +89,7 @@
     -fx-min-height: 38px;
     -fx-max-height: 38px;
     -fx-padding: 0 4 0 8;
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 14px;
 }
 
@@ -142,7 +136,7 @@
     -fx-background-color: transparent;
     -fx-text-fill: #18181b;
     -fx-padding: 6px 12px;
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 14px;
 }
 

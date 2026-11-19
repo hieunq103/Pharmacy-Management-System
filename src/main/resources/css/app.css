@@ -24,7 +24,7 @@
 .tab-pane,
 .text,
 .scroll-pane {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
 }
 
 .root {
@@ -39,18 +39,18 @@
     -fx-text: #12201d;
     -fx-text-muted: #5c6e6a;
 
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-background-color: -fx-bg;
 }
 
 /* Chữ đậm */
 .bold {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
 }
 
 /* Định nghĩa chung cỡ chữ và kiểu dáng cho toàn bộ nút menu */
 .nav-button {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-background-radius: 8px;
     -fx-cursor: hand;
@@ -80,7 +80,7 @@
 .nav-button.active {
     -fx-background-color: #1e293b;
     -fx-text-fill: #38bdf8;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
 }
 .nav-button.active SVGPath,
 .nav-button.active .shape {

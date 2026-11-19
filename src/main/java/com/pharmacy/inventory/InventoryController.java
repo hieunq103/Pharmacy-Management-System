@@ -389,7 +389,7 @@ public class InventoryController implements Initializable {
                     setAlignment(Pos.CENTER_LEFT);
                     vbox.setAlignment(Pos.CENTER_LEFT);
                     vbox.setMaxHeight(Double.MAX_VALUE);
-                    lblName.setStyle("-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #1E293B;");
+                    lblName.setStyle("-fx-font-family: 'Inter 18pt Bold'; -fx-text-fill: #1E293B;");
                     lblPrescription.getStyleClass().add("lbl-prescription-tag");
                     txtField.getStyleClass().add("table-cell-editor");
                     txtField.setOnAction(e -> {

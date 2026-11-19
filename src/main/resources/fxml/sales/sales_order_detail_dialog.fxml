@@ -14,7 +14,7 @@
 
 <VBox prefHeight="650.0" prefWidth="1400.0" spacing="14.0"
       styleClass="lot-dialog-root"
-      stylesheets="@../../css/inventory.css, @../../css/inventory_history.css, @../../css/sales.css, @../../css/icon_buttons.css"
+      stylesheets="@../../css/common.css, @../../css/inventory.css, @../../css/inventory_history.css, @../../css/sales.css, @../../css/icon_buttons.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.pharmacy.sales.SalesOrderDetailDialogController">
 

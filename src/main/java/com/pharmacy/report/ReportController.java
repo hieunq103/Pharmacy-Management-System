@@ -317,7 +317,7 @@ public class ReportController {
         colMedRevenue.setSortable(false);
 
         Label emptyPlaceholder = new Label("Không có dữ liệu thuốc đã bán trong kỳ này");
-        emptyPlaceholder.setStyle("-fx-font-family: 'Inter 18pt'; -fx-font-size: 14px; -fx-text-fill: #64748B;");
+        emptyPlaceholder.setStyle("-fx-font-family: 'Inter 18pt Medium'; -fx-font-size: 14px; -fx-text-fill: #64748B;");
         tblSoldMedicines.setPlaceholder(emptyPlaceholder);
 
         tblSoldMedicines.setFixedCellSize(TABLE_ROW_HEIGHT);
@@ -760,7 +760,7 @@ public class ReportController {
                             : "Tháng " + targetMonth + "/" + targetYear;
                     Label emptyPlaceholder = new Label("Không có dữ liệu thuốc đã bán trong " + periodText);
                     emptyPlaceholder.setStyle(
-                        "-fx-font-family: 'Inter 18pt'; -fx-font-size: 14px; -fx-text-fill: #64748B;"
+                        "-fx-font-family: 'Inter 18pt Medium'; -fx-font-size: 14px; -fx-text-fill: #64748B;"
                     );
                     tblSoldMedicines.setPlaceholder(emptyPlaceholder);
                 }
@@ -941,7 +941,7 @@ public class ReportController {
         tooltip.setStyle(
             """
                 -fx-font-size: 13px;
-                -fx-font-family: 'Inter 18pt SemiBold', 'Inter', sans-serif;
+                -fx-font-family: 'Inter 18pt Bold', 'Inter', sans-serif;
                 -fx-background-color: #0F172A;
                 -fx-text-fill: #FFFFFF;
                 -fx-background-radius: 6px;

@@ -263,7 +263,7 @@ public class LoginController {
             lblError.setText(message);
             lblError.setVisible(true);
             lblError.setManaged(true);
-            lblError.setStyle("-fx-text-fill: #E53935; -fx-font-size: 13px; -fx-font-family: 'Inter 18pt';");
+            lblError.setStyle("-fx-text-fill: #E53935; -fx-font-size: 13px; -fx-font-family: 'Inter 18pt Medium';");
         }
     }
 
@@ -279,7 +279,7 @@ public class LoginController {
     public void onLoginHover(javafx.scene.input.MouseEvent event) {
         if (btnLogin != null && !btnLogin.isDisabled()) {
             btnLogin.setStyle(
-                "-fx-font-family: 'Inter 18pt SemiBold';" +
+                "-fx-font-family: 'Inter 18pt Bold';" +
                     "-fx-background-color: #0052B4;" +
                     "-fx-text-fill: white;" +
                     "-fx-font-size: 16px;" +
@@ -293,7 +293,7 @@ public class LoginController {
     public void onLoginHoverExit(javafx.scene.input.MouseEvent event) {
         if (btnLogin != null && !btnLogin.isDisabled()) {
             btnLogin.setStyle(
-                "-fx-font-family: 'Inter 18pt SemiBold';" +
+                "-fx-font-family: 'Inter 18pt Bold';" +
                     "-fx-background-color: #1D70E2;" +
                     "-fx-text-fill: white;" +
                     "-fx-font-size: 16px;" +

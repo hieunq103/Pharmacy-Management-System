@@ -236,7 +236,7 @@ public class MedicineLotDialogController implements Initializable {
                         setGraphic(null);
                         setAlignment(Pos.CENTER_LEFT);
                         setStyle(
-                            "-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #1E293B; -fx-alignment: CENTER_LEFT;"
+                            "-fx-font-family: 'Inter 18pt Bold'; -fx-text-fill: #1E293B; -fx-alignment: CENTER_LEFT;"
                         );
                     }
                 }
@@ -358,7 +358,7 @@ public class MedicineLotDialogController implements Initializable {
                         setGraphic(null);
                         setAlignment(Pos.CENTER_LEFT);
                         setStyle(
-                            "-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0F172A; -fx-alignment: CENTER_LEFT;"
+                            "-fx-font-family: 'Inter 18pt Bold'; -fx-text-fill: #0F172A; -fx-alignment: CENTER_LEFT;"
                         );
                     }
                 }

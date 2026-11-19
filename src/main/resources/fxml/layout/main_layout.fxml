@@ -39,13 +39,13 @@
 
                 <TextFlow>
                     <Text text="Pharma"
-                          style="-fx-fill: #FFFFFF; -fx-font-size: 20px; -fx-font-family: 'Inter 18pt SemiBold';" />
+                          style="-fx-fill: #FFFFFF; -fx-font-size: 20px; -fx-font-family: 'Inter 18pt Bold';" />
                     <Text text="OS"
-                          style="-fx-fill: #38BDF8; -fx-font-size: 20px; -fx-font-family: 'Inter 18pt SemiBold';" />
+                          style="-fx-fill: #38BDF8; -fx-font-size: 20px; -fx-font-family: 'Inter 18pt Bold';" />
                 </TextFlow>
             </HBox>
 
-<Label style="-fx-font-size: 12px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #64748B; -fx-padding: 8 0 4 6;"  />
+<Label style="-fx-font-size: 12px; -fx-font-family: 'Inter 18pt Bold'; -fx-text-fill: #64748B; -fx-padding: 8 0 4 6;"  />
 
             <VBox spacing="4.0">
                 <Button fx:id="btnDashboard" alignment="BASELINE_LEFT" maxWidth="Infinity" onAction="#handleNavDashboard"
@@ -106,11 +106,11 @@
                       style="-fx-cursor: hand;">
 
                     <StackPane prefHeight="38.0" prefWidth="38.0" style="-fx-background-color: #2563EB; -fx-background-radius: 19;">
-                        <Label fx:id="lblUserAvatar" style="-fx-font-size: 14px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: white;"/>
+                        <Label fx:id="lblUserAvatar" style="-fx-font-size: 14px; -fx-font-family: 'Inter 18pt Bold'; -fx-text-fill: white;"/>
                     </StackPane>
 
                     <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-                        <Label fx:id="lblUserName" style="-fx-font-size: 14px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: white;"/>
+                        <Label fx:id="lblUserName" style="-fx-font-size: 14px; -fx-font-family: 'Inter 18pt Bold'; -fx-text-fill: white;"/>
                         <Label fx:id="lblUserRole" style="-fx-font-size: 12px; -fx-text-fill: #94A3B8;"/>
                     </VBox>
                 </HBox>
@@ -138,7 +138,7 @@
                 </padding>
 
                 <VBox alignment="CENTER_LEFT">
-                    <Label fx:id="lblHeaderTitle" style="-fx-font-size: 19px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0F172A;" text="Tổng quan" />
+                    <Label fx:id="lblHeaderTitle" style="-fx-font-size: 19px; -fx-font-family: 'Inter 18pt Bold'; -fx-text-fill: #0F172A;" text="Tổng quan" />
                 </VBox>
 
                 <Region HBox.hgrow="ALWAYS" />

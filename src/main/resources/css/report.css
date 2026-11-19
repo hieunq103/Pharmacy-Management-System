@@ -35,7 +35,7 @@
 
 .report-root {
     -fx-background-color: #f8fafc;
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 14px;
 }
 
@@ -81,10 +81,6 @@
     -fx-pref-width: 34px;
     -fx-pref-height: 34px;
     -fx-alignment: center;
-}
-
-.stat-icon-pill-blue {
-    -fx-background-color: #eff6ff;
 }
 .stat-icon-pill-emerald {
     -fx-background-color: #ecfdf5;
@@ -164,7 +160,7 @@
 
 .report-tab-pane .tab .tab-label {
     -fx-alignment: CENTER;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 15px;
     -fx-text-fill: #475569;
 }
@@ -197,7 +193,7 @@
 }
 
 .section-title {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 17px;
     -fx-text-fill: #0f172a;
 }
@@ -212,7 +208,7 @@
 }
 
 .custom-inventory-table .column-header .label {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 15px;
     -fx-text-fill: #334155;
     -fx-alignment: CENTER_LEFT;
@@ -223,20 +219,6 @@
     -fx-border-color: #e2e8f0;
     -fx-border-width: 0 0 1px 0;
     -fx-cell-size: 50px;
-}
-
-.custom-inventory-table .table-row-cell:hover {
-    -fx-background-color: #f8fafc;
-}
-
-.custom-inventory-table .table-cell {
-    -fx-font-family: "Inter 18pt";
-    -fx-font-size: 14.5px;
-    -fx-text-fill: #1e293b;
-    -fx-alignment: CENTER_LEFT;
-    -fx-padding: 0 16px;
-    -fx-border-width: 0;
-    -fx-border-color: transparent;
 }
 
 /* ==================== BIỂU ĐỒ DOANH SỐ ==================== */
@@ -250,7 +232,7 @@
 }
 
 .chart-title {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 16px;
     -fx-text-fill: #0f172a;
     -fx-alignment: CENTER;
@@ -272,7 +254,7 @@
 }
 
 .axis {
-    -fx-tick-label-font-family: "Inter 18pt";
+    -fx-tick-label-font-family: "Inter 18pt Medium";
     -fx-tick-label-font-size: 13px;
     -fx-tick-label-fill: #64748b;
 }
@@ -382,18 +364,18 @@
 }
 
 .report-loading-text {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-text-fill: #475569;
 }
 
 .report-loading-text .text {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
 }
 
 /* Danh sách xổ xuống của các ô chọn (nhân viên, tháng): chữ 13px, rê chuột tới dòng nào thì dòng đó nền xanh chữ trắng */
 .combo-box-popup .list-view .list-cell {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 14px;
     -fx-text-fill: #1e293b;
     -fx-background-color: transparent;

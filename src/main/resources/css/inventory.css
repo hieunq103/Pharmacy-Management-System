@@ -3,13 +3,13 @@
    ========================================================================== */
 
 .root {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 14px;
 }
 
 .stat-label-primary,
 .stat-label-secondary {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 18px;
     -fx-text-fill: #1e293b;
 }
@@ -27,32 +27,12 @@
    ========================================================================== */
 
 /* Ô nhập liệu tìm kiếm */
-.search-input {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #cbd5e1;
-    -fx-border-width: 1px;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
-    -fx-padding: 8 14;
-    -fx-font-size: 13px;
-    -fx-text-fill: #1e293b;
-    -fx-prompt-text-fill: #94a3b8;
-}
-
-.search-input:hover {
-    -fx-border-color: #94a3b8;
-}
-
-.search-input:focused {
-    -fx-border-color: #2563eb;
-    -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.15), 4, 0, 0, 0);
-}
 
 /* Nút Nhập Kho - nền xanh lá (hàng vào kho), chữ trắng */
 .btn-primary-import {
     -fx-background-color: #16a34a;
     -fx-text-fill: #ffffff;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-background-radius: 10px;
     -fx-border-radius: 10px;
@@ -74,7 +54,7 @@
 .btn-secondary-export {
     -fx-background-color: #0066ff;
     -fx-text-fill: #ffffff;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-background-radius: 10px;
     -fx-border-radius: 10px;
@@ -98,7 +78,7 @@
     -fx-text-fill: #0066ff;
     -fx-border-color: #bfdbfe;
     -fx-border-width: 1px;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-background-radius: 10px;
     -fx-border-radius: 10px;
@@ -121,13 +101,6 @@
    ========================================================================== */
 
 /* Khung bao viền ngoài cùng bo tròn góc chứa bảng */
-.table-float-container {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #cbd5e1;
-    -fx-border-width: 1px;
-    -fx-border-radius: 10px;
-    -fx-background-radius: 10px;
-}
 
 .custom-inventory-table {
     -fx-background-color: transparent;
@@ -141,12 +114,6 @@
 .custom-inventory-table .virtual-flow,
 .custom-inventory-table .placeholder {
     -fx-background-color: transparent;
-}
-
-/* Bảng dữ liệu chính */
-.table-scrollable-data {
-    -fx-border-width: 0;
-    -fx-background-insets: 0;
 }
 
 /* Cột Thao tác ghim cố định nổi bên phải */
@@ -182,7 +149,7 @@
 }
 
 .custom-inventory-table .column-header .label {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 15px;
     -fx-text-fill: #334155;
     -fx-alignment: CENTER_LEFT;
@@ -205,7 +172,7 @@
     -fx-cursor: hand;
     -fx-text-fill: #94a3b8;
     -fx-font-size: 23px;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-alignment: CENTER;
 }
 
@@ -249,41 +216,6 @@
     -fx-padding: 0;
 }
 
-/* Thanh cuộn dọc ở cột Thao tác (ngoài cùng bên phải) mỏng, thanh lịch */
-.sticky-action-col .scroll-bar:vertical {
-    -fx-background-color: transparent;
-    -fx-pref-width: 7px;
-    -fx-max-width: 7px;
-    -fx-padding: 0;
-    -fx-opacity: 1;
-}
-
-.sticky-action-col .scroll-bar:vertical .thumb {
-    -fx-background-color: #cbd5e1;
-    -fx-background-radius: 4px;
-}
-
-.sticky-action-col .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: #94a3b8;
-}
-
-.sticky-action-col .scroll-bar:vertical .track,
-.sticky-action-col .scroll-bar:vertical .increment-button,
-.sticky-action-col .scroll-bar:vertical .decrement-button {
-    -fx-background-color: transparent;
-    -fx-pref-width: 0;
-    -fx-pref-height: 0;
-    -fx-opacity: 0;
-}
-
-/* Ẩn hoàn toàn thanh cuộn ngang ở cột thao tác */
-.sticky-action-col .scroll-bar:horizontal {
-    -fx-opacity: 0;
-    -fx-pref-height: 0;
-    -fx-max-height: 0;
-    -fx-padding: 0;
-}
-
 .custom-inventory-table .scroll-bar:horizontal {
     -fx-background-color: transparent;
     -fx-pref-height: 8px;
@@ -323,10 +255,6 @@
     -fx-cell-size: 54px;
 }
 
-.custom-inventory-table .table-row-cell:hover {
-    -fx-background-color: #f8fafc;
-}
-
 .custom-inventory-table .table-row-cell:selected,
 .custom-inventory-table .table-row-cell:filled:selected,
 .custom-inventory-table .table-row-cell:filled:focused:selected,
@@ -356,16 +284,6 @@
     -fx-border-color: transparent;
 }
 
-.custom-inventory-table .table-cell {
-    -fx-font-family: "Inter 18pt";
-    -fx-font-size: 14.5px;
-    -fx-text-fill: #1e293b;
-    -fx-alignment: CENTER_LEFT;
-    -fx-padding: 0 16px;
-    -fx-border-width: 0;
-    -fx-border-color: transparent;
-}
-
 /* ==========================================================================
    STATUS BADGES (ĐỒNG BỘ MÀU PASTEL HIỆN ĐẠI CỦA TRANG NHÂN VIÊN)
    ========================================================================== */
@@ -377,12 +295,12 @@
     -fx-pref-height: 28px;
     -fx-min-height: 28px;
     -fx-max-height: 28px;
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13.5px;
 }
 
 .status-badge .text {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13.5px;
 }
 
@@ -493,7 +411,7 @@
 .custom-inventory-table .table-row-cell:filled:selected .lbl-prescription-tag,
 .custom-inventory-table .table-row-cell:filled:focused:selected .lbl-prescription-tag,
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected .lbl-prescription-tag {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-style: italic;
     -fx-font-size: 11.5px;
     -fx-text-fill: #ef4444;
@@ -528,17 +446,12 @@
     -fx-pref-height: 38px;
     -fx-max-height: 38px;
     -fx-border-width: 1.5px;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-text-fill: #475569;
     -fx-alignment: CENTER;
     -fx-cursor: hand;
     -fx-padding: 0;
-}
-
-.page-btn:hover {
-    -fx-background-color: #f8fafc;
-    -fx-border-color: #cbd5e1;
 }
 
 .page-btn-active {
@@ -549,7 +462,7 @@
 }
 
 .page-dots {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14px;
     -fx-text-fill: #64748b;
     -fx-min-width: 28px;
@@ -562,7 +475,7 @@
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-padding: 0 16;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-text-fill: #475569;
 }
@@ -577,24 +490,6 @@
     -fx-background-color: #f1f5f9;
 }
 
-/* Nút 3 chấm cột thao tác */
-.btn-action-more {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #cbd5e1;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
-    -fx-padding: 4 10;
-    -fx-cursor: hand;
-    -fx-text-fill: #475569;
-    -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 15px;
-}
-
-.btn-action-more:hover {
-    -fx-background-color: #f1f5f9;
-    -fx-border-color: #94a3b8;
-}
-
 /* ==========================================================================
    HEADER FILTER POPUP & TAM GIÁC LỌC (GIỐNG TRANG NHÂN VIÊN)
    ========================================================================== */
@@ -604,7 +499,7 @@
     -fx-cursor: hand;
     -fx-text-fill: #94a3b8;
     -fx-font-size: 21px;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-alignment: CENTER;
 }
 
@@ -618,75 +513,11 @@
     -fx-text-fill: #0066ff;
 }
 
-.filter-context-menu {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 8px;
-    -fx-border-color: #cbd5e1;
-    -fx-border-radius: 8px;
-    -fx-padding: 4px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
-}
-
-.filter-context-menu .custom-filter-menu-item {
-    -fx-padding: 0;
-    -fx-background-color: transparent;
-}
-
-.filter-context-menu .custom-filter-menu-item:focused,
-.filter-context-menu .custom-filter-menu-item:hover {
-    -fx-background-color: transparent;
-}
-
-.filter-item-label {
-    -fx-font-family: "Inter 18pt";
-    -fx-font-size: 13.5px;
-    -fx-text-fill: #334155;
-    -fx-padding: 7 14;
-    -fx-background-radius: 6px;
-    -fx-background-color: transparent;
-    -fx-min-width: 210px;
-    -fx-pref-width: 210px;
-    -fx-alignment: CENTER_LEFT;
-    -fx-cursor: hand;
-}
-
-.filter-context-menu .custom-filter-menu-item:hover .filter-item-label {
-    -fx-background-color: #f8fafc;
-}
-
 .filter-context-menu .custom-filter-menu-item .filter-item-label.filter-item-active,
 .filter-item-label.filter-item-active {
     -fx-background-color: #eff6ff;
     -fx-text-fill: #0066ff;
-    -fx-font-family: "Inter 18pt SemiBold";
-}
-
-.filter-checkbox {
-    -fx-font-family: "Inter 18pt";
-    -fx-font-size: 13.5px;
-    -fx-text-fill: #334155;
-    -fx-cursor: hand;
-}
-
-.filter-checkbox:hover {
-    -fx-text-fill: #0f172a;
-}
-
-.filter-checkbox .box {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #cbd5e1;
-    -fx-border-radius: 4px;
-    -fx-background-radius: 4px;
-    -fx-border-width: 1.5px;
-}
-
-.filter-checkbox:selected .box {
-    -fx-background-color: #0066ff;
-    -fx-border-color: #0066ff;
-}
-
-.filter-checkbox:selected .mark {
-    -fx-background-color: #ffffff;
+    -fx-font-family: "Inter 18pt Bold";
 }
 
 .action-context-menu {
@@ -706,7 +537,7 @@
 }
 
 .action-context-menu .menu-item .label {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13.5px;
     -fx-text-fill: #334155;
 }
@@ -732,7 +563,7 @@
     -fx-border-radius: 6px;
     -fx-background-radius: 6px;
     -fx-padding: 4 8;
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13px;
     -fx-text-fill: #1e293b;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.18), 4, 0, 0, 0);
@@ -746,7 +577,7 @@
 .btn-action-save {
     -fx-background-color: #10b981;
     -fx-text-fill: #ffffff;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-background-radius: 6px;
     -fx-border-radius: 6px;
@@ -761,7 +592,7 @@
 .btn-action-cancel {
     -fx-background-color: #94a3b8;
     -fx-text-fill: #ffffff;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-background-radius: 6px;
     -fx-border-radius: 6px;
@@ -782,7 +613,7 @@
 }
 
 .lot-dialog-title {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 20px;
     -fx-text-fill: #0f172a;
 }
@@ -790,7 +621,7 @@
 .lot-dialog-code-badge {
     -fx-background-color: #eff6ff;
     -fx-text-fill: #0066ff;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 12px;
     -fx-background-radius: 6px;
     -fx-padding: 3 8;
@@ -800,7 +631,7 @@
 }
 
 .lot-dialog-medicine-name {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 16px;
     -fx-text-fill: #0f172a;
 }
@@ -815,19 +646,19 @@
 }
 
 .lot-info-label {
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13px;
     -fx-text-fill: #64748b;
 }
 
 .lot-info-value {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
     -fx-text-fill: #1e293b;
 }
 
 .lot-info-value-highlight {
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13.5px;
     -fx-text-fill: #0066ff;
 }
@@ -838,7 +669,7 @@
     -fx-border-color: #cbd5e1;
     -fx-border-radius: 7px;
     -fx-background-radius: 7px;
-    -fx-font-family: "Inter 18pt";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13px;
     -fx-pref-height: 40px;
     -fx-cursor: hand;
@@ -854,7 +685,7 @@
     -fx-padding: 3 10;
     -fx-alignment: CENTER;
     -fx-pref-height: 24px;
-    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 12px;
 }
 

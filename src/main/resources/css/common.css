@@ -1,0 +1,183 @@
+/* ===================================================================
+   PHARMAOS - STYLE DÙNG CHUNG GIỮA NHIỀU TRANG
+   (gộp từ các rule giống hệt nhau trước đây nằm rải ở nhiều file CSS)
+   =================================================================== */
+
+.page-btn:hover {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #cbd5e1;
+}
+
+.stat-icon-pill-blue {
+    -fx-background-color: #eff6ff;
+}
+
+.table-float-container {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
+.table-scrollable-data {
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+}
+
+.btn-action-more {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 4 10;
+    -fx-cursor: hand;
+    -fx-text-fill: #475569;
+    -fx-font-family: "Inter 18pt Bold";
+    -fx-font-size: 15px;
+}
+
+.btn-action-more:hover {
+    -fx-background-color: #f1f5f9;
+    -fx-border-color: #94a3b8;
+}
+
+.search-input {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 8 14;
+    -fx-font-size: 13px;
+    -fx-text-fill: #1e293b;
+    -fx-prompt-text-fill: #94a3b8;
+}
+
+.search-input:hover {
+    -fx-border-color: #94a3b8;
+}
+
+.search-input:focused {
+    -fx-border-color: #2563eb;
+    -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.15), 4, 0, 0, 0);
+}
+
+.sticky-action-col .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 7px;
+    -fx-max-width: 7px;
+    -fx-padding: 0;
+    -fx-opacity: 1;
+}
+
+.sticky-action-col .scroll-bar:vertical .thumb {
+    -fx-background-color: #cbd5e1;
+    -fx-background-radius: 4px;
+}
+
+.sticky-action-col .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #94a3b8;
+}
+
+.sticky-action-col .scroll-bar:vertical .track,
+.sticky-action-col .scroll-bar:vertical .increment-button,
+.sticky-action-col .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+}
+
+.sticky-action-col .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+    -fx-padding: 0;
+}
+
+.filter-context-menu {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8px;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 8px;
+    -fx-padding: 4px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
+}
+
+.filter-context-menu .custom-filter-menu-item {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+.filter-context-menu .custom-filter-menu-item:focused,
+.filter-context-menu .custom-filter-menu-item:hover {
+    -fx-background-color: transparent;
+}
+
+.filter-item-label {
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #334155;
+    -fx-padding: 7 14;
+    -fx-background-radius: 6px;
+    -fx-background-color: transparent;
+    -fx-min-width: 210px;
+    -fx-pref-width: 210px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+}
+
+.filter-context-menu .custom-filter-menu-item:hover .filter-item-label {
+    -fx-background-color: #f8fafc;
+}
+
+.filter-checkbox {
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #334155;
+    -fx-cursor: hand;
+}
+
+.filter-checkbox:hover {
+    -fx-text-fill: #0f172a;
+}
+
+.filter-checkbox .box {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-border-width: 1.5px;
+}
+
+.filter-checkbox:selected .box {
+    -fx-background-color: #0066ff;
+    -fx-border-color: #0066ff;
+}
+
+.filter-checkbox:selected .mark {
+    -fx-background-color: #ffffff;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #1d4ed8;
+}
+
+.btn-success:hover {
+    -fx-background-color: #15803d;
+}
+
+.custom-inventory-table .table-row-cell:hover {
+    -fx-background-color: #f8fafc;
+}
+
+.custom-inventory-table .table-cell {
+    -fx-font-family: "Inter 18pt Medium";
+    -fx-font-size: 14.5px;
+    -fx-text-fill: #1e293b;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 16px;
+    -fx-border-width: 0;
+    -fx-border-color: transparent;
+}

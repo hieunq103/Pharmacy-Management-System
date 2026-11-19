@@ -310,8 +310,8 @@ public class ImportDialogController implements Initializable {
                         lbl.setMinWidth(Label.USE_PREF_SIZE);
                         lbl.setStyle(
                             PENDING_CODE.equals(item)
-                                ? "-fx-font-size: 11px; -fx-font-family: 'Inter 18pt Regular'; -fx-background-color: #F1F5F9; -fx-text-fill: #64748B; -fx-background-radius: 4px; -fx-padding: 2 6;"
-                                : "-fx-font-size: 11px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-background-radius: 4px; -fx-padding: 2 6;"
+                                ? "-fx-font-size: 11px; -fx-font-family: 'Inter 18pt Medium'; -fx-background-color: #F1F5F9; -fx-text-fill: #64748B; -fx-background-radius: 4px; -fx-padding: 2 6;"
+                                : "-fx-font-size: 11px; -fx-font-family: 'Inter 18pt Bold'; -fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-background-radius: 4px; -fx-padding: 2 6;"
                         );
                         setGraphic(lbl);
                         setText(null);
@@ -342,16 +342,16 @@ public class ImportDialogController implements Initializable {
 
                 {
                     btnDelete.setStyle(
-                        "-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;"
+                        "-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt Bold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;"
                     );
                     btnDelete.setOnMouseEntered(ev ->
                         btnDelete.setStyle(
-                            "-fx-background-color: #FCA5A5; -fx-text-fill: #991B1B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #F87171; -fx-border-radius: 4px; -fx-background-radius: 4px;"
+                            "-fx-background-color: #FCA5A5; -fx-text-fill: #991B1B; -fx-font-family: 'Inter 18pt Bold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #F87171; -fx-border-radius: 4px; -fx-background-radius: 4px;"
                         )
                     );
                     btnDelete.setOnMouseExited(ev ->
                         btnDelete.setStyle(
-                            "-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;"
+                            "-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt Bold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;"
                         )
                     );
                     btnDelete.setTooltip(new Tooltip("Xóa mặt hàng này khỏi phiếu nhập"));
@@ -626,7 +626,7 @@ public class ImportDialogController implements Initializable {
                     code.setStyle(
                         noCodeYet
                             ? "-fx-text-fill: #64748B;"
-                            : "-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0066FF;"
+                            : "-fx-font-family: 'Inter 18pt Bold'; -fx-text-fill: #0066FF;"
                     );
                     HBox box = new HBox(6, code);
                     box.setAlignment(Pos.CENTER_LEFT);

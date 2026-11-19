@@ -17,7 +17,7 @@
 <?import javafx.scene.shape.SVGPath?>
 
 <StackPane style="-fx-background-color: #F8FAFC;"
-           stylesheets="@../../css/inventory.css, @../../css/inventory_history.css, @../../css/sales.css, @../../css/icon_buttons.css"
+           stylesheets="@../../css/common.css, @../../css/inventory.css, @../../css/inventory_history.css, @../../css/sales.css, @../../css/icon_buttons.css"
            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.pharmacy.sales.SalesController">
 

@@ -16,7 +16,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.shape.SVGPath?>
 
-<GridPane prefHeight="800.0" prefWidth="1280.0" style="-fx-font-family: 'Inter 18pt';" stylesheets="@../../css/app.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pharmacy.auth.LoginController">
+<GridPane prefHeight="800.0" prefWidth="1280.0" style="-fx-font-family: 'Inter 18pt Medium';" stylesheets="@../../css/app.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pharmacy.auth.LoginController">
 
    <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" percentWidth="60.0" />
@@ -49,18 +49,18 @@
                <children>
                   <VBox spacing="4.0">
                      <children>
-                        <Label minWidth="-Infinity" style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0f172a; -fx-font-size: 30px;" text="Đăng nhập" />
-                        <Label fx:id="lblError" managed="false" style="-fx-font-family: 'Inter 18pt'; -fx-text-fill: #ef4444; -fx-font-size: 13px;" visible="false" wrapText="true" />
+                        <Label minWidth="-Infinity" style="-fx-font-family: 'Inter 18pt Bold'; -fx-text-fill: #0f172a; -fx-font-size: 30px;" text="Đăng nhập" />
+                        <Label fx:id="lblError" managed="false" style="-fx-font-family: 'Inter 18pt Medium'; -fx-text-fill: #ef4444; -fx-font-size: 13px;" visible="false" wrapText="true" />
                      </children>
                   </VBox>
 
                   <VBox spacing="6.0">
                      <children>
-                        <Label style="-fx-font-family: 'Inter 18pt'; -fx-text-fill: #334155; -fx-font-size: 15px;" text="Tên đăng nhập" />
+                        <Label style="-fx-font-family: 'Inter 18pt Medium'; -fx-text-fill: #334155; -fx-font-size: 15px;" text="Tên đăng nhập" />
                         <HBox alignment="CENTER_LEFT" prefHeight="44.0" spacing="10.0" style="-fx-background-color: #ffffff; -fx-border-color: #cbd5e1; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 0 12;">
                            <children>
                               <SVGPath content="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#94a3b8" scaleX="0.8" scaleY="0.8" />
-                              <TextField fx:id="txtUsername" onAction="#handleLogin" promptText="Nhập tên đăng nhập" style="-fx-font-family: 'Inter 18pt'; -fx-background-color: transparent; -fx-text-fill: #0f172a; -fx-prompt-text-fill: #94a3b8; -fx-font-size: 15px;" HBox.hgrow="ALWAYS" />
+                              <TextField fx:id="txtUsername" onAction="#handleLogin" promptText="Nhập tên đăng nhập" style="-fx-font-family: 'Inter 18pt Medium'; -fx-background-color: transparent; -fx-text-fill: #0f172a; -fx-prompt-text-fill: #94a3b8; -fx-font-size: 15px;" HBox.hgrow="ALWAYS" />
                            </children>
                         </HBox>
                      </children>
@@ -68,7 +68,7 @@
 
                   <VBox spacing="6.0">
                      <children>
-                        <Label style="-fx-font-family: 'Inter 18pt'; -fx-text-fill: #334155; -fx-font-size: 15px;" text="Mật khẩu" />
+                        <Label style="-fx-font-family: 'Inter 18pt Medium'; -fx-text-fill: #334155; -fx-font-size: 15px;" text="Mật khẩu" />
                         <TogglePasswordField fx:id="txtPassword" promptText="Nhập mật khẩu"/>
                      </children>
                   </VBox>
@@ -80,7 +80,7 @@
                           onMouseEntered="#onLoginHover"
                           onMouseExited="#onLoginHoverExit"
                           prefHeight="46.0"
-                          style="-fx-font-family: 'Inter 18pt SemiBold'; -fx-background-color: #1D70E2; -fx-text-fill: white; -fx-font-size: 16px; -fx-background-radius: 8; -fx-cursor: hand;"
+                          style="-fx-font-family: 'Inter 18pt Bold'; -fx-background-color: #1D70E2; -fx-text-fill: white; -fx-font-size: 16px; -fx-background-radius: 8; -fx-cursor: hand;"
                           text="Đăng nhập  →" />
 
                </children>
