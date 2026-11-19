@@ -81,7 +81,7 @@
     <TableView fx:id="tableLots" styleClass="custom-inventory-table, table-scrollable-data" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="colIndex" styleClass="lot-col-left" minWidth="70.0" prefWidth="75.0" resizable="false" sortable="false" text="STT" />
-            <TableColumn fx:id="colLotNumber" styleClass="lot-col-left" minWidth="160.0" prefWidth="180.0" resizable="true" sortable="false" text="Số lô" />
+            <TableColumn fx:id="colLotNumber" styleClass="lot-col-left" minWidth="240.0" prefWidth="255.0" resizable="true" sortable="false" text="Số lô" />
             <TableColumn fx:id="colExpiryDate" styleClass="lot-col-left" minWidth="150.0" prefWidth="165.0" resizable="true" sortable="false" text="Hạn sử dụng" />
             <TableColumn fx:id="colStatus" styleClass="lot-col-left" minWidth="120.0" prefWidth="130.0" resizable="true" sortable="false" text="Trạng thái" />
             <TableColumn fx:id="colQuantityIn" styleClass="lot-col-left" minWidth="90.0" prefWidth="105.0" resizable="true" sortable="false" text="SL nhập" />
