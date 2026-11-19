@@ -278,6 +278,15 @@ public class InventoryController implements Initializable {
         savedKeyword = null;
     }
 
+    /** Vào Kho thuốc bằng Menu: bỏ mọi bộ lọc/từ khóa, về danh sách mặt định (và màn hình chính nếu đang ở lịch sử). */
+    public void resetToDefault() {
+        resetContext();
+        if (viewInventoryHistory != null && viewInventoryHistory.isVisible()) {
+            showInventoryView();
+        }
+        applyFilterState(null, null, "");
+    }
+
     @FXML
     private void handleBackContext() {
         Runnable back = contextBack;

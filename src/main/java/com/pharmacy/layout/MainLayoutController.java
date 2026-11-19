@@ -226,7 +226,7 @@ public class MainLayoutController {
         resetContexts();
         com.pharmacy.inventory.InventoryController ctrl = showInventoryPage();
         if (ctrl != null) {
-            ctrl.resetContext();
+            ctrl.resetToDefault();
         }
     }
 
@@ -308,13 +308,13 @@ public class MainLayoutController {
                 controllerCache.get("/fxml/profile/profile.fxml") instanceof
                     com.pharmacy.profile.ProfileController profileCtrl
             ) {
-                profileCtrl.setOnBack(() -> handleNavEmployee(null));
+                profileCtrl.setOnBack(() -> showEmployeePage(false));
             }
             return;
         }
         FXMLLoader loader = loadCenterViewWithLoader("/fxml/profile/profile.fxml");
         if (loader != null && loader.getController() instanceof com.pharmacy.profile.ProfileController profileCtrl) {
-            profileCtrl.setOnBack(() -> handleNavEmployee(null));
+            profileCtrl.setOnBack(() -> showEmployeePage(false));
         }
     }
 
@@ -335,6 +335,11 @@ public class MainLayoutController {
 
     @FXML
     private void handleNavEmployee(ActionEvent event) {
+        showEmployeePage(true);
+    }
+
+    /** {@code reset}: true khi vào bằng Menu (trang về trạng thái ban đầu); false khi quay lại từ Hồ sơ cá nhân. */
+    private void showEmployeePage(boolean reset) {
         resetContexts();
         if (UserSession.isLoggedIn() && !UserSession.getInstance().isManager()) {
             log.warn("Nhân viên không có quyền truy cập quản lý Nhân viên! Điều hướng về Bán hàng.");
@@ -346,6 +351,13 @@ public class MainLayoutController {
         Parent cached = viewCache.get("/fxml/employee/employee.fxml");
         if (cached != null) {
             contentArea.getChildren().setAll(cached);
+            if (
+                reset &&
+                controllerCache.get("/fxml/employee/employee.fxml") instanceof
+                    com.pharmacy.employee.EmployeeController ctrl
+            ) {
+                ctrl.resetState();
+            }
             return;
         }
         loadCenterView("/fxml/employee/employee.fxml");

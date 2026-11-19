@@ -98,6 +98,7 @@ public class EmployeeController implements Initializable {
 
     private int pageSize = AppConstants.DEFAULT_PAGE_SIZE;
     private int currentPage = 1;
+    private boolean suppressReload;
     private int totalPages = 1;
     private long totalRecords = 0;
     private Task<PageResult<Employee>> currentLoadTask;
@@ -107,6 +108,28 @@ public class EmployeeController implements Initializable {
 
     private final EmployeeService employeeService = new EmployeeService();
     private final Map<String, String> activeFilters = new HashMap<>();
+
+    private void onFilterChanged() {
+        if (suppressReload) return;
+        currentPage = 1;
+        loadEmployeeData();
+    }
+
+    /** Đưa trang về trạng thái ban đầu: bỏ từ khóa, mọi bộ lọc cột, về trang 1. */
+    public void resetState() {
+        suppressReload = true;
+        try {
+            if (txtSearch != null) txtSearch.setText("");
+            TableFilterHelper.resetColumnFilter(colGender);
+            TableFilterHelper.resetColumnFilter(colRole);
+            TableFilterHelper.resetColumnFilter(colStatus);
+            TableFilterHelper.resetColumnFilter(colAccountStatus);
+        } finally {
+            suppressReload = false;
+        }
+        currentPage = 1;
+        loadEmployeeData();
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -129,10 +152,9 @@ public class EmployeeController implements Initializable {
         });
 
         if (txtSearch != null) {
-            com.pharmacy.common.DebounceUtil.debounce(txtSearch, AppConstants.SEARCH_DEBOUNCE, text -> {
-                currentPage = 1;
-                loadEmployeeData();
-            });
+            com.pharmacy.common.DebounceUtil.debounce(txtSearch, AppConstants.SEARCH_DEBOUNCE, text ->
+                onFilterChanged()
+            );
         }
 
         TableFilterHelper.setupMultiSelectColumnFilter(
@@ -141,10 +163,7 @@ public class EmployeeController implements Initializable {
             new String[] { "Nam", "Nữ", "Khác" },
             "gender",
             activeFilters,
-            () -> {
-                currentPage = 1;
-                loadEmployeeData();
-            }
+            this::onFilterChanged
         );
         TableFilterHelper.setupMultiSelectColumnFilter(
             colRole,
@@ -152,10 +171,7 @@ public class EmployeeController implements Initializable {
             new String[] { "Nhân viên", "Quản lý" },
             "role",
             activeFilters,
-            () -> {
-                currentPage = 1;
-                loadEmployeeData();
-            }
+            this::onFilterChanged
         );
         TableFilterHelper.setupColumnFilter(
             colStatus,
@@ -163,10 +179,7 @@ public class EmployeeController implements Initializable {
             new String[] { "Tất cả", "Đang làm", "Đã nghỉ" },
             "status",
             activeFilters,
-            () -> {
-                currentPage = 1;
-                loadEmployeeData();
-            }
+            this::onFilterChanged
         );
         TableFilterHelper.setupMultiSelectColumnFilter(
             colAccountStatus,
@@ -174,10 +187,7 @@ public class EmployeeController implements Initializable {
             new String[] { "Hoạt động", "Ngưng hoạt động" },
             "statusAcount",
             activeFilters,
-            () -> {
-                currentPage = 1;
-                loadEmployeeData();
-            }
+            this::onFilterChanged
         );
 
         tableEmployee.setItems(pageData);

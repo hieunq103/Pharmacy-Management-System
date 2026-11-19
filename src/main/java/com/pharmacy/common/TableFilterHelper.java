@@ -62,6 +62,7 @@ public final class TableFilterHelper {
             }
             menu.hide();
         };
+        column.getProperties().put("tableFilterHelper_singleSetter", filterSetter);
 
         for (String opt : options) {
             Label lblOpt = new Label(opt);
@@ -231,6 +232,23 @@ public final class TableFilterHelper {
                 java.util.Collection<String>
             >) consumer;
             collConsumer.accept(values != null ? java.util.Arrays.asList(values) : java.util.Collections.emptyList());
+        }
+    }
+
+    /** Đưa bộ lọc của cột về "Tất cả" (dùng khi đưa trang về trạng thái ban đầu). */
+    @SuppressWarnings("unchecked")
+    public static void resetColumnFilter(TableColumn<?, ?> column) {
+        if (column == null) return;
+        Object multi = column.getProperties().get("tableFilterHelper_multiSetter");
+        if (multi instanceof java.util.function.Consumer<?> consumer) {
+            ((java.util.function.Consumer<java.util.Collection<String>>) consumer).accept(
+                java.util.Collections.emptyList()
+            );
+            return;
+        }
+        Object single = column.getProperties().get("tableFilterHelper_singleSetter");
+        if (single instanceof java.util.function.Consumer<?> consumer) {
+            ((java.util.function.Consumer<String>) consumer).accept("Tất cả");
         }
     }
 }
