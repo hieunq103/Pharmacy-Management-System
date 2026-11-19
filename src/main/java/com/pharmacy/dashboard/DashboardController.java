@@ -278,7 +278,8 @@ public class DashboardController implements Initializable {
             });
 
             Label lblCode = new Label(tx.getCode());
-            lblCode.setPrefWidth(160.0);
+            lblCode.setPrefWidth(175.0);
+            lblCode.setMinWidth(Region.USE_PREF_SIZE);
             lblCode.setAlignment(Pos.CENTER_LEFT);
             lblCode.getStyleClass().add("tx-code");
 
@@ -289,7 +290,8 @@ public class DashboardController implements Initializable {
                 "Khách lẻ".equalsIgnoreCase(phone) ||
                 "null".equalsIgnoreCase(phone);
             Label lblCustomer = new Label(isGuest ? "Khách lẻ" : phone);
-            lblCustomer.setPrefWidth(170.0);
+            lblCustomer.setPrefWidth(110.0);
+            lblCustomer.setMinWidth(Region.USE_PREF_SIZE);
             lblCustomer.setAlignment(Pos.CENTER_LEFT);
             lblCustomer.getStyleClass().add("tx-customer");
             if (isGuest) {
@@ -297,12 +299,14 @@ public class DashboardController implements Initializable {
             }
 
             HBox empBox = new HBox(8.0);
-            empBox.setPrefWidth(210.0);
+            empBox.setPrefWidth(260.0);
+            empBox.setMinWidth(Region.USE_PREF_SIZE);
             empBox.setAlignment(Pos.CENTER_LEFT);
             Label lblAvatar = new Label(tx.getEmployeeInitials());
             lblAvatar.getStyleClass().add("avatar-initials");
             Label lblEmpName = new Label(tx.getEmployeeName());
             lblEmpName.getStyleClass().add("employee-name");
+            lblEmpName.setMinWidth(Region.USE_PREF_SIZE);
             empBox.getChildren().addAll(lblAvatar, lblEmpName);
 
             String formattedDateTime =
@@ -310,12 +314,14 @@ public class DashboardController implements Initializable {
                     ? tx.getCreatedAt().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy"))
                     : "--:--";
             Label lblTime = new Label(formattedDateTime);
-            lblTime.setPrefWidth(170.0);
+            lblTime.setPrefWidth(150.0);
+            lblTime.setMinWidth(Region.USE_PREF_SIZE);
             lblTime.setAlignment(Pos.CENTER_LEFT);
             lblTime.getStyleClass().add("tx-time");
 
             HBox paymentBox = new HBox();
-            paymentBox.setPrefWidth(140.0);
+            paymentBox.setPrefWidth(125.0);
+            paymentBox.setMinWidth(Region.USE_PREF_SIZE);
             paymentBox.setAlignment(Pos.CENTER_LEFT);
             Label lblPayment = new Label(tx.getFormattedPaymentMethod());
             lblPayment.getStyleClass().setAll("payment-badge", tx.getPaymentBadgeClass());
@@ -325,7 +331,8 @@ public class DashboardController implements Initializable {
             HBox.setHgrow(spacer, Priority.ALWAYS);
 
             Label lblAmount = new Label(tx.getFormattedTotal());
-            lblAmount.setPrefWidth(140.0);
+            lblAmount.setPrefWidth(120.0);
+            lblAmount.setMinWidth(Region.USE_PREF_SIZE);
             lblAmount.setAlignment(Pos.CENTER_LEFT);
             lblAmount.getStyleClass().add("tx-amount");
 

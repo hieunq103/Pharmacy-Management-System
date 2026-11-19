@@ -107,17 +107,21 @@
                     </Button>
                 </HBox>
 
-                <HBox alignment="CENTER_LEFT" styleClass="recent-table-header">
-                    <Label prefWidth="160.0" styleClass="recent-th-label" text="Mã HĐ" />
-                    <Label prefWidth="170.0" styleClass="recent-th-label" text="Khách hàng" />
-                    <Label prefWidth="210.0" styleClass="recent-th-label" text="Nhân viên" />
-                    <Label prefWidth="170.0" styleClass="recent-th-label" text="Thời gian" />
-                    <Label prefWidth="140.0" styleClass="recent-th-label" text="Thanh toán" />
-                    <Region HBox.hgrow="ALWAYS" />
-                    <Label alignment="CENTER_LEFT" prefWidth="140.0" styleClass="recent-th-label" text="Tổng tiền" />
-                </HBox>
+                <ScrollPane fitToWidth="true" hbarPolicy="AS_NEEDED" vbarPolicy="NEVER" styleClass="tx-scroll-pane">
+                    <VBox minWidth="970.0" style="-fx-padding: 0 0 12 0;">
+                        <HBox alignment="CENTER_LEFT" styleClass="recent-table-header">
+                            <Label minWidth="-Infinity" prefWidth="175.0" styleClass="recent-th-label" text="Mã HĐ" />
+                            <Label minWidth="-Infinity" prefWidth="110.0" styleClass="recent-th-label" text="Khách hàng" />
+                            <Label minWidth="-Infinity" prefWidth="260.0" styleClass="recent-th-label" text="Nhân viên" />
+                            <Label minWidth="-Infinity" prefWidth="150.0" styleClass="recent-th-label" text="Thời gian" />
+                            <Label minWidth="-Infinity" prefWidth="125.0" styleClass="recent-th-label" text="Thanh toán" />
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Label alignment="CENTER_LEFT" minWidth="-Infinity" prefWidth="120.0" styleClass="recent-th-label" text="Tổng tiền" />
+                        </HBox>
 
-                <VBox fx:id="boxRecentTransactions" spacing="0.0" />
+                        <VBox fx:id="boxRecentTransactions" spacing="0.0" />
+                    </VBox>
+                </ScrollPane>
             </VBox>
         </VBox>
     </content>

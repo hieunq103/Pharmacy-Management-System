@@ -361,3 +361,12 @@
     -fx-border-radius: 10px;
     -fx-border-width: 1px;
 }
+
+/* Bảng giao dịch gần đây: nền trong suốt, cuộn ngang khi cửa sổ hẹp để không bị cắt chữ */
+.tx-scroll-pane,
+.tx-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
