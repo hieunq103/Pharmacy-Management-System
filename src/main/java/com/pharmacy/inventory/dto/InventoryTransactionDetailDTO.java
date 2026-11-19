@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class InventoryTransactionDetailDTO {
+
     private String medicineCode;
     private String medicineName;
     private String categoryName;
@@ -17,11 +18,19 @@ public class InventoryTransactionDetailDTO {
     private BigDecimal totalPrice;
     private String reason;
 
-    public InventoryTransactionDetailDTO(String medicineCode, String medicineName,
-                                        String categoryName, String unit, String manufacturer,
-                                        String lotNumber, LocalDate expiryDate,
-                                        int quantity, BigDecimal unitPrice, BigDecimal totalPrice,
-                                        String reason) {
+    public InventoryTransactionDetailDTO(
+        String medicineCode,
+        String medicineName,
+        String categoryName,
+        String unit,
+        String manufacturer,
+        String lotNumber,
+        LocalDate expiryDate,
+        int quantity,
+        BigDecimal unitPrice,
+        BigDecimal totalPrice,
+        String reason
+    ) {
         this.medicineCode = medicineCode;
         this.medicineName = medicineName;
         this.categoryName = categoryName;
@@ -81,5 +90,4 @@ public class InventoryTransactionDetailDTO {
     public String getReason() {
         return reason != null && !reason.isBlank() ? reason : "—";
     }
-
 }

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class PageResult<T> {
+
     private final List<T> items;
     private final long totalElements;
     private final int totalPages;

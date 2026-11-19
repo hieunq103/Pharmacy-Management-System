@@ -1,7 +1,7 @@
 package com.pharmacy.sales;
 
-import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.AppConstants;
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.DebounceUtil;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormatUtils;
@@ -10,6 +10,11 @@ import com.pharmacy.common.PaginationHelper;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.sales.dto.CartItem;
 import com.pharmacy.sales.dto.CartOrder;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.*;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,50 +30,88 @@ import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.util.*;
-
 public class SalesController implements Initializable {
+
     private static final Logger log = LoggerFactory.getLogger(SalesController.class);
 
-    @FXML private HBox viewSalesMain;
+    @FXML
+    private HBox viewSalesMain;
+
     private static final double LINE_TOTAL_WIDTH = 86;
-    @FXML private StackPane viewSalesHistory;
+
+    @FXML
+    private StackPane viewSalesHistory;
 
     private Runnable historyBackAction;
 
     private Parent historyRootNode;
     private SalesHistoryController historyController;
 
-    @FXML private TextField txtSearch;
-    @FXML private ComboBox<String> cboCategory;
-    @FXML private GridPane gridMedicineCards;
-    @FXML private VBox paneEmptyMedicines;
-    @FXML private HBox paginationBox;
-    @FXML private Label lblRecordRange;
+    @FXML
+    private TextField txtSearch;
 
-    @FXML private VBox paneEmptyCart;
-    @FXML private ScrollPane scrollCartItems;
-    @FXML private VBox boxCartItems;
-    @FXML private HBox bannerPrescriptionNotice;
+    @FXML
+    private ComboBox<String> cboCategory;
 
-    @FXML private Label lblExpandIcon;
-    @FXML private Label lblExpandTitle;
-    @FXML private VBox paneExtraFields;
-    @FXML private TextField txtCustomerPhone;
-    @FXML private TextField txtDiscount;
-    @FXML private Button btnDiscountVnd;
-    @FXML private Button btnDiscountPercent;
+    @FXML
+    private GridPane gridMedicineCards;
+
+    @FXML
+    private VBox paneEmptyMedicines;
+
+    @FXML
+    private HBox paginationBox;
+
+    @FXML
+    private Label lblRecordRange;
+
+    @FXML
+    private VBox paneEmptyCart;
+
+    @FXML
+    private ScrollPane scrollCartItems;
+
+    @FXML
+    private VBox boxCartItems;
+
+    @FXML
+    private HBox bannerPrescriptionNotice;
+
+    @FXML
+    private Label lblExpandIcon;
+
+    @FXML
+    private Label lblExpandTitle;
+
+    @FXML
+    private VBox paneExtraFields;
+
+    @FXML
+    private TextField txtCustomerPhone;
+
+    @FXML
+    private TextField txtDiscount;
+
+    @FXML
+    private Button btnDiscountVnd;
+
+    @FXML
+    private Button btnDiscountPercent;
+
     private boolean isDiscountPercent = false;
     private boolean isAdjustingDiscount = false;
 
-    @FXML private Label lblCartSubtotal;
-    @FXML private Label lblCartDiscount;
-    @FXML private Label lblCartTotal;
-    @FXML private Button btnCheckout;
+    @FXML
+    private Label lblCartSubtotal;
+
+    @FXML
+    private Label lblCartDiscount;
+
+    @FXML
+    private Label lblCartTotal;
+
+    @FXML
+    private Button btnCheckout;
 
     private final SalesService salesService = new SalesService();
     private CartOrder activeOrder = new CartOrder();
@@ -81,9 +124,9 @@ public class SalesController implements Initializable {
     private String currentCategory = "Tất cả nhóm thuốc";
 
     private List<MedicineInventoryDTO> allLoadedMedicines = new ArrayList<>();
-    private final java.util.Map<Integer, PageResult<MedicineInventoryDTO>> pageCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private final java.util.Map<Integer, PageResult<MedicineInventoryDTO>> pageCache =
+        new java.util.concurrent.ConcurrentHashMap<>();
     private String lastSearchState = "";
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -165,7 +208,7 @@ public class SalesController implements Initializable {
     private void recalculateDiscount() {
         if (activeOrder == null || isAdjustingDiscount) return;
         BigDecimal subtotal = activeOrder.getSubtotal();
-        String val = (txtDiscount != null && txtDiscount.getText() != null) ? txtDiscount.getText().trim() : "";
+        String val = txtDiscount != null && txtDiscount.getText() != null ? txtDiscount.getText().trim() : "";
         if (val.isEmpty()) {
             activeOrder.setDiscount(BigDecimal.ZERO);
         } else {
@@ -186,8 +229,9 @@ public class SalesController implements Initializable {
                             }
                             isAdjustingDiscount = false;
                         }
-                        BigDecimal calculatedDisc = subtotal.multiply(num)
-                                .divide(BigDecimal.valueOf(100), 0, java.math.RoundingMode.HALF_UP);
+                        BigDecimal calculatedDisc = subtotal
+                            .multiply(num)
+                            .divide(BigDecimal.valueOf(100), 0, java.math.RoundingMode.HALF_UP);
                         if (calculatedDisc.compareTo(subtotal) > 0) {
                             calculatedDisc = subtotal;
                         }
@@ -195,7 +239,8 @@ public class SalesController implements Initializable {
                     } else {
                         if (num.compareTo(subtotal) > 0) {
                             num = subtotal;
-                            final String corrected = subtotal.compareTo(BigDecimal.ZERO) > 0 ? subtotal.toPlainString() : "0";
+                            final String corrected =
+                                subtotal.compareTo(BigDecimal.ZERO) > 0 ? subtotal.toPlainString() : "0";
                             isAdjustingDiscount = true;
                             if (txtDiscount != null) {
                                 txtDiscount.setText(corrected);
@@ -313,7 +358,13 @@ public class SalesController implements Initializable {
         if (nextPage > totalPages || pageCache.containsKey(nextPage)) return;
         BackgroundTasks.run(() -> {
             try {
-                PageResult<MedicineInventoryDTO> prefetched = salesService.getMedicinesPage(nextPage, PAGE_SIZE, kw, cat, totalRecords);
+                PageResult<MedicineInventoryDTO> prefetched = salesService.getMedicinesPage(
+                    nextPage,
+                    PAGE_SIZE,
+                    kw,
+                    cat,
+                    totalRecords
+                );
                 if (prefetched != null) {
                     pageCache.put(nextPage, prefetched);
                 }
@@ -325,16 +376,16 @@ public class SalesController implements Initializable {
 
     private void renderPagination() {
         PaginationHelper.render(
-                paginationBox,
-                lblRecordRange,
-                currentPage,
-                totalPages,
-                totalRecords,
-                PAGE_SIZE,
-                page -> {
-                    currentPage = page;
-                    loadMedicinesData();
-                }
+            paginationBox,
+            lblRecordRange,
+            currentPage,
+            totalPages,
+            totalRecords,
+            PAGE_SIZE,
+            page -> {
+                currentPage = page;
+                loadMedicinesData();
+            }
         );
     }
 
@@ -475,7 +526,10 @@ public class SalesController implements Initializable {
 
         card.setOnMouseClicked(e -> {
             if (outOfStock) {
-                DialogUtils.showWarning("Hết hàng", "Thuốc '" + med.getMedicineName() + "' hiện đã hết hàng trong kho.");
+                DialogUtils.showWarning(
+                    "Hết hàng",
+                    "Thuốc '" + med.getMedicineName() + "' hiện đã hết hàng trong kho."
+                );
                 return;
             }
             addMedicineToCart(med);
@@ -499,19 +553,22 @@ public class SalesController implements Initializable {
 
         int currentQty = getCartQuantityForMedicine(med.getMedicineId());
         if (currentQty + 1 > med.getTotalQuantity()) {
-            DialogUtils.showWarning("Quá tồn kho", "Không thể bán quá số lượng tồn kho khả dụng (" + med.getTotalQuantity() + ").");
+            DialogUtils.showWarning(
+                "Quá tồn kho",
+                "Không thể bán quá số lượng tồn kho khả dụng (" + med.getTotalQuantity() + ")."
+            );
             return;
         }
 
         CartItem item = new CartItem(
-                med.getMedicineId(),
-                med.getMedicineCode(),
-                med.getMedicineName(),
-                med.getUnit(),
-                med.getRequiresPrescription(),
-                med.getSellPrice(),
-                1,
-                med.getTotalQuantity()
+            med.getMedicineId(),
+            med.getMedicineCode(),
+            med.getMedicineName(),
+            med.getUnit(),
+            med.getRequiresPrescription(),
+            med.getSellPrice(),
+            1,
+            med.getTotalQuantity()
         );
 
         activeOrder.addItem(item);
@@ -693,7 +750,10 @@ public class SalesController implements Initializable {
             stage.setScene(scene);
 
             controller.initializeData(activeOrder, orderCode -> {
-                DialogUtils.showInfo("Thanh toán thành công", "Hóa đơn " + orderCode + " đã được thanh toán và trừ kho thành công!");
+                DialogUtils.showInfo(
+                    "Thanh toán thành công",
+                    "Hóa đơn " + orderCode + " đã được thanh toán và trừ kho thành công!"
+                );
                 activeOrder.clear();
                 if (txtCustomerPhone != null) txtCustomerPhone.clear();
                 if (txtDiscount != null) txtDiscount.clear();
@@ -782,4 +842,3 @@ public class SalesController implements Initializable {
         }
     }
 }
-

@@ -1,13 +1,13 @@
 package com.pharmacy.infra.config;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import java.io.InputStream;
+import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
-import java.util.Properties;
-
 public final class AppConfig {
+
     private static final Logger log = LoggerFactory.getLogger(AppConfig.class);
     private static final Properties properties = new Properties();
     private static Dotenv dotenv;
@@ -48,7 +48,7 @@ public final class AppConfig {
         if ((val == null || val.isBlank()) && dotenv != null) {
             val = dotenv.get(key);
         }
-        return (val == null || val.isBlank()) ? null : val.trim();
+        return val == null || val.isBlank() ? null : val.trim();
     }
 
     public static String get(String key) {

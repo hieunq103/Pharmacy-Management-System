@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MigrationRunner {
+
     private static final Logger log = LoggerFactory.getLogger(MigrationRunner.class);
 
     public static void main(String[] args) {
@@ -27,11 +28,11 @@ public class MigrationRunner {
 
         try (HikariDataSource dataSource = new HikariDataSource(hikariConfig)) {
             Flyway flyway = Flyway.configure()
-                    .dataSource(dataSource)
-                    .locations(AppConfig.get("flyway.locations", "classpath:db/migration"))
-                    .baselineOnMigrate(Boolean.parseBoolean(AppConfig.get("flyway.baselineOnMigrate", "true")))
-                    .cleanDisabled(true)
-                    .load();
+                .dataSource(dataSource)
+                .locations(AppConfig.get("flyway.locations", "classpath:db/migration"))
+                .baselineOnMigrate(Boolean.parseBoolean(AppConfig.get("flyway.baselineOnMigrate", "true")))
+                .cleanDisabled(true)
+                .load();
 
             flyway.migrate();
             log.info("Flyway migration hoàn tất thành công.");

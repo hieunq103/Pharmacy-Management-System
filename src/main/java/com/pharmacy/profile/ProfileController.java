@@ -1,9 +1,12 @@
 package com.pharmacy.profile;
 
-import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.account.Account;
+import com.pharmacy.common.BackgroundTasks;
+import com.pharmacy.common.FormValidator;
+import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.UserSession;
 import com.pharmacy.employee.Employee;
+import com.pharmacy.profile.dto.ProfileUpdateRequest;
 import javafx.animation.PauseTransition;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -18,15 +21,14 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.pharmacy.common.FormatUtils;
-import com.pharmacy.common.FormValidator;
-import com.pharmacy.profile.dto.ProfileUpdateRequest;
-
 public class ProfileController {
+
     private static final Logger log = LoggerFactory.getLogger(ProfileController.class);
 
     public enum StatusType {
-        SUCCESS, ERROR, INFO
+        SUCCESS,
+        ERROR,
+        INFO,
     }
 
     @FXML
@@ -39,32 +41,43 @@ public class ProfileController {
 
     @FXML
     private TextField txtEmployeeCode;
+
     @FXML
     private TextField txtHiredDate;
+
     @FXML
     private TextField txtFullName;
+
     @FXML
     private TextField txtNationalId;
+
     @FXML
     private TextField txtDob;
+
     @FXML
     private TextField txtGender;
+
     @FXML
     private TextField txtRole;
 
     @FXML
     private TextField txtPhone;
+
     @FXML
     private TextField txtAddress;
 
     @FXML
     private Button btnEdit;
+
     @FXML
     private HBox boxEditActions;
+
     @FXML
     private Button btnCancel;
+
     @FXML
     private Button btnSave;
+
     @FXML
     private Button btnChangePassword;
 
@@ -100,13 +113,14 @@ public class ProfileController {
         }
 
         Account account = UserSession.getInstance().getAccount();
-        if (account == null)
-            return;
+        if (account == null) return;
 
         Employee emp = account.getEmployee();
         if (emp != null) {
             txtEmployeeCode.setText(emp.getCode() != null ? emp.getCode() : "");
-            txtHiredDate.setText(emp.getHiredDate() != null ? FormatUtils.formatDate(emp.getHiredDate()) : "Chưa cập nhật");
+            txtHiredDate.setText(
+                emp.getHiredDate() != null ? FormatUtils.formatDate(emp.getHiredDate()) : "Chưa cập nhật"
+            );
             txtFullName.setText(emp.getFullName() != null ? emp.getFullName() : "");
             txtNationalId.setText(emp.getNationalId() != null ? emp.getNationalId() : "");
 
@@ -127,11 +141,11 @@ public class ProfileController {
     }
 
     private void setEditMode(boolean editing) {
-        for (TextField editable : new TextField[]{txtFullName, txtPhone, txtAddress}) {
+        for (TextField editable : new TextField[] { txtFullName, txtPhone, txtAddress }) {
             editable.setEditable(editing);
             applyInputState(editable, editing);
         }
-        for (TextField locked : new TextField[]{txtEmployeeCode, txtHiredDate, txtNationalId, txtDob, txtGender}) {
+        for (TextField locked : new TextField[] { txtEmployeeCode, txtHiredDate, txtNationalId, txtDob, txtGender }) {
             locked.setEditable(false);
             applyInputState(locked, false);
         }
@@ -202,8 +216,10 @@ public class ProfileController {
         }
 
         if (!FormValidator.isValidPhone(phone)) {
-            showStatus("Số điện thoại không hợp lệ (phải gồm 10 chữ số, bắt đầu bằng 03, 05, 07, 08 hoặc 09).",
-                    StatusType.ERROR);
+            showStatus(
+                "Số điện thoại không hợp lệ (phải gồm 10 chữ số, bắt đầu bằng 03, 05, 07, 08 hoặc 09).",
+                StatusType.ERROR
+            );
             txtPhone.requestFocus();
             return;
         }
@@ -220,9 +236,10 @@ public class ProfileController {
             return;
         }
 
-        boolean hasChanged = !fullName.equals(emp.getFullName() != null ? emp.getFullName().trim() : "")
-                || !phone.equals(emp.getPhone() != null ? emp.getPhone().trim() : "")
-                || !address.equals(emp.getAddress() != null ? emp.getAddress().trim() : "");
+        boolean hasChanged =
+            !fullName.equals(emp.getFullName() != null ? emp.getFullName().trim() : "") ||
+            !phone.equals(emp.getPhone() != null ? emp.getPhone().trim() : "") ||
+            !address.equals(emp.getAddress() != null ? emp.getAddress().trim() : "");
 
         if (!hasChanged) {
             showStatus("Thông tin được giữ nguyên, không có thay đổi nào cần lưu.", StatusType.INFO);
@@ -266,13 +283,17 @@ public class ProfileController {
             if (ex instanceof IllegalArgumentException) {
                 showStatus(errorMsg, StatusType.ERROR);
                 txtPhone.requestFocus();
-            } else if (errorMsg != null
-                    && (errorMsg.contains("Duplicate entry") || errorMsg.contains("ConstraintViolationException"))) {
+            } else if (
+                errorMsg != null &&
+                (errorMsg.contains("Duplicate entry") || errorMsg.contains("ConstraintViolationException"))
+            ) {
                 showStatus("Số điện thoại này đã được sử dụng bởi một nhân viên khác.", StatusType.ERROR);
                 txtPhone.requestFocus();
             } else {
-                showStatus("Lỗi khi lưu dữ liệu: " + (errorMsg != null ? errorMsg : "Không xác định"),
-                        StatusType.ERROR);
+                showStatus(
+                    "Lỗi khi lưu dữ liệu: " + (errorMsg != null ? errorMsg : "Không xác định"),
+                    StatusType.ERROR
+                );
             }
         });
 
@@ -284,9 +305,12 @@ public class ProfileController {
         clearStatus();
 
         Account acc = UserSession.getInstance().getAccount();
-        String username = (acc != null && acc.getUsername() != null && !acc.getUsername().isBlank())
+        String username =
+            acc != null && acc.getUsername() != null && !acc.getUsername().isBlank()
                 ? acc.getUsername()
-                : (UserSession.getInstance().getEmployee() != null ? UserSession.getInstance().getEmployee().getCode() : null);
+                : UserSession.getInstance().getEmployee() != null
+                  ? UserSession.getInstance().getEmployee().getCode()
+                  : null;
 
         if (username == null || username.isBlank()) {
             showStatus("Không tìm thấy thông tin tài khoản đăng nhập.", StatusType.ERROR);
@@ -294,11 +318,9 @@ public class ProfileController {
         }
 
         Window owner = btnChangePassword.getScene().getWindow();
-        ChangePasswordDialog dialog = new ChangePasswordDialog(
-                owner,
-                profileService,
-                username,
-                successMsg -> showStatus(successMsg, StatusType.SUCCESS));
+        ChangePasswordDialog dialog = new ChangePasswordDialog(owner, profileService, username, successMsg ->
+            showStatus(successMsg, StatusType.SUCCESS)
+        );
 
         dialog.showAndWait();
     }
@@ -314,32 +336,35 @@ public class ProfileController {
 
         switch (type) {
             case ERROR -> lblStatusMessage.setStyle(
-                    "-fx-background-color: #FEE2E2; " +
-                            "-fx-text-fill: #DC2626; " +
-                            "-fx-padding: 8 12; " +
-                            "-fx-background-radius: 6; " +
-                            "-fx-font-family: 'Inter 18pt SemiBold'; " +
-                            "-fx-font-size: 13.5px;");
+                "-fx-background-color: #FEE2E2; " +
+                    "-fx-text-fill: #DC2626; " +
+                    "-fx-padding: 8 12; " +
+                    "-fx-background-radius: 6; " +
+                    "-fx-font-family: 'Inter 18pt SemiBold'; " +
+                    "-fx-font-size: 13.5px;"
+            );
             case SUCCESS -> {
                 lblStatusMessage.setStyle(
-                        "-fx-background-color: #DCFCE7; " +
-                                "-fx-text-fill: #16A34A; " +
-                                "-fx-padding: 8 12; " +
-                                "-fx-background-radius: 6; " +
-                                "-fx-font-family: 'Inter 18pt SemiBold'; " +
-                                "-fx-font-size: 13.5px;");
+                    "-fx-background-color: #DCFCE7; " +
+                        "-fx-text-fill: #16A34A; " +
+                        "-fx-padding: 8 12; " +
+                        "-fx-background-radius: 6; " +
+                        "-fx-font-family: 'Inter 18pt SemiBold'; " +
+                        "-fx-font-size: 13.5px;"
+                );
                 statusTimer = new PauseTransition(Duration.seconds(3));
                 statusTimer.setOnFinished(event -> clearStatus());
                 statusTimer.play();
             }
             case INFO -> {
                 lblStatusMessage.setStyle(
-                        "-fx-background-color: #EFF6FF; " +
-                                "-fx-text-fill: #2563EB; " +
-                                "-fx-padding: 8 12; " +
-                                "-fx-background-radius: 6; " +
-                                "-fx-font-family: 'Inter 18pt SemiBold'; " +
-                                "-fx-font-size: 13.5px;");
+                    "-fx-background-color: #EFF6FF; " +
+                        "-fx-text-fill: #2563EB; " +
+                        "-fx-padding: 8 12; " +
+                        "-fx-background-radius: 6; " +
+                        "-fx-font-family: 'Inter 18pt SemiBold'; " +
+                        "-fx-font-size: 13.5px;"
+                );
                 statusTimer = new PauseTransition(Duration.seconds(3));
                 statusTimer.setOnFinished(event -> clearStatus());
                 statusTimer.play();

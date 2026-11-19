@@ -1,9 +1,8 @@
 package com.pharmacy.common;
 
-import org.hibernate.query.SelectionQuery;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.hibernate.query.SelectionQuery;
 
 /**
  * Dựng điều kiện tìm kiếm HQL từ từ khóa người dùng nhập:
@@ -18,6 +17,7 @@ import java.util.List;
  * Collation utf8mb4_unicode_ci của schema đã không phân biệt hoa/thường và dấu.
  */
 public final class SearchFilter {
+
     private static final int MAX_TOKENS = 6;
     private static final char ESC = '!';
 

@@ -1,18 +1,16 @@
 package com.pharmacy.common;
 
+import java.util.function.Consumer;
 import javafx.animation.PauseTransition;
 import javafx.scene.control.TextField;
 import javafx.util.Duration;
 
-import java.util.function.Consumer;
-
 public final class DebounceUtil {
-    private DebounceUtil() {
-    }
+
+    private DebounceUtil() {}
 
     public static PauseTransition debounce(TextField textField, Duration delay, Consumer<String> onAction) {
-        if (textField == null || onAction == null)
-            return null;
+        if (textField == null || onAction == null) return null;
 
         PauseTransition pause = new PauseTransition(delay != null ? delay : Duration.millis(350));
         pause.setOnFinished(e -> {

@@ -13,19 +13,23 @@ public final class BackgroundTasks {
     private static final AtomicInteger SEQ = new AtomicInteger();
 
     private static final ThreadPoolExecutor POOL = new ThreadPoolExecutor(
-            CORE_THREADS, MAX_THREADS, IDLE_SECONDS, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
-            r -> {
-                Thread t = new Thread(r, "pharma-bg-" + SEQ.incrementAndGet());
-                t.setDaemon(true);
-                return t;
-            });
+        CORE_THREADS,
+        MAX_THREADS,
+        IDLE_SECONDS,
+        TimeUnit.SECONDS,
+        new LinkedBlockingQueue<>(),
+        r -> {
+            Thread t = new Thread(r, "pharma-bg-" + SEQ.incrementAndGet());
+            t.setDaemon(true);
+            return t;
+        }
+    );
 
     static {
         POOL.prestartAllCoreThreads();
     }
 
-    private BackgroundTasks() {
-    }
+    private BackgroundTasks() {}
 
     public static java.util.concurrent.Executor getExecutor() {
         return POOL;

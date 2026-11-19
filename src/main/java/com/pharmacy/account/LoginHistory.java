@@ -7,10 +7,12 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "login_history")
 public class LoginHistory implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     public enum Result {
-        SUCCESS, FAILED
+        SUCCESS,
+        FAILED,
     }
 
     @Id
@@ -32,8 +34,7 @@ public class LoginHistory implements Serializable {
     @Column(name = "client_info", length = 255)
     private String clientInfo;
 
-    public LoginHistory() {
-    }
+    public LoginHistory() {}
 
     public LoginHistory(Account account, Result result, String clientInfo) {
         this.account = account;
@@ -41,4 +42,3 @@ public class LoginHistory implements Serializable {
         this.clientInfo = clientInfo;
     }
 }
-

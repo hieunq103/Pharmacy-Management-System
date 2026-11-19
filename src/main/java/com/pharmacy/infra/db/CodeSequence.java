@@ -9,6 +9,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "code_sequences")
 public class CodeSequence implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -18,8 +19,7 @@ public class CodeSequence implements Serializable {
     @Column(name = "current_number", nullable = false)
     private long currentNumber;
 
-    public CodeSequence() {
-    }
+    public CodeSequence() {}
 
     public CodeSequence(String name, long currentNumber) {
         this.name = name;
@@ -34,4 +34,3 @@ public class CodeSequence implements Serializable {
         this.currentNumber = currentNumber;
     }
 }
-

@@ -1,15 +1,15 @@
 package com.pharmacy.sales.payment;
 
 import com.pharmacy.infra.config.AppConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PaymentConfig {
+
     private static final Logger log = LoggerFactory.getLogger(PaymentConfig.class);
     private static final Properties props = new Properties();
 
@@ -47,8 +47,7 @@ public class PaymentConfig {
                 String pollStr = props.getProperty("sepay.poll_interval_ms", "2000").trim();
                 try {
                     pollIntervalMs = Long.parseLong(pollStr);
-                } catch (NumberFormatException ignored) {
-                }
+                } catch (NumberFormatException ignored) {}
 
                 bankId = envOr("PAYMENT_BANK_ID", bankId);
                 accountNo = envOr("PAYMENT_ACCOUNT_NO", accountNo);
@@ -57,8 +56,13 @@ public class PaymentConfig {
                 storeCode = envOr("PAYMENT_STORE_CODE", storeCode);
 
                 log.info(
-                        "Loaded payment configuration: StoreCode={}, Bank={}, AccountNo={}, AccountName={}, SePAY Token present={}",
-                        storeCode, bankId, accountNo, accountName, isSepayConfigured());
+                    "Loaded payment configuration: StoreCode={}, Bank={}, AccountNo={}, AccountName={}, SePAY Token present={}",
+                    storeCode,
+                    bankId,
+                    accountNo,
+                    accountName,
+                    isSepayConfigured()
+                );
             }
         } catch (Exception e) {
             log.error("Failed to load payment.properties: {}", e.getMessage());
@@ -66,8 +70,7 @@ public class PaymentConfig {
             if (in != null) {
                 try {
                     in.close();
-                } catch (Exception ignored) {
-                }
+                } catch (Exception ignored) {}
             }
         }
     }
@@ -106,7 +109,10 @@ public class PaymentConfig {
     }
 
     public static boolean isSepayConfigured() {
-        return sepayApiToken != null && !sepayApiToken.isBlank()
-                && !sepayApiToken.equalsIgnoreCase("YOUR_SEPAY_API_TOKEN_HERE");
+        return (
+            sepayApiToken != null &&
+            !sepayApiToken.isBlank() &&
+            !sepayApiToken.equalsIgnoreCase("YOUR_SEPAY_API_TOKEN_HERE")
+        );
     }
 }

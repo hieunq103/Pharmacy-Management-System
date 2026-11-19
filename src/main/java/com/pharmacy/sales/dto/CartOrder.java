@@ -1,18 +1,27 @@
 package com.pharmacy.sales.dto;
 
+import java.math.BigDecimal;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.math.BigDecimal;
-
 public class CartOrder {
+
     private final ObservableList<CartItem> items = FXCollections.observableArrayList();
     private String customerPhone = "";
     private BigDecimal discount = BigDecimal.ZERO;
 
-    public ObservableList<CartItem> getItems() { return items; }
-    public String getCustomerPhone() { return customerPhone; }
-    public void setCustomerPhone(String customerPhone) { this.customerPhone = customerPhone; }
+    public ObservableList<CartItem> getItems() {
+        return items;
+    }
+
+    public String getCustomerPhone() {
+        return customerPhone;
+    }
+
+    public void setCustomerPhone(String customerPhone) {
+        this.customerPhone = customerPhone;
+    }
+
     public BigDecimal getDiscount() {
         return CartTotals.clampDiscount(discount, getSubtotal());
     }

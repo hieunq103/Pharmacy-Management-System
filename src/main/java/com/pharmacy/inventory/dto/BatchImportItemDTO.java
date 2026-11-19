@@ -1,11 +1,11 @@
 package com.pharmacy.inventory.dto;
 
 import com.pharmacy.common.FormatUtils;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class BatchImportItemDTO {
+
     private boolean isNewMedicine;
     private Integer existingMedicineId;
     private String medicineCode;
@@ -23,13 +23,19 @@ public class BatchImportItemDTO {
     private BigDecimal importPrice;
     private BigDecimal lineTotal;
 
-    public BatchImportItemDTO() {
-    }
+    public BatchImportItemDTO() {}
 
     public static BatchImportItemDTO fromExisting(
-            Integer medicineId, String code, String name, String categoryName,
-            String manufacturer, String lotNumber, LocalDate expiryDate,
-            String unit, int quantityIn, BigDecimal importPrice
+        Integer medicineId,
+        String code,
+        String name,
+        String categoryName,
+        String manufacturer,
+        String lotNumber,
+        LocalDate expiryDate,
+        String unit,
+        int quantityIn,
+        BigDecimal importPrice
     ) {
         BatchImportItemDTO item = new BatchImportItemDTO();
         item.setNewMedicine(false);
@@ -48,9 +54,18 @@ public class BatchImportItemDTO {
     }
 
     public static BatchImportItemDTO fromNew(
-            String code, String name, String categoryName, String activeIngredient,
-            String manufacturer, BigDecimal sellPrice, boolean requiresPrescription,
-            String lotNumber, LocalDate expiryDate, String unit, int quantityIn, BigDecimal importPrice
+        String code,
+        String name,
+        String categoryName,
+        String activeIngredient,
+        String manufacturer,
+        BigDecimal sellPrice,
+        boolean requiresPrescription,
+        String lotNumber,
+        LocalDate expiryDate,
+        String unit,
+        int quantityIn,
+        BigDecimal importPrice
     ) {
         BatchImportItemDTO item = new BatchImportItemDTO();
         item.setNewMedicine(true);

@@ -6,6 +6,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "medicine_categories")
 public class MedicineCategory implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -16,11 +17,9 @@ public class MedicineCategory implements Serializable {
     @Column(name = "name", nullable = false, unique = true, length = 100)
     private String name;
 
-    public MedicineCategory() {
-    }
+    public MedicineCategory() {}
 
     public MedicineCategory(String name) {
         this.name = name;
     }
 }
-

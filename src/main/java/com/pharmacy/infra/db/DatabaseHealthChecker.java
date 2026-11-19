@@ -1,15 +1,15 @@
 package com.pharmacy.infra.db;
 
-import javafx.application.Platform;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import javafx.application.Platform;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class DatabaseHealthChecker {
+
     private static final Logger log = LoggerFactory.getLogger(DatabaseHealthChecker.class);
 
     private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(runnable -> {
@@ -20,19 +20,23 @@ public final class DatabaseHealthChecker {
 
     private static volatile boolean connected = true;
 
-    private DatabaseHealthChecker() {
-    }
+    private DatabaseHealthChecker() {}
 
     public static void startMonitoring(int intervalSeconds, Consumer<Boolean> onStatusChange) {
-        scheduler.scheduleWithFixedDelay(() -> {
-            boolean alive = HibernateUtil.isDatabaseAlive();
-            if (alive != connected) {
-                connected = alive;
-                log.warn("Trạng thái kết nối CSDL thay đổi: {}", alive ? "ONLINE" : "DISCONNECTED");
-                if (onStatusChange != null) {
-                    Platform.runLater(() -> onStatusChange.accept(alive));
+        scheduler.scheduleWithFixedDelay(
+            () -> {
+                boolean alive = HibernateUtil.isDatabaseAlive();
+                if (alive != connected) {
+                    connected = alive;
+                    log.warn("Trạng thái kết nối CSDL thay đổi: {}", alive ? "ONLINE" : "DISCONNECTED");
+                    if (onStatusChange != null) {
+                        Platform.runLater(() -> onStatusChange.accept(alive));
+                    }
                 }
-            }
-        }, 2, intervalSeconds, TimeUnit.SECONDS);
+            },
+            2,
+            intervalSeconds,
+            TimeUnit.SECONDS
+        );
     }
 }

@@ -8,8 +8,10 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "accounts")
 public class Account implements Serializable {
+
     public enum Status {
-        ACTIVE, DISABLED
+        ACTIVE,
+        DISABLED,
     }
 
     @Id
@@ -44,8 +46,7 @@ public class Account implements Serializable {
     @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
 
-    public Account() {
-    }
+    public Account() {}
 
     public Integer getId() {
         return id;
@@ -102,5 +103,4 @@ public class Account implements Serializable {
     public boolean isManager() {
         return role != null && "MANAGER".equalsIgnoreCase(role.getCode());
     }
-
 }

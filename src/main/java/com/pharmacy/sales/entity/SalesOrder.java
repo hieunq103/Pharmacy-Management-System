@@ -9,10 +9,13 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "sales_orders")
 public class SalesOrder implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     public enum PaymentMethod {
-        CASH, TRANSFER, CARD
+        CASH,
+        TRANSFER,
+        CARD,
     }
 
     @Id
@@ -43,8 +46,7 @@ public class SalesOrder implements Serializable {
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public SalesOrder() {
-    }
+    public SalesOrder() {}
 
     public void setCode(String code) {
         this.code = code;
@@ -70,4 +72,3 @@ public class SalesOrder implements Serializable {
         this.paymentMethod = paymentMethod;
     }
 }
-

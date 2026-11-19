@@ -1,29 +1,54 @@
 package com.pharmacy.employee;
 
-import javafx.collections.FXCollections;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.*;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 
 public class AddEmployeeController implements Initializable {
-    @FXML private TextField txtEmployeeCode;
-    @FXML private TextField txtFullName;
-    @FXML private DatePicker dpBirthDate;
-    @FXML private ComboBox<String> cbGender;
-    @FXML private ComboBox<String> cbRole;
-    @FXML private TextField txtCitizenId;
-    @FXML private TextField txtPhone;
-    @FXML private TextField txtAddress;
 
-    @FXML private Label lblErrorName;
-    @FXML private Label lblErrorBirthDate;
-    @FXML private Label lblErrorCitizenId;
-    @FXML private Label lblErrorPhone;
-    @FXML private Label lblErrorAddress;
+    @FXML
+    private TextField txtEmployeeCode;
+
+    @FXML
+    private TextField txtFullName;
+
+    @FXML
+    private DatePicker dpBirthDate;
+
+    @FXML
+    private ComboBox<String> cbGender;
+
+    @FXML
+    private ComboBox<String> cbRole;
+
+    @FXML
+    private TextField txtCitizenId;
+
+    @FXML
+    private TextField txtPhone;
+
+    @FXML
+    private TextField txtAddress;
+
+    @FXML
+    private Label lblErrorName;
+
+    @FXML
+    private Label lblErrorBirthDate;
+
+    @FXML
+    private Label lblErrorCitizenId;
+
+    @FXML
+    private Label lblErrorPhone;
+
+    @FXML
+    private Label lblErrorAddress;
 
     private Runnable onCloseCallback;
     private Consumer<Employee> onSaveSuccessCallback;
@@ -35,11 +60,9 @@ public class AddEmployeeController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         txtEmployeeCode.setText(PENDING_CODE);
 
-        cbGender.setItems(FXCollections.observableArrayList(
-                Employee.GENDER_MALE,
-                Employee.GENDER_FEMALE,
-                Employee.GENDER_OTHER
-        ));
+        cbGender.setItems(
+            FXCollections.observableArrayList(Employee.GENDER_MALE, Employee.GENDER_FEMALE, Employee.GENDER_OTHER)
+        );
         cbGender.setValue(Employee.GENDER_MALE);
 
         cbRole.setItems(FXCollections.observableArrayList("Nhân viên", "Quản lý"));
@@ -136,8 +159,11 @@ public class AddEmployeeController implements Initializable {
             var account = employeeService.createEmployeeWithAccount(newEmp, role);
 
             if (account.isPresent()) {
-                NewAccountDialog.showCreated(txtFullName.getScene() != null ? txtFullName.getScene().getWindow() : null,
-                        newEmp.getFullName(), account.get());
+                NewAccountDialog.showCreated(
+                    txtFullName.getScene() != null ? txtFullName.getScene().getWindow() : null,
+                    newEmp.getFullName(),
+                    account.get()
+                );
                 if (onSaveSuccessCallback != null) {
                     onSaveSuccessCallback.accept(newEmp);
                 }

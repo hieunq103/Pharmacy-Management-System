@@ -18,21 +18,21 @@
 
 /* ---------- Nút X đóng ---------- */
 .btn-icon-close {
-    -fx-background-color: #EF4444;
-    -fx-border-color: #DC2626;
+    -fx-background-color: #ef4444;
+    -fx-border-color: #dc2626;
     -fx-border-width: 1px;
 }
 
 .btn-icon-close:hover {
-    -fx-background-color: #DC2626;
+    -fx-background-color: #dc2626;
 }
 
 .btn-icon-close:pressed {
-    -fx-background-color: #B91C1C;
+    -fx-background-color: #b91c1c;
 }
 
 .btn-icon-close .btn-icon-glyph {
-    -fx-stroke: #FFFFFF;
+    -fx-stroke: #ffffff;
     -fx-stroke-width: 2;
     -fx-stroke-line-cap: round;
 }
@@ -45,9 +45,9 @@
     -fx-pref-height: 38px;
     -fx-max-height: 38px;
     -fx-padding: 0 16;
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: #f1f5f9;
     -fx-background-radius: 10px;
-    -fx-border-color: #CBD5E1;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 10px;
     -fx-border-width: 1px;
     -fx-font-family: "Inter 18pt SemiBold";
@@ -63,13 +63,13 @@
 }
 
 .btn-back:hover {
-    -fx-background-color: #E2E8F0;
-    -fx-border-color: #94A3B8;
-    -fx-text-fill: #0F172A;
+    -fx-background-color: #e2e8f0;
+    -fx-border-color: #94a3b8;
+    -fx-text-fill: #0f172a;
 }
 
 .btn-back:pressed {
-    -fx-background-color: #CBD5E1;
+    -fx-background-color: #cbd5e1;
 }
 
 .btn-back .btn-back-glyph {
@@ -81,7 +81,7 @@
 }
 
 .btn-back:hover .btn-back-glyph {
-    -fx-stroke: #0F172A;
+    -fx-stroke: #0f172a;
 }
 
 /* ---------- Nút Lịch sử bán hàng (biểu tượng đồng hồ quay ngược) ---------- */
@@ -93,40 +93,40 @@
     -fx-max-width: 44px;
     -fx-max-height: 44px;
     -fx-padding: 0;
-    -fx-background-color: #EFF6FF;
+    -fx-background-color: #eff6ff;
     -fx-background-radius: 10px;
-    -fx-border-color: #BFDBFE;
+    -fx-border-color: #bfdbfe;
     -fx-border-width: 1.5px;
     -fx-border-radius: 10px;
     -fx-cursor: hand;
 }
 
 .btn-icon-history:hover {
-    -fx-background-color: #DBEAFE;
-    -fx-border-color: #93C5FD;
+    -fx-background-color: #dbeafe;
+    -fx-border-color: #93c5fd;
 }
 
 .btn-icon-history:pressed {
-    -fx-background-color: #BFDBFE;
+    -fx-background-color: #bfdbfe;
 }
 
 .btn-icon-history .btn-icon-history-glyph {
-    -fx-fill: #0066FF;
+    -fx-fill: #0066ff;
     -fx-scale-x: 0.95;
     -fx-scale-y: 0.95;
 }
 
 /* ---------- Nút "Xem đầy đủ →" (Báo cáo: top 5 thuốc; Tổng quan: giao dịch gần đây) ---------- */
 .btn-view-full {
-    -fx-background-color: #EFF6FF;
+    -fx-background-color: #eff6ff;
     -fx-background-radius: 8px;
-    -fx-border-color: #BFDBFE;
+    -fx-border-color: #bfdbfe;
     -fx-border-radius: 8px;
     -fx-border-width: 1px;
     -fx-padding: 6 14;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13px;
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
     -fx-content-display: RIGHT;
     -fx-graphic-text-gap: 8px;
     -fx-cursor: hand;
@@ -137,17 +137,17 @@
 }
 
 .btn-view-full:hover {
-    -fx-background-color: #DBEAFE;
-    -fx-border-color: #93C5FD;
+    -fx-background-color: #dbeafe;
+    -fx-border-color: #93c5fd;
 }
 
 .btn-view-full:pressed {
-    -fx-background-color: #BFDBFE;
+    -fx-background-color: #bfdbfe;
 }
 
 .btn-view-full-glyph {
     -fx-fill: transparent;
-    -fx-stroke: #0066FF;
+    -fx-stroke: #0066ff;
     -fx-stroke-width: 1.8;
     -fx-stroke-line-cap: round;
     -fx-stroke-line-join: round;

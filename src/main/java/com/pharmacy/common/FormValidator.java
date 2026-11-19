@@ -4,17 +4,17 @@ import com.pharmacy.infra.exception.ErrorCode;
 import java.util.regex.Pattern;
 
 public final class FormValidator {
+
     private static final Pattern PHONE_PATTERN = Pattern.compile("^(03|05|07|08|09)\\d{8}$");
 
     private static final Pattern NATIONAL_ID_PATTERN = Pattern.compile("^\\d{12}$");
 
-    private FormValidator() {
-    }
+    private FormValidator() {}
 
     public static ValidationResult validateLoginForm(String username, String password) {
-        String cleanUsername = (username != null) ? username.trim() : "";
+        String cleanUsername = username != null ? username.trim() : "";
         boolean idEmpty = cleanUsername.isEmpty();
-        boolean pwdEmpty = (password == null || password.isEmpty());
+        boolean pwdEmpty = password == null || password.isEmpty();
 
         if (idEmpty && pwdEmpty) {
             return ValidationResult.fail(TargetField.BOTH, ErrorCode.EMPTY_LOGIN_FIELDS);
@@ -38,7 +38,10 @@ public final class FormValidator {
     }
 
     public enum TargetField {
-        NONE, IDENTIFIER, PASSWORD, BOTH
+        NONE,
+        IDENTIFIER,
+        PASSWORD,
+        BOTH,
     }
 
     public record ValidationResult(boolean isValid, TargetField targetField, ErrorCode errorCode) {

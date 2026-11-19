@@ -1,6 +1,7 @@
 package com.pharmacy.inventory.ui;
 
 import com.pharmacy.common.FormatUtils;
+import java.util.List;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -16,9 +17,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.util.Duration;
 
-import java.util.List;
-
 public class SearchableStringPicker extends VBox {
+
     private final TextField txtInput = new TextField();
     private final Button btnClear = new Button("✕");
     private final ListView<String> listView = new ListView<>();
@@ -45,64 +45,78 @@ public class SearchableStringPicker extends VBox {
         listView.setPrefHeight(150);
         listView.setMaxHeight(200);
 
-        listView.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    HBox row = new HBox(6);
-                    row.setAlignment(Pos.CENTER_LEFT);
-                    row.setStyle("-fx-padding: 7 10; -fx-cursor: hand;");
+        listView.setCellFactory(lv ->
+            new ListCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        HBox row = new HBox(6);
+                        row.setAlignment(Pos.CENTER_LEFT);
+                        row.setStyle("-fx-padding: 7 10; -fx-cursor: hand;");
 
-                    Label lbl = new Label(item);
-                    lbl.setStyle("-fx-font-size: 13px; -fx-font-family: 'Inter 18pt'; -fx-text-fill: #1E293B;");
-                    HBox.setHgrow(lbl, Priority.ALWAYS);
+                        Label lbl = new Label(item);
+                        lbl.setStyle("-fx-font-size: 13px; -fx-font-family: 'Inter 18pt'; -fx-text-fill: #1E293B;");
+                        HBox.setHgrow(lbl, Priority.ALWAYS);
 
-                    row.getChildren().add(lbl);
+                        row.getChildren().add(lbl);
 
-                    row.setOnMousePressed(e -> {
-                        applySelection(item);
-                        e.consume();
-                    });
+                        row.setOnMousePressed(e -> {
+                            applySelection(item);
+                            e.consume();
+                        });
 
-                    setGraphic(row);
-                    setText(null);
+                        setGraphic(row);
+                        setText(null);
+                    }
                 }
             }
-        });
+        );
 
         SVGPath svgSearch = new SVGPath();
-        svgSearch.setContent("M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z");
+        svgSearch.setContent(
+            "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+        );
         svgSearch.setFill(Color.web("#94A3B8"));
 
         txtInput.setPromptText(promptText);
-        txtInput.setStyle("-fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 13.5px; -fx-font-family: 'Inter 18pt'; -fx-text-fill: #0F172A; -fx-padding: 4 0;");
+        txtInput.setStyle(
+            "-fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 13.5px; -fx-font-family: 'Inter 18pt'; -fx-text-fill: #0F172A; -fx-padding: 4 0;"
+        );
         HBox.setHgrow(txtInput, Priority.ALWAYS);
 
-        btnClear.setStyle("-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-cursor: hand; -fx-font-size: 12px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-padding: 2 6;");
+        btnClear.setStyle(
+            "-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-cursor: hand; -fx-font-size: 12px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-padding: 2 6;"
+        );
         btnClear.setVisible(false);
         btnClear.setManaged(false);
         btnClear.setOnAction(e -> clear());
 
         inputContainer.setAlignment(Pos.CENTER_LEFT);
         inputContainer.getStyleClass().add("string-picker-box");
-        inputContainer.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12;");
+        inputContainer.setStyle(
+            "-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12;"
+        );
         inputContainer.getChildren().addAll(svgSearch, txtInput, btnClear);
 
         txtInput.focusedProperty().addListener((obs, oldV, isFocused) -> {
             if (isFocused) {
                 if (!inputContainer.getStyleClass().contains("form-input-error")) {
-                    inputContainer.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #0066FF; -fx-border-width: 1.2px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12; -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.15), 4, 0, 0, 0);");
+                    inputContainer.setStyle(
+                        "-fx-background-color: #FFFFFF; -fx-border-color: #0066FF; -fx-border-width: 1.2px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12; -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.15), 4, 0, 0, 0);"
+                    );
                 }
                 if (!txtInput.getText().trim().isEmpty() && !resultsContainer.isVisible()) {
                     showResults();
                 }
             } else {
                 if (!inputContainer.getStyleClass().contains("form-input-error")) {
-                    inputContainer.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12; -fx-effect: null;");
+                    inputContainer.setStyle(
+                        "-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12; -fx-effect: null;"
+                    );
                 }
             }
         });
@@ -126,7 +140,9 @@ public class SearchableStringPicker extends VBox {
             }
         });
 
-        resultsContainer.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4); -fx-padding: 2;");
+        resultsContainer.setStyle(
+            "-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4); -fx-padding: 2;"
+        );
         resultsContainer.setVisible(false);
         resultsContainer.setManaged(false);
 
@@ -264,7 +280,9 @@ public class SearchableStringPicker extends VBox {
 
     public void clearErrorStyle() {
         inputContainer.getStyleClass().remove("form-input-error");
-        inputContainer.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12;");
+        inputContainer.setStyle(
+            "-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12;"
+        );
     }
 
     private static String removeAccents(String s) {

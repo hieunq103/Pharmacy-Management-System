@@ -9,6 +9,13 @@ import com.pharmacy.sales.dto.SalesOrderRequest;
 import com.pharmacy.sales.payment.PaymentConfig;
 import com.pharmacy.sales.payment.SepayService;
 import com.pharmacy.sales.payment.VietQrService;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -23,45 +30,78 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-
 public class PaymentDialogController {
+
     private static final Logger log = LoggerFactory.getLogger(PaymentDialogController.class);
 
-    @FXML private Label lblDialogOrderCode;
-    @FXML private ScrollPane scrollDialogCart;
-    @FXML private VBox boxDialogCartItems;
+    @FXML
+    private Label lblDialogOrderCode;
 
-    @FXML private Label lblDialogSubtotal;
-    @FXML private Label lblDialogDiscount;
-    @FXML private Label lblTotalAmount;
-    @FXML private HBox boxPrescriptionWarning;
-    @FXML private CheckBox chkPrescriptionConfirmed;
+    @FXML
+    private ScrollPane scrollDialogCart;
 
-    @FXML private Button btnMethodCash;
-    @FXML private Button btnMethodTransfer;
+    @FXML
+    private VBox boxDialogCartItems;
 
-    @FXML private VBox paneCash;
-    @FXML private TextField txtCashGiven;
-    @FXML private Label lblChangeAmount;
+    @FXML
+    private Label lblDialogSubtotal;
 
-    @FXML private VBox paneTransfer;
-    @FXML private ImageView imgQrCode;
-    @FXML private ProgressIndicator progressQr;
-    @FXML private VBox boxSuccessOverlay;
-    @FXML private Label lblBankName;
-    @FXML private Label lblAccountNo;
-    @FXML private Label lblAccountName;
-    @FXML private Label lblTransferAmount;
-    @FXML private Label lblTransferContent;
+    @FXML
+    private Label lblDialogDiscount;
 
-    @FXML private Button btnConfirmPayment;
+    @FXML
+    private Label lblTotalAmount;
+
+    @FXML
+    private HBox boxPrescriptionWarning;
+
+    @FXML
+    private CheckBox chkPrescriptionConfirmed;
+
+    @FXML
+    private Button btnMethodCash;
+
+    @FXML
+    private Button btnMethodTransfer;
+
+    @FXML
+    private VBox paneCash;
+
+    @FXML
+    private TextField txtCashGiven;
+
+    @FXML
+    private Label lblChangeAmount;
+
+    @FXML
+    private VBox paneTransfer;
+
+    @FXML
+    private ImageView imgQrCode;
+
+    @FXML
+    private ProgressIndicator progressQr;
+
+    @FXML
+    private VBox boxSuccessOverlay;
+
+    @FXML
+    private Label lblBankName;
+
+    @FXML
+    private Label lblAccountNo;
+
+    @FXML
+    private Label lblAccountName;
+
+    @FXML
+    private Label lblTransferAmount;
+
+    @FXML
+    private Label lblTransferContent;
+
+    @FXML
+    private Button btnConfirmPayment;
 
     private final SalesService salesService = new SalesService();
     private CartOrder currentOrder;
@@ -84,7 +124,7 @@ public class PaymentDialogController {
         try {
             this.orderCode = salesService.generateNextOrderCode();
         } catch (Exception e) {
-            this.orderCode = "HDB" + System.currentTimeMillis() % 1000000;
+            this.orderCode = "HDB" + (System.currentTimeMillis() % 1000000);
         }
 
         if (lblDialogOrderCode != null) {
@@ -123,7 +163,10 @@ public class PaymentDialogController {
         Platform.runLater(() -> {
             adjustWindowSize();
             if (lblTotalAmount.getScene() != null && lblTotalAmount.getScene().getWindow() != null) {
-                lblTotalAmount.getScene().getWindow().setOnHidden(e -> stopPolling());
+                lblTotalAmount
+                    .getScene()
+                    .getWindow()
+                    .setOnHidden(e -> stopPolling());
             }
         });
     }
@@ -155,11 +198,18 @@ public class PaymentDialogController {
             var rows = boxDialogCartItems.getChildren();
             int count = Math.min(VISIBLE_CART_ROWS, rows.size());
             if (count == 0) return;
-            double height = boxDialogCartItems.snappedTopInset() + boxDialogCartItems.snappedBottomInset()
-                    + boxDialogCartItems.getSpacing() * (count - 1);
+            double height =
+                boxDialogCartItems.snappedTopInset() +
+                boxDialogCartItems.snappedBottomInset() +
+                boxDialogCartItems.getSpacing() * (count - 1);
             for (int i = 0; i < count; i++) {
-                height += rows.get(i).prefHeight(boxDialogCartItems.getWidth()
-                        - boxDialogCartItems.snappedLeftInset() - boxDialogCartItems.snappedRightInset());
+                height += rows
+                    .get(i)
+                    .prefHeight(
+                        boxDialogCartItems.getWidth() -
+                            boxDialogCartItems.snappedLeftInset() -
+                            boxDialogCartItems.snappedRightInset()
+                    );
             }
 
             height += scrollDialogCart.snappedTopInset() + scrollDialogCart.snappedBottomInset() + 2;
@@ -332,10 +382,14 @@ public class PaymentDialogController {
         BigDecimal change = cashGiven.subtract(totalAmount);
         if (change.compareTo(BigDecimal.ZERO) >= 0) {
             lblChangeAmount.setText(FormatUtils.formatCurrency(change) + "đ");
-            lblChangeAmount.setStyle("-fx-text-fill: #D97706; -fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 18px;");
+            lblChangeAmount.setStyle(
+                "-fx-text-fill: #D97706; -fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 18px;"
+            );
         } else {
             lblChangeAmount.setText("Còn thiếu: " + FormatUtils.formatCurrency(change.abs()) + "đ");
-            lblChangeAmount.setStyle("-fx-text-fill: #EF4444; -fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 14px;");
+            lblChangeAmount.setStyle(
+                "-fx-text-fill: #EF4444; -fx-font-family: 'Inter 18pt Bold'; -fx-font-size: 14px;"
+            );
         }
     }
 
@@ -385,7 +439,11 @@ public class PaymentDialogController {
 
     private void adjustWindowSize() {
         Platform.runLater(() -> {
-            if (lblTotalAmount != null && lblTotalAmount.getScene() != null && lblTotalAmount.getScene().getWindow() instanceof Stage stage) {
+            if (
+                lblTotalAmount != null &&
+                lblTotalAmount.getScene() != null &&
+                lblTotalAmount.getScene().getWindow() instanceof Stage stage
+            ) {
                 stage.sizeToScene();
                 javafx.geometry.Rectangle2D visualBounds = javafx.stage.Screen.getPrimary().getVisualBounds();
                 if (stage.getHeight() > visualBounds.getHeight()) {
@@ -413,19 +471,23 @@ public class PaymentDialogController {
         }
 
         progressQr.setVisible(true);
-        CompletableFuture.supplyAsync(() -> VietQrService.generateQrImage(
+        CompletableFuture.supplyAsync(() ->
+            VietQrService.generateQrImage(
                 PaymentConfig.getBankId(),
                 PaymentConfig.getAccountNo(),
                 PaymentConfig.getAccountName(),
                 totalAmount,
                 orderCode
-        )).thenAccept(img -> Platform.runLater(() -> {
-            progressQr.setVisible(false);
-            if (img != null) {
-                cachedQrImage = img;
-                imgQrCode.setImage(img);
-            }
-        }));
+            )
+        ).thenAccept(img ->
+            Platform.runLater(() -> {
+                progressQr.setVisible(false);
+                if (img != null) {
+                    cachedQrImage = img;
+                    imgQrCode.setImage(img);
+                }
+            })
+        );
     }
 
     private void startPolling() {
@@ -439,23 +501,28 @@ public class PaymentDialogController {
         });
 
         long interval = PaymentConfig.getPollIntervalMs();
-        pollExecutor.scheduleWithFixedDelay(() -> {
-            try {
-                if (isPaymentReceived) {
-                    stopPolling();
-                    return;
-                }
-
-                if (PaymentConfig.isSepayConfigured()) {
-                    SepayService.PaymentResult result = SepayService.checkOrderPayment(orderCode, totalAmount);
-                    if (result.matched()) {
-                        Platform.runLater(() -> onPaymentSuccess(result.content(), result.amount()));
+        pollExecutor.scheduleWithFixedDelay(
+            () -> {
+                try {
+                    if (isPaymentReceived) {
+                        stopPolling();
+                        return;
                     }
+
+                    if (PaymentConfig.isSepayConfigured()) {
+                        SepayService.PaymentResult result = SepayService.checkOrderPayment(orderCode, totalAmount);
+                        if (result.matched()) {
+                            Platform.runLater(() -> onPaymentSuccess(result.content(), result.amount()));
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("Error in payment polling loop: {}", e.getMessage());
                 }
-            } catch (Exception e) {
-                log.error("Error in payment polling loop: {}", e.getMessage());
-            }
-        }, 1500, interval, TimeUnit.MILLISECONDS);
+            },
+            1500,
+            interval,
+            TimeUnit.MILLISECONDS
+        );
     }
 
     private synchronized void onPaymentSuccess(String note, BigDecimal paidAmount) {
@@ -498,7 +565,10 @@ public class PaymentDialogController {
         }
 
         if (currentOrder.hasPrescriptionItem() && !chkPrescriptionConfirmed.isSelected()) {
-            DialogUtils.showWarning("Chưa xác nhận đơn thuốc", "Vui lòng tích xác nhận đã kiểm tra đơn thuốc của khách hàng trước khi bán.");
+            DialogUtils.showWarning(
+                "Chưa xác nhận đơn thuốc",
+                "Vui lòng tích xác nhận đã kiểm tra đơn thuốc của khách hàng trước khi bán."
+            );
             return;
         }
 
@@ -514,12 +584,12 @@ public class PaymentDialogController {
         Integer employeeId = UserSession.getInstance() != null ? UserSession.getInstance().getEmployeeId() : null;
 
         SalesOrderRequest req = new SalesOrderRequest(
-                employeeId,
-                currentOrder.getCustomerPhone(),
-                currentOrder.getDiscount(),
-                selectedMethod,
-                chkPrescriptionConfirmed.isSelected(),
-                new ArrayList<>(currentOrder.getItems())
+            employeeId,
+            currentOrder.getCustomerPhone(),
+            currentOrder.getDiscount(),
+            selectedMethod,
+            chkPrescriptionConfirmed.isSelected(),
+            new ArrayList<>(currentOrder.getItems())
         );
         req.setOrderCode(this.orderCode);
 

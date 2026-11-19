@@ -3,6 +3,9 @@ package com.pharmacy;
 import com.pharmacy.infra.db.DatabaseHealthChecker;
 import com.pharmacy.infra.db.HibernateUtil;
 import com.pharmacy.infra.db.MigrationRunner;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -15,11 +18,8 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
 public class PharmacyApplication {
+
     private static final Logger log = LoggerFactory.getLogger(PharmacyApplication.class);
 
     public static void main(String[] args) {
@@ -27,10 +27,12 @@ public class PharmacyApplication {
     }
 
     public static class App extends Application {
+
         @Override
         public void init() {
-            Thread.setDefaultUncaughtExceptionHandler(
-                    (thread, ex) -> log.error("Uncaught exception trên thread '{}': ", thread.getName(), ex));
+            Thread.setDefaultUncaughtExceptionHandler((thread, ex) ->
+                log.error("Uncaught exception trên thread '{}': ", thread.getName(), ex)
+            );
 
             try {
                 MigrationRunner.migrate();

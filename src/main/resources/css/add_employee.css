@@ -2,23 +2,23 @@
    DRAWER CONTAINER & SCROLL
    ========================================================================== */
 .drawer-panel {
-    -fx-background-color: #FFFFFF !important;
+    -fx-background-color: #ffffff !important;
     -fx-font-family: "Inter 18pt";
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-width: 0 0 0 1px;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 25, 0, -6, 0);
 }
 
 .drawer-panel .scroll-pane,
 .drawer-panel .scroll-pane > .viewport {
-    -fx-background-color: #FFFFFF !important;
-    -fx-background: #FFFFFF !important;
+    -fx-background-color: #ffffff !important;
+    -fx-background: #ffffff !important;
 }
 
 /* Nút X đóng Drawer */
 .btn-close-drawer {
     -fx-background-color: transparent;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 15px;
     -fx-cursor: hand;
@@ -26,8 +26,8 @@
 }
 
 .btn-close-drawer:hover {
-    -fx-text-fill: #0F172A;
-    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #0f172a;
+    -fx-background-color: #f1f5f9;
     -fx-background-radius: 6px;
 }
 
@@ -41,66 +41,75 @@
 }
 
 .form-error-msg {
-    -fx-text-fill: #EF4444;
+    -fx-text-fill: #ef4444;
     -fx-font-size: 12px;
 }
 
 /* ==========================================================================
    INPUT FIELDS (TextField, ComboBox, DatePicker)
    ========================================================================== */
-.form-input, .form-combobox {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+.form-input,
+.form-combobox {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-padding: 7 12;
     -fx-font-size: 14px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
-.form-input:focused, .form-combobox:focused {
-    -fx-border-color: #0066FF;
+.form-input:focused,
+.form-combobox:focused {
+    -fx-border-color: #0066ff;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.2), 4, 0, 0, 0);
 }
 
 /* Trạng thái lỗi viền đỏ kích hoạt bởi Controller */
 .form-input-error {
-    -fx-border-color: #EF4444 !important;
+    -fx-border-color: #ef4444 !important;
     -fx-effect: dropshadow(three-pass-box, rgba(239, 68, 68, 0.2), 4, 0, 0, 0) !important;
 }
 
-.medicine-picker-box, .string-picker-box {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+.medicine-picker-box,
+.string-picker-box {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
 }
 
-.medicine-picker-box:hover, .string-picker-box:hover {
-    -fx-border-color: #94A3B8;
+.medicine-picker-box:hover,
+.string-picker-box:hover {
+    -fx-border-color: #94a3b8;
 }
 
-.medicine-picker-box:focus-within, .string-picker-box:focus-within {
-    -fx-border-color: #0066FF;
+.medicine-picker-box:focus-within,
+.string-picker-box:focus-within {
+    -fx-border-color: #0066ff;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.2), 4, 0, 0, 0);
 }
 
-.medicine-picker-box.form-input-error, .string-picker-box.form-input-error {
-    -fx-border-color: #EF4444 !important;
+.medicine-picker-box.form-input-error,
+.string-picker-box.form-input-error {
+    -fx-border-color: #ef4444 !important;
     -fx-effect: dropshadow(three-pass-box, rgba(239, 68, 68, 0.2), 4, 0, 0, 0) !important;
 }
 
-.medicine-picker-list, .string-picker-list {
-    -fx-background-color: #FFFFFF;
+.medicine-picker-list,
+.string-picker-list {
+    -fx-background-color: #ffffff;
     -fx-border-color: transparent;
 }
 
-.medicine-picker-list .list-cell:filled:hover, .string-picker-list .list-cell:filled:hover {
-    -fx-background-color: #F1F5F9;
+.medicine-picker-list .list-cell:filled:hover,
+.string-picker-list .list-cell:filled:hover {
+    -fx-background-color: #f1f5f9;
 }
 
-.medicine-picker-list .list-cell:filled:selected, .string-picker-list .list-cell:filled:selected {
-    -fx-background-color: #EFF6FF;
+.medicine-picker-list .list-cell:filled:selected,
+.string-picker-list .list-cell:filled:selected {
+    -fx-background-color: #eff6ff;
 }
 
 /* ==========================================================================
@@ -108,8 +117,8 @@
    ========================================================================== */
 
 .date-picker {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-width: 1px;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
@@ -118,12 +127,12 @@
 
 /* Hover & Focus cho DatePicker */
 .date-picker:hover {
-    -fx-border-color: #94A3B8;
+    -fx-border-color: #94a3b8;
 }
 
 .date-picker:focused,
 .date-picker:focus-within {
-    -fx-border-color: #0066FF;
+    -fx-border-color: #0066ff;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.2), 4, 0, 0, 0);
 }
 
@@ -135,8 +144,8 @@
     -fx-background-radius: 8px 0 0 8px;
     -fx-padding: 9 12;
     -fx-font-size: 14px;
-    -fx-text-fill: #0F172A;
-    -fx-prompt-text-fill: #94A3B8;
+    -fx-text-fill: #0f172a;
+    -fx-prompt-text-fill: #94a3b8;
 }
 
 .date-picker > .text-field:focused {
@@ -155,16 +164,16 @@
 }
 
 .date-picker > .arrow-button:hover {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: #f1f5f9;
 }
 
 .date-picker > .arrow-button > .arrow {
-    -fx-background-color: #64748B;
+    -fx-background-color: #64748b;
 }
 
 /* Trạng thái báo lỗi đỏ khi validate */
 .date-picker.form-input-error {
-    -fx-border-color: #EF4444 !important;
+    -fx-border-color: #ef4444 !important;
     -fx-effect: dropshadow(three-pass-box, rgba(239, 68, 68, 0.2), 4, 0, 0, 0) !important;
 }
 
@@ -173,8 +182,8 @@
    ========================================================================== */
 /* Nút Huỷ */
 .btn-secondary {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-text-fill: #475569;
@@ -184,15 +193,15 @@
 }
 
 .btn-secondary:hover {
-    -fx-background-color: #F8FAFC;
-    -fx-border-color: #94A3B8;
-    -fx-text-fill: #0F172A;
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #94a3b8;
+    -fx-text-fill: #0f172a;
 }
 
 /* Nút Lưu thông tin */
 .btn-primary-add {
-    -fx-background-color: #0066FF;
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #0066ff;
+    -fx-text-fill: #ffffff;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-border-width: 0;
     -fx-border-radius: 8px;
@@ -204,12 +213,12 @@
 }
 
 .btn-primary-add:hover {
-    -fx-background-color: #0052CC;
+    -fx-background-color: #0052cc;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 82, 204, 0.35), 8, 0, 0, 3);
 }
 
 .btn-primary-add:pressed {
-    -fx-background-color: #003D99;
+    -fx-background-color: #003d99;
     -fx-effect: none;
 }
 
@@ -221,7 +230,7 @@
     -fx-padding: 0;
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 14px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .form-combobox > .arrow-button {
@@ -230,18 +239,17 @@
 }
 
 .form-combobox > .arrow-button > .arrow {
-    -fx-background-color: #64748B;
+    -fx-background-color: #64748b;
 }
 
 /* Thẻ phụ trợ trong Drawer */
 .drawer-radio-button {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
     -fx-cursor: hand;
 }
 
 .drawer-radio-button:selected {
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
-

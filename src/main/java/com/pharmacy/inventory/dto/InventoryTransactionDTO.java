@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class InventoryTransactionDTO {
+
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
 
     private Long id;
@@ -18,11 +19,17 @@ public class InventoryTransactionDTO {
     private String note;
     private String exportTypeLabel;
 
-    public InventoryTransactionDTO(Long id, String type, LocalDateTime transactionAt,
-                                  String employeeName,
-                                  String supplierName,
-                                  int itemCount, int totalQuantity, BigDecimal totalAmount,
-                                  String note) {
+    public InventoryTransactionDTO(
+        Long id,
+        String type,
+        LocalDateTime transactionAt,
+        String employeeName,
+        String supplierName,
+        int itemCount,
+        int totalQuantity,
+        BigDecimal totalAmount,
+        String note
+    ) {
         this.id = id;
         this.type = type;
         this.transactionAt = transactionAt;

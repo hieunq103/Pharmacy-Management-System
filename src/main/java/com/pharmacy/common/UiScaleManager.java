@@ -1,5 +1,9 @@
 package com.pharmacy.common;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Locale;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -8,12 +12,8 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Locale;
-
 public final class UiScaleManager {
+
     private static final Logger log = LoggerFactory.getLogger(UiScaleManager.class);
     private static final UiScaleManager INSTANCE = new UiScaleManager();
 
@@ -118,22 +118,27 @@ public final class UiScaleManager {
             int paddingY = (int) Math.round(8.0 * scale);
             int paddingX = (int) Math.round(14.0 * scale);
 
-            String css = String.format(Locale.US,
+            String css = String.format(
+                Locale.US,
                 ".root { -fx-font-size: %dpx; }\n" +
-                ".stat-label-primary, .stat-label-secondary { -fx-font-size: %dpx; }\n" +
-                "#lblHeaderTitle { -fx-font-size: %dpx; }\n" +
-                ".custom-inventory-table .table-cell, .custom-employee-table .table-cell { -fx-font-size: %dpx; }\n" +
-                ".custom-inventory-table .column-header .label, .custom-employee-table .column-header .label { -fx-font-size: %dpx; }\n" +
-                ".search-input { -fx-font-size: %dpx; -fx-padding: %d %d; }\n" +
-                ".btn-primary-import, .btn-secondary-export, .btn-primary-add { -fx-font-size: %dpx; -fx-padding: %d %d; }\n" +
-                ".nav-button { -fx-font-size: %dpx; }\n",
+                    ".stat-label-primary, .stat-label-secondary { -fx-font-size: %dpx; }\n" +
+                    "#lblHeaderTitle { -fx-font-size: %dpx; }\n" +
+                    ".custom-inventory-table .table-cell, .custom-employee-table .table-cell { -fx-font-size: %dpx; }\n" +
+                    ".custom-inventory-table .column-header .label, .custom-employee-table .column-header .label { -fx-font-size: %dpx; }\n" +
+                    ".search-input { -fx-font-size: %dpx; -fx-padding: %d %d; }\n" +
+                    ".btn-primary-import, .btn-secondary-export, .btn-primary-add { -fx-font-size: %dpx; -fx-padding: %d %d; }\n" +
+                    ".nav-button { -fx-font-size: %dpx; }\n",
                 baseFont,
                 statFont,
                 titleFont,
                 tableCellFont,
                 headerFont,
-                inputFont, paddingY, paddingX,
-                btnFont, paddingY, paddingX,
+                inputFont,
+                paddingY,
+                paddingX,
+                btnFont,
+                paddingY,
+                paddingX,
                 navFont
             );
 

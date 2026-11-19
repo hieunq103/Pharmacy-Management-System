@@ -2,10 +2,6 @@ package com.pharmacy.sales.payment;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.scene.image.Image;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.net.URI;
@@ -16,13 +12,15 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.scene.image.Image;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class VietQrService {
+
     private static final Logger log = LoggerFactory.getLogger(VietQrService.class);
     private static final ObjectMapper mapper = new ObjectMapper();
-    private static final HttpClient client = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(5))
-            .build();
+    private static final HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
 
     private static final Map<String, String> BANK_BIN_MAP = new HashMap<>();
 
@@ -73,7 +71,13 @@ public class VietQrService {
         return BANK_BIN_MAP.getOrDefault(clean, "970422");
     }
 
-    public static Image generateQrImage(String bankCode, String accountNo, String accountName, BigDecimal amount, String content) {
+    public static Image generateQrImage(
+        String bankCode,
+        String accountNo,
+        String accountName,
+        BigDecimal amount,
+        String content
+    ) {
         try {
             String bin = getBinForBank(bankCode);
             long amountVal = amount != null ? amount.longValue() : 0L;
@@ -90,11 +94,11 @@ public class VietQrService {
             String jsonPayload = mapper.writeValueAsString(reqBody);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.vietqr.io/v2/generate"))
-                    .header("Content-Type", "application/json")
-                    .timeout(Duration.ofSeconds(6))
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                    .build();
+                .uri(URI.create("https://api.vietqr.io/v2/generate"))
+                .header("Content-Type", "application/json")
+                .timeout(Duration.ofSeconds(6))
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 

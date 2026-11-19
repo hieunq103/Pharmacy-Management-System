@@ -7,10 +7,12 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "medicines")
 public class Medicine implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     public enum Status {
-        ACTIVE, INACTIVE
+        ACTIVE,
+        INACTIVE,
     }
 
     @Id
@@ -50,8 +52,7 @@ public class Medicine implements Serializable {
     @Column(name = "status", nullable = false)
     private Status status = Status.ACTIVE;
 
-    public Medicine() {
-    }
+    public Medicine() {}
 
     public Integer getId() {
         return id;
@@ -97,4 +98,3 @@ public class Medicine implements Serializable {
         this.status = status;
     }
 }
-

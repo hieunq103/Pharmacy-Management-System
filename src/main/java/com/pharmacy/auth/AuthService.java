@@ -27,14 +27,16 @@ public class AuthService {
 
     public Account login(LoginRequest request) {
         // Tìm tài khoản duy nhất bằng tên đăng nhập
-        Account account = accountRepository.findByUsername(request.username())
-                .orElseThrow(() -> {
-                    log.warn("Đăng nhập thất bại: Tài khoản không tồn tại [{}]", request.username());
-                    return new AuthenticationException(ErrorCode.INVALID_CREDENTIALS,
-                            "Tài khoản hoặc mật khẩu không chính xác.");
-                });
+        Account account = accountRepository.findByUsername(request.username()).orElseThrow(() -> {
+            log.warn("Đăng nhập thất bại: Tài khoản không tồn tại [{}]", request.username());
+            return new AuthenticationException(
+                ErrorCode.INVALID_CREDENTIALS,
+                "Tài khoản hoặc mật khẩu không chính xác."
+            );
+        });
 
-        String employeeName = (account.getEmployee() != null && account.getEmployee().getFullName() != null)
+        String employeeName =
+            account.getEmployee() != null && account.getEmployee().getFullName() != null
                 ? account.getEmployee().getFullName()
                 : "N/A";
         Integer accountId = account.getId();
@@ -43,15 +45,17 @@ public class AuthService {
             log.warn("Nhân viên [{}] - Mật khẩu không chính xác", employeeName);
             accountRepository.saveLoginHistory(accountId, "FAILED", CLIENT_INFO);
             throw new AuthenticationException(
-                    ErrorCode.INVALID_CREDENTIALS,
-                    "Tài khoản hoặc mật khẩu không chính xác.");
+                ErrorCode.INVALID_CREDENTIALS,
+                "Tài khoản hoặc mật khẩu không chính xác."
+            );
         }
 
         if (account.getStatus() == Account.Status.DISABLED) {
             log.warn("Nhân viên [{}] - Tài khoản đã bị vô hiệu hóa", employeeName);
             throw new AuthenticationException(
-                    ErrorCode.ACCOUNT_DISABLED,
-                    "Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.");
+                ErrorCode.ACCOUNT_DISABLED,
+                "Tài khoản này đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên."
+            );
         }
 
         accountRepository.recordSuccessfulLogin(accountId, CLIENT_INFO);

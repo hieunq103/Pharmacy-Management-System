@@ -2,6 +2,7 @@ package com.pharmacy.inventory.ui;
 
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
+import java.util.List;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -18,9 +19,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.util.Duration;
 
-import java.util.List;
-
 public class SearchableMedicinePicker extends VBox {
+
     private final TextField txtSearch = new TextField();
     private final Button btnClear = new Button("✕");
     private final ListView<MedicineInventoryDTO> listView = new ListView<>();
@@ -49,89 +49,113 @@ public class SearchableMedicinePicker extends VBox {
         listView.setPrefHeight(180);
         listView.setMaxHeight(240);
 
-        listView.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(MedicineInventoryDTO item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    HBox row = new HBox(8);
-                    row.setAlignment(Pos.CENTER_LEFT);
-                    row.setStyle("-fx-padding: 7 10; -fx-cursor: hand;");
+        listView.setCellFactory(lv ->
+            new ListCell<>() {
+                @Override
+                protected void updateItem(MedicineInventoryDTO item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        HBox row = new HBox(8);
+                        row.setAlignment(Pos.CENTER_LEFT);
+                        row.setStyle("-fx-padding: 7 10; -fx-cursor: hand;");
 
-                    Label lblCode = new Label(item.getMedicineCode() != null ? item.getMedicineCode() : "");
-                    lblCode.setStyle("-fx-font-size: 11.5px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-background-radius: 4px; -fx-padding: 2 8;");
+                        Label lblCode = new Label(item.getMedicineCode() != null ? item.getMedicineCode() : "");
+                        lblCode.setStyle(
+                            "-fx-font-size: 11.5px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-background-radius: 4px; -fx-padding: 2 8;"
+                        );
 
-                    Label lblName = new Label(item.getMedicineName() != null ? item.getMedicineName() : "");
-                    lblName.setStyle("-fx-font-size: 13.5px; -fx-font-family: 'Inter 18pt Medium'; -fx-text-fill: #0F172A;");
-                    HBox.setHgrow(lblName, Priority.ALWAYS);
+                        Label lblName = new Label(item.getMedicineName() != null ? item.getMedicineName() : "");
+                        lblName.setStyle(
+                            "-fx-font-size: 13.5px; -fx-font-family: 'Inter 18pt Medium'; -fx-text-fill: #0F172A;"
+                        );
+                        HBox.setHgrow(lblName, Priority.ALWAYS);
 
-                    Label lblExpiry = new Label();
-                    MedicineInventoryDTO.ExpiryStatus expStatus = item.getExpiryStatus();
-                    if (expStatus == null) {
-                        expStatus = MedicineInventoryDTO.ExpiryStatus.NORMAL;
+                        Label lblExpiry = new Label();
+                        MedicineInventoryDTO.ExpiryStatus expStatus = item.getExpiryStatus();
+                        if (expStatus == null) {
+                            expStatus = MedicineInventoryDTO.ExpiryStatus.NORMAL;
+                        }
+                        lblExpiry.setText(expStatus.getLabel());
+                        lblExpiry.getStyleClass().add("status-badge");
+                        switch (expStatus) {
+                            case NORMAL -> {
+                                lblExpiry.getStyleClass().add("status-badge-normal");
+                                lblExpiry.setStyle(
+                                    "-fx-background-color: #DCFCE7; -fx-text-fill: #16A34A; -fx-background-radius: 14px; -fx-padding: 2 10; -fx-font-size: 11.5px; -fx-font-family: 'Inter 18pt'; -fx-alignment: CENTER;"
+                                );
+                            }
+                            case NEAR_EXPIRY -> {
+                                lblExpiry.getStyleClass().add("status-badge-near-expiry");
+                                lblExpiry.setStyle(
+                                    "-fx-background-color: #FEF3C7; -fx-text-fill: #D97706; -fx-background-radius: 14px; -fx-padding: 2 10; -fx-font-size: 11.5px; -fx-font-family: 'Inter 18pt'; -fx-alignment: CENTER;"
+                                );
+                            }
+                            case EXPIRED -> {
+                                lblExpiry.getStyleClass().add("status-badge-expired");
+                                lblExpiry.setStyle(
+                                    "-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-background-radius: 14px; -fx-padding: 2 10; -fx-font-size: 11.5px; -fx-font-family: 'Inter 18pt'; -fx-alignment: CENTER;"
+                                );
+                            }
+                        }
+
+                        row.getChildren().addAll(lblCode, lblName, lblExpiry);
+
+                        row.setOnMousePressed(e -> {
+                            applySelection(item);
+                            e.consume();
+                        });
+
+                        setGraphic(row);
+                        setText(null);
                     }
-                    lblExpiry.setText(expStatus.getLabel());
-                    lblExpiry.getStyleClass().add("status-badge");
-                    switch (expStatus) {
-                        case NORMAL -> {
-                            lblExpiry.getStyleClass().add("status-badge-normal");
-                            lblExpiry.setStyle("-fx-background-color: #DCFCE7; -fx-text-fill: #16A34A; -fx-background-radius: 14px; -fx-padding: 2 10; -fx-font-size: 11.5px; -fx-font-family: 'Inter 18pt'; -fx-alignment: CENTER;");
-                        }
-                        case NEAR_EXPIRY -> {
-                            lblExpiry.getStyleClass().add("status-badge-near-expiry");
-                            lblExpiry.setStyle("-fx-background-color: #FEF3C7; -fx-text-fill: #D97706; -fx-background-radius: 14px; -fx-padding: 2 10; -fx-font-size: 11.5px; -fx-font-family: 'Inter 18pt'; -fx-alignment: CENTER;");
-                        }
-                        case EXPIRED -> {
-                            lblExpiry.getStyleClass().add("status-badge-expired");
-                            lblExpiry.setStyle("-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-background-radius: 14px; -fx-padding: 2 10; -fx-font-size: 11.5px; -fx-font-family: 'Inter 18pt'; -fx-alignment: CENTER;");
-                        }
-                    }
-
-                    row.getChildren().addAll(lblCode, lblName, lblExpiry);
-
-                    row.setOnMousePressed(e -> {
-                        applySelection(item);
-                        e.consume();
-                    });
-
-                    setGraphic(row);
-                    setText(null);
                 }
             }
-        });
+        );
 
         SVGPath svgSearch = new SVGPath();
-        svgSearch.setContent("M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z");
+        svgSearch.setContent(
+            "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+        );
         svgSearch.setFill(Color.web("#94A3B8"));
 
         txtSearch.setPromptText(promptText);
-        txtSearch.setStyle("-fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 13.5px; -fx-font-family: 'Inter 18pt'; -fx-text-fill: #0F172A; -fx-padding: 4 0;");
+        txtSearch.setStyle(
+            "-fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 13.5px; -fx-font-family: 'Inter 18pt'; -fx-text-fill: #0F172A; -fx-padding: 4 0;"
+        );
         HBox.setHgrow(txtSearch, Priority.ALWAYS);
 
-        btnClear.setStyle("-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-cursor: hand; -fx-font-size: 12px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-padding: 2 6;");
+        btnClear.setStyle(
+            "-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-cursor: hand; -fx-font-size: 12px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-padding: 2 6;"
+        );
         btnClear.setVisible(false);
         btnClear.setManaged(false);
         btnClear.setOnAction(e -> clear());
 
         inputContainer.setAlignment(Pos.CENTER_LEFT);
         inputContainer.getStyleClass().add("medicine-picker-box");
-        inputContainer.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12;");
+        inputContainer.setStyle(
+            "-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12;"
+        );
         inputContainer.getChildren().addAll(svgSearch, txtSearch, btnClear);
 
         txtSearch.focusedProperty().addListener((obs, oldV, isFocused) -> {
             if (isFocused) {
                 if (!inputContainer.getStyleClass().contains("form-input-error")) {
-                    inputContainer.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #0066FF; -fx-border-width: 1.2px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12; -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.15), 4, 0, 0, 0);");
+                    inputContainer.setStyle(
+                        "-fx-background-color: #FFFFFF; -fx-border-color: #0066FF; -fx-border-width: 1.2px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12; -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.15), 4, 0, 0, 0);"
+                    );
                 }
                 if (!txtSearch.getText().trim().isEmpty() && !resultsContainer.isVisible()) {
                     showResults();
                 }
             } else {
                 if (!inputContainer.getStyleClass().contains("form-input-error")) {
-                    inputContainer.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12; -fx-effect: null;");
+                    inputContainer.setStyle(
+                        "-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12; -fx-effect: null;"
+                    );
                 }
             }
         });
@@ -155,11 +179,15 @@ public class SearchableMedicinePicker extends VBox {
             }
         });
 
-        lblNoResult.setStyle("-fx-font-size: 12.5px; -fx-font-family: 'Inter 18pt'; -fx-text-fill: #94A3B8; -fx-padding: 12 16;");
+        lblNoResult.setStyle(
+            "-fx-font-size: 12.5px; -fx-font-family: 'Inter 18pt'; -fx-text-fill: #94A3B8; -fx-padding: 12 16;"
+        );
         lblNoResult.setAlignment(Pos.CENTER);
         lblNoResult.setMaxWidth(Double.MAX_VALUE);
 
-        resultsContainer.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4); -fx-padding: 2;");
+        resultsContainer.setStyle(
+            "-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4); -fx-padding: 2;"
+        );
         resultsContainer.setVisible(false);
         resultsContainer.setManaged(false);
 
@@ -190,12 +218,17 @@ public class SearchableMedicinePicker extends VBox {
                         String code = med.getMedicineCode() != null ? med.getMedicineCode().toLowerCase() : "";
                         String name = med.getMedicineName() != null ? med.getMedicineName().toLowerCase() : "";
                         String nameNoAccent = removeAccents(med.getMedicineName());
-                        String expLabel = (med.getExpiryStatus() != null) ? med.getExpiryStatus().getLabel().toLowerCase() : "";
+                        String expLabel =
+                            med.getExpiryStatus() != null ? med.getExpiryStatus().getLabel().toLowerCase() : "";
                         String expLabelNoAccent = removeAccents(expLabel);
 
-                        return code.contains(kw)
-                                || name.contains(kw) || nameNoAccent.contains(kwNoAccent)
-                                || expLabel.contains(kw) || expLabelNoAccent.contains(kwNoAccent);
+                        return (
+                            code.contains(kw) ||
+                            name.contains(kw) ||
+                            nameNoAccent.contains(kwNoAccent) ||
+                            expLabel.contains(kw) ||
+                            expLabelNoAccent.contains(kwNoAccent)
+                        );
                     });
 
                     showResults();
@@ -304,7 +337,9 @@ public class SearchableMedicinePicker extends VBox {
     }
 
     public void showErrorStyle() {
-        inputContainer.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #EF4444; -fx-border-width: 1.5px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12;");
+        inputContainer.setStyle(
+            "-fx-background-color: #FFFFFF; -fx-border-color: #EF4444; -fx-border-width: 1.5px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12;"
+        );
         if (!inputContainer.getStyleClass().contains("form-input-error")) {
             inputContainer.getStyleClass().add("form-input-error");
         }
@@ -312,7 +347,9 @@ public class SearchableMedicinePicker extends VBox {
 
     public void clearErrorStyle() {
         inputContainer.getStyleClass().remove("form-input-error");
-        inputContainer.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12;");
+        inputContainer.setStyle(
+            "-fx-background-color: #FFFFFF; -fx-border-color: #CBD5E1; -fx-border-width: 1px; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 3 10 3 12;"
+        );
     }
 
     public ObjectProperty<MedicineInventoryDTO> selectedMedicineProperty() {

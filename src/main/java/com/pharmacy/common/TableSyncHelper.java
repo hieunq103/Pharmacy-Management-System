@@ -12,6 +12,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Region;
 
 public final class TableSyncHelper {
+
     private TableSyncHelper() {}
 
     public static void enableAutoRowHeight(TableView<?> mainTable, TableView<?> stickyTable, int targetRowCount) {
@@ -70,23 +71,27 @@ public final class TableSyncHelper {
                 resetScrollToTop(mainTable, stickyTable);
             }
             if (newItems != null) {
-                newItems.addListener((ListChangeListener<? super T>) c -> {
-                    if (mainTable.getItems() != null && !mainTable.getItems().isEmpty()) {
-                        resetScrollToTop(mainTable, stickyTable);
+                newItems.addListener(
+                    (ListChangeListener<? super T>) c -> {
+                        if (mainTable.getItems() != null && !mainTable.getItems().isEmpty()) {
+                            resetScrollToTop(mainTable, stickyTable);
+                        }
                     }
-                });
+                );
             }
         });
         if (mainTable.getItems() != null) {
-            mainTable.getItems().addListener((ListChangeListener<? super T>) c -> {
-                if (mainTable.getItems() != null && !mainTable.getItems().isEmpty()) {
-                    resetScrollToTop(mainTable, stickyTable);
+            mainTable.getItems().addListener(
+                (ListChangeListener<? super T>) c -> {
+                    if (mainTable.getItems() != null && !mainTable.getItems().isEmpty()) {
+                        resetScrollToTop(mainTable, stickyTable);
+                    }
                 }
-            });
+            );
         }
 
-        final boolean[] attached = new boolean[]{false};
-        final boolean[] isSyncing = new boolean[]{false};
+        final boolean[] attached = new boolean[] { false };
+        final boolean[] isSyncing = new boolean[] { false };
 
         Runnable tryAttachSync = () -> {
             if (attached[0]) return;
@@ -220,19 +225,23 @@ public final class TableSyncHelper {
                 resetScrollToTop(table, null);
             }
             if (newItems != null) {
-                newItems.addListener((ListChangeListener<? super T>) c -> {
-                    if (table.getItems() != null && !table.getItems().isEmpty()) {
-                        resetScrollToTop(table, null);
+                newItems.addListener(
+                    (ListChangeListener<? super T>) c -> {
+                        if (table.getItems() != null && !table.getItems().isEmpty()) {
+                            resetScrollToTop(table, null);
+                        }
                     }
-                });
+                );
             }
         });
         if (table.getItems() != null) {
-            table.getItems().addListener((ListChangeListener<? super T>) c -> {
-                if (table.getItems() != null && !table.getItems().isEmpty()) {
-                    resetScrollToTop(table, null);
+            table.getItems().addListener(
+                (ListChangeListener<? super T>) c -> {
+                    if (table.getItems() != null && !table.getItems().isEmpty()) {
+                        resetScrollToTop(table, null);
+                    }
                 }
-            });
+            );
         }
 
         attachVirtualFlowProtection(table);

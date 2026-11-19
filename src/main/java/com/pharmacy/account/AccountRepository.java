@@ -1,11 +1,10 @@
 package com.pharmacy.account;
 
 import com.pharmacy.infra.db.HibernateUtil;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
-
 import java.util.List;
 import java.util.Optional;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 public class AccountRepository {
 
@@ -15,11 +14,11 @@ public class AccountRepository {
         }
         return HibernateUtil.executeWithResult(session -> {
             String hql = """
-            SELECT a FROM Account a
-            JOIN FETCH a.employee e
-            JOIN FETCH a.role r
-            WHERE a.username = :username
-        """;
+                SELECT a FROM Account a
+                JOIN FETCH a.employee e
+                JOIN FETCH a.role r
+                WHERE a.username = :username
+            """;
             Query<Account> query = session.createQuery(hql, Account.class);
             query.setParameter("username", username.trim());
             return query.uniqueResultOptional();
@@ -49,37 +48,45 @@ public class AccountRepository {
         }
         try (Session session = HibernateUtil.openReadOnlySession()) {
             String hql = """
-                        SELECT lh.loginAt, lh.result, lh.clientInfo
-                        FROM LoginHistory lh
-                        WHERE lh.account.id = :accountId
-                        ORDER BY lh.loginAt DESC
-                    """;
-            return session.createSelectionQuery(hql, Object[].class)
-                    .setParameter("accountId", accountId)
-                    .setMaxResults(100)
-                    .list();
+                SELECT lh.loginAt, lh.result, lh.clientInfo
+                FROM LoginHistory lh
+                WHERE lh.account.id = :accountId
+                ORDER BY lh.loginAt DESC
+            """;
+            return session
+                .createSelectionQuery(hql, Object[].class)
+                .setParameter("accountId", accountId)
+                .setMaxResults(100)
+                .list();
         }
     }
 
     // Cập nhật mật khẩu mới và tắt cờ bắt buộc đổi mật khẩu
     public boolean updatePassword(Integer accountId, String newPasswordHash) {
         return HibernateUtil.executeWithResult(session -> {
-            String hql = "UPDATE Account a SET a.passwordHash = :passwordHash, a.mustChangePassword = false WHERE a.id = :id";
-            int rowsUpdated = session.createMutationQuery(hql)
-                    .setParameter("passwordHash", newPasswordHash)
-                    .setParameter("id", accountId)
-                    .executeUpdate();
+            String hql =
+                "UPDATE Account a SET a.passwordHash = :passwordHash, a.mustChangePassword = false WHERE a.id = :id";
+            int rowsUpdated = session
+                .createMutationQuery(hql)
+                .setParameter("passwordHash", newPasswordHash)
+                .setParameter("id", accountId)
+                .executeUpdate();
             return rowsUpdated > 0;
         });
     }
 
     // Cấp lại mật khẩu tạm: thay bản băm và bật lại cờ bắt buộc đổi mật khẩu
     public boolean resetPassword(Integer accountId, String newPasswordHash) {
-        return HibernateUtil.executeWithResult(session -> session.createMutationQuery(
-                        "UPDATE Account a SET a.passwordHash = :passwordHash, a.mustChangePassword = true WHERE a.id = :id")
-                .setParameter("passwordHash", newPasswordHash)
-                .setParameter("id", accountId)
-                .executeUpdate() > 0);
+        return HibernateUtil.executeWithResult(
+            session ->
+                session
+                    .createMutationQuery(
+                        "UPDATE Account a SET a.passwordHash = :passwordHash, a.mustChangePassword = true WHERE a.id = :id"
+                    )
+                    .setParameter("passwordHash", newPasswordHash)
+                    .setParameter("id", accountId)
+                    .executeUpdate() > 0
+        );
     }
 
     // Khóa tài khoản nhân viên
@@ -87,9 +94,7 @@ public class AccountRepository {
         if (accountId == null) return false;
         return HibernateUtil.executeWithResult(session -> {
             String hql = "UPDATE Account a SET a.status = 'DISABLED' WHERE a.id = :id";
-            int rowsUpdated = session.createMutationQuery(hql)
-                    .setParameter("id", accountId)
-                    .executeUpdate();
+            int rowsUpdated = session.createMutationQuery(hql).setParameter("id", accountId).executeUpdate();
             return rowsUpdated > 0;
         });
     }
@@ -99,9 +104,7 @@ public class AccountRepository {
         if (accountId == null) return false;
         return HibernateUtil.executeWithResult(session -> {
             String hql = "UPDATE Account a SET a.status = 'ACTIVE' WHERE a.id = :id";
-            int rowsUpdated = session.createMutationQuery(hql)
-                    .setParameter("id", accountId)
-                    .executeUpdate();
+            int rowsUpdated = session.createMutationQuery(hql).setParameter("id", accountId).executeUpdate();
             return rowsUpdated > 0;
         });
     }

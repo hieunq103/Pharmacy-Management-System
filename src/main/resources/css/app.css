@@ -1,21 +1,43 @@
-.root, .label, .button, .toggle-button, .text-field, .password-field, .text-area,
-.check-box, .radio-button, .hyperlink, .combo-box, .choice-box, .list-cell,
-.table-view, .table-cell, .table-column-header, .column-header, .column-header .label,
-.menu, .menu-item, .context-menu, .tooltip, .tab, .tab-pane, .text, .scroll-pane {
+.root,
+.label,
+.button,
+.toggle-button,
+.text-field,
+.password-field,
+.text-area,
+.check-box,
+.radio-button,
+.hyperlink,
+.combo-box,
+.choice-box,
+.list-cell,
+.table-view,
+.table-cell,
+.table-column-header,
+.column-header,
+.column-header .label,
+.menu,
+.menu-item,
+.context-menu,
+.tooltip,
+.tab,
+.tab-pane,
+.text,
+.scroll-pane {
     -fx-font-family: "Inter 18pt";
 }
 
 .root {
-    -fx-bg: #F5F7F8;
-    -fx-surface: #FFFFFF;
-    -fx-border-color-default: #E1E6E8;
-    -fx-primary: #0E6E5C;
-    -fx-primary-dark: #0A5548;
-    -fx-primary-tint: #E4F3EF;
-    -fx-amber: #B4690E;
-    -fx-red: #B3261E;
-    -fx-text: #12201D;
-    -fx-text-muted: #5C6E6A;
+    -fx-bg: #f5f7f8;
+    -fx-surface: #ffffff;
+    -fx-border-color-default: #e1e6e8;
+    -fx-primary: #0e6e5c;
+    -fx-primary-dark: #0a5548;
+    -fx-primary-tint: #e4f3ef;
+    -fx-amber: #b4690e;
+    -fx-red: #b3261e;
+    -fx-text: #12201d;
+    -fx-text-muted: #5c6e6a;
 
     -fx-font-family: "Inter 18pt";
     -fx-background-color: -fx-bg;
@@ -33,7 +55,7 @@
     -fx-background-radius: 8px;
     -fx-cursor: hand;
     -fx-background-color: transparent;
-    -fx-text-fill: #94A3B8;
+    -fx-text-fill: #94a3b8;
     -fx-graphic-text-gap: 1px;
     -fx-padding: 0 10px;
 }
@@ -41,28 +63,28 @@
 /* Icon ở trạng thái mặc định: dùng SVGPath hoặc .shape */
 .nav-button SVGPath,
 .nav-button .shape {
-    -fx-fill: #94A3B8;
+    -fx-fill: #94a3b8;
 }
 
 /* Khi hover chuột */
 .nav-button:hover {
-    -fx-background-color: #1E293B;
-    -fx-text-fill: #E2E8F0;
+    -fx-background-color: #1e293b;
+    -fx-text-fill: #e2e8f0;
 }
 .nav-button:hover SVGPath,
 .nav-button:hover .shape {
-    -fx-fill: #E2E8F0;
+    -fx-fill: #e2e8f0;
 }
 
 /* Kiểu dáng khi nút được chọn */
 .nav-button.active {
-    -fx-background-color: #1E293B;
-    -fx-text-fill: #38BDF8;
+    -fx-background-color: #1e293b;
+    -fx-text-fill: #38bdf8;
     -fx-font-family: "Inter 18pt SemiBold";
 }
 .nav-button.active SVGPath,
 .nav-button.active .shape {
-    -fx-fill: #38BDF8;
+    -fx-fill: #38bdf8;
 }
 
 /* Màn che overlay nền mờ khi mở Drawer */

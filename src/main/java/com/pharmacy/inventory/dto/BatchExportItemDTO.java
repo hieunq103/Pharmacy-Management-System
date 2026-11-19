@@ -1,10 +1,10 @@
 package com.pharmacy.inventory.dto;
 
 import com.pharmacy.common.FormatUtils;
-
 import java.time.LocalDate;
 
 public class BatchExportItemDTO {
+
     private String medicineCode;
     private String medicineName;
     private String categoryName;
@@ -17,13 +17,19 @@ public class BatchExportItemDTO {
     private int exportQuantity;
     private String reason;
 
-    public BatchExportItemDTO() {
-    }
+    public BatchExportItemDTO() {}
 
     public static BatchExportItemDTO of(
-            String code, String name, String categoryName,
-            long lotId, String lotNumber, LocalDate expiryDate, String unit,
-            int stockRemaining, int exportQuantity, String reason
+        String code,
+        String name,
+        String categoryName,
+        long lotId,
+        String lotNumber,
+        LocalDate expiryDate,
+        String unit,
+        int stockRemaining,
+        int exportQuantity,
+        String reason
     ) {
         BatchExportItemDTO item = new BatchExportItemDTO();
         item.setMedicineCode(code);

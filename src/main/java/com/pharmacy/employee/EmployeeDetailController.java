@@ -1,60 +1,109 @@
 package com.pharmacy.employee;
 
-import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.account.Account;
+import com.pharmacy.common.BackgroundTasks;
+import com.pharmacy.common.DialogUtils;
+import com.pharmacy.common.FormValidator;
+import com.pharmacy.common.FormatUtils;
+import com.pharmacy.common.UserSession;
 import com.pharmacy.employee.dto.EmployeeUpdateRequest;
 import com.pharmacy.employee.dto.NewEmployeeAccount;
+import java.time.LocalDate;
+import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import com.pharmacy.common.DialogUtils;
-import com.pharmacy.common.FormatUtils;
-import com.pharmacy.common.FormValidator;
-import com.pharmacy.common.UserSession;
 import javafx.stage.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
-import java.util.List;
-
 public class EmployeeDetailController {
+
     private static final Logger log = LoggerFactory.getLogger(EmployeeDetailController.class);
 
-    @FXML private Button btnClose;
-    @FXML private Button btnViewHistory;
-    @FXML private Button btnResetPassword;
-    @FXML private Button btnUpdateProfile;
-    @FXML private HBox boxEditActions;
-    @FXML private Button btnCancel;
-    @FXML private Button btnSave;
+    @FXML
+    private Button btnClose;
 
-    @FXML private TextField txtEmpId;
-    @FXML private TextField txtFullName;
-    @FXML private TextField txtDob;
-    @FXML private TextField txtGender;
-    @FXML private ComboBox<String> cbGender;
-    @FXML private TextField txtNationalId;
-    @FXML private TextField txtPhone;
-    @FXML private TextField txtHiredDate;
-    @FXML private TextField txtAddress;
+    @FXML
+    private Button btnViewHistory;
 
-    @FXML private TextField txtEmpStatus;
-    @FXML private ComboBox<String> cbEmpStatus;
+    @FXML
+    private Button btnResetPassword;
 
-    @FXML private TextField txtRole;
-    @FXML private ComboBox<String> cbRole;
-    @FXML private TextField txtAccountStatus;
-    @FXML private ComboBox<String> cbAccountStatus;
+    @FXML
+    private Button btnUpdateProfile;
 
-    @FXML private Label lblErrFullName;
-    @FXML private Label lblErrDob;
-    @FXML private Label lblErrNationalId;
-    @FXML private Label lblErrPhone;
-    @FXML private Label lblErrAddress;
+    @FXML
+    private HBox boxEditActions;
+
+    @FXML
+    private Button btnCancel;
+
+    @FXML
+    private Button btnSave;
+
+    @FXML
+    private TextField txtEmpId;
+
+    @FXML
+    private TextField txtFullName;
+
+    @FXML
+    private TextField txtDob;
+
+    @FXML
+    private TextField txtGender;
+
+    @FXML
+    private ComboBox<String> cbGender;
+
+    @FXML
+    private TextField txtNationalId;
+
+    @FXML
+    private TextField txtPhone;
+
+    @FXML
+    private TextField txtHiredDate;
+
+    @FXML
+    private TextField txtAddress;
+
+    @FXML
+    private TextField txtEmpStatus;
+
+    @FXML
+    private ComboBox<String> cbEmpStatus;
+
+    @FXML
+    private TextField txtRole;
+
+    @FXML
+    private ComboBox<String> cbRole;
+
+    @FXML
+    private TextField txtAccountStatus;
+
+    @FXML
+    private ComboBox<String> cbAccountStatus;
+
+    @FXML
+    private Label lblErrFullName;
+
+    @FXML
+    private Label lblErrDob;
+
+    @FXML
+    private Label lblErrNationalId;
+
+    @FXML
+    private Label lblErrPhone;
+
+    @FXML
+    private Label lblErrAddress;
 
     private Employee employee;
     private Runnable onBackCallback;
@@ -95,11 +144,16 @@ public class EmployeeDetailController {
     private void populateData() {
         if (employee == null) return;
 
-        boolean isInactive = (employee.getStatus() == Employee.Status.INACTIVE);
+        boolean isInactive = employee.getStatus() == Employee.Status.INACTIVE;
 
-        setTextSafe(txtEmpId, (employee.getCode() != null && !employee.getCode().isBlank())
+        setTextSafe(
+            txtEmpId,
+            employee.getCode() != null && !employee.getCode().isBlank()
                 ? employee.getCode()
-                : (employee.getId() != null ? String.valueOf(employee.getId()) : ""));
+                : employee.getId() != null
+                  ? String.valueOf(employee.getId())
+                  : ""
+        );
         setTextSafe(txtFullName, employee.getFullName());
         setTextSafe(txtDob, employee.getDob() != null ? FormatUtils.formatDate(employee.getDob()) : "");
         setTextSafe(txtGender, employee.getGender());
@@ -109,7 +163,10 @@ public class EmployeeDetailController {
 
         setTextSafe(txtNationalId, employee.getNationalId());
         setTextSafe(txtPhone, employee.getPhone());
-        setTextSafe(txtHiredDate, employee.getHiredDate() != null ? FormatUtils.formatDate(employee.getHiredDate()) : "Chưa cập nhật");
+        setTextSafe(
+            txtHiredDate,
+            employee.getHiredDate() != null ? FormatUtils.formatDate(employee.getHiredDate()) : "Chưa cập nhật"
+        );
         setTextSafe(txtAddress, employee.getAddress());
 
         String empStatusStr = isInactive ? "Đã nghỉ việc" : "Đang làm việc";
@@ -120,12 +177,11 @@ public class EmployeeDetailController {
 
         Account acc = employee.getAccount();
         if (acc != null) {
-            String roleName = (acc.getRole() != null && acc.getRole().getName() != null)
+            String roleName =
+                acc.getRole() != null && acc.getRole().getName() != null
                     ? acc.getRole().getName()
                     : "Nhân viên bán thuốc";
-            String accStatusStr = (acc.getStatus() == Account.Status.ACTIVE)
-                    ? "Đang hoạt động"
-                    : "Đang bị khóa";
+            String accStatusStr = acc.getStatus() == Account.Status.ACTIVE ? "Đang hoạt động" : "Đang bị khóa";
 
             setTextSafe(txtRole, roleName);
             if (cbRole != null) {
@@ -206,12 +262,16 @@ public class EmployeeDetailController {
         setEditableSafe(txtAccountStatus, false);
 
         if (editing) {
-            Tooltip fixedTooltip = new Tooltip("Mã nhân viên và ngày vào làm là thông tin cố định, không thể chỉnh sửa.");
+            Tooltip fixedTooltip = new Tooltip(
+                "Mã nhân viên và ngày vào làm là thông tin cố định, không thể chỉnh sửa."
+            );
             if (txtEmpId != null) txtEmpId.setTooltip(fixedTooltip);
             if (txtHiredDate != null) txtHiredDate.setTooltip(fixedTooltip);
 
             if (isEditingSelf()) {
-                Tooltip selfTooltip = new Tooltip("Với hồ sơ của chính mình, chỉ có thể thay đổi Họ và tên, Số điện thoại và Địa chỉ.");
+                Tooltip selfTooltip = new Tooltip(
+                    "Với hồ sơ của chính mình, chỉ có thể thay đổi Họ và tên, Số điện thoại và Địa chỉ."
+                );
                 if (txtRole != null) txtRole.setTooltip(selfTooltip);
                 if (txtEmpStatus != null) txtEmpStatus.setTooltip(selfTooltip);
                 if (txtAccountStatus != null) txtAccountStatus.setTooltip(selfTooltip);
@@ -289,13 +349,17 @@ public class EmployeeDetailController {
 
         clearAllErrors();
 
-        String fullName = (txtFullName != null && txtFullName.getText() != null) ? txtFullName.getText().trim() : "";
-        String nationalId = (txtNationalId != null && txtNationalId.getText() != null) ? txtNationalId.getText().trim() : "";
-        String phone = (txtPhone != null && txtPhone.getText() != null) ? txtPhone.getText().trim() : "";
-        String address = (txtAddress != null && txtAddress.getText() != null) ? txtAddress.getText().trim() : "";
-        String gender = (cbGender != null && cbGender.getValue() != null)
+        String fullName = txtFullName != null && txtFullName.getText() != null ? txtFullName.getText().trim() : "";
+        String nationalId =
+            txtNationalId != null && txtNationalId.getText() != null ? txtNationalId.getText().trim() : "";
+        String phone = txtPhone != null && txtPhone.getText() != null ? txtPhone.getText().trim() : "";
+        String address = txtAddress != null && txtAddress.getText() != null ? txtAddress.getText().trim() : "";
+        String gender =
+            cbGender != null && cbGender.getValue() != null
                 ? cbGender.getValue()
-                : ((txtGender != null && txtGender.getText() != null) ? txtGender.getText().trim() : "");
+                : txtGender != null && txtGender.getText() != null
+                  ? txtGender.getText().trim()
+                  : "";
         if (isEditingSelf()) {
             nationalId = employee.getNationalId() != null ? employee.getNationalId() : "";
             gender = employee.getGender();
@@ -306,28 +370,39 @@ public class EmployeeDetailController {
         String roleName;
 
         if (isEditingSelf()) {
-            empStatus = (employee.getStatus() == Employee.Status.INACTIVE) ? "Đã nghỉ việc" : "Đang làm việc";
+            empStatus = employee.getStatus() == Employee.Status.INACTIVE ? "Đã nghỉ việc" : "Đang làm việc";
             Account acc = employee.getAccount();
-            accountStatus = (acc != null && acc.getStatus() == Account.Status.DISABLED) ? "Đang bị khóa" : "Đang hoạt động";
-            roleName = (acc != null && acc.getRole() != null && acc.getRole().getName() != null)
+            accountStatus =
+                acc != null && acc.getStatus() == Account.Status.DISABLED ? "Đang bị khóa" : "Đang hoạt động";
+            roleName =
+                acc != null && acc.getRole() != null && acc.getRole().getName() != null
                     ? acc.getRole().getName()
                     : "Quản lý cửa hàng";
         } else {
-            empStatus = (cbEmpStatus != null && cbEmpStatus.getValue() != null)
+            empStatus =
+                cbEmpStatus != null && cbEmpStatus.getValue() != null
                     ? cbEmpStatus.getValue()
-                    : ((txtEmpStatus != null && txtEmpStatus.getText() != null) ? txtEmpStatus.getText().trim() : "Đang làm việc");
+                    : txtEmpStatus != null && txtEmpStatus.getText() != null
+                      ? txtEmpStatus.getText().trim()
+                      : "Đang làm việc";
 
             if ("Đã nghỉ việc".equalsIgnoreCase(empStatus)) {
                 accountStatus = "Đang bị khóa";
             } else {
-                accountStatus = (cbAccountStatus != null && cbAccountStatus.getValue() != null)
+                accountStatus =
+                    cbAccountStatus != null && cbAccountStatus.getValue() != null
                         ? cbAccountStatus.getValue()
-                        : ((txtAccountStatus != null && txtAccountStatus.getText() != null) ? txtAccountStatus.getText().trim() : "Đang hoạt động");
+                        : txtAccountStatus != null && txtAccountStatus.getText() != null
+                          ? txtAccountStatus.getText().trim()
+                          : "Đang hoạt động";
             }
 
-            roleName = (cbRole != null && cbRole.getValue() != null)
+            roleName =
+                cbRole != null && cbRole.getValue() != null
                     ? cbRole.getValue()
-                    : ((txtRole != null && txtRole.getText() != null) ? txtRole.getText().trim() : "Nhân viên bán thuốc");
+                    : txtRole != null && txtRole.getText() != null
+                      ? txtRole.getText().trim()
+                      : "Nhân viên bán thuốc";
         }
 
         boolean hasError = false;
@@ -338,7 +413,7 @@ public class EmployeeDetailController {
         }
 
         LocalDate parsedDob = null;
-        String dobStr = (txtDob != null && txtDob.getText() != null) ? txtDob.getText().trim() : "";
+        String dobStr = txtDob != null && txtDob.getText() != null ? txtDob.getText().trim() : "";
         if (isEditingSelf()) {
             parsedDob = employee.getDob();
         } else if (dobStr.isEmpty()) {
@@ -384,16 +459,16 @@ public class EmployeeDetailController {
         if (hasError) return;
 
         final EmployeeUpdateRequest request = new EmployeeUpdateRequest(
-                employee.getId(),
-                fullName,
-                nationalId,
-                phone,
-                address,
-                parsedDob,
-                gender,
-                empStatus,
-                accountStatus,
-                roleName
+            employee.getId(),
+            fullName,
+            nationalId,
+            phone,
+            address,
+            parsedDob,
+            gender,
+            empStatus,
+            accountStatus,
+            roleName
         );
 
         if (btnSave != null) btnSave.setDisable(true);
@@ -421,17 +496,21 @@ public class EmployeeDetailController {
 
                 if (!isEditingSelf()) {
                     employee.setStatus(
-                            ("INACTIVE".equalsIgnoreCase(request.empStatus()) || "Đã nghỉ việc".equalsIgnoreCase(request.empStatus()))
-                                    ? Employee.Status.INACTIVE
-                                    : Employee.Status.ACTIVE
+                        "INACTIVE".equalsIgnoreCase(request.empStatus()) ||
+                            "Đã nghỉ việc".equalsIgnoreCase(request.empStatus())
+                            ? Employee.Status.INACTIVE
+                            : Employee.Status.ACTIVE
                     );
 
                     if (employee.getAccount() != null) {
-                        employee.getAccount().setStatus(
-                                ("DISABLED".equalsIgnoreCase(request.accountStatus()) || "Đang bị khóa".equalsIgnoreCase(request.accountStatus()))
-                                        ? Account.Status.DISABLED
-                                        : Account.Status.ACTIVE
-                        );
+                        employee
+                            .getAccount()
+                            .setStatus(
+                                "DISABLED".equalsIgnoreCase(request.accountStatus()) ||
+                                    "Đang bị khóa".equalsIgnoreCase(request.accountStatus())
+                                    ? Account.Status.DISABLED
+                                    : Account.Status.ACTIVE
+                            );
                         if (employee.getAccount().getRole() != null) {
                             employee.getAccount().getRole().setName(request.roleName());
                         }
@@ -451,7 +530,11 @@ public class EmployeeDetailController {
                 populateData();
                 setEditMode(false);
             } else {
-                DialogUtils.showWarning(getWindow(), "Cảnh báo", "Không thể cập nhật. Bản ghi không tồn tại hoặc không có thay đổi.");
+                DialogUtils.showWarning(
+                    getWindow(),
+                    "Cảnh báo",
+                    "Không thể cập nhật. Bản ghi không tồn tại hoặc không có thay đổi."
+                );
             }
         });
 
@@ -464,12 +547,21 @@ public class EmployeeDetailController {
             String msg = ex != null ? ex.getMessage() : "";
             if (msg != null && (msg.contains("Số điện thoại") || msg.toLowerCase().contains("phone"))) {
                 showFieldError(txtPhone, lblErrPhone, "Số điện thoại này đã thuộc về nhân viên khác.");
-            } else if (msg != null && (msg.contains("Căn cước") || msg.contains("CCCD") || msg.toLowerCase().contains("national"))) {
+            } else if (
+                msg != null &&
+                (msg.contains("Căn cước") || msg.contains("CCCD") || msg.toLowerCase().contains("national"))
+            ) {
                 showFieldError(txtNationalId, lblErrNationalId, "Số CCCD này đã thuộc về nhân viên khác.");
-            } else if (msg != null && (msg.contains("Duplicate entry") || msg.contains("ConstraintViolationException"))) {
+            } else if (
+                msg != null && (msg.contains("Duplicate entry") || msg.contains("ConstraintViolationException"))
+            ) {
                 showFieldError(txtPhone, lblErrPhone, "Số điện thoại hoặc CCCD đã bị trùng lặp trong hệ thống.");
             } else {
-                DialogUtils.showError(getWindow(), "Lỗi", msg != null && !msg.isBlank() ? msg : "Có lỗi xảy ra khi lưu dữ liệu.");
+                DialogUtils.showError(
+                    getWindow(),
+                    "Lỗi",
+                    msg != null && !msg.isBlank() ? msg : "Có lỗi xảy ra khi lưu dữ liệu."
+                );
             }
         });
 
@@ -533,8 +625,12 @@ public class EmployeeDetailController {
     // Chỉ cấp lại cho nhân viên khác, đang làm việc và đã có tài khoản; ẩn khi đang sửa hồ sơ
     private void updateResetPasswordButton(boolean editing) {
         if (btnResetPassword == null) return;
-        boolean show = !editing && employee != null && !isEditingSelf()
-                && employee.getStatus() != Employee.Status.INACTIVE && employee.getAccount() != null;
+        boolean show =
+            !editing &&
+            employee != null &&
+            !isEditingSelf() &&
+            employee.getStatus() != Employee.Status.INACTIVE &&
+            employee.getAccount() != null;
         btnResetPassword.setVisible(show);
         btnResetPassword.setManaged(show);
     }
@@ -543,9 +639,18 @@ public class EmployeeDetailController {
     private void handleResetPassword() {
         if (employee == null) return;
         Window owner = btnResetPassword.getScene() != null ? btnResetPassword.getScene().getWindow() : null;
-        if (!DialogUtils.showConfirmation(owner, "Cấp lại mật khẩu",
-                "Cấp mật khẩu mới cho " + employee.getFullName() + " (" + employee.getCode() + ")?\n"
-                        + "Mật khẩu hiện tại sẽ không dùng được nữa và nhân viên phải đổi mật khẩu khi đăng nhập.")) {
+        if (
+            !DialogUtils.showConfirmation(
+                owner,
+                "Cấp lại mật khẩu",
+                "Cấp mật khẩu mới cho " +
+                    employee.getFullName() +
+                    " (" +
+                    employee.getCode() +
+                    ")?\n" +
+                    "Mật khẩu hiện tại sẽ không dùng được nữa và nhân viên phải đổi mật khẩu khi đăng nhập."
+            )
+        ) {
             return;
         }
         btnResetPassword.setDisable(true);
@@ -564,9 +669,13 @@ public class EmployeeDetailController {
             btnResetPassword.setDisable(false);
             Throwable ex = task.getException();
             log.error("Lỗi khi cấp lại mật khẩu: ", ex);
-            DialogUtils.showError(owner, "Không thể cấp lại mật khẩu",
-                    ex instanceof IllegalArgumentException || ex instanceof SecurityException
-                            ? ex.getMessage() : "Đã có lỗi xảy ra. Vui lòng thử lại.");
+            DialogUtils.showError(
+                owner,
+                "Không thể cấp lại mật khẩu",
+                ex instanceof IllegalArgumentException || ex instanceof SecurityException
+                    ? ex.getMessage()
+                    : "Đã có lỗi xảy ra. Vui lòng thử lại."
+            );
         });
         BackgroundTasks.run(task);
     }
@@ -600,10 +709,14 @@ public class EmployeeDetailController {
         colTime.setCellValueFactory(cell -> {
             Object val = cell.getValue()[0];
             if (val instanceof java.sql.Timestamp ts) {
-                return new SimpleStringProperty(ts.toLocalDateTime().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")));
+                return new SimpleStringProperty(
+                    ts.toLocalDateTime().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy"))
+                );
             }
             if (val instanceof java.time.LocalDateTime ldt) {
-                return new SimpleStringProperty(ldt.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")));
+                return new SimpleStringProperty(
+                    ldt.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy"))
+                );
             }
             return new SimpleStringProperty(val != null ? val.toString().replace(".0", "") : "");
         });

@@ -2,26 +2,26 @@ package com.pharmacy.employee;
 
 import com.pharmacy.account.Account;
 import com.pharmacy.account.Role;
+import com.pharmacy.common.PageResult;
+import com.pharmacy.common.SearchFilter;
 import com.pharmacy.employee.dto.EmployeeConflict;
 import com.pharmacy.employee.dto.EmployeeSummary;
 import com.pharmacy.employee.dto.EmployeeUpdateRequest;
 import com.pharmacy.infra.db.CodeSequence;
 import com.pharmacy.infra.db.HibernateUtil;
 import jakarta.persistence.LockModeType;
-import org.hibernate.Session;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.pharmacy.common.PageResult;
-import com.pharmacy.common.SearchFilter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EmployeeRepository {
+
     private static final Logger log = LoggerFactory.getLogger(EmployeeRepository.class);
     private static final DateTimeFormatter YYMM = DateTimeFormatter.ofPattern("yyMM");
 
@@ -83,10 +83,15 @@ public class EmployeeRepository {
         if (value == null || value.isBlank()) return Optional.empty();
         try {
             return HibernateUtil.executeWithResult(session -> {
-                String hql = "SELECT new com.pharmacy.employee.dto.EmployeeConflict(e.code, e.fullName, e.status) "
-                        + "FROM Employee e WHERE e." + field + " = :value"
-                        + (excludeId != null ? " AND e.id <> :id" : "");
-                var query = session.createSelectionQuery(hql, EmployeeConflict.class).setParameter("value", value.trim());
+                String hql =
+                    "SELECT new com.pharmacy.employee.dto.EmployeeConflict(e.code, e.fullName, e.status) " +
+                    "FROM Employee e WHERE e." +
+                    field +
+                    " = :value" +
+                    (excludeId != null ? " AND e.id <> :id" : "");
+                var query = session
+                    .createSelectionQuery(hql, EmployeeConflict.class)
+                    .setParameter("value", value.trim());
                 if (excludeId != null) query.setParameter("id", excludeId);
                 return query.setMaxResults(1).uniqueResultOptional();
             });
@@ -99,15 +104,21 @@ public class EmployeeRepository {
     // Cập nhật thông tin hồ sơ cá nhân của nhân viên đang đăng nhập
     public boolean updateOwnProfile(Integer employeeId, String fullName, String phone, String address) {
         try {
-            return HibernateUtil.executeWithResult(session -> session.createMutationQuery("""
-                        UPDATE Employee e SET e.fullName = :fullName, e.phone = :phone, e.address = :address
-                        WHERE e.id = :id
-                    """)
-                    .setParameter("fullName", fullName)
-                    .setParameter("phone", phone)
-                    .setParameter("address", address)
-                    .setParameter("id", employeeId)
-                    .executeUpdate() > 0);
+            return HibernateUtil.executeWithResult(
+                session ->
+                    session
+                        .createMutationQuery(
+                            """
+                                UPDATE Employee e SET e.fullName = :fullName, e.phone = :phone, e.address = :address
+                                WHERE e.id = :id
+                            """
+                        )
+                        .setParameter("fullName", fullName)
+                        .setParameter("phone", phone)
+                        .setParameter("address", address)
+                        .setParameter("id", employeeId)
+                        .executeUpdate() > 0
+            );
         } catch (RuntimeException e) {
             log.error("Lỗi khi cập nhật hồ sơ cá nhân [ID: {}]: ", employeeId, e);
             throw e;
@@ -116,18 +127,15 @@ public class EmployeeRepository {
 
     // Tìm nhân viên theo ID kèm thông tin tài khoản và vai trò
     public Optional<Employee> findByIdWithDetails(Integer id) {
-        if (id == null)
-            return Optional.empty();
+        if (id == null) return Optional.empty();
         return HibernateUtil.executeWithResult(session -> {
             String hql = """
-                        SELECT e FROM Employee e
-                        LEFT JOIN FETCH e.account a
-                        LEFT JOIN FETCH a.role r
-                        WHERE e.id = :id
-                    """;
-            return session.createSelectionQuery(hql, Employee.class)
-                    .setParameter("id", id)
-                    .uniqueResultOptional();
+                SELECT e FROM Employee e
+                LEFT JOIN FETCH e.account a
+                LEFT JOIN FETCH a.role r
+                WHERE e.id = :id
+            """;
+            return session.createSelectionQuery(hql, Employee.class).setParameter("id", id).uniqueResultOptional();
         });
     }
 
@@ -135,10 +143,10 @@ public class EmployeeRepository {
     public EmployeeSummary getEmployeeSummary() {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             String hql = """
-                        SELECT
-                            (SELECT COUNT(e.id) FROM Employee e),
-                            (SELECT COUNT(e.id) FROM Employee e WHERE e.status = com.pharmacy.employee.Employee.Status.ACTIVE)
-                    """;
+                SELECT
+                    (SELECT COUNT(e.id) FROM Employee e),
+                    (SELECT COUNT(e.id) FROM Employee e WHERE e.status = com.pharmacy.employee.Employee.Status.ACTIVE)
+            """;
             Object[] row = session.createSelectionQuery(hql, Object[].class).getSingleResult();
             long total = row[0] != null ? ((Number) row[0]).longValue() : 0L;
             long active = row[1] != null ? ((Number) row[1]).longValue() : 0L;
@@ -150,13 +158,28 @@ public class EmployeeRepository {
     }
 
     // Phân trang và lọc danh sách nhân viên theo nhiều tiêu chí
-    public PageResult<Employee> getEmployeesPage(int page, int size, String keyword, String gender, String role,
-            String status, String accountStatus) {
+    public PageResult<Employee> getEmployeesPage(
+        int page,
+        int size,
+        String keyword,
+        String gender,
+        String role,
+        String status,
+        String accountStatus
+    ) {
         return getEmployeesPage(page, size, keyword, gender, role, status, accountStatus, null);
     }
 
-    public PageResult<Employee> getEmployeesPage(int page, int size, String keyword, String gender, String role,
-            String status, String accountStatus, Long cachedTotal) {
+    public PageResult<Employee> getEmployeesPage(
+        int page,
+        int size,
+        String keyword,
+        String gender,
+        String role,
+        String status,
+        String accountStatus,
+        Long cachedTotal
+    ) {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             StringBuilder whereClause = new StringBuilder(" WHERE 1=1 ");
             Map<String, Object> params = new HashMap<>();
@@ -173,27 +196,34 @@ public class EmployeeRepository {
                 params.put("genders", genders);
             }
 
-            List<String> roleCodes = parseMultiFilter(role).stream()
-                    .map(r -> ("Quản lý".equalsIgnoreCase(r) || "MANAGER".equalsIgnoreCase(r)) ? "MANAGER" : "STAFF")
-                    .distinct()
-                    .toList();
+            List<String> roleCodes = parseMultiFilter(role)
+                .stream()
+                .map(r -> "Quản lý".equalsIgnoreCase(r) || "MANAGER".equalsIgnoreCase(r) ? "MANAGER" : "STAFF")
+                .distinct()
+                .toList();
             if (!roleCodes.isEmpty()) {
                 whereClause.append(" AND r.code IN (:roleCodes) ");
                 params.put("roleCodes", roleCodes);
             }
 
             if (status != null && !status.isBlank() && !"Tất cả".equalsIgnoreCase(status)) {
-                Employee.Status empStatus = ("Đang làm".equalsIgnoreCase(status) || "ACTIVE".equalsIgnoreCase(status))
+                Employee.Status empStatus =
+                    "Đang làm".equalsIgnoreCase(status) || "ACTIVE".equalsIgnoreCase(status)
                         ? Employee.Status.ACTIVE
                         : Employee.Status.INACTIVE;
                 whereClause.append(" AND e.status = :empStatus ");
                 params.put("empStatus", empStatus);
             }
 
-            List<Account.Status> accStatuses = parseMultiFilter(accountStatus).stream()
-                    .map(a -> ("Hoạt động".equalsIgnoreCase(a) || "Active".equalsIgnoreCase(a)) ? Account.Status.ACTIVE : Account.Status.DISABLED)
-                    .distinct()
-                    .toList();
+            List<Account.Status> accStatuses = parseMultiFilter(accountStatus)
+                .stream()
+                .map(a ->
+                    "Hoạt động".equalsIgnoreCase(a) || "Active".equalsIgnoreCase(a)
+                        ? Account.Status.ACTIVE
+                        : Account.Status.DISABLED
+                )
+                .distinct()
+                .toList();
             if (!accStatuses.isEmpty()) {
                 whereClause.append(" AND a.status IN (:accStatuses) ");
                 params.put("accStatuses", accStatuses);
@@ -206,9 +236,8 @@ public class EmployeeRepository {
                 total = cachedTotal;
             } else {
                 String countHql = needAccountJoin
-                        ? "SELECT COUNT(e.id) FROM Employee e LEFT JOIN e.account a LEFT JOIN a.role r "
-                                + whereClause
-                        : "SELECT COUNT(e.id) FROM Employee e " + whereClause;
+                    ? "SELECT COUNT(e.id) FROM Employee e LEFT JOIN e.account a LEFT JOIN a.role r " + whereClause
+                    : "SELECT COUNT(e.id) FROM Employee e " + whereClause;
                 var countQuery = session.createSelectionQuery(countHql, Long.class);
                 params.forEach(countQuery::setParameter);
                 search.bind(countQuery);
@@ -220,8 +249,10 @@ public class EmployeeRepository {
                 return PageResult.empty(page, size);
             }
 
-            String dataHql = "SELECT e FROM Employee e LEFT JOIN FETCH e.account a LEFT JOIN FETCH a.role r "
-                    + whereClause + " ORDER BY e.id DESC";
+            String dataHql =
+                "SELECT e FROM Employee e LEFT JOIN FETCH e.account a LEFT JOIN FETCH a.role r " +
+                whereClause +
+                " ORDER BY e.id DESC";
             var dataQuery = session.createSelectionQuery(dataHql, Employee.class);
             params.forEach(dataQuery::setParameter);
             search.bind(dataQuery);
@@ -240,10 +271,10 @@ public class EmployeeRepository {
     private static List<String> parseMultiFilter(String raw) {
         if (raw == null || raw.isBlank()) return List.of();
         return java.util.Arrays.stream(raw.split(","))
-                .map(String::trim)
-                .filter(v -> !v.isEmpty() && !"Tất cả".equalsIgnoreCase(v))
-                .distinct()
-                .toList();
+            .map(String::trim)
+            .filter(v -> !v.isEmpty() && !"Tất cả".equalsIgnoreCase(v))
+            .distinct()
+            .toList();
     }
 
     // Thêm mới nhân viên đồng thời tạo tài khoản đăng nhập
@@ -267,9 +298,10 @@ public class EmployeeRepository {
             return HibernateUtil.executeWithResult(session -> {
                 // Khóa bộ đếm trước mọi thao tác khác trong giao dịch
                 String allocatedCode = needsCode ? allocateEmployeeCode(session, prefix) : null;
-                Role role = session.createSelectionQuery("FROM Role r WHERE r.code = :code", Role.class)
-                        .setParameter("code", code)
-                        .uniqueResult();
+                Role role = session
+                    .createSelectionQuery("FROM Role r WHERE r.code = :code", Role.class)
+                    .setParameter("code", code)
+                    .uniqueResult();
                 if (role == null) {
                     // Ném lỗi để rollback, trả mã vừa cấp lại cho bộ đếm
                     throw new IllegalArgumentException("Không tìm thấy vai trò với mã: " + code);
@@ -305,14 +337,16 @@ public class EmployeeRepository {
     public boolean markAsInactive(Integer employeeId) {
         try {
             HibernateUtil.execute(session -> {
-                session.createMutationQuery("UPDATE Employee e SET e.status = :st WHERE e.id = :id")
-                        .setParameter("st", Employee.Status.INACTIVE)
-                        .setParameter("id", employeeId)
-                        .executeUpdate();
-                session.createMutationQuery("UPDATE Account a SET a.status = :st WHERE a.employee.id = :id")
-                        .setParameter("st", Account.Status.DISABLED)
-                        .setParameter("id", employeeId)
-                        .executeUpdate();
+                session
+                    .createMutationQuery("UPDATE Employee e SET e.status = :st WHERE e.id = :id")
+                    .setParameter("st", Employee.Status.INACTIVE)
+                    .setParameter("id", employeeId)
+                    .executeUpdate();
+                session
+                    .createMutationQuery("UPDATE Account a SET a.status = :st WHERE a.employee.id = :id")
+                    .setParameter("st", Account.Status.DISABLED)
+                    .setParameter("id", employeeId)
+                    .executeUpdate();
             });
             return true;
         } catch (Exception e) {
@@ -325,35 +359,42 @@ public class EmployeeRepository {
     public boolean updateEmployeeByManager(EmployeeUpdateRequest req) {
         try {
             return HibernateUtil.executeWithResult(session -> {
-                int rowsUpdated = session.createMutationQuery("""
+                int rowsUpdated = session
+                    .createMutationQuery(
+                        """
                             UPDATE Employee e SET
                                 e.fullName = :fullName, e.dob = :dob, e.gender = :gender,
                                 e.nationalId = :nationalId, e.phone = :phone, e.address = :address,
                                 e.status = :status
                             WHERE e.id = :id
-                        """)
-                        .setParameter("fullName", req.fullName())
-                        .setParameter("dob", req.dob())
-                        .setParameter("gender", req.gender())
-                        .setParameter("nationalId", req.nationalId())
-                        .setParameter("phone", req.phone())
-                        .setParameter("address", req.address())
-                        .setParameter("status", Employee.Status.valueOf(req.empStatus()))
-                        .setParameter("id", req.employeeId())
-                        .executeUpdate();
+                        """
+                    )
+                    .setParameter("fullName", req.fullName())
+                    .setParameter("dob", req.dob())
+                    .setParameter("gender", req.gender())
+                    .setParameter("nationalId", req.nationalId())
+                    .setParameter("phone", req.phone())
+                    .setParameter("address", req.address())
+                    .setParameter("status", Employee.Status.valueOf(req.empStatus()))
+                    .setParameter("id", req.employeeId())
+                    .executeUpdate();
                 if (rowsUpdated == 0) {
                     return false;
                 }
 
-                Role role = session.createSelectionQuery("FROM Role r WHERE r.code = :roleVal OR r.name = :roleVal", Role.class)
-                        .setParameter("roleVal", req.roleName())
-                        .setMaxResults(1)
-                        .uniqueResult();
-                var accountUpdate = session.createMutationQuery(role != null
-                                ? "UPDATE Account a SET a.status = :status, a.role.id = :roleId WHERE a.employee.id = :empId"
-                                : "UPDATE Account a SET a.status = :status WHERE a.employee.id = :empId")
-                        .setParameter("status", Account.Status.valueOf(req.accountStatus()))
-                        .setParameter("empId", req.employeeId());
+                Role role = session
+                    .createSelectionQuery("FROM Role r WHERE r.code = :roleVal OR r.name = :roleVal", Role.class)
+                    .setParameter("roleVal", req.roleName())
+                    .setMaxResults(1)
+                    .uniqueResult();
+                var accountUpdate = session
+                    .createMutationQuery(
+                        role != null
+                            ? "UPDATE Account a SET a.status = :status, a.role.id = :roleId WHERE a.employee.id = :empId"
+                            : "UPDATE Account a SET a.status = :status WHERE a.employee.id = :empId"
+                    )
+                    .setParameter("status", Account.Status.valueOf(req.accountStatus()))
+                    .setParameter("empId", req.employeeId());
                 if (role != null) {
                     accountUpdate.setParameter("roleId", role.getId());
                 }

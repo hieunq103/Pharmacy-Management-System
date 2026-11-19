@@ -15,6 +15,15 @@ import com.pharmacy.sales.entity.SalesOrder;
 import com.pharmacy.sales.entity.SalesOrderItem;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -26,23 +35,13 @@ import org.hibernate.cfg.AvailableSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public final class HibernateUtil {
+
     private static final Logger log = LoggerFactory.getLogger(HibernateUtil.class);
     private static SessionFactory sessionFactory;
     private static HikariDataSource dataSource;
 
-    private HibernateUtil() {
-    }
+    private HibernateUtil() {}
 
     public static synchronized SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
@@ -52,8 +51,7 @@ public final class HibernateUtil {
     }
 
     public static synchronized void init() {
-        if (sessionFactory != null)
-            return;
+        if (sessionFactory != null) return;
         StandardServiceRegistry registry = null;
         try {
             log.info("Khởi tạo Hibernate SessionFactory với HikariCP...");
@@ -85,10 +83,15 @@ public final class HibernateUtil {
 
             registryBuilder.applySetting(AvailableSettings.SHOW_SQL, AppConfig.get("hibernate.show_sql", "false"));
             registryBuilder.applySetting(AvailableSettings.FORMAT_SQL, AppConfig.get("hibernate.format_sql", "false"));
-            registryBuilder.applySetting(AvailableSettings.GENERATE_STATISTICS,
-                    AppConfig.get("hibernate.generate_statistics", "false"));
+            registryBuilder.applySetting(
+                AvailableSettings.GENERATE_STATISTICS,
+                AppConfig.get("hibernate.generate_statistics", "false")
+            );
 
-            registryBuilder.applySetting(AvailableSettings.STATEMENT_BATCH_SIZE, AppConfig.get("hibernate.jdbc.batch_size", "50"));
+            registryBuilder.applySetting(
+                AvailableSettings.STATEMENT_BATCH_SIZE,
+                AppConfig.get("hibernate.jdbc.batch_size", "50")
+            );
             registryBuilder.applySetting(AvailableSettings.ORDER_INSERTS, "true");
             registryBuilder.applySetting(AvailableSettings.ORDER_UPDATES, "true");
 
@@ -123,7 +126,9 @@ public final class HibernateUtil {
 
     static String sessionTimeZoneOffset(String jdbcUrl) {
         ZoneId zone = ZoneId.systemDefault();
-        Matcher m = Pattern.compile("[?&](?:serverTimezone|connectionTimeZone)=([^&]+)").matcher(jdbcUrl == null ? "" : jdbcUrl);
+        Matcher m = Pattern.compile("[?&](?:serverTimezone|connectionTimeZone)=([^&]+)").matcher(
+            jdbcUrl == null ? "" : jdbcUrl
+        );
         if (m.find()) {
             String id = URLDecoder.decode(m.group(1), StandardCharsets.UTF_8);
             if (!"LOCAL".equalsIgnoreCase(id) && !"SERVER".equalsIgnoreCase(id)) {
@@ -154,8 +159,7 @@ public final class HibernateUtil {
                 tx.commit();
                 return result;
             } catch (Exception e) {
-                if (tx != null && tx.isActive())
-                    tx.rollback();
+                if (tx != null && tx.isActive()) tx.rollback();
                 throw e;
             }
         }
@@ -169,16 +173,14 @@ public final class HibernateUtil {
                 consumer.accept(session);
                 tx.commit();
             } catch (Exception e) {
-                if (tx != null && tx.isActive())
-                    tx.rollback();
+                if (tx != null && tx.isActive()) tx.rollback();
                 throw e;
             }
         }
     }
 
     public static boolean isDatabaseAlive() {
-        if (dataSource == null || dataSource.isClosed())
-            return false;
+        if (dataSource == null || dataSource.isClosed()) return false;
         try (Connection conn = dataSource.getConnection()) {
             return conn.isValid(2);
         } catch (Exception e) {

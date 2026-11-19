@@ -4,6 +4,7 @@ import com.pharmacy.account.Account;
 import com.pharmacy.employee.Employee;
 
 public final class UserSession {
+
     private static volatile UserSession instance;
 
     private final Account account;
@@ -94,5 +95,4 @@ public final class UserSession {
     public boolean isManager() {
         return account != null && account.isManager();
     }
-
 }

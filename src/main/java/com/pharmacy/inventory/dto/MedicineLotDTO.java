@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class MedicineLotDTO {
+
     private Long id;
     private String lotNumber;
     private LocalDate expiryDate;
@@ -38,8 +39,7 @@ public class MedicineLotDTO {
         }
     }
 
-    public MedicineLotDTO() {
-    }
+    public MedicineLotDTO() {}
 
     public Long getId() {
         return id;

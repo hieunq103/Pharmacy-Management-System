@@ -9,10 +9,10 @@ import com.pharmacy.report.dto.DailySalesDTO;
 import com.pharmacy.report.dto.TodaySalesSummary;
 import com.pharmacy.sales.SalesService;
 import com.pharmacy.sales.dto.SalesOrderDTO;
-
 import java.util.List;
 
 public class DashboardService {
+
     private final SalesService salesService;
     private final InventoryService inventoryService;
     private final ReportService reportService;

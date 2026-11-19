@@ -3,6 +3,7 @@ package com.pharmacy.inventory.dto;
 import java.math.BigDecimal;
 
 public class MedicineInventoryDTO {
+
     private Integer medicineId;
     private String medicineCode;
     private String medicineName;
@@ -26,8 +27,14 @@ public class MedicineInventoryDTO {
         OUT_OF_STOCK("Hết hàng");
 
         private final String label;
-        StockStatus(String label) { this.label = label; }
-        public String getLabel() { return label; }
+
+        StockStatus(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
     }
 
     public enum ExpiryStatus {
@@ -36,8 +43,14 @@ public class MedicineInventoryDTO {
         EXPIRED("Có lô hết hạn");
 
         private final String label;
-        ExpiryStatus(String label) { this.label = label; }
-        public String getLabel() { return label; }
+
+        ExpiryStatus(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
     }
 
     public enum InventoryStatus {
@@ -45,16 +58,22 @@ public class MedicineInventoryDTO {
         LOW_STOCK,
         HAS_NEAR_EXPIRY_LOT,
         HAS_EXPIRED_LOT,
-        OUT_OF_STOCK
+        OUT_OF_STOCK,
     }
 
-    public MedicineInventoryDTO() {
-    }
+    public MedicineInventoryDTO() {}
 
-    public MedicineInventoryDTO(Integer medicineId, String medicineCode, String medicineName,
-                                String categoryName, Boolean requiresPrescription, String unit,
-                                BigDecimal sellPrice, Integer totalQuantity,
-                                InventoryStatus status) {
+    public MedicineInventoryDTO(
+        Integer medicineId,
+        String medicineCode,
+        String medicineName,
+        String categoryName,
+        Boolean requiresPrescription,
+        String unit,
+        BigDecimal sellPrice,
+        Integer totalQuantity,
+        InventoryStatus status
+    ) {
         this.medicineId = medicineId;
         this.medicineCode = medicineCode;
         this.medicineName = medicineName;
@@ -66,42 +85,107 @@ public class MedicineInventoryDTO {
         this.status = status;
     }
 
-    public Integer getMedicineId() { return medicineId; }
-    public void setMedicineId(Integer medicineId) { this.medicineId = medicineId; }
+    public Integer getMedicineId() {
+        return medicineId;
+    }
 
-    public String getMedicineCode() { return medicineCode; }
-    public void setMedicineCode(String medicineCode) { this.medicineCode = medicineCode; }
+    public void setMedicineId(Integer medicineId) {
+        this.medicineId = medicineId;
+    }
 
-    public String getMedicineName() { return medicineName; }
-    public void setMedicineName(String medicineName) { this.medicineName = medicineName; }
+    public String getMedicineCode() {
+        return medicineCode;
+    }
 
-    public String getActiveIngredient() { return activeIngredient; }
-    public void setActiveIngredient(String activeIngredient) { this.activeIngredient = activeIngredient; }
+    public void setMedicineCode(String medicineCode) {
+        this.medicineCode = medicineCode;
+    }
 
-    public String getCategoryName() { return categoryName; }
-    public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
+    public String getMedicineName() {
+        return medicineName;
+    }
 
-    public String getManufacturer() { return manufacturer; }
-    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+    public void setMedicineName(String medicineName) {
+        this.medicineName = medicineName;
+    }
 
-    public Boolean getRequiresPrescription() { return requiresPrescription; }
-    public void setRequiresPrescription(Boolean requiresPrescription) { this.requiresPrescription = requiresPrescription; }
+    public String getActiveIngredient() {
+        return activeIngredient;
+    }
 
-    public String getUnit() { return unit; }
-    public void setUnit(String unit) { this.unit = unit; }
+    public void setActiveIngredient(String activeIngredient) {
+        this.activeIngredient = activeIngredient;
+    }
 
-    public BigDecimal getSellPrice() { return sellPrice; }
-    public void setSellPrice(BigDecimal sellPrice) { this.sellPrice = sellPrice; }
+    public String getCategoryName() {
+        return categoryName;
+    }
 
-    public Integer getTotalQuantity() { return totalQuantity; }
-    public void setTotalQuantity(Integer totalQuantity) { this.totalQuantity = totalQuantity; }
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
 
-    public InventoryStatus getStatus() { return status; }
-    public void setStatus(InventoryStatus status) { this.status = status; }
+    public String getManufacturer() {
+        return manufacturer;
+    }
 
-    public StockStatus getStockStatus() { return stockStatus; }
-    public void setStockStatus(StockStatus stockStatus) { this.stockStatus = stockStatus; }
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
 
-    public ExpiryStatus getExpiryStatus() { return expiryStatus; }
-    public void setExpiryStatus(ExpiryStatus expiryStatus) { this.expiryStatus = expiryStatus; }
+    public Boolean getRequiresPrescription() {
+        return requiresPrescription;
+    }
+
+    public void setRequiresPrescription(Boolean requiresPrescription) {
+        this.requiresPrescription = requiresPrescription;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public BigDecimal getSellPrice() {
+        return sellPrice;
+    }
+
+    public void setSellPrice(BigDecimal sellPrice) {
+        this.sellPrice = sellPrice;
+    }
+
+    public Integer getTotalQuantity() {
+        return totalQuantity;
+    }
+
+    public void setTotalQuantity(Integer totalQuantity) {
+        this.totalQuantity = totalQuantity;
+    }
+
+    public InventoryStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(InventoryStatus status) {
+        this.status = status;
+    }
+
+    public StockStatus getStockStatus() {
+        return stockStatus;
+    }
+
+    public void setStockStatus(StockStatus stockStatus) {
+        this.stockStatus = stockStatus;
+    }
+
+    public ExpiryStatus getExpiryStatus() {
+        return expiryStatus;
+    }
+
+    public void setExpiryStatus(ExpiryStatus expiryStatus) {
+        this.expiryStatus = expiryStatus;
+    }
 }

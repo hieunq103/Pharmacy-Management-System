@@ -7,6 +7,11 @@ import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.UiScaleManager;
 import com.pharmacy.common.UserSession;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import java.util.Optional;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,13 +26,8 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-import java.util.Optional;
-
 public class MainLayoutController {
+
     private static final Logger log = LoggerFactory.getLogger(MainLayoutController.class);
     private static MainLayoutController instance;
     private final AuthService authService;
@@ -42,31 +42,40 @@ public class MainLayoutController {
 
     @FXML
     private BorderPane rootPane;
+
     @FXML
     private StackPane contentArea;
 
     @FXML
     private Button btnDashboard;
+
     @FXML
     private Button btnSales;
+
     @FXML
     private HBox boxInventoryNav;
+
     @FXML
     private Button btnInventory;
+
     @FXML
     private Button btnEmployee;
+
     @FXML
     private Button btnReport;
 
     @FXML
     private Label lblUserAvatar;
+
     @FXML
     private Label lblUserName;
+
     @FXML
     private Label lblUserRole;
 
     @FXML
     private Label lblHeaderTitle;
+
     @FXML
     private Label lblHeaderSubtitle;
 
@@ -104,7 +113,8 @@ public class MainLayoutController {
         lblUserName.setText(fullName);
         lblUserAvatar.setText(getInitials(fullName));
 
-        String roleName = (currentAccount.getRole() != null && currentAccount.getRole().getName() != null)
+        String roleName =
+            currentAccount.getRole() != null && currentAccount.getRole().getName() != null
                 ? currentAccount.getRole().getName()
                 : "Chưa phân quyền";
         lblUserRole.setText(roleName);
@@ -146,7 +156,10 @@ public class MainLayoutController {
         Parent cached = viewCache.get("/fxml/dashboard/dashboard.fxml");
         if (cached != null) {
             contentArea.getChildren().setAll(cached);
-            if (controllerCache.get("/fxml/dashboard/dashboard.fxml") instanceof com.pharmacy.dashboard.DashboardController dashCtrl) {
+            if (
+                controllerCache.get("/fxml/dashboard/dashboard.fxml") instanceof
+                    com.pharmacy.dashboard.DashboardController dashCtrl
+            ) {
                 dashCtrl.loadAllDashboardData();
             }
             return;
@@ -188,7 +201,10 @@ public class MainLayoutController {
         Parent cached = viewCache.get("/fxml/inventory/inventory.fxml");
         if (cached != null) {
             contentArea.getChildren().setAll(cached);
-            if (controllerCache.get("/fxml/inventory/inventory.fxml") instanceof com.pharmacy.inventory.InventoryController invCtrl) {
+            if (
+                controllerCache.get("/fxml/inventory/inventory.fxml") instanceof
+                    com.pharmacy.inventory.InventoryController invCtrl
+            ) {
                 invCtrl.applyFilters(stockFilters, expiryFilters);
             }
             return;
@@ -233,8 +249,8 @@ public class MainLayoutController {
         }
         FXMLLoader loader = loadCenterViewWithLoader("/fxml/sales/sales.fxml");
         return loader != null && loader.getController() instanceof com.pharmacy.sales.SalesController salesCtrl
-                ? salesCtrl
-                : (com.pharmacy.sales.SalesController) controllerCache.get("/fxml/sales/sales.fxml");
+            ? salesCtrl
+            : (com.pharmacy.sales.SalesController) controllerCache.get("/fxml/sales/sales.fxml");
     }
 
     public void navigateToProfileFromEmployees() {
@@ -244,7 +260,10 @@ public class MainLayoutController {
         Parent cached = viewCache.get("/fxml/profile/profile.fxml");
         if (cached != null) {
             contentArea.getChildren().setAll(cached);
-            if (controllerCache.get("/fxml/profile/profile.fxml") instanceof com.pharmacy.profile.ProfileController profileCtrl) {
+            if (
+                controllerCache.get("/fxml/profile/profile.fxml") instanceof
+                    com.pharmacy.profile.ProfileController profileCtrl
+            ) {
                 profileCtrl.setOnBack(() -> handleNavEmployee(null));
             }
             return;
@@ -321,7 +340,7 @@ public class MainLayoutController {
             "/fxml/sales/sales.fxml",
             "/fxml/inventory/inventory.fxml",
             "/fxml/employee/employee.fxml",
-            REPORT_FXML
+            REPORT_FXML,
         };
         for (String fxmlPath : viewsToPreload) {
             if (viewCache.containsKey(fxmlPath)) continue;
@@ -364,8 +383,10 @@ public class MainLayoutController {
         }
 
         Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
-        DialogUtils.configure(confirmDialog,
-                rootPane != null && rootPane.getScene() != null ? rootPane.getScene().getWindow() : null);
+        DialogUtils.configure(
+            confirmDialog,
+            rootPane != null && rootPane.getScene() != null ? rootPane.getScene().getWindow() : null
+        );
         confirmDialog.setTitle("Xác nhận");
         confirmDialog.setHeaderText(null);
         confirmDialog.setContentText("Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?");
@@ -383,8 +404,10 @@ public class MainLayoutController {
             forceRedirectToLogin();
         } catch (Exception e) {
             log.error("Lỗi phát sinh trong quá trình đăng xuất: ", e);
-            showFriendlyMessage("Thông báo",
-                    "Có lỗi xảy ra trong quá trình đăng xuất. Hệ thống sẽ đưa bạn về trang đăng nhập.");
+            showFriendlyMessage(
+                "Thông báo",
+                "Có lỗi xảy ra trong quá trình đăng xuất. Hệ thống sẽ đưa bạn về trang đăng nhập."
+            );
             forceRedirectToLogin();
         }
     }
@@ -439,8 +462,11 @@ public class MainLayoutController {
     }
 
     private void showFriendlyMessage(String title, String message) {
-        DialogUtils.showInfo(rootPane != null && rootPane.getScene() != null ? rootPane.getScene().getWindow() : null,
-                title, message);
+        DialogUtils.showInfo(
+            rootPane != null && rootPane.getScene() != null ? rootPane.getScene().getWindow() : null,
+            title,
+            message
+        );
     }
 
     private FXMLLoader loadCenterViewWithLoader(String fxmlPath) {
@@ -481,8 +507,7 @@ public class MainLayoutController {
         }
         Button[] allButtons = { btnDashboard, btnSales, btnInventory, btnEmployee, btnReport };
         for (Button btn : allButtons) {
-            if (btn == null)
-                continue;
+            if (btn == null) continue;
             if (btn == activeButton) {
                 if (!btn.getStyleClass().contains("active")) {
                     btn.getStyleClass().add("active");

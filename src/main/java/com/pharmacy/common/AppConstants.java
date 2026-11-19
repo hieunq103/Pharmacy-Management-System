@@ -3,8 +3,8 @@ package com.pharmacy.common;
 import javafx.util.Duration;
 
 public final class AppConstants {
-    private AppConstants() {
-    }
+
+    private AppConstants() {}
 
     public static final int NEAR_EXPIRY_DAYS = 90;
     public static final int DEFAULT_LOW_STOCK_THRESHOLD = 10;

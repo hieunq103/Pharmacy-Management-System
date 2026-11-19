@@ -1,14 +1,15 @@
 package com.pharmacy.sales;
 
-import com.pharmacy.common.AppConstants;
+import static com.pharmacy.common.SqlRows.*;
 
+import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.PageResult;
 import com.pharmacy.common.SearchFilter;
 import com.pharmacy.employee.Employee;
 import com.pharmacy.infra.db.HibernateUtil;
 import com.pharmacy.infra.db.TransactionGuards;
-import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.inventory.LotStats;
+import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.inventory.entity.InventoryLot;
 import com.pharmacy.inventory.entity.InventoryTransaction;
 import com.pharmacy.inventory.entity.Medicine;
@@ -20,11 +21,6 @@ import com.pharmacy.sales.dto.SalesOrderRequest;
 import com.pharmacy.sales.entity.SalesOrder;
 import com.pharmacy.sales.entity.SalesOrderItem;
 import jakarta.persistence.LockModeType;
-import org.hibernate.Session;
-import org.hibernate.query.SelectionQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,18 +34,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static com.pharmacy.common.SqlRows.*;
+import org.hibernate.Session;
+import org.hibernate.query.SelectionQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SalesRepository {
-    private static final Logger log = LoggerFactory.getLogger(SalesRepository.class);
 
+    private static final Logger log = LoggerFactory.getLogger(SalesRepository.class);
 
     // Lấy danh sách tên tất cả danh mục thuốc cho màn hình bán hàng
     public List<String> getAllCategories() {
         try (Session session = HibernateUtil.openReadOnlySession()) {
-            return session.createSelectionQuery("SELECT mc.name FROM MedicineCategory mc ORDER BY mc.id ASC", String.class)
-                    .list();
+            return session
+                .createSelectionQuery("SELECT mc.name FROM MedicineCategory mc ORDER BY mc.id ASC", String.class)
+                .list();
         } catch (Exception e) {
             log.error("Lỗi khi lấy danh mục thuốc cho màn hình bán hàng: ", e);
             return Collections.emptyList();
@@ -61,25 +60,34 @@ public class SalesRepository {
         return getMedicinesPage(page, size, keyword, categoryName, null);
     }
 
-    public PageResult<MedicineInventoryDTO> getMedicinesPage(int page, int size, String keyword, String categoryName, Long cachedTotal) {
+    public PageResult<MedicineInventoryDTO> getMedicinesPage(
+        int page,
+        int size,
+        String keyword,
+        String categoryName,
+        Long cachedTotal
+    ) {
         int validPage = Math.max(1, page);
         int validSize = Math.max(1, size);
         try (Session session = HibernateUtil.openReadOnlySession()) {
-            SearchFilter search = SearchFilter.of(keyword, "kw").prefix("m.code").contains("m.name", "m.activeIngredient");
-            boolean hasCategory = hasText(categoryName)
-                    && !"Tất cả".equalsIgnoreCase(categoryName)
-                    && !"Tất cả nhóm thuốc".equalsIgnoreCase(categoryName);
+            SearchFilter search = SearchFilter.of(keyword, "kw")
+                .prefix("m.code")
+                .contains("m.name", "m.activeIngredient");
+            boolean hasCategory =
+                hasText(categoryName) &&
+                !"Tất cả".equalsIgnoreCase(categoryName) &&
+                !"Tất cả nhóm thuốc".equalsIgnoreCase(categoryName);
 
-            String where = " WHERE m.status = :active "
-                    + search.hql()
-                    + (hasCategory ? " AND m.category.name = :category " : "");
+            String where =
+                " WHERE m.status = :active " + search.hql() + (hasCategory ? " AND m.category.name = :category " : "");
 
             long total;
             if (cachedTotal != null && cachedTotal >= 0) {
                 total = cachedTotal;
             } else {
-                SelectionQuery<Long> countQuery = session.createSelectionQuery("SELECT COUNT(m.id) FROM Medicine m " + where, Long.class)
-                        .setParameter("active", Medicine.Status.ACTIVE);
+                SelectionQuery<Long> countQuery = session
+                    .createSelectionQuery("SELECT COUNT(m.id) FROM Medicine m " + where, Long.class)
+                    .setParameter("active", Medicine.Status.ACTIVE);
                 bindMedicineFilter(countQuery, search, hasCategory ? categoryName : null);
                 total = toLong(countQuery.uniqueResult());
             }
@@ -91,39 +99,45 @@ public class SalesRepository {
             // Không dùng ORDER BY CASE WHEN EXISTS(...) (subquery tương quan chạy cho mọi dòng + filesort toàn bảng mỗi lần
             // chuyển trang). Thay bằng 2 nhóm: nhóm có hàng (semi-join theo index lô) rồi tới nhóm còn lại, ghép theo offset.
             LocalDate today = LocalDate.now();
-            String sellable = " AND m.id IN (SELECT il.medicine.id FROM InventoryLot il "
-                    + "WHERE il.quantityRemaining > 0 AND il.expiryDate > :today) ";
+            String sellable =
+                " AND m.id IN (SELECT il.medicine.id FROM InventoryLot il " +
+                "WHERE il.quantityRemaining > 0 AND il.expiryDate > :today) ";
             String idsOrder = " ORDER BY m.name ASC, m.id ASC";
             int offset = (validPage - 1) * validSize;
 
-            SelectionQuery<Long> sellableCount = session.createSelectionQuery(
-                            "SELECT COUNT(m.id) FROM Medicine m " + where + sellable, Long.class)
-                    .setParameter("active", Medicine.Status.ACTIVE)
-                    .setParameter("today", today);
+            SelectionQuery<Long> sellableCount = session
+                .createSelectionQuery("SELECT COUNT(m.id) FROM Medicine m " + where + sellable, Long.class)
+                .setParameter("active", Medicine.Status.ACTIVE)
+                .setParameter("today", today);
             bindMedicineFilter(sellableCount, search, hasCategory ? categoryName : null);
             long sellableTotal = toLong(sellableCount.uniqueResult());
 
             List<Integer> pageIds = new ArrayList<>(validSize);
             if (offset < sellableTotal) {
-                SelectionQuery<Integer> q = session.createSelectionQuery(
-                                "SELECT m.id FROM Medicine m " + where + sellable + idsOrder, Integer.class)
-                        .setParameter("active", Medicine.Status.ACTIVE)
-                        .setParameter("today", today)
-                        .setFirstResult(offset)
-                        .setMaxResults(validSize);
+                SelectionQuery<Integer> q = session
+                    .createSelectionQuery("SELECT m.id FROM Medicine m " + where + sellable + idsOrder, Integer.class)
+                    .setParameter("active", Medicine.Status.ACTIVE)
+                    .setParameter("today", today)
+                    .setFirstResult(offset)
+                    .setMaxResults(validSize);
                 bindMedicineFilter(q, search, hasCategory ? categoryName : null);
                 pageIds.addAll(q.list());
             }
             int remaining = validSize - pageIds.size();
             if (remaining > 0) {
-                SelectionQuery<Integer> q = session.createSelectionQuery(
-                                "SELECT m.id FROM Medicine m " + where
-                                        + " AND NOT EXISTS (SELECT 1 FROM InventoryLot il WHERE il.medicine.id = m.id "
-                                        + "AND il.quantityRemaining > 0 AND il.expiryDate > :today) " + idsOrder, Integer.class)
-                        .setParameter("active", Medicine.Status.ACTIVE)
-                        .setParameter("today", today)
-                        .setFirstResult((int) Math.max(0, offset - sellableTotal))
-                        .setMaxResults(remaining);
+                SelectionQuery<Integer> q = session
+                    .createSelectionQuery(
+                        "SELECT m.id FROM Medicine m " +
+                            where +
+                            " AND NOT EXISTS (SELECT 1 FROM InventoryLot il WHERE il.medicine.id = m.id " +
+                            "AND il.quantityRemaining > 0 AND il.expiryDate > :today) " +
+                            idsOrder,
+                        Integer.class
+                    )
+                    .setParameter("active", Medicine.Status.ACTIVE)
+                    .setParameter("today", today)
+                    .setFirstResult((int) Math.max(0, offset - sellableTotal))
+                    .setMaxResults(remaining);
                 bindMedicineFilter(q, search, hasCategory ? categoryName : null);
                 pageIds.addAll(q.list());
             }
@@ -133,15 +147,16 @@ public class SalesRepository {
 
             // Bước 2: Lấy thông tin thuốc + thống kê lô chỉ cho đúng pageIds
             String detailHql = """
-                    SELECT m.id, m.code, m.name, mc.name, m.requiresPrescription, m.unit, m.sellPrice,
-                           m.activeIngredient, m.manufacturer
-                    FROM Medicine m
-                    LEFT JOIN m.category mc
-                    WHERE m.id IN (:ids)
-                    """;
-            List<Object[]> rows = session.createSelectionQuery(detailHql, Object[].class)
-                    .setParameter("ids", pageIds)
-                    .list();
+            SELECT m.id, m.code, m.name, mc.name, m.requiresPrescription, m.unit, m.sellPrice,
+                   m.activeIngredient, m.manufacturer
+            FROM Medicine m
+            LEFT JOIN m.category mc
+            WHERE m.id IN (:ids)
+            """;
+            List<Object[]> rows = session
+                .createSelectionQuery(detailHql, Object[].class)
+                .setParameter("ids", pageIds)
+                .list();
             Map<Integer, Object[]> rowById = new HashMap<>(rows.size() * 2);
             for (Object[] r : rows) {
                 rowById.put(toInteger(r[0]), r);
@@ -181,8 +196,16 @@ public class SalesRepository {
         }
 
         MedicineInventoryDTO dto = new MedicineInventoryDTO(
-                toInteger(row[0]), toStr(row[1]), toStr(row[2]), toStr(row[3]), toBoolean(row[4]), toStr(row[5]),
-                toBigDecimal(row[6]), sellableQty, status);
+            toInteger(row[0]),
+            toStr(row[1]),
+            toStr(row[2]),
+            toStr(row[3]),
+            toBoolean(row[4]),
+            toStr(row[5]),
+            toBigDecimal(row[6]),
+            sellableQty,
+            status
+        );
         dto.setActiveIngredient(toStr(row[7]));
         dto.setManufacturer(toStr(row[8]));
         return dto;
@@ -218,7 +241,9 @@ public class SalesRepository {
                 Map<Integer, CartItem> cartByMedicine = new HashMap<>();
                 for (CartItem item : req.getItems()) {
                     if (item.getMedicineId() == null || item.getQuantity() <= 0) {
-                        throw new IllegalArgumentException("Số lượng của thuốc '" + item.getMedicineName() + "' phải lớn hơn 0.");
+                        throw new IllegalArgumentException(
+                            "Số lượng của thuốc '" + item.getMedicineName() + "' phải lớn hơn 0."
+                        );
                     }
                     qtyByMedicine.merge(item.getMedicineId(), item.getQuantity(), Integer::sum);
                     cartByMedicine.putIfAbsent(item.getMedicineId(), item);
@@ -227,7 +252,13 @@ public class SalesRepository {
                 Map<Integer, BigDecimal> prices = loadActivePrices(session, qtyByMedicine.keySet());
                 Map<Integer, List<InventoryLot>> lotsByMedicine = lockSellableLots(session, qtyByMedicine.keySet());
 
-                record OrderLinePlan(int medicineId, InventoryLot lot, int quantity, BigDecimal unitPrice, BigDecimal lineTotal) {}
+                record OrderLinePlan(
+                    int medicineId,
+                    InventoryLot lot,
+                    int quantity,
+                    BigDecimal unitPrice,
+                    BigDecimal lineTotal
+                ) {}
                 BigDecimal subtotal = BigDecimal.ZERO;
                 List<OrderLinePlan> lines = new ArrayList<>();
 
@@ -237,18 +268,30 @@ public class SalesRepository {
                     CartItem cart = cartByMedicine.get(medicineId);
                     BigDecimal unitPrice = prices.get(medicineId);
                     if (unitPrice == null) {
-                        throw new IllegalStateException("Thuốc '" + cart.getMedicineName() + "' không tồn tại hoặc đã ngừng kinh doanh.");
+                        throw new IllegalStateException(
+                            "Thuốc '" + cart.getMedicineName() + "' không tồn tại hoặc đã ngừng kinh doanh."
+                        );
                     }
                     if (cart.getSellPrice() != null && cart.getSellPrice().compareTo(unitPrice) != 0) {
-                        throw new IllegalStateException("Giá bán của thuốc '" + cart.getMedicineName()
-                                + "' đã thay đổi. Vui lòng tải lại giỏ hàng trước khi thanh toán.");
+                        throw new IllegalStateException(
+                            "Giá bán của thuốc '" +
+                                cart.getMedicineName() +
+                                "' đã thay đổi. Vui lòng tải lại giỏ hàng trước khi thanh toán."
+                        );
                     }
 
                     List<InventoryLot> lots = lotsByMedicine.getOrDefault(medicineId, List.of());
                     long available = lots.stream().mapToLong(InventoryLot::getQuantityRemaining).sum();
                     if (available < needed) {
-                        throw new IllegalStateException("Thuốc '" + cart.getMedicineName() + "' không đủ số lượng tồn còn hạn để bán (Còn "
-                                + available + ", yêu cầu " + needed + ").");
+                        throw new IllegalStateException(
+                            "Thuốc '" +
+                                cart.getMedicineName() +
+                                "' không đủ số lượng tồn còn hạn để bán (Còn " +
+                                available +
+                                ", yêu cầu " +
+                                needed +
+                                ")."
+                        );
                     }
                     for (InventoryLot lot : lots) {
                         if (needed <= 0) break;
@@ -307,15 +350,19 @@ public class SalesRepository {
 
     // Lấy giá bán hiện tại của các thuốc đang kinh doanh (khóa đọc chia sẻ PESSIMISTIC_READ = FOR SHARE)
     private static Map<Integer, BigDecimal> loadActivePrices(Session session, Set<Integer> medicineIds) {
-        List<Object[]> rows = session.createSelectionQuery("""
+        List<Object[]> rows = session
+            .createSelectionQuery(
+                """
                 SELECT m.id, m.sellPrice
                 FROM Medicine m
                 WHERE m.status = :active AND m.id IN (:ids)
-                """, Object[].class)
-                .setParameter("active", Medicine.Status.ACTIVE)
-                .setParameter("ids", medicineIds)
-                .setLockMode(LockModeType.PESSIMISTIC_READ)
-                .list();
+                """,
+                Object[].class
+            )
+            .setParameter("active", Medicine.Status.ACTIVE)
+            .setParameter("ids", medicineIds)
+            .setLockMode(LockModeType.PESSIMISTIC_READ)
+            .list();
         Map<Integer, BigDecimal> prices = new HashMap<>(rows.size() * 2);
         for (Object[] r : rows) {
             prices.put(toInteger(r[0]), toBigDecimal(r[1]));
@@ -325,16 +372,20 @@ public class SalesRepository {
 
     // Khóa và lấy danh sách lô thuốc còn hạn theo thứ tự ưu tiên FEFO (PESSIMISTIC_WRITE = FOR UPDATE)
     private static Map<Integer, List<InventoryLot>> lockSellableLots(Session session, Set<Integer> medicineIds) {
-        List<InventoryLot> lots = session.createSelectionQuery("""
+        List<InventoryLot> lots = session
+            .createSelectionQuery(
+                """
                 SELECT il
                 FROM InventoryLot il
                 WHERE il.medicine.id IN (:ids) AND il.quantityRemaining > 0 AND il.expiryDate > :today
                 ORDER BY il.medicine.id ASC, il.expiryDate ASC, il.id ASC
-                """, InventoryLot.class)
-                .setParameter("ids", medicineIds)
-                .setParameter("today", LocalDate.now())
-                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
-                .list();
+                """,
+                InventoryLot.class
+            )
+            .setParameter("ids", medicineIds)
+            .setParameter("today", LocalDate.now())
+            .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+            .list();
         Map<Integer, List<InventoryLot>> result = new HashMap<>();
         for (InventoryLot lot : lots) {
             Integer medId = lot.getMedicine().getId();
@@ -344,8 +395,14 @@ public class SalesRepository {
     }
 
     // Phân trang danh sách hóa đơn bán hàng theo khoảng ngày và từ khóa (2-step HQL pagination)
-    public PageResult<SalesOrderDTO> getSalesOrders(LocalDate fromDate, LocalDate toDate, Integer employeeId, String keyword,
-                                                    int page, int size) {
+    public PageResult<SalesOrderDTO> getSalesOrders(
+        LocalDate fromDate,
+        LocalDate toDate,
+        Integer employeeId,
+        String keyword,
+        int page,
+        int size
+    ) {
         if (fromDate == null) fromDate = LocalDate.now();
         if (toDate == null || toDate.isBefore(fromDate)) toDate = fromDate;
         int validPage = Math.max(1, page);
@@ -354,19 +411,24 @@ public class SalesRepository {
         try (Session session = HibernateUtil.openReadOnlySession()) {
             // Mỗi token khớp mã đơn / SĐT khách / tên nhân viên lập / tên-mã thuốc trong đơn
             SearchFilter search = SearchFilter.of(keyword, "kw")
-                    .contains("so.code", "so.customerPhone")
-                    .custom("so.employee.id IN (SELECT eS.id FROM Employee eS WHERE eS.fullName LIKE {p} ESCAPE '!')")
-                    .custom("EXISTS (SELECT 1 FROM SalesOrderItem soiS JOIN soiS.medicine mS WHERE soiS.salesOrder.id = so.id"
-                            + " AND (mS.name LIKE {p} ESCAPE '!' OR mS.code LIKE {p} ESCAPE '!'))");
+                .contains("so.code", "so.customerPhone")
+                .custom("so.employee.id IN (SELECT eS.id FROM Employee eS WHERE eS.fullName LIKE {p} ESCAPE '!')")
+                .custom(
+                    "EXISTS (SELECT 1 FROM SalesOrderItem soiS JOIN soiS.medicine mS WHERE soiS.salesOrder.id = so.id" +
+                        " AND (mS.name LIKE {p} ESCAPE '!' OR mS.code LIKE {p} ESCAPE '!'))"
+                );
 
             StringBuilder where = new StringBuilder(" WHERE so.createdAt >= :fromTs AND so.createdAt < :toTs ");
             if (employeeId != null) where.append(" AND so.employee.id = :empId ");
             where.append(search.hql());
 
-            SelectionQuery<Long> idsQuery = session.createSelectionQuery(
-                    "SELECT so.id FROM SalesOrder so " + where + " ORDER BY so.createdAt DESC, so.id DESC", Long.class)
-                    .setFirstResult((validPage - 1) * validSize)
-                    .setMaxResults(validSize);
+            SelectionQuery<Long> idsQuery = session
+                .createSelectionQuery(
+                    "SELECT so.id FROM SalesOrder so " + where + " ORDER BY so.createdAt DESC, so.id DESC",
+                    Long.class
+                )
+                .setFirstResult((validPage - 1) * validSize)
+                .setMaxResults(validSize);
             bindOrderFilter(idsQuery, fromDate, toDate, employeeId, search);
             List<Long> pageIds = idsQuery.list();
 
@@ -375,7 +437,10 @@ public class SalesRepository {
                 // Trang chưa đầy: biết ngay tổng số dòng, không cần COUNT
                 totalRecords = (long) (validPage - 1) * validSize + pageIds.size();
             } else {
-                SelectionQuery<Long> countQuery = session.createSelectionQuery("SELECT COUNT(so.id) FROM SalesOrder so " + where, Long.class);
+                SelectionQuery<Long> countQuery = session.createSelectionQuery(
+                    "SELECT COUNT(so.id) FROM SalesOrder so " + where,
+                    Long.class
+                );
                 bindOrderFilter(countQuery, fromDate, toDate, employeeId, search);
                 totalRecords = toLong(countQuery.uniqueResult());
             }
@@ -396,26 +461,34 @@ public class SalesRepository {
         if (orderIds == null || orderIds.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Object[]> headerRows = session.createSelectionQuery("""
+        List<Object[]> headerRows = session
+            .createSelectionQuery(
+                """
                 SELECT so.id, so.code, so.createdAt, e.id, e.fullName,
                        so.customerPhone, so.discount, so.totalAmount, so.paymentMethod
                 FROM SalesOrder so
                 LEFT JOIN so.employee e
                 WHERE so.id IN (:ids)
                 ORDER BY so.createdAt DESC, so.id DESC
-                """, Object[].class)
-                .setParameter("ids", orderIds)
-                .list();
+                """,
+                Object[].class
+            )
+            .setParameter("ids", orderIds)
+            .list();
 
-        List<Object[]> aggRows = session.createSelectionQuery("""
+        List<Object[]> aggRows = session
+            .createSelectionQuery(
+                """
                 SELECT soi.salesOrder.id, COUNT(DISTINCT soi.medicine.id),
                        COALESCE(SUM(soi.quantity), 0), COALESCE(SUM(soi.lineTotal), 0)
                 FROM SalesOrderItem soi
                 WHERE soi.salesOrder.id IN (:ids)
                 GROUP BY soi.salesOrder.id
-                """, Object[].class)
-                .setParameter("ids", orderIds)
-                .list();
+                """,
+                Object[].class
+            )
+            .setParameter("ids", orderIds)
+            .list();
         Map<Long, Object[]> aggByOrderId = new HashMap<>(aggRows.size() * 2);
         for (Object[] a : aggRows) {
             aggByOrderId.put(toLongObj(a[0]), a);
@@ -429,16 +502,34 @@ public class SalesRepository {
             int totalQty = agg != null ? toInt(agg[2]) : 0;
             BigDecimal subtotal = agg != null ? toBigDecimal(agg[3]) : BigDecimal.ZERO;
             String paymentMethod = r[8] != null ? r[8].toString() : null;
-            list.add(new SalesOrderDTO(
-                    id, toStr(r[1]), toLocalDateTime(r[2]), toStr(r[4]), null,
-                    toStr(r[5]), itemCount, totalQty, subtotal, toBigDecimal(r[6]),
-                    toBigDecimal(r[7]), paymentMethod));
+            list.add(
+                new SalesOrderDTO(
+                    id,
+                    toStr(r[1]),
+                    toLocalDateTime(r[2]),
+                    toStr(r[4]),
+                    null,
+                    toStr(r[5]),
+                    itemCount,
+                    totalQty,
+                    subtotal,
+                    toBigDecimal(r[6]),
+                    toBigDecimal(r[7]),
+                    paymentMethod
+                )
+            );
         }
         return list;
     }
 
     // Gán tham số bộ lọc cho truy vấn danh sách hóa đơn
-    private static void bindOrderFilter(SelectionQuery<?> query, LocalDate fromDate, LocalDate toDate, Integer employeeId, SearchFilter search) {
+    private static void bindOrderFilter(
+        SelectionQuery<?> query,
+        LocalDate fromDate,
+        LocalDate toDate,
+        Integer employeeId,
+        SearchFilter search
+    ) {
         query.setParameter("fromTs", fromDate.atStartOfDay());
         query.setParameter("toTs", toDate.plusDays(1).atStartOfDay());
         if (employeeId != null) query.setParameter("empId", employeeId);
@@ -458,14 +549,26 @@ public class SalesRepository {
                 WHERE soi.salesOrder.id = :orderId
                 ORDER BY soi.id ASC
             """;
-            List<Object[]> rows = session.createSelectionQuery(hql, Object[].class)
-                    .setParameter("orderId", orderId)
-                    .list();
+            List<Object[]> rows = session
+                .createSelectionQuery(hql, Object[].class)
+                .setParameter("orderId", orderId)
+                .list();
             List<SalesOrderDetailDTO> list = new ArrayList<>(rows.size());
             for (Object[] r : rows) {
-                list.add(new SalesOrderDetailDTO(
-                        toStr(r[2]), toStr(r[3]), toStr(r[4]), toStr(r[5]), toStr(r[6]),
-                        toStr(r[7]), toLocalDate(r[8]), toInt(r[9]), toBigDecimal(r[10]), toBigDecimal(r[11])));
+                list.add(
+                    new SalesOrderDetailDTO(
+                        toStr(r[2]),
+                        toStr(r[3]),
+                        toStr(r[4]),
+                        toStr(r[5]),
+                        toStr(r[6]),
+                        toStr(r[7]),
+                        toLocalDate(r[8]),
+                        toInt(r[9]),
+                        toBigDecimal(r[10]),
+                        toBigDecimal(r[11])
+                    )
+                );
             }
             return list;
         } catch (Exception e) {
@@ -477,11 +580,13 @@ public class SalesRepository {
     // Lấy danh sách các đơn bán hàng gần nhất cho Dashboard
     public List<SalesOrderDTO> getRecentSalesOrders(int limit, Integer employeeId) {
         try (Session session = HibernateUtil.openReadOnlySession()) {
-            String idsHql = "SELECT so.id FROM SalesOrder so"
-                    + (employeeId != null ? " WHERE so.employee.id = :employeeId" : "")
-                    + " ORDER BY so.createdAt DESC, so.id DESC";
-            SelectionQuery<Long> idsQuery = session.createSelectionQuery(idsHql, Long.class)
-                    .setMaxResults(Math.max(1, limit));
+            String idsHql =
+                "SELECT so.id FROM SalesOrder so" +
+                (employeeId != null ? " WHERE so.employee.id = :employeeId" : "") +
+                " ORDER BY so.createdAt DESC, so.id DESC";
+            SelectionQuery<Long> idsQuery = session
+                .createSelectionQuery(idsHql, Long.class)
+                .setMaxResults(Math.max(1, limit));
             if (employeeId != null) {
                 idsQuery.setParameter("employeeId", employeeId);
             }

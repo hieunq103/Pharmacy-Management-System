@@ -19,8 +19,8 @@
 
 /* Khung bao viền ngoài cùng bo tròn góc chứa cả 2 bảng */
 .table-float-container {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-width: 1px;
     -fx-border-radius: 10px;
     -fx-background-radius: 10px;
@@ -46,7 +46,7 @@
 /* Cột Thao tác ghim cố định bên phải */
 .sticky-action-col {
     -fx-border-width: 0 0 0 1px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-background-insets: 0;
 }
 
@@ -55,8 +55,8 @@
    ========================================================================== */
 
 .custom-employee-table .column-header-background {
-    -fx-background-color: #F8FAFC;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #cbd5e1;
     -fx-border-width: 0 0 1.5px 0;
     -fx-background-radius: 9px 9px 0 0;
 }
@@ -91,35 +91,35 @@
 
 .custom-employee-table .table-row-cell {
     -fx-background-color: transparent;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-width: 0 0 1px 0;
     -fx-cell-size: 54px;
 }
 
 .custom-employee-table .table-row-cell:hover {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
 }
 
 .custom-employee-table {
-    -fx-selection-bar: #F1F5F9;
-    -fx-selection-bar-text: #1E293B;
-    -fx-selection-bar-non-focused: #F1F5F9;
+    -fx-selection-bar: #f1f5f9;
+    -fx-selection-bar-text: #1e293b;
+    -fx-selection-bar-non-focused: #f1f5f9;
 }
 
 .custom-employee-table .table-row-cell:selected,
 .custom-employee-table .table-row-cell:filled:selected,
 .custom-employee-table .table-row-cell:filled:focused:selected,
 .custom-employee-table:focused .table-row-cell:filled:focused:selected {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: #f1f5f9;
     -fx-table-cell-border-color: transparent;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 .custom-employee-table .table-row-cell:selected .table-cell,
 .custom-employee-table .table-row-cell:filled:selected .table-cell,
 .custom-employee-table .table-row-cell:filled:focused:selected .table-cell,
 .custom-employee-table:focused .table-row-cell:filled:focused:selected .table-cell {
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 /* Chỉ đổi màu cho text trực tiếp của table-cell, không can thiệp label con hay badge */
@@ -127,7 +127,7 @@
 .custom-employee-table .table-row-cell:filled:selected > .table-cell > .text,
 .custom-employee-table .table-row-cell:filled:focused:selected > .table-cell > .text,
 .custom-employee-table:focused .table-row-cell:filled:focused:selected > .table-cell > .text {
-    -fx-fill: #1E293B;
+    -fx-fill: #1e293b;
 }
 
 /* Ẩn hoàn toàn viền và nền của các hàng trống */
@@ -139,7 +139,7 @@
 .custom-employee-table .table-cell {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 15px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0 16px;
     -fx-text-overrun: clip;
@@ -153,8 +153,8 @@
 
 /* Nút 3 chấm cột thao tác */
 .btn-action-more {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 6px;
     -fx-background-radius: 6px;
     -fx-padding: 4 10;
@@ -165,14 +165,14 @@
 }
 
 .btn-action-more:hover {
-    -fx-background-color: #F1F5F9;
-    -fx-border-color: #94A3B8;
+    -fx-background-color: #f1f5f9;
+    -fx-border-color: #94a3b8;
 }
 
 /* Nút Thêm nhân viên */
 .btn-primary-add {
-    -fx-background-color: #0066FF;
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #0066ff;
+    -fx-text-fill: #ffffff;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
     -fx-background-radius: 10px;
@@ -184,32 +184,32 @@
 }
 
 .btn-primary-add:hover {
-    -fx-background-color: #0052CC;
+    -fx-background-color: #0052cc;
 }
 
 .btn-primary-add:pressed {
-    -fx-background-color: #0040A8;
+    -fx-background-color: #0040a8;
 }
 
 /* Ô nhập liệu tìm kiếm */
 .search-input {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-width: 1px;
     -fx-border-radius: 6px;
     -fx-background-radius: 6px;
     -fx-padding: 8 14;
     -fx-font-size: 13px;
-    -fx-text-fill: #1E293B;
-    -fx-prompt-text-fill: #94A3B8;
+    -fx-text-fill: #1e293b;
+    -fx-prompt-text-fill: #94a3b8;
 }
 
 .search-input:hover {
-    -fx-border-color: #94A3B8;
+    -fx-border-color: #94a3b8;
 }
 
 .search-input:focused {
-    -fx-border-color: #2563EB;
+    -fx-border-color: #2563eb;
     -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.15), 4, 0, 0, 0);
 }
 
@@ -231,14 +231,14 @@
 .custom-employee-table .table-row-cell:selected .status-badge-active,
 .custom-employee-table .table-row-cell:filled:selected .status-badge-active,
 .custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-active {
-    -fx-background-color: #DCFCE7;
+    -fx-background-color: #dcfce7;
 }
 
 .status-badge-active .pill-text,
 .custom-employee-table .table-row-cell:selected .status-badge-active .pill-text,
 .custom-employee-table .table-row-cell:filled:selected .status-badge-active .pill-text,
 .custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-active .pill-text {
-    -fx-text-fill: #16A34A;
+    -fx-text-fill: #16a34a;
     -fx-font-size: 13.5px;
 }
 
@@ -246,21 +246,21 @@
 .custom-employee-table .table-row-cell:selected .status-badge-active .pill-text .text,
 .custom-employee-table .table-row-cell:filled:selected .status-badge-active .pill-text .text,
 .custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-active .pill-text .text {
-    -fx-fill: #16A34A;
+    -fx-fill: #16a34a;
 }
 
 .status-badge-inactive,
 .custom-employee-table .table-row-cell:selected .status-badge-inactive,
 .custom-employee-table .table-row-cell:filled:selected .status-badge-inactive,
 .custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-inactive {
-    -fx-background-color: #FEECEB;
+    -fx-background-color: #feeceb;
 }
 
 .status-badge-inactive .pill-text,
 .custom-employee-table .table-row-cell:selected .status-badge-inactive .pill-text,
 .custom-employee-table .table-row-cell:filled:selected .status-badge-inactive .pill-text,
 .custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-inactive .pill-text {
-    -fx-text-fill: #D9483B;
+    -fx-text-fill: #d9483b;
     -fx-font-size: 13.5px;
 }
 
@@ -268,14 +268,14 @@
 .custom-employee-table .table-row-cell:selected .status-badge-inactive .pill-text .text,
 .custom-employee-table .table-row-cell:filled:selected .status-badge-inactive .pill-text .text,
 .custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-inactive .pill-text .text {
-    -fx-fill: #D9483B;
+    -fx-fill: #d9483b;
 }
 
 .status-badge-none,
 .custom-employee-table .table-row-cell:selected .status-badge-none,
 .custom-employee-table .table-row-cell:filled:selected .status-badge-none,
 .custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-none {
-    -fx-text-fill: #94A3B8;
+    -fx-text-fill: #94a3b8;
     -fx-font-size: 13px;
     -fx-font-style: italic;
 }
@@ -284,7 +284,7 @@
 .custom-employee-table .table-row-cell:selected .status-badge-none .text,
 .custom-employee-table .table-row-cell:filled:selected .status-badge-none .text,
 .custom-employee-table:focused .table-row-cell:filled:focused:selected .status-badge-none .text {
-    -fx-fill: #94A3B8;
+    -fx-fill: #94a3b8;
 }
 
 /* ==========================================================================
@@ -292,8 +292,8 @@
    ========================================================================== */
 
 .page-btn {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #E2E8F0;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-min-width: 38px;
@@ -312,28 +312,28 @@
 }
 
 .page-btn:hover {
-    -fx-background-color: #F8FAFC;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #cbd5e1;
 }
 
 .page-btn-active {
-    -fx-background-color: #E0F2FE;
-    -fx-border-color: #94A3B8;
+    -fx-background-color: #e0f2fe;
+    -fx-border-color: #94a3b8;
     -fx-border-width: 1.5px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .page-dots {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
     -fx-min-width: 28px;
     -fx-alignment: CENTER;
 }
 
 .pagination-record-badge {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #E2E8F0;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-padding: 0 16;
@@ -365,12 +365,12 @@
 }
 
 .sticky-action-col .scroll-bar:vertical .thumb {
-    -fx-background-color: #CBD5E1;
+    -fx-background-color: #cbd5e1;
     -fx-background-radius: 4px;
 }
 
 .sticky-action-col .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: #94A3B8;
+    -fx-background-color: #94a3b8;
 }
 
 .sticky-action-col .scroll-bar:vertical .track,
@@ -397,12 +397,12 @@
 }
 
 .custom-employee-table .scroll-bar:horizontal .thumb {
-    -fx-background-color: #CBD5E1;
+    -fx-background-color: #cbd5e1;
     -fx-background-radius: 4px;
 }
 
 .custom-employee-table .scroll-bar:horizontal .thumb:hover {
-    -fx-background-color: #94A3B8;
+    -fx-background-color: #94a3b8;
 }
 
 .custom-employee-table .scroll-bar:horizontal .track,
@@ -428,7 +428,7 @@
 .custom-employee-table .column-header .btn-header-filter,
 .btn-header-filter {
     -fx-cursor: hand;
-    -fx-text-fill: #94A3B8;
+    -fx-text-fill: #94a3b8;
     -fx-font-size: 23px;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-alignment: CENTER;
@@ -436,18 +436,18 @@
 
 .custom-employee-table .column-header .btn-header-filter:hover,
 .btn-header-filter:hover {
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .custom-employee-table .column-header .btn-header-filter.filter-active,
 .btn-header-filter.filter-active {
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .filter-context-menu {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 8px;
-    -fx-border-color: #CBD5E1;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 8px;
     -fx-padding: 4px;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
@@ -477,12 +477,12 @@
 }
 
 .filter-context-menu .custom-filter-menu-item:hover .filter-item-label {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
 }
 
 .filter-item-label.filter-item-active {
-    -fx-background-color: #EFF6FF;
-    -fx-text-fill: #0066FF;
+    -fx-background-color: #eff6ff;
+    -fx-text-fill: #0066ff;
     -fx-font-family: "Inter 18pt SemiBold";
 }
 
@@ -495,24 +495,24 @@
 }
 
 .filter-checkbox:hover {
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .filter-checkbox .box {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
     -fx-border-width: 1.5px;
 }
 
 .filter-checkbox:selected .box {
-    -fx-background-color: #0066FF;
-    -fx-border-color: #0066FF;
+    -fx-background-color: #0066ff;
+    -fx-border-color: #0066ff;
 }
 
 .filter-checkbox:selected .mark {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
 }
 
 /* ==========================================================================
@@ -528,5 +528,5 @@
 .sticky-action-col,
 .sticky-action-col .virtual-flow,
 .sticky-action-col .placeholder {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: #f1f5f9;
 }

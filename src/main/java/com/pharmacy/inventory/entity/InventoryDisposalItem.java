@@ -6,6 +6,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "inventory_disposal_items")
 public class InventoryDisposalItem implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -27,8 +28,7 @@ public class InventoryDisposalItem implements Serializable {
     @Column(name = "reason", length = 255)
     private String reason;
 
-    public InventoryDisposalItem() {
-    }
+    public InventoryDisposalItem() {}
 
     public void setTransaction(InventoryTransaction transaction) {
         this.transaction = transaction;
@@ -46,4 +46,3 @@ public class InventoryDisposalItem implements Serializable {
         this.reason = reason;
     }
 }
-

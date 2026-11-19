@@ -5,8 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public final class SqlRows {
-    private SqlRows() {
-    }
+
+    private SqlRows() {}
 
     public static Integer toInteger(Object value) {
         return value instanceof Number n ? n.intValue() : null;
@@ -54,7 +54,6 @@ public final class SqlRows {
         if (value instanceof java.sql.Timestamp ts) return ts.toLocalDateTime();
         return null;
     }
-
 
     public static boolean hasText(String s) {
         return s != null && !s.isBlank();

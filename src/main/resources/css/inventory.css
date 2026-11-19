@@ -11,15 +11,15 @@
 .stat-label-secondary {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 18px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 .stat-label-primary {
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 .stat-label-secondary {
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 /* ==========================================================================
@@ -28,30 +28,30 @@
 
 /* Ô nhập liệu tìm kiếm */
 .search-input {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-width: 1px;
     -fx-border-radius: 6px;
     -fx-background-radius: 6px;
     -fx-padding: 8 14;
     -fx-font-size: 13px;
-    -fx-text-fill: #1E293B;
-    -fx-prompt-text-fill: #94A3B8;
+    -fx-text-fill: #1e293b;
+    -fx-prompt-text-fill: #94a3b8;
 }
 
 .search-input:hover {
-    -fx-border-color: #94A3B8;
+    -fx-border-color: #94a3b8;
 }
 
 .search-input:focused {
-    -fx-border-color: #2563EB;
+    -fx-border-color: #2563eb;
     -fx-effect: dropshadow(three-pass-box, rgba(37, 99, 235, 0.15), 4, 0, 0, 0);
 }
 
 /* Nút Nhập Kho - nền xanh lá (hàng vào kho), chữ trắng */
 .btn-primary-import {
-    -fx-background-color: #16A34A;
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #16a34a;
+    -fx-text-fill: #ffffff;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
     -fx-background-radius: 10px;
@@ -63,7 +63,7 @@
 }
 
 .btn-primary-import:hover {
-    -fx-background-color: #15803D;
+    -fx-background-color: #15803d;
 }
 
 .btn-primary-import:pressed {
@@ -72,8 +72,8 @@
 
 /* Nút Xuất Kho - nền xanh dương, chữ trắng */
 .btn-secondary-export {
-    -fx-background-color: #0066FF;
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #0066ff;
+    -fx-text-fill: #ffffff;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
     -fx-background-radius: 10px;
@@ -85,18 +85,18 @@
 }
 
 .btn-secondary-export:hover {
-    -fx-background-color: #0052CC;
+    -fx-background-color: #0052cc;
 }
 
 .btn-secondary-export:pressed {
-    -fx-background-color: #0040A8;
+    -fx-background-color: #0040a8;
 }
 
 /* Nút Lịch sử Nhập / Xuất */
 .btn-secondary-history {
-    -fx-background-color: #EFF6FF;
-    -fx-text-fill: #0066FF;
-    -fx-border-color: #BFDBFE;
+    -fx-background-color: #eff6ff;
+    -fx-text-fill: #0066ff;
+    -fx-border-color: #bfdbfe;
     -fx-border-width: 1px;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
@@ -108,12 +108,12 @@
 }
 
 .btn-secondary-history:hover {
-    -fx-background-color: #DBEAFE;
-    -fx-border-color: #93C5FD;
+    -fx-background-color: #dbeafe;
+    -fx-border-color: #93c5fd;
 }
 
 .btn-secondary-history:pressed {
-    -fx-background-color: #BFDBFE;
+    -fx-background-color: #bfdbfe;
 }
 
 /* ==========================================================================
@@ -122,8 +122,8 @@
 
 /* Khung bao viền ngoài cùng bo tròn góc chứa bảng */
 .table-float-container {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-width: 1px;
     -fx-border-radius: 10px;
     -fx-background-radius: 10px;
@@ -133,9 +133,9 @@
     -fx-background-color: transparent;
     -fx-border-width: 0;
     -fx-padding: 0;
-    -fx-selection-bar: #F1F5F9;
-    -fx-selection-bar-text: #1E293B;
-    -fx-selection-bar-non-focused: #F1F5F9;
+    -fx-selection-bar: #f1f5f9;
+    -fx-selection-bar-text: #1e293b;
+    -fx-selection-bar-non-focused: #f1f5f9;
 }
 
 .custom-inventory-table .virtual-flow,
@@ -152,21 +152,21 @@
 /* Cột Thao tác ghim cố định nổi bên phải */
 .sticky-action-col {
     -fx-border-width: 0 0 0 1.5px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-background-insets: 0;
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
 }
 
 .sticky-action-col,
 .sticky-action-col .virtual-flow,
 .sticky-action-col .placeholder {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
 }
 
 /* Header bảng */
 .custom-inventory-table .column-header-background {
-    -fx-background-color: #F8FAFC;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #cbd5e1;
     -fx-border-width: 0 0 1.5px 0;
     -fx-background-radius: 9px 9px 0 0;
 }
@@ -203,7 +203,7 @@
 /* Nút sắp xếp tiêu đề cột đồng bộ phong cách bảng Nhân viên */
 .btn-header-sort {
     -fx-cursor: hand;
-    -fx-text-fill: #94A3B8;
+    -fx-text-fill: #94a3b8;
     -fx-font-size: 23px;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-alignment: CENTER;
@@ -211,11 +211,11 @@
 
 .custom-inventory-table .column-header:hover .btn-header-sort,
 .btn-header-sort:hover {
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .btn-header-sort.sort-active {
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 /* Icon sắp xếp tiêu đề cột mặc định của JavaFX */
@@ -225,12 +225,12 @@
 }
 
 .custom-inventory-table .column-header .arrow {
-    -fx-background-color: #64748B;
+    -fx-background-color: #64748b;
     -fx-padding: 3.5px 4.5px;
 }
 
 .custom-inventory-table .column-header:hover .arrow {
-    -fx-background-color: #0066FF;
+    -fx-background-color: #0066ff;
 }
 
 /* Ẩn dấu chấm sort order thừa */
@@ -259,12 +259,12 @@
 }
 
 .sticky-action-col .scroll-bar:vertical .thumb {
-    -fx-background-color: #CBD5E1;
+    -fx-background-color: #cbd5e1;
     -fx-background-radius: 4px;
 }
 
 .sticky-action-col .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: #94A3B8;
+    -fx-background-color: #94a3b8;
 }
 
 .sticky-action-col .scroll-bar:vertical .track,
@@ -291,12 +291,12 @@
 }
 
 .custom-inventory-table .scroll-bar:horizontal .thumb {
-    -fx-background-color: #CBD5E1;
+    -fx-background-color: #cbd5e1;
     -fx-background-radius: 4px;
 }
 
 .custom-inventory-table .scroll-bar:horizontal .thumb:hover {
-    -fx-background-color: #94A3B8;
+    -fx-background-color: #94a3b8;
 }
 
 .custom-inventory-table .scroll-bar:horizontal .track,
@@ -318,29 +318,29 @@
 /* Các hàng và ô */
 .custom-inventory-table .table-row-cell {
     -fx-background-color: transparent;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-width: 0 0 1px 0;
     -fx-cell-size: 54px;
 }
 
 .custom-inventory-table .table-row-cell:hover {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
 }
 
 .custom-inventory-table .table-row-cell:selected,
 .custom-inventory-table .table-row-cell:filled:selected,
 .custom-inventory-table .table-row-cell:filled:focused:selected,
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: #f1f5f9;
     -fx-table-cell-border-color: transparent;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 .custom-inventory-table .table-row-cell:selected .table-cell,
 .custom-inventory-table .table-row-cell:filled:selected .table-cell,
 .custom-inventory-table .table-row-cell:filled:focused:selected .table-cell,
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected .table-cell {
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 /* Chỉ áp dụng đổi màu cho text trực tiếp của table-cell (Mã, Nhóm, HSD, Số lượng), không đè lên badge hay label con */
@@ -348,7 +348,7 @@
 .custom-inventory-table .table-row-cell:filled:selected > .table-cell > .text,
 .custom-inventory-table .table-row-cell:filled:focused:selected > .table-cell > .text,
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected > .table-cell > .text {
-    -fx-fill: #1E293B;
+    -fx-fill: #1e293b;
 }
 
 .custom-inventory-table .table-row-cell:empty {
@@ -359,7 +359,7 @@
 .custom-inventory-table .table-cell {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 14.5px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0 16px;
     -fx-border-width: 0;
@@ -393,8 +393,8 @@
 .custom-inventory-table .table-row-cell:filled:selected .status-badge-normal,
 .custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-normal,
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-normal {
-    -fx-background-color: #DCFCE7;
-    -fx-text-fill: #16A34A;
+    -fx-background-color: #dcfce7;
+    -fx-text-fill: #16a34a;
 }
 
 .status-badge-normal .text,
@@ -403,7 +403,7 @@
 .custom-inventory-table .table-row-cell:filled:selected .status-badge-normal .text,
 .custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-normal .text,
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-normal .text {
-    -fx-fill: #16A34A;
+    -fx-fill: #16a34a;
 }
 
 /* Sắp hết hàng (Cam ấm pastel cảnh báo tồn kho ít) */
@@ -413,8 +413,8 @@
 .custom-inventory-table .table-row-cell:filled:selected .status-badge-low-stock,
 .custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-low-stock,
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-low-stock {
-    -fx-background-color: #FFEDD5;
-    -fx-text-fill: #EA580C;
+    -fx-background-color: #ffedd5;
+    -fx-text-fill: #ea580c;
 }
 
 .status-badge-low-stock .text,
@@ -423,7 +423,7 @@
 .custom-inventory-table .table-row-cell:filled:selected .status-badge-low-stock .text,
 .custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-low-stock .text,
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-low-stock .text {
-    -fx-fill: #EA580C;
+    -fx-fill: #ea580c;
 }
 
 /* Có lô cận hạn (Vàng/Cam pastel cảnh báo) */
@@ -433,8 +433,8 @@
 .custom-inventory-table .table-row-cell:filled:selected .status-badge-near-expiry,
 .custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-near-expiry,
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-near-expiry {
-    -fx-background-color: #FEF3C7;
-    -fx-text-fill: #D97706;
+    -fx-background-color: #fef3c7;
+    -fx-text-fill: #d97706;
 }
 
 .status-badge-near-expiry .text,
@@ -443,7 +443,7 @@
 .custom-inventory-table .table-row-cell:filled:selected .status-badge-near-expiry .text,
 .custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-near-expiry .text,
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-near-expiry .text {
-    -fx-fill: #D97706;
+    -fx-fill: #d97706;
 }
 
 /* Có lô hết hạn (Đỏ pastel giống Inactive của nhân viên) */
@@ -453,8 +453,8 @@
 .custom-inventory-table .table-row-cell:filled:selected .status-badge-expired,
 .custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-expired,
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-expired {
-    -fx-background-color: #FEECEB;
-    -fx-text-fill: #D9483B;
+    -fx-background-color: #feeceb;
+    -fx-text-fill: #d9483b;
 }
 
 .status-badge-expired .text,
@@ -463,7 +463,7 @@
 .custom-inventory-table .table-row-cell:filled:selected .status-badge-expired .text,
 .custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-expired .text,
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-expired .text {
-    -fx-fill: #D9483B;
+    -fx-fill: #d9483b;
 }
 
 /* Hết hàng (Xám pastel) */
@@ -473,8 +473,8 @@
 .custom-inventory-table .table-row-cell:filled:selected .status-badge-out-of-stock,
 .custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-out-of-stock,
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-out-of-stock {
-    -fx-background-color: #F1F5F9;
-    -fx-text-fill: #64748B;
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #64748b;
 }
 
 .status-badge-out-of-stock .text,
@@ -483,7 +483,7 @@
 .custom-inventory-table .table-row-cell:filled:selected .status-badge-out-of-stock .text,
 .custom-inventory-table .table-row-cell:filled:focused:selected .status-badge-out-of-stock .text,
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected .status-badge-out-of-stock .text {
-    -fx-fill: #64748B;
+    -fx-fill: #64748b;
 }
 
 /* Nhãn thuốc kê toa */
@@ -496,7 +496,7 @@
     -fx-font-family: "Inter 18pt";
     -fx-font-style: italic;
     -fx-font-size: 11.5px;
-    -fx-text-fill: #EF4444;
+    -fx-text-fill: #ef4444;
 }
 
 .lbl-prescription-tag .text,
@@ -505,7 +505,7 @@
 .custom-inventory-table .table-row-cell:filled:selected .lbl-prescription-tag .text,
 .custom-inventory-table .table-row-cell:filled:focused:selected .lbl-prescription-tag .text,
 .custom-inventory-table:focused .table-row-cell:filled:focused:selected .lbl-prescription-tag .text {
-    -fx-fill: #EF4444;
+    -fx-fill: #ef4444;
 }
 
 /* ==========================================================================
@@ -517,8 +517,8 @@
    ========================================================================== */
 
 .page-btn {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #E2E8F0;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-min-width: 38px;
@@ -537,28 +537,28 @@
 }
 
 .page-btn:hover {
-    -fx-background-color: #F8FAFC;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #cbd5e1;
 }
 
 .page-btn-active {
-    -fx-background-color: #E0F2FE;
-    -fx-border-color: #94A3B8;
+    -fx-background-color: #e0f2fe;
+    -fx-border-color: #94a3b8;
     -fx-border-width: 1.5px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .page-dots {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
     -fx-min-width: 28px;
     -fx-alignment: CENTER;
 }
 
 .pagination-record-badge {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #E2E8F0;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-padding: 0 16;
@@ -574,13 +574,13 @@
 .sticky-action-col,
 .sticky-action-col .virtual-flow,
 .sticky-action-col .placeholder {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: #f1f5f9;
 }
 
 /* Nút 3 chấm cột thao tác */
 .btn-action-more {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 6px;
     -fx-background-radius: 6px;
     -fx-padding: 4 10;
@@ -591,8 +591,8 @@
 }
 
 .btn-action-more:hover {
-    -fx-background-color: #F1F5F9;
-    -fx-border-color: #94A3B8;
+    -fx-background-color: #f1f5f9;
+    -fx-border-color: #94a3b8;
 }
 
 /* ==========================================================================
@@ -602,7 +602,7 @@
 .custom-inventory-table .column-header .btn-header-filter,
 .btn-header-filter {
     -fx-cursor: hand;
-    -fx-text-fill: #94A3B8;
+    -fx-text-fill: #94a3b8;
     -fx-font-size: 21px;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-alignment: CENTER;
@@ -610,18 +610,18 @@
 
 .custom-inventory-table .column-header .btn-header-filter:hover,
 .btn-header-filter:hover {
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .custom-inventory-table .column-header .btn-header-filter.filter-active,
 .btn-header-filter.filter-active {
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .filter-context-menu {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 8px;
-    -fx-border-color: #CBD5E1;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 8px;
     -fx-padding: 4px;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
@@ -651,13 +651,13 @@
 }
 
 .filter-context-menu .custom-filter-menu-item:hover .filter-item-label {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
 }
 
 .filter-context-menu .custom-filter-menu-item .filter-item-label.filter-item-active,
 .filter-item-label.filter-item-active {
-    -fx-background-color: #EFF6FF;
-    -fx-text-fill: #0066FF;
+    -fx-background-color: #eff6ff;
+    -fx-text-fill: #0066ff;
     -fx-font-family: "Inter 18pt SemiBold";
 }
 
@@ -669,30 +669,30 @@
 }
 
 .filter-checkbox:hover {
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .filter-checkbox .box {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
     -fx-border-width: 1.5px;
 }
 
 .filter-checkbox:selected .box {
-    -fx-background-color: #0066FF;
-    -fx-border-color: #0066FF;
+    -fx-background-color: #0066ff;
+    -fx-border-color: #0066ff;
 }
 
 .filter-checkbox:selected .mark {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
 }
 
 .action-context-menu {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 8px;
-    -fx-border-color: #CBD5E1;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 8px;
     -fx-padding: 4px;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
@@ -713,12 +713,12 @@
 
 .action-context-menu .menu-item:hover,
 .action-context-menu .menu-item:focused {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
 }
 
 .action-context-menu .menu-item:hover .label,
 .action-context-menu .menu-item:focused .label {
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 /* ==========================================================================
@@ -726,26 +726,26 @@
    ========================================================================== */
 
 .table-cell-editor {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #0066FF;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #0066ff;
     -fx-border-width: 1.5px;
     -fx-border-radius: 6px;
     -fx-background-radius: 6px;
     -fx-padding: 4 8;
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 13px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.18), 4, 0, 0, 0);
 }
 
 .table-cell-editor:focused {
-    -fx-border-color: #0052CC;
-    -fx-background-color: #F8FAFC;
+    -fx-border-color: #0052cc;
+    -fx-background-color: #f8fafc;
 }
 
 .btn-action-save {
-    -fx-background-color: #10B981;
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #10b981;
+    -fx-text-fill: #ffffff;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13px;
     -fx-background-radius: 6px;
@@ -759,8 +759,8 @@
 }
 
 .btn-action-cancel {
-    -fx-background-color: #94A3B8;
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #94a3b8;
+    -fx-text-fill: #ffffff;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13px;
     -fx-background-radius: 6px;
@@ -770,7 +770,7 @@
 }
 
 .btn-action-cancel:hover {
-    -fx-background-color: #64748B;
+    -fx-background-color: #64748b;
 }
 
 /* ==========================================================================
@@ -778,23 +778,23 @@
    ========================================================================== */
 
 .lot-dialog-root {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
 }
 
 .lot-dialog-title {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 20px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .lot-dialog-code-badge {
-    -fx-background-color: #EFF6FF;
-    -fx-text-fill: #0066FF;
+    -fx-background-color: #eff6ff;
+    -fx-text-fill: #0066ff;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 12px;
     -fx-background-radius: 6px;
     -fx-padding: 3 8;
-    -fx-border-color: #BFDBFE;
+    -fx-border-color: #bfdbfe;
     -fx-border-radius: 6px;
     -fx-border-width: 1px;
 }
@@ -802,13 +802,13 @@
 .lot-dialog-medicine-name {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 16px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 /* Card chi tiết thông tin thuốc */
 .lot-info-card {
-    -fx-background-color: #F8FAFC;
-    -fx-border-color: #E2E8F0;
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-padding: 12 16;
@@ -817,25 +817,25 @@
 .lot-info-label {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 13px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
 }
 
 .lot-info-value {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 .lot-info-value-highlight {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13.5px;
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 /* Bộ lọc ComboBox */
 .lot-filter-combo {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 7px;
     -fx-background-radius: 7px;
     -fx-font-family: "Inter 18pt";
@@ -845,7 +845,7 @@
 }
 
 .lot-filter-combo:focused {
-    -fx-border-color: #0066FF;
+    -fx-border-color: #0066ff;
 }
 
 /* Badges trạng thái cho từng lô hàng */
@@ -859,23 +859,23 @@
 }
 
 .lot-badge-active {
-    -fx-background-color: #DCFCE7;
-    -fx-text-fill: #16A34A;
+    -fx-background-color: #dcfce7;
+    -fx-text-fill: #16a34a;
 }
 
 .lot-badge-near-expiry {
-    -fx-background-color: #FEF3C7;
-    -fx-text-fill: #D97706;
+    -fx-background-color: #fef3c7;
+    -fx-text-fill: #d97706;
 }
 
 .lot-badge-expired {
-    -fx-background-color: #FEE2E2;
-    -fx-text-fill: #DC2626;
+    -fx-background-color: #fee2e2;
+    -fx-text-fill: #dc2626;
 }
 
 .lot-badge-depleted {
-    -fx-background-color: #F1F5F9;
-    -fx-text-fill: #64748B;
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #64748b;
 }
 
 /* ==========================================================================
@@ -898,28 +898,28 @@
 
 /* Searchable Medicine Picker Component */
 .medicine-picker-box:focused-within {
-    -fx-border-color: #0066FF;
+    -fx-border-color: #0066ff;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.15), 4, 0, 0, 0);
 }
 
 .medicine-picker-list {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-border-color: transparent;
 }
 
 .medicine-picker-list .list-cell {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #F1F5F9;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #f1f5f9;
     -fx-border-width: 0 0 1px 0;
     -fx-padding: 0;
 }
 
 .medicine-picker-list .list-cell:filled:hover {
-    -fx-background-color: #EFF6FF;
+    -fx-background-color: #eff6ff;
 }
 
 .medicine-picker-list .list-cell:filled:selected {
-    -fx-background-color: #DBEAFE;
+    -fx-background-color: #dbeafe;
 }
 
 /* ==========================================================================
@@ -935,12 +935,12 @@
 }
 
 .import-items-table .scroll-bar:vertical .thumb {
-    -fx-background-color: #CBD5E1 !important;
+    -fx-background-color: #cbd5e1 !important;
     -fx-background-radius: 4px !important;
 }
 
 .import-items-table .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: #94A3B8 !important;
+    -fx-background-color: #94a3b8 !important;
 }
 
 .import-items-table .scroll-bar:horizontal {
@@ -951,12 +951,12 @@
 }
 
 .import-items-table .scroll-bar:horizontal .thumb {
-    -fx-background-color: #CBD5E1 !important;
+    -fx-background-color: #cbd5e1 !important;
     -fx-background-radius: 4px !important;
 }
 
 .import-items-table .scroll-bar:horizontal .thumb:hover {
-    -fx-background-color: #94A3B8 !important;
+    -fx-background-color: #94a3b8 !important;
 }
 
 /* Ô bảng tự xuống dòng (WrappingTextCell), vd. cột Lý do xuất */

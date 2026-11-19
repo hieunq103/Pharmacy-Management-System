@@ -1,14 +1,17 @@
 package com.pharmacy.inventory.ui;
 
-import com.pharmacy.common.BackgroundTasks;
-import com.pharmacy.common.PageResult;
 import com.pharmacy.common.AppConstants;
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.FormatUtils;
+import com.pharmacy.common.PageResult;
 import com.pharmacy.common.PaginationHelper;
 import com.pharmacy.common.TableSyncHelper;
 import com.pharmacy.inventory.InventoryService;
 import com.pharmacy.inventory.dto.InventoryTransactionDTO;
-
+import java.io.IOException;
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -29,51 +32,97 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.ResourceBundle;
-
 public class InventoryHistoryController implements Initializable {
+
     private static final Logger log = LoggerFactory.getLogger(InventoryHistoryController.class);
 
     private final InventoryService inventoryService = new InventoryService();
 
     private Runnable onBackToInventory;
 
-    @FXML private DatePicker dpFilterDate;
-    @FXML private Button btnFilterDate;
-    @FXML private Tooltip tooltipFilter;
+    @FXML
+    private DatePicker dpFilterDate;
+
+    @FXML
+    private Button btnFilterDate;
+
+    @FXML
+    private Tooltip tooltipFilter;
 
     private boolean isDateFiltered = false;
     private LocalDate appliedFilterDate = null;
 
-    @FXML private TabPane historyTabPane;
-    @FXML private Tab tabImport;
-    @FXML private Tab tabExport;
+    @FXML
+    private TabPane historyTabPane;
 
-    @FXML private TableView<InventoryTransactionDTO> tableImport;
-    @FXML private TableColumn<InventoryTransactionDTO, String> colImportIndex;
-    @FXML private TableColumn<InventoryTransactionDTO, String> colImportDateTime;
-    @FXML private TableColumn<InventoryTransactionDTO, String> colImportEmployee;
-    @FXML private TableColumn<InventoryTransactionDTO, String> colImportSupplier;
-    @FXML private TableColumn<InventoryTransactionDTO, String> colImportItemCount;
-    @FXML private TableColumn<InventoryTransactionDTO, String> colImportTotalQty;
-    @FXML private TableColumn<InventoryTransactionDTO, String> colImportTotalAmount;
-    @FXML private TableColumn<InventoryTransactionDTO, String> colImportNote;
-    @FXML private HBox importPaginationBox;
-    @FXML private Label lblImportRecordRange;
+    @FXML
+    private Tab tabImport;
 
-    @FXML private TableView<InventoryTransactionDTO> tableExport;
-    @FXML private TableColumn<InventoryTransactionDTO, String> colExportIndex;
-    @FXML private TableColumn<InventoryTransactionDTO, String> colExportDateTime;
-    @FXML private TableColumn<InventoryTransactionDTO, String> colExportEmployee;
-    @FXML private TableColumn<InventoryTransactionDTO, String> colExportType;
-    @FXML private TableColumn<InventoryTransactionDTO, String> colExportItemCount;
-    @FXML private TableColumn<InventoryTransactionDTO, String> colExportTotalQty;
-    @FXML private TableColumn<InventoryTransactionDTO, String> colExportNote;
-    @FXML private HBox exportPaginationBox;
-    @FXML private Label lblExportRecordRange;
+    @FXML
+    private Tab tabExport;
+
+    @FXML
+    private TableView<InventoryTransactionDTO> tableImport;
+
+    @FXML
+    private TableColumn<InventoryTransactionDTO, String> colImportIndex;
+
+    @FXML
+    private TableColumn<InventoryTransactionDTO, String> colImportDateTime;
+
+    @FXML
+    private TableColumn<InventoryTransactionDTO, String> colImportEmployee;
+
+    @FXML
+    private TableColumn<InventoryTransactionDTO, String> colImportSupplier;
+
+    @FXML
+    private TableColumn<InventoryTransactionDTO, String> colImportItemCount;
+
+    @FXML
+    private TableColumn<InventoryTransactionDTO, String> colImportTotalQty;
+
+    @FXML
+    private TableColumn<InventoryTransactionDTO, String> colImportTotalAmount;
+
+    @FXML
+    private TableColumn<InventoryTransactionDTO, String> colImportNote;
+
+    @FXML
+    private HBox importPaginationBox;
+
+    @FXML
+    private Label lblImportRecordRange;
+
+    @FXML
+    private TableView<InventoryTransactionDTO> tableExport;
+
+    @FXML
+    private TableColumn<InventoryTransactionDTO, String> colExportIndex;
+
+    @FXML
+    private TableColumn<InventoryTransactionDTO, String> colExportDateTime;
+
+    @FXML
+    private TableColumn<InventoryTransactionDTO, String> colExportEmployee;
+
+    @FXML
+    private TableColumn<InventoryTransactionDTO, String> colExportType;
+
+    @FXML
+    private TableColumn<InventoryTransactionDTO, String> colExportItemCount;
+
+    @FXML
+    private TableColumn<InventoryTransactionDTO, String> colExportTotalQty;
+
+    @FXML
+    private TableColumn<InventoryTransactionDTO, String> colExportNote;
+
+    @FXML
+    private HBox exportPaginationBox;
+
+    @FXML
+    private Label lblExportRecordRange;
 
     private final ObservableList<InventoryTransactionDTO> importPageData = FXCollections.observableArrayList();
     private int importCurrentPage = 1;
@@ -90,7 +139,6 @@ public class InventoryHistoryController implements Initializable {
     private boolean isImportDirty = false;
     private boolean isExportDirty = false;
 
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupImportTableColumns();
@@ -106,28 +154,31 @@ public class InventoryHistoryController implements Initializable {
         TableSyncHelper.setupTableScrollProtection(tableExport, AppConstants.DEFAULT_PAGE_SIZE);
 
         if (historyTabPane != null) {
-            historyTabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
-                Platform.runLater(() -> {
-                    TableSyncHelper.resetScrollToTop(tableImport, null);
-                    TableSyncHelper.resetScrollToTop(tableExport, null);
-                    TableSyncHelper.attachVirtualFlowProtection(tableImport);
-                    TableSyncHelper.attachVirtualFlowProtection(tableExport);
-                });
+            historyTabPane
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener((obs, oldTab, newTab) -> {
+                    Platform.runLater(() -> {
+                        TableSyncHelper.resetScrollToTop(tableImport, null);
+                        TableSyncHelper.resetScrollToTop(tableExport, null);
+                        TableSyncHelper.attachVirtualFlowProtection(tableImport);
+                        TableSyncHelper.attachVirtualFlowProtection(tableExport);
+                    });
 
-                if (newTab == tabImport) {
-                    if (isImportDirty) {
-                        isImportDirty = false;
-                        importCurrentPage = 1;
-                        loadImportData();
+                    if (newTab == tabImport) {
+                        if (isImportDirty) {
+                            isImportDirty = false;
+                            importCurrentPage = 1;
+                            loadImportData();
+                        }
+                    } else if (newTab == tabExport) {
+                        if (isExportDirty) {
+                            isExportDirty = false;
+                            exportCurrentPage = 1;
+                            loadExportData();
+                        }
                     }
-                } else if (newTab == tabExport) {
-                    if (isExportDirty) {
-                        isExportDirty = false;
-                        exportCurrentPage = 1;
-                        loadExportData();
-                    }
-                }
-            });
+                });
         }
 
         setupEventHandlers();
@@ -140,12 +191,15 @@ public class InventoryHistoryController implements Initializable {
 
     private void setupImportTableColumns() {
         colImportIndex.setCellValueFactory(cellData -> {
-            int idx = (importCurrentPage - 1) * importPageSize + tableImport.getItems().indexOf(cellData.getValue()) + 1;
+            int idx =
+                (importCurrentPage - 1) * importPageSize + tableImport.getItems().indexOf(cellData.getValue()) + 1;
             return new SimpleStringProperty(String.valueOf(idx));
         });
         setupLeftAlignedCell(colImportIndex);
 
-        colImportDateTime.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFormattedDateTime()));
+        colImportDateTime.setCellValueFactory(cellData ->
+            new SimpleStringProperty(cellData.getValue().getFormattedDateTime())
+        );
         setupLeftAlignedCell(colImportDateTime);
 
         colImportEmployee.setCellValueFactory(new PropertyValueFactory<>("employeeName"));
@@ -155,15 +209,18 @@ public class InventoryHistoryController implements Initializable {
         setupLeftAlignedCell(colImportSupplier);
 
         colImportItemCount.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getItemCount() + " mặt hàng"));
+            new SimpleStringProperty(cellData.getValue().getItemCount() + " mặt hàng")
+        );
         setupLeftAlignedCell(colImportItemCount);
 
         colImportTotalQty.setCellValueFactory(cellData ->
-                new SimpleStringProperty(String.format("%,d", cellData.getValue().getTotalQuantity())));
+            new SimpleStringProperty(String.format("%,d", cellData.getValue().getTotalQuantity()))
+        );
         setupLeftAlignedCell(colImportTotalQty);
 
         colImportTotalAmount.setCellValueFactory(cellData ->
-                new SimpleStringProperty(FormatUtils.formatCurrency(cellData.getValue().getTotalAmount())));
+            new SimpleStringProperty(FormatUtils.formatCurrency(cellData.getValue().getTotalAmount()))
+        );
         setupLeftAlignedCell(colImportTotalAmount);
 
         colImportNote.setCellValueFactory(new PropertyValueFactory<>("note"));
@@ -172,7 +229,7 @@ public class InventoryHistoryController implements Initializable {
         tableImport.setRowFactory(tv -> {
             TableRow<InventoryTransactionDTO> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
                     showTransactionDetailDialog(row.getItem());
                 }
             });
@@ -182,12 +239,15 @@ public class InventoryHistoryController implements Initializable {
 
     private void setupExportTableColumns() {
         colExportIndex.setCellValueFactory(cellData -> {
-            int idx = (exportCurrentPage - 1) * exportPageSize + tableExport.getItems().indexOf(cellData.getValue()) + 1;
+            int idx =
+                (exportCurrentPage - 1) * exportPageSize + tableExport.getItems().indexOf(cellData.getValue()) + 1;
             return new SimpleStringProperty(String.valueOf(idx));
         });
         setupLeftAlignedCell(colExportIndex);
 
-        colExportDateTime.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFormattedDateTime()));
+        colExportDateTime.setCellValueFactory(cellData ->
+            new SimpleStringProperty(cellData.getValue().getFormattedDateTime())
+        );
         setupLeftAlignedCell(colExportDateTime);
 
         colExportEmployee.setCellValueFactory(new PropertyValueFactory<>("employeeName"));
@@ -197,11 +257,13 @@ public class InventoryHistoryController implements Initializable {
         setupLeftAlignedCell(colExportType);
 
         colExportItemCount.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getItemCount() + " mặt hàng"));
+            new SimpleStringProperty(cellData.getValue().getItemCount() + " mặt hàng")
+        );
         setupLeftAlignedCell(colExportItemCount);
 
         colExportTotalQty.setCellValueFactory(cellData ->
-                new SimpleStringProperty(String.format("%,d", cellData.getValue().getTotalQuantity())));
+            new SimpleStringProperty(String.format("%,d", cellData.getValue().getTotalQuantity()))
+        );
         setupLeftAlignedCell(colExportTotalQty);
 
         colExportNote.setCellValueFactory(new PropertyValueFactory<>("note"));
@@ -210,7 +272,7 @@ public class InventoryHistoryController implements Initializable {
         tableExport.setRowFactory(tv -> {
             TableRow<InventoryTransactionDTO> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
                     showTransactionDetailDialog(row.getItem());
                 }
             });
@@ -219,19 +281,21 @@ public class InventoryHistoryController implements Initializable {
     }
 
     private <T> void setupLeftAlignedCell(TableColumn<T, String> column) {
-        column.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    setText(item);
-                    setAlignment(Pos.CENTER_LEFT);
+        column.setCellFactory(col ->
+            new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        setText(item);
+                        setAlignment(Pos.CENTER_LEFT);
+                    }
                 }
             }
-        });
+        );
     }
 
     private void setupEventHandlers() {
@@ -240,15 +304,18 @@ public class InventoryHistoryController implements Initializable {
 
             dpFilterDate.getEditor().setOnAction(e -> applyDateFilter());
 
-            dpFilterDate.getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal == null || newVal.trim().isEmpty()) {
-                    if (isDateFiltered) {
-                        clearDateFilter();
-                    } else if (dpFilterDate.getValue() != null) {
-                        dpFilterDate.setValue(null);
+            dpFilterDate
+                .getEditor()
+                .textProperty()
+                .addListener((obs, oldVal, newVal) -> {
+                    if (newVal == null || newVal.trim().isEmpty()) {
+                        if (isDateFiltered) {
+                            clearDateFilter();
+                        } else if (dpFilterDate.getValue() != null) {
+                            dpFilterDate.setValue(null);
+                        }
                     }
-                }
-            });
+                });
         }
     }
 
@@ -302,7 +369,9 @@ public class InventoryHistoryController implements Initializable {
             btnFilterDate.getStyleClass().add("active");
         }
         if (tooltipFilter != null) {
-            tooltipFilter.setText("Đang lọc: " + FormatUtils.DATE_FORMATTER.format(appliedFilterDate) + " (Nhấn phễu để hủy lọc)");
+            tooltipFilter.setText(
+                "Đang lọc: " + FormatUtils.DATE_FORMATTER.format(appliedFilterDate) + " (Nhấn phễu để hủy lọc)"
+            );
         }
 
         loadFilteredData();
@@ -331,7 +400,8 @@ public class InventoryHistoryController implements Initializable {
     private Task<PageResult<InventoryTransactionDTO>> runningExportTask;
 
     public void loadFilteredData() {
-        boolean isExportTabActive = historyTabPane != null && historyTabPane.getSelectionModel().getSelectedItem() == tabExport;
+        boolean isExportTabActive =
+            historyTabPane != null && historyTabPane.getSelectionModel().getSelectedItem() == tabExport;
         if (isExportTabActive) {
             exportCurrentPage = 1;
             isExportDirty = false;
@@ -372,11 +442,18 @@ public class InventoryHistoryController implements Initializable {
             importTotalPages = Math.max(1, result.getTotalPages());
             importPageData.setAll(result.getItems());
             TableSyncHelper.resetScrollToTop(tableImport, null);
-            PaginationHelper.render(importPaginationBox, lblImportRecordRange, importCurrentPage, importTotalPages,
-                    importTotalRecords, importPageSize, p -> {
-                        importCurrentPage = p;
-                        loadImportData();
-                    });
+            PaginationHelper.render(
+                importPaginationBox,
+                lblImportRecordRange,
+                importCurrentPage,
+                importTotalPages,
+                importTotalRecords,
+                importPageSize,
+                p -> {
+                    importCurrentPage = p;
+                    loadImportData();
+                }
+            );
         });
 
         task.setOnFailed(e -> log.error("Lỗi khi tải lịch sử Nhập kho: ", task.getException()));
@@ -407,11 +484,18 @@ public class InventoryHistoryController implements Initializable {
             exportTotalPages = Math.max(1, result.getTotalPages());
             exportPageData.setAll(result.getItems());
             TableSyncHelper.resetScrollToTop(tableExport, null);
-            PaginationHelper.render(exportPaginationBox, lblExportRecordRange, exportCurrentPage, exportTotalPages,
-                    exportTotalRecords, exportPageSize, p -> {
-                        exportCurrentPage = p;
-                        loadExportData();
-                    });
+            PaginationHelper.render(
+                exportPaginationBox,
+                lblExportRecordRange,
+                exportCurrentPage,
+                exportTotalPages,
+                exportTotalRecords,
+                exportPageSize,
+                p -> {
+                    exportCurrentPage = p;
+                    loadExportData();
+                }
+            );
         });
 
         task.setOnFailed(e -> log.error("Lỗi khi tải lịch sử Xuất kho: ", task.getException()));
@@ -430,7 +514,9 @@ public class InventoryHistoryController implements Initializable {
         if (tx == null) return;
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/inventory/transaction_detail_dialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/fxml/inventory/transaction_detail_dialog.fxml")
+            );
             Parent root = loader.load();
 
             TransactionDetailDialogController controller = loader.getController();
@@ -441,7 +527,9 @@ public class InventoryHistoryController implements Initializable {
             if (tableImport != null && tableImport.getScene() != null) {
                 dialogStage.initOwner(tableImport.getScene().getWindow());
             }
-            dialogStage.setTitle("IMPORT".equalsIgnoreCase(tx.getType()) ? "Chi tiết phiếu nhập kho" : "Chi tiết phiếu xuất kho");
+            dialogStage.setTitle(
+                "IMPORT".equalsIgnoreCase(tx.getType()) ? "Chi tiết phiếu nhập kho" : "Chi tiết phiếu xuất kho"
+            );
 
             Scene scene = new Scene(root);
 

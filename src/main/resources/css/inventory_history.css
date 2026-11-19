@@ -5,13 +5,13 @@
 .history-main-title {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 19px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .history-sub-title {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 13px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
 }
 
 /* Bộ lọc & DatePicker */
@@ -22,8 +22,8 @@
 }
 
 .history-datepicker {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-width: 1px;
     -fx-background-radius: 6px;
     -fx-border-radius: 6px;
@@ -34,15 +34,15 @@
     -fx-background-color: transparent;
     -fx-padding: 6 10;
     -fx-font-size: 13px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 /* Nút phễu lọc theo ngày: Mặc định chưa lọc (Màu xám) */
 .btn-funnel-filter {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: #f1f5f9;
     -fx-background-radius: 6px;
     -fx-border-radius: 6px;
-    -fx-border-color: #CBD5E1;
+    -fx-border-color: #cbd5e1;
     -fx-border-width: 1px;
     -fx-padding: 6 10;
     -fx-cursor: hand;
@@ -50,16 +50,16 @@
 }
 
 .btn-funnel-filter:hover {
-    -fx-background-color: #E2E8F0;
-    -fx-border-color: #94A3B8;
+    -fx-background-color: #e2e8f0;
+    -fx-border-color: #94a3b8;
 }
 
 .btn-funnel-filter:pressed {
-    -fx-background-color: #CBD5E1;
+    -fx-background-color: #cbd5e1;
 }
 
 .btn-funnel-filter .funnel-icon {
-    -fx-fill: #64748B;
+    -fx-fill: #64748b;
     -fx-scale-x: 0.72;
     -fx-scale-y: 0.72;
 }
@@ -70,23 +70,23 @@
 
 /* Trạng thái đang áp dụng lọc (Màu xanh thương hiệu) */
 .btn-funnel-filter.active {
-    -fx-background-color: #0066FF;
-    -fx-border-color: #0066FF;
+    -fx-background-color: #0066ff;
+    -fx-border-color: #0066ff;
 }
 
 .btn-funnel-filter.active:hover {
-    -fx-background-color: #0052CC;
-    -fx-border-color: #0052CC;
+    -fx-background-color: #0052cc;
+    -fx-border-color: #0052cc;
 }
 
 .btn-funnel-filter.active:pressed {
-    -fx-background-color: #003D99;
-    -fx-border-color: #003D99;
+    -fx-background-color: #003d99;
+    -fx-border-color: #003d99;
 }
 
 .btn-funnel-filter.active .funnel-icon,
 .btn-funnel-filter.active:hover .funnel-icon {
-    -fx-fill: #FFFFFF;
+    -fx-fill: #ffffff;
 }
 
 /* TABPANE TÙY BIẾN HIỆN ĐẠI */
@@ -104,9 +104,9 @@
 }
 
 .custom-history-tabpane .tab {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: #f1f5f9;
     -fx-background-radius: 8px 8px 0 0;
-    -fx-border-color: #CBD5E1 #CBD5E1 transparent #CBD5E1;
+    -fx-border-color: #cbd5e1 #cbd5e1 transparent #cbd5e1;
     -fx-border-radius: 8px 8px 0 0;
     -fx-border-width: 1px;
     -fx-padding: 0 20;
@@ -123,8 +123,8 @@
 }
 
 .custom-history-tabpane .tab:selected {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #0066FF #0066FF transparent #0066FF;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #0066ff #0066ff transparent #0066ff;
     -fx-border-width: 2px 2px 0 2px;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
@@ -147,36 +147,36 @@
 .custom-history-tabpane .tab .tab-label {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
 }
 
 .custom-history-tabpane .tab:selected .tab-label {
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .hint-select-label {
     -fx-font-size: 12px;
-    -fx-text-fill: #94A3B8;
+    -fx-text-fill: #94a3b8;
     -fx-font-style: italic;
 }
 
 /* Master Table & Detail Table */
 .history-master-table .table-row-cell:selected,
 .history-detail-table .table-row-cell:selected {
-    -fx-background-color: #E0EDFF !important;
+    -fx-background-color: #e0edff !important;
 }
 
 .history-master-table .table-row-cell:selected .text,
 .history-detail-table .table-row-cell:selected .text {
-    -fx-fill: #0040A8 !important;
+    -fx-fill: #0040a8 !important;
     -fx-font-family: "Inter 18pt SemiBold";
 }
 
 .code-pill {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 12px;
-    -fx-text-fill: #0066FF;
-    -fx-background-color: #EFF6FF;
+    -fx-text-fill: #0066ff;
+    -fx-background-color: #eff6ff;
     -fx-background-radius: 4px;
     -fx-padding: 2 6;
 }
@@ -193,4 +193,3 @@
 .history-detail-table .table-cell {
     -fx-alignment: CENTER_LEFT !important;
 }
-

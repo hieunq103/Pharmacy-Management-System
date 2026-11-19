@@ -1,11 +1,11 @@
 package com.pharmacy.sales.dto;
 
 import com.pharmacy.common.FormatUtils;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class SalesOrderDetailDTO {
+
     private String medicineCode;
     private String medicineName;
     private String categoryName;
@@ -17,10 +17,18 @@ public class SalesOrderDetailDTO {
     private BigDecimal unitPrice;
     private BigDecimal lineTotal;
 
-    public SalesOrderDetailDTO(String medicineCode, String medicineName,
-            String categoryName, String activeIngredient, String unit,
-            String lotNumber, LocalDate expiryDate, int quantity,
-            BigDecimal unitPrice, BigDecimal lineTotal) {
+    public SalesOrderDetailDTO(
+        String medicineCode,
+        String medicineName,
+        String categoryName,
+        String activeIngredient,
+        String unit,
+        String lotNumber,
+        LocalDate expiryDate,
+        int quantity,
+        BigDecimal unitPrice,
+        BigDecimal lineTotal
+    ) {
         this.medicineCode = medicineCode;
         this.medicineName = medicineName;
         this.categoryName = categoryName != null ? categoryName : "—";

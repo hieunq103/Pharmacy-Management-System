@@ -1,14 +1,14 @@
 package com.pharmacy.common;
 
+import java.util.List;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Dialog;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
-import java.util.List;
-
 public final class DialogUtils {
+
     private DialogUtils() {}
 
     public static Window getActiveWindow() {
@@ -28,7 +28,7 @@ public final class DialogUtils {
 
     public static void configure(Dialog<?> dialog, Window explicitOwner) {
         if (dialog == null) return;
-        Window owner = (explicitOwner != null) ? explicitOwner : getActiveWindow();
+        Window owner = explicitOwner != null ? explicitOwner : getActiveWindow();
         if (owner != null) {
             dialog.initOwner(owner);
             dialog.initModality(Modality.WINDOW_MODAL);
@@ -77,7 +77,10 @@ public final class DialogUtils {
         alert.setTitle(title != null ? title : "Xác nhận");
         alert.setHeaderText(null);
         alert.setContentText(message);
-        return alert.showAndWait().filter(b -> b == javafx.scene.control.ButtonType.OK).isPresent();
+        return alert
+            .showAndWait()
+            .filter(b -> b == javafx.scene.control.ButtonType.OK)
+            .isPresent();
     }
 
     public static void showError(String title, String message) {
@@ -92,5 +95,4 @@ public final class DialogUtils {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
 }

@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "sales_order_items")
 public class SalesOrderItem implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -37,8 +38,7 @@ public class SalesOrderItem implements Serializable {
     @Column(name = "line_total", nullable = false, precision = 14, scale = 2)
     private BigDecimal lineTotal = BigDecimal.ZERO;
 
-    public SalesOrderItem() {
-    }
+    public SalesOrderItem() {}
 
     public void setSalesOrder(SalesOrder salesOrder) {
         this.salesOrder = salesOrder;
@@ -64,4 +64,3 @@ public class SalesOrderItem implements Serializable {
         this.lineTotal = lineTotal;
     }
 }
-

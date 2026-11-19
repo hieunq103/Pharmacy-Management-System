@@ -2,27 +2,22 @@ package com.pharmacy.sales.payment;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SepayService {
+
     private static final Logger log = LoggerFactory.getLogger(SepayService.class);
     private static final ObjectMapper mapper = new ObjectMapper();
-    private static final HttpClient client = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(4))
-            .build();
+    private static final HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(4)).build();
 
-    public record PaymentResult(
-            boolean matched,
-            BigDecimal amount,
-            String content) {
+    public record PaymentResult(boolean matched, BigDecimal amount, String content) {
         public static PaymentResult notMatched() {
             return new PaymentResult(false, BigDecimal.ZERO, null);
         }
@@ -52,12 +47,12 @@ public class SepayService {
             }
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Authorization", "Bearer " + token)
-                    .header("Content-Type", "application/json")
-                    .timeout(Duration.ofSeconds(4))
-                    .GET()
-                    .build();
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + token)
+                .header("Content-Type", "application/json")
+                .timeout(Duration.ofSeconds(4))
+                .GET()
+                .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
@@ -86,8 +81,12 @@ public class SepayService {
 
                         if (normContent.contains(normCode)) {
                             String refNum = tx.path("reference_number").asText("");
-                            log.info("Detected matching SePAY transaction! Order={}, Amount={}, Ref={}",
-                                    orderCode, amountIn, refNum);
+                            log.info(
+                                "Detected matching SePAY transaction! Order={}, Amount={}, Ref={}",
+                                orderCode,
+                                amountIn,
+                                refNum
+                            );
                             return PaymentResult.matched(amountIn, content);
                         }
                     }

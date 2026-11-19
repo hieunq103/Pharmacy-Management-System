@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public final class CartTotals {
-    private CartTotals() {
-    }
+
+    private CartTotals() {}
 
     public static BigDecimal subtotal(List<CartItem> items) {
         BigDecimal sum = BigDecimal.ZERO;

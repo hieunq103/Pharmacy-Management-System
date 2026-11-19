@@ -1,15 +1,20 @@
 package com.pharmacy.sales;
 
-import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.AppConstants;
+import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.DebounceUtil;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.PageResult;
 import com.pharmacy.common.PaginationHelper;
 import com.pharmacy.common.TableSyncHelper;
 import com.pharmacy.common.UserSession;
-import com.pharmacy.sales.dto.SalesOrderDetailDTO;
 import com.pharmacy.sales.dto.SalesOrderDTO;
+import com.pharmacy.sales.dto.SalesOrderDetailDTO;
+import java.io.IOException;
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -39,42 +44,73 @@ import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.ResourceBundle;
-
 public class SalesHistoryController implements Initializable {
+
     private static final Logger log = LoggerFactory.getLogger(SalesHistoryController.class);
 
     private final SalesService salesService = new SalesService();
 
     private Runnable onCloseHistory;
 
-    @FXML private TextField txtSearch;
-    @FXML private DatePicker dpFilterDate;
-    @FXML private Button btnFilterDay;
-    @FXML private Button btnFilterMonth;
-    @FXML private TextField txtFilterYear;
-    @FXML private ComboBox<String> cbFilterMonth;
+    @FXML
+    private TextField txtSearch;
 
-    @FXML private TableView<SalesOrderDTO> tableSalesOrders;
-    @FXML private TableColumn<SalesOrderDTO, String> colIndex;
-    @FXML private TableColumn<SalesOrderDTO, String> colCode;
-    @FXML private TableColumn<SalesOrderDTO, String> colDateTime;
-    @FXML private TableColumn<SalesOrderDTO, String> colEmployee;
-    @FXML private TableColumn<SalesOrderDTO, String> colCustomerPhone;
-    @FXML private TableColumn<SalesOrderDTO, String> colItemSummary;
-    @FXML private TableColumn<SalesOrderDTO, String> colSubtotal;
-    @FXML private TableColumn<SalesOrderDTO, String> colDiscount;
-    @FXML private TableColumn<SalesOrderDTO, String> colTotalAmount;
-    @FXML private TableColumn<SalesOrderDTO, String> colPaymentMethod;
+    @FXML
+    private DatePicker dpFilterDate;
 
-    @FXML private VBox paneEmptyHistory;
+    @FXML
+    private Button btnFilterDay;
 
-    @FXML private HBox paginationBox;
-    @FXML private Label lblRecordRange;
+    @FXML
+    private Button btnFilterMonth;
+
+    @FXML
+    private TextField txtFilterYear;
+
+    @FXML
+    private ComboBox<String> cbFilterMonth;
+
+    @FXML
+    private TableView<SalesOrderDTO> tableSalesOrders;
+
+    @FXML
+    private TableColumn<SalesOrderDTO, String> colIndex;
+
+    @FXML
+    private TableColumn<SalesOrderDTO, String> colCode;
+
+    @FXML
+    private TableColumn<SalesOrderDTO, String> colDateTime;
+
+    @FXML
+    private TableColumn<SalesOrderDTO, String> colEmployee;
+
+    @FXML
+    private TableColumn<SalesOrderDTO, String> colCustomerPhone;
+
+    @FXML
+    private TableColumn<SalesOrderDTO, String> colItemSummary;
+
+    @FXML
+    private TableColumn<SalesOrderDTO, String> colSubtotal;
+
+    @FXML
+    private TableColumn<SalesOrderDTO, String> colDiscount;
+
+    @FXML
+    private TableColumn<SalesOrderDTO, String> colTotalAmount;
+
+    @FXML
+    private TableColumn<SalesOrderDTO, String> colPaymentMethod;
+
+    @FXML
+    private VBox paneEmptyHistory;
+
+    @FXML
+    private HBox paginationBox;
+
+    @FXML
+    private Label lblRecordRange;
 
     private final ObservableList<SalesOrderDTO> pageData = FXCollections.observableArrayList();
     private int currentPage = 1;
@@ -90,7 +126,6 @@ public class SalesHistoryController implements Initializable {
     private boolean updatingControls = false;
     private String currentKeyword = "";
     private Integer filterEmployeeId = null;
-
 
     private Task<PageResult<SalesOrderDTO>> runningTask;
 
@@ -239,10 +274,11 @@ public class SalesHistoryController implements Initializable {
                 selectedYear = y;
                 return true;
             }
-        } catch (NumberFormatException ignored) {
-        }
-        com.pharmacy.common.DialogUtils.showWarning("Năm không hợp lệ",
-                "Vui lòng nhập năm từ 2000 trở đi (ví dụ: " + LocalDate.now().getYear() + ").");
+        } catch (NumberFormatException ignored) {}
+        com.pharmacy.common.DialogUtils.showWarning(
+            "Năm không hợp lệ",
+            "Vui lòng nhập năm từ 2000 trở đi (ví dụ: " + LocalDate.now().getYear() + ")."
+        );
         txtFilterYear.setText(String.valueOf(selectedYear));
         return false;
     }
@@ -251,8 +287,7 @@ public class SalesHistoryController implements Initializable {
         if (cbFilterMonth != null && cbFilterMonth.getValue() != null) {
             try {
                 selectedMonth = Integer.parseInt(cbFilterMonth.getValue().replace("Tháng", "").trim());
-            } catch (NumberFormatException ignored) {
-            }
+            } catch (NumberFormatException ignored) {}
         }
     }
 
@@ -280,27 +315,33 @@ public class SalesHistoryController implements Initializable {
         setupLeftAlignedCell(colEmployee);
 
         colCustomerPhone.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getCustomerPhone()));
+            new SimpleStringProperty(cellData.getValue().getCustomerPhone())
+        );
         setupLeftAlignedCell(colCustomerPhone);
 
         colItemSummary.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getFormattedItemSummary()));
+            new SimpleStringProperty(cellData.getValue().getFormattedItemSummary())
+        );
         setupLeftAlignedCell(colItemSummary);
 
         colSubtotal.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getFormattedSubtotal()));
+            new SimpleStringProperty(cellData.getValue().getFormattedSubtotal())
+        );
         setupLeftAlignedCell(colSubtotal);
 
         colDiscount.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getFormattedDiscount()));
+            new SimpleStringProperty(cellData.getValue().getFormattedDiscount())
+        );
         setupLeftAlignedCell(colDiscount);
 
         colTotalAmount.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getFormattedTotal()));
+            new SimpleStringProperty(cellData.getValue().getFormattedTotal())
+        );
         setupLeftAlignedCell(colTotalAmount);
 
         colPaymentMethod.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getFormattedPaymentMethod()));
+            new SimpleStringProperty(cellData.getValue().getFormattedPaymentMethod())
+        );
         setupLeftAlignedCell(colPaymentMethod);
 
         tableSalesOrders.setRowFactory(tv -> {
@@ -316,19 +357,21 @@ public class SalesHistoryController implements Initializable {
     }
 
     private <T> void setupLeftAlignedCell(TableColumn<T, String> column) {
-        column.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    setText(item);
-                    setAlignment(Pos.CENTER_LEFT);
+        column.setCellFactory(col ->
+            new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        setText(item);
+                        setAlignment(Pos.CENTER_LEFT);
+                    }
                 }
             }
-        });
+        );
     }
 
     private void setupEventHandlers() {
@@ -423,16 +466,16 @@ public class SalesHistoryController implements Initializable {
 
     private void renderPagination() {
         PaginationHelper.render(
-                paginationBox,
-                lblRecordRange,
-                currentPage,
-                totalPages,
-                totalRecords,
-                pageSize,
-                page -> {
-                    currentPage = page;
-                    loadSalesHistoryData();
-                }
+            paginationBox,
+            lblRecordRange,
+            currentPage,
+            totalPages,
+            totalRecords,
+            pageSize,
+            page -> {
+                currentPage = page;
+                loadSalesHistoryData();
+            }
         );
     }
 

@@ -9,10 +9,13 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "inventory_transactions")
 public class InventoryTransaction implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     public enum Type {
-        IMPORT, EXPORT_SALE, EXPORT_DISPOSAL
+        IMPORT,
+        EXPORT_SALE,
+        EXPORT_DISPOSAL,
     }
 
     @Id
@@ -42,8 +45,7 @@ public class InventoryTransaction implements Serializable {
     @Column(name = "note", length = 255)
     private String note;
 
-    public InventoryTransaction() {
-    }
+    public InventoryTransaction() {}
 
     public void setType(Type type) {
         this.type = type;
@@ -65,4 +67,3 @@ public class InventoryTransaction implements Serializable {
         this.note = note;
     }
 }
-

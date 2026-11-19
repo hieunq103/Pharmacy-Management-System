@@ -1,22 +1,22 @@
 package com.pharmacy.common;
 
+import java.util.function.Consumer;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 
-import java.util.function.Consumer;
-
 public final class PaginationHelper {
+
     private PaginationHelper() {}
 
     public static void render(
-            HBox paginationBox,
-            Label lblRecordRange,
-            int currentPage,
-            int totalPages,
-            long totalRecords,
-            int pageSize,
-            Consumer<Integer> onPageChange
+        HBox paginationBox,
+        Label lblRecordRange,
+        int currentPage,
+        int totalPages,
+        long totalRecords,
+        int pageSize,
+        Consumer<Integer> onPageChange
     ) {
         if (paginationBox == null) return;
         paginationBox.getChildren().clear();

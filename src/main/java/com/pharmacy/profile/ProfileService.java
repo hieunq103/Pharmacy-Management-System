@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProfileService {
+
     private static final Logger log = LoggerFactory.getLogger(ProfileService.class);
 
     private final EmployeeRepository employeeRepository;
@@ -45,7 +46,9 @@ public class ProfileService {
             throw new IllegalArgumentException("Số điện thoại không được để trống.");
         }
         if (!FormValidator.isValidPhone(request.phone())) {
-            throw new IllegalArgumentException("Số điện thoại không hợp lệ (gồm 10 chữ số, bắt đầu bằng 03, 05, 07, 08 hoặc 09).");
+            throw new IllegalArgumentException(
+                "Số điện thoại không hợp lệ (gồm 10 chữ số, bắt đầu bằng 03, 05, 07, 08 hoặc 09)."
+            );
         }
         if (request.address() == null || request.address().isBlank()) {
             throw new IllegalArgumentException("Địa chỉ không được để trống.");
@@ -57,12 +60,20 @@ public class ProfileService {
         log.info("Bắt đầu cập nhật hồ sơ cá nhân cho nhân viên ID: {}", request.employeeId());
 
         employeeRepository.findByPhone(request.phone(), request.employeeId()).ifPresent(c -> {
-            log.warn("Cập nhật thất bại: Số điện thoại {} đã được sử dụng bởi nhân viên {}.", request.phone(), c.code());
+            log.warn(
+                "Cập nhật thất bại: Số điện thoại {} đã được sử dụng bởi nhân viên {}.",
+                request.phone(),
+                c.code()
+            );
             throw new IllegalArgumentException(c.message("Số điện thoại"));
         });
 
-        boolean success = employeeRepository.updateOwnProfile(request.employeeId(),
-                request.fullName().trim(), request.phone().trim(), request.address().trim());
+        boolean success = employeeRepository.updateOwnProfile(
+            request.employeeId(),
+            request.fullName().trim(),
+            request.phone().trim(),
+            request.address().trim()
+        );
         if (!success) {
             log.error("Không tìm thấy nhân viên hoặc không thể cập nhật dữ liệu với ID: {}", request.employeeId());
             throw new IllegalStateException("Không tìm thấy nhân viên hoặc không thể cập nhật dữ liệu.");
@@ -88,8 +99,9 @@ public class ProfileService {
             throw new IllegalArgumentException("Mật khẩu mới không được trùng với mật khẩu hiện tại.");
         }
 
-        Account account = accountRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalStateException("Không tìm thấy tài khoản trong hệ thống."));
+        Account account = accountRepository
+            .findByUsername(username)
+            .orElseThrow(() -> new IllegalStateException("Không tìm thấy tài khoản trong hệ thống."));
 
         if (!PasswordEncoder.matches(currentPassword, account.getPasswordHash())) {
             throw new IllegalArgumentException("Mật khẩu hiện tại không chính xác.");

@@ -2,6 +2,7 @@ package com.pharmacy.profile;
 
 import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.TogglePasswordField;
+import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -13,9 +14,8 @@ import javafx.stage.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.function.Consumer;
-
 public class ChangePasswordDialog extends Dialog<ButtonType> {
+
     private static final Logger log = LoggerFactory.getLogger(ChangePasswordDialog.class);
 
     private final ProfileService profileService;
@@ -29,7 +29,12 @@ public class ChangePasswordDialog extends Dialog<ButtonType> {
     private TogglePasswordField txtConfirmPassword;
     private Label lblDialogStatus;
 
-    public ChangePasswordDialog(Window owner, ProfileService profileService, String identifier, Consumer<String> onSuccessCallback) {
+    public ChangePasswordDialog(
+        Window owner,
+        ProfileService profileService,
+        String identifier,
+        Consumer<String> onSuccessCallback
+    ) {
         this.profileService = profileService;
         this.identifier = identifier;
         this.onSuccessCallback = onSuccessCallback;
@@ -75,12 +80,14 @@ public class ChangePasswordDialog extends Dialog<ButtonType> {
         content.setPadding(new Insets(16, 20, 16, 20));
         content.setPrefWidth(420);
 
-        content.getChildren().addAll(
+        content
+            .getChildren()
+            .addAll(
                 createFieldBox("Mật khẩu hiện tại", txtCurrentPassword),
                 createFieldBox("Mật khẩu mới", txtNewPassword),
                 createFieldBox("Xác nhận mật khẩu mới", txtConfirmPassword),
                 lblDialogStatus
-        );
+            );
 
         dialogPane.setContent(content);
         setupButtons(dialogPane);
@@ -107,10 +114,13 @@ public class ChangePasswordDialog extends Dialog<ButtonType> {
         btnOk.setText("Xác nhận đổi");
         btnCancel.setText("Hủy");
 
-        String btnBase = "-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 14px; -fx-pref-height: 38px; -fx-min-height: 38px; -fx-background-radius: 6; -fx-cursor: hand; ";
+        String btnBase =
+            "-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 14px; -fx-pref-height: 38px; -fx-min-height: 38px; -fx-background-radius: 6; -fx-cursor: hand; ";
 
-        String btnSuccessStyle = btnBase + "-fx-background-color: #16A34A !important; -fx-text-fill: white !important; -fx-padding: 0 20;";
-        String btnSuccessHover = btnBase + "-fx-background-color: #15803D !important; -fx-text-fill: white !important; -fx-padding: 0 20;";
+        String btnSuccessStyle =
+            btnBase + "-fx-background-color: #16A34A !important; -fx-text-fill: white !important; -fx-padding: 0 20;";
+        String btnSuccessHover =
+            btnBase + "-fx-background-color: #15803D !important; -fx-text-fill: white !important; -fx-padding: 0 20;";
         btnOk.setStyle(btnSuccessStyle);
         btnOk.setOnMouseEntered(e -> btnOk.setStyle(btnSuccessHover));
         btnOk.setOnMouseExited(e -> btnOk.setStyle(btnSuccessStyle));

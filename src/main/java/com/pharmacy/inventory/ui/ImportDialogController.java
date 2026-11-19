@@ -5,9 +5,13 @@ import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.UserSession;
 import com.pharmacy.inventory.InventoryService;
-import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.inventory.dto.BatchImportItemDTO;
-
+import com.pharmacy.inventory.dto.MedicineInventoryDTO;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.ResourceBundle;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -24,68 +28,144 @@ import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.ResourceBundle;
-
 public class ImportDialogController implements Initializable {
+
     private static final Logger log = LoggerFactory.getLogger(ImportDialogController.class);
 
     // Mã của thuốc mới chỉ được cấp khi lưu phiếu (bộ đếm trong CSDL) nên lúc lập phiếu chưa có mã thật
     private static final String PENDING_CODE = "Tự cấp khi lưu";
 
-    @FXML private StackPane supplierPickerContainer;
-    @FXML private Label lblErrorSupplier;
-    @FXML private TextField txtNote;
+    @FXML
+    private StackPane supplierPickerContainer;
 
-    @FXML private RadioButton rbExistingMedicine;
-    @FXML private RadioButton rbNewMedicine;
-    @FXML private ToggleGroup itemModeGroup;
+    @FXML
+    private Label lblErrorSupplier;
 
-    @FXML private VBox boxExistingMedicine;
-    @FXML private StackPane medicinePickerContainer;
-    @FXML private HBox boxSelectedMedInfo;
-    @FXML private Label lblSelectedMedName;
-    @FXML private Label lblSelectedCategory;
-    @FXML private Label lblSelectedStock;
+    @FXML
+    private TextField txtNote;
 
-    @FXML private VBox boxNewMedicine;
-    @FXML private TextField txtNewName;
-    @FXML private StackPane categoryPickerContainer;
-    @FXML private TextField txtNewActiveIngredient;
-    @FXML private TextField txtNewManufacturer;
-    @FXML private TextField txtNewSellPrice;
-    @FXML private CheckBox chkRequiresPrescription;
+    @FXML
+    private RadioButton rbExistingMedicine;
 
-    @FXML private TextField txtLotNumber;
-    @FXML private DatePicker dpExpiryDate;
-    @FXML private ComboBox<String> cbUnit;
-    @FXML private TextField txtQuantityIn;
-    @FXML private TextField txtImportPrice;
-    @FXML private Label lblItemError;
+    @FXML
+    private RadioButton rbNewMedicine;
 
-    @FXML private Label lblItemCountBadge;
-    @FXML private TableView<BatchImportItemDTO> tableItems;
-    @FXML private TableColumn<BatchImportItemDTO, Integer> colIndex;
-    @FXML private TableColumn<BatchImportItemDTO, String> colCode;
-    @FXML private TableColumn<BatchImportItemDTO, String> colName;
-    @FXML private TableColumn<BatchImportItemDTO, String> colCategory;
-    @FXML private TableColumn<BatchImportItemDTO, String> colManufacturer;
-    @FXML private TableColumn<BatchImportItemDTO, String> colLot;
-    @FXML private TableColumn<BatchImportItemDTO, String> colExpiry;
-    @FXML private TableColumn<BatchImportItemDTO, String> colUnit;
-    @FXML private TableColumn<BatchImportItemDTO, Integer> colQuantity;
-    @FXML private TableColumn<BatchImportItemDTO, String> colPrice;
-    @FXML private TableColumn<BatchImportItemDTO, String> colTotal;
-    @FXML private TableColumn<BatchImportItemDTO, BatchImportItemDTO> colAction;
+    @FXML
+    private ToggleGroup itemModeGroup;
 
-    @FXML private Label lblGeneralError;
-    @FXML private Label lblSummaryTotalQuantity;
-    @FXML private Label lblGrandTotal;
-    @FXML private Button btnCancel;
-    @FXML private Button btnConfirmImport;
+    @FXML
+    private VBox boxExistingMedicine;
+
+    @FXML
+    private StackPane medicinePickerContainer;
+
+    @FXML
+    private HBox boxSelectedMedInfo;
+
+    @FXML
+    private Label lblSelectedMedName;
+
+    @FXML
+    private Label lblSelectedCategory;
+
+    @FXML
+    private Label lblSelectedStock;
+
+    @FXML
+    private VBox boxNewMedicine;
+
+    @FXML
+    private TextField txtNewName;
+
+    @FXML
+    private StackPane categoryPickerContainer;
+
+    @FXML
+    private TextField txtNewActiveIngredient;
+
+    @FXML
+    private TextField txtNewManufacturer;
+
+    @FXML
+    private TextField txtNewSellPrice;
+
+    @FXML
+    private CheckBox chkRequiresPrescription;
+
+    @FXML
+    private TextField txtLotNumber;
+
+    @FXML
+    private DatePicker dpExpiryDate;
+
+    @FXML
+    private ComboBox<String> cbUnit;
+
+    @FXML
+    private TextField txtQuantityIn;
+
+    @FXML
+    private TextField txtImportPrice;
+
+    @FXML
+    private Label lblItemError;
+
+    @FXML
+    private Label lblItemCountBadge;
+
+    @FXML
+    private TableView<BatchImportItemDTO> tableItems;
+
+    @FXML
+    private TableColumn<BatchImportItemDTO, Integer> colIndex;
+
+    @FXML
+    private TableColumn<BatchImportItemDTO, String> colCode;
+
+    @FXML
+    private TableColumn<BatchImportItemDTO, String> colName;
+
+    @FXML
+    private TableColumn<BatchImportItemDTO, String> colCategory;
+
+    @FXML
+    private TableColumn<BatchImportItemDTO, String> colManufacturer;
+
+    @FXML
+    private TableColumn<BatchImportItemDTO, String> colLot;
+
+    @FXML
+    private TableColumn<BatchImportItemDTO, String> colExpiry;
+
+    @FXML
+    private TableColumn<BatchImportItemDTO, String> colUnit;
+
+    @FXML
+    private TableColumn<BatchImportItemDTO, Integer> colQuantity;
+
+    @FXML
+    private TableColumn<BatchImportItemDTO, String> colPrice;
+
+    @FXML
+    private TableColumn<BatchImportItemDTO, String> colTotal;
+
+    @FXML
+    private TableColumn<BatchImportItemDTO, BatchImportItemDTO> colAction;
+
+    @FXML
+    private Label lblGeneralError;
+
+    @FXML
+    private Label lblSummaryTotalQuantity;
+
+    @FXML
+    private Label lblGrandTotal;
+
+    @FXML
+    private Button btnCancel;
+
+    @FXML
+    private Button btnConfirmImport;
 
     private SearchableMedicinePicker medicinePicker;
     private SearchableStringPicker supplierPicker;
@@ -112,16 +192,29 @@ public class ImportDialogController implements Initializable {
         dpExpiryDate.setPromptText("dd/MM/yyyy");
         com.pharmacy.common.FormatUtils.setupDatePicker(dpExpiryDate);
 
-        cbUnit.setItems(FXCollections.observableArrayList(
-                "Hộp", "Vỉ", "Viên", "Chai", "Lọ", "Ống", "Gói", "Tuýp", "Hũ", "Bình", "Túi", "Miếng"
-        ));
+        cbUnit.setItems(
+            FXCollections.observableArrayList(
+                "Hộp",
+                "Vỉ",
+                "Viên",
+                "Chai",
+                "Lọ",
+                "Ống",
+                "Gói",
+                "Tuýp",
+                "Hũ",
+                "Bình",
+                "Túi",
+                "Miếng"
+            )
+        );
         cbUnit.setValue("Hộp");
 
         setupTableColumns();
         tableItems.setItems(itemList);
 
         itemModeGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
-            boolean isNew = (newVal == rbNewMedicine);
+            boolean isNew = newVal == rbNewMedicine;
             boxExistingMedicine.setVisible(!isNew);
             boxExistingMedicine.setManaged(!isNew);
             boxNewMedicine.setVisible(isNew);
@@ -134,7 +227,9 @@ public class ImportDialogController implements Initializable {
             if (newVal != null) {
                 lblSelectedMedName.setText(newVal.getMedicineName() + " (" + newVal.getMedicineCode() + ")");
                 lblSelectedCategory.setText(newVal.getCategoryName() != null ? newVal.getCategoryName() : "—");
-                lblSelectedStock.setText(newVal.getTotalQuantity() + " " + (newVal.getUnit() != null ? newVal.getUnit() : ""));
+                lblSelectedStock.setText(
+                    newVal.getTotalQuantity() + " " + (newVal.getUnit() != null ? newVal.getUnit() : "")
+                );
                 boxSelectedMedInfo.setVisible(true);
                 boxSelectedMedInfo.setManaged(true);
 
@@ -177,82 +272,111 @@ public class ImportDialogController implements Initializable {
 
     private void setupTableColumns() {
         colIndex.setCellValueFactory(cellData ->
-                new ReadOnlyObjectWrapper<>(tableItems.getItems().indexOf(cellData.getValue()) + 1));
-        colIndex.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || getTableView() == null || getIndex() < 0 || getIndex() >= getTableView().getItems().size()) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    setText(String.valueOf(getIndex() + 1));
-                    setGraphic(null);
-                    setAlignment(Pos.CENTER_LEFT);
+            new ReadOnlyObjectWrapper<>(tableItems.getItems().indexOf(cellData.getValue()) + 1)
+        );
+        colIndex.setCellFactory(col ->
+            new TableCell<>() {
+                @Override
+                protected void updateItem(Integer item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (
+                        empty ||
+                        getTableView() == null ||
+                        getIndex() < 0 ||
+                        getIndex() >= getTableView().getItems().size()
+                    ) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        setText(String.valueOf(getIndex() + 1));
+                        setGraphic(null);
+                        setAlignment(Pos.CENTER_LEFT);
+                    }
                 }
             }
-        });
+        );
 
         colCode.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMedicineCode()));
-        colCode.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    Label lbl = new Label(item);
-                    lbl.setMinWidth(Label.USE_PREF_SIZE);
-                    lbl.setStyle(PENDING_CODE.equals(item)
-                            ? "-fx-font-size: 11px; -fx-font-family: 'Inter 18pt Regular'; -fx-background-color: #F1F5F9; -fx-text-fill: #64748B; -fx-background-radius: 4px; -fx-padding: 2 6;"
-                            : "-fx-font-size: 11px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-background-radius: 4px; -fx-padding: 2 6;");
-                    setGraphic(lbl);
-                    setText(null);
-                    setAlignment(Pos.CENTER_LEFT);
+        colCode.setCellFactory(col ->
+            new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        Label lbl = new Label(item);
+                        lbl.setMinWidth(Label.USE_PREF_SIZE);
+                        lbl.setStyle(
+                            PENDING_CODE.equals(item)
+                                ? "-fx-font-size: 11px; -fx-font-family: 'Inter 18pt Regular'; -fx-background-color: #F1F5F9; -fx-text-fill: #64748B; -fx-background-radius: 4px; -fx-padding: 2 6;"
+                                : "-fx-font-size: 11px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-background-radius: 4px; -fx-padding: 2 6;"
+                        );
+                        setGraphic(lbl);
+                        setText(null);
+                        setAlignment(Pos.CENTER_LEFT);
+                    }
                 }
             }
-        });
+        );
 
         colName.setCellValueFactory(new PropertyValueFactory<>("medicineName"));
         colCategory.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
         colManufacturer.setCellValueFactory(new PropertyValueFactory<>("manufacturer"));
         colLot.setCellValueFactory(new PropertyValueFactory<>("lotNumber"));
-        colExpiry.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFormattedExpiryDate()));
+        colExpiry.setCellValueFactory(cellData ->
+            new SimpleStringProperty(cellData.getValue().getFormattedExpiryDate())
+        );
         colUnit.setCellValueFactory(new PropertyValueFactory<>("unit"));
         colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantityIn"));
-        colPrice.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFormattedImportPrice()));
+        colPrice.setCellValueFactory(cellData ->
+            new SimpleStringProperty(cellData.getValue().getFormattedImportPrice())
+        );
         colTotal.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFormattedLineTotal()));
 
         colAction.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-        colAction.setCellFactory(col -> new TableCell<>() {
-            private final Button btnDelete = new Button("✕ Xóa");
-            {
-                btnDelete.setStyle("-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;");
-                btnDelete.setOnMouseEntered(ev -> btnDelete.setStyle("-fx-background-color: #FCA5A5; -fx-text-fill: #991B1B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #F87171; -fx-border-radius: 4px; -fx-background-radius: 4px;"));
-                btnDelete.setOnMouseExited(ev -> btnDelete.setStyle("-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;"));
-                btnDelete.setTooltip(new Tooltip("Xóa mặt hàng này khỏi phiếu nhập"));
-                btnDelete.setOnAction(e -> {
-                    BatchImportItemDTO item = getItem();
-                    if (item != null) {
-                        itemList.remove(item);
-                        updateSummary();
-                        tableItems.refresh();
-                    }
-                });
-            }
+        colAction.setCellFactory(col ->
+            new TableCell<>() {
+                private final Button btnDelete = new Button("✕ Xóa");
 
-            @Override
-            protected void updateItem(BatchImportItemDTO item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(btnDelete);
-                    setAlignment(Pos.CENTER);
+                {
+                    btnDelete.setStyle(
+                        "-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;"
+                    );
+                    btnDelete.setOnMouseEntered(ev ->
+                        btnDelete.setStyle(
+                            "-fx-background-color: #FCA5A5; -fx-text-fill: #991B1B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #F87171; -fx-border-radius: 4px; -fx-background-radius: 4px;"
+                        )
+                    );
+                    btnDelete.setOnMouseExited(ev ->
+                        btnDelete.setStyle(
+                            "-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;"
+                        )
+                    );
+                    btnDelete.setTooltip(new Tooltip("Xóa mặt hàng này khỏi phiếu nhập"));
+                    btnDelete.setOnAction(e -> {
+                        BatchImportItemDTO item = getItem();
+                        if (item != null) {
+                            itemList.remove(item);
+                            updateSummary();
+                            tableItems.refresh();
+                        }
+                    });
+                }
+
+                @Override
+                protected void updateItem(BatchImportItemDTO item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setGraphic(null);
+                    } else {
+                        setGraphic(btnDelete);
+                        setAlignment(Pos.CENTER);
+                    }
                 }
             }
-        });
+        );
     }
 
     public void initData(List<MedicineInventoryDTO> medicines, InventoryService service, Runnable onSuccess) {
@@ -305,7 +429,10 @@ public class ImportDialogController implements Initializable {
             categoryName = categoryPicker.getText() != null ? categoryPicker.getText().trim() : "";
             manufacturer = txtNewManufacturer.getText() != null ? txtNewManufacturer.getText().trim() : "";
             activeIngredient = txtNewActiveIngredient.getText() != null ? txtNewActiveIngredient.getText().trim() : "";
-            String sellPriceStr = txtNewSellPrice.getText() != null ? txtNewSellPrice.getText().trim().replace(".", "").replace(",", "") : "0";
+            String sellPriceStr =
+                txtNewSellPrice.getText() != null
+                    ? txtNewSellPrice.getText().trim().replace(".", "").replace(",", "")
+                    : "0";
 
             if (medicineName.isEmpty()) {
                 showItemError("Vui lòng nhập Tên thuốc / Biệt dược mới!");
@@ -327,7 +454,9 @@ public class ImportDialogController implements Initializable {
             rx = chkRequiresPrescription.isSelected();
         } else {
             if (currentlySelectedMedicine == null) {
-                showItemError("Vui lòng tìm và chọn một loại thuốc trong kho (hoặc chọn chế độ '+ Thêm loại thuốc mới')!");
+                showItemError(
+                    "Vui lòng tìm và chọn một loại thuốc trong kho (hoặc chọn chế độ '+ Thêm loại thuốc mới')!"
+                );
                 return;
             }
             existingId = currentlySelectedMedicine.getMedicineId();
@@ -352,7 +481,11 @@ public class ImportDialogController implements Initializable {
         }
 
         if (expiryDate.isBefore(LocalDate.now())) {
-            showItemError("Cảnh báo: Hạn sử dụng (" + com.pharmacy.common.FormatUtils.formatDate(expiryDate) + ") đã hết hạn! Vui lòng kiểm tra lại vỏ hộp.");
+            showItemError(
+                "Cảnh báo: Hạn sử dụng (" +
+                    com.pharmacy.common.FormatUtils.formatDate(expiryDate) +
+                    ") đã hết hạn! Vui lòng kiểm tra lại vỏ hộp."
+            );
             return;
         }
 
@@ -377,7 +510,8 @@ public class ImportDialogController implements Initializable {
             return;
         }
 
-        String priceStr = txtImportPrice.getText() != null ? txtImportPrice.getText().trim().replace(".", "").replace(",", "") : "";
+        String priceStr =
+            txtImportPrice.getText() != null ? txtImportPrice.getText().trim().replace(".", "").replace(",", "") : "";
         BigDecimal importPrice;
         try {
             if (priceStr.isEmpty()) priceStr = "0";
@@ -396,13 +530,31 @@ public class ImportDialogController implements Initializable {
         BatchImportItemDTO item;
         if (isNewMedicine) {
             item = BatchImportItemDTO.fromNew(
-                    code, medicineName, categoryName, activeIngredient,
-                    manufacturer, sellPrice, rx, lotNumber, expiryDate, unit, quantity, importPrice
+                code,
+                medicineName,
+                categoryName,
+                activeIngredient,
+                manufacturer,
+                sellPrice,
+                rx,
+                lotNumber,
+                expiryDate,
+                unit,
+                quantity,
+                importPrice
             );
         } else {
             item = BatchImportItemDTO.fromExisting(
-                    existingId, code, medicineName, categoryName,
-                    manufacturer, lotNumber, expiryDate, unit, quantity, importPrice
+                existingId,
+                code,
+                medicineName,
+                categoryName,
+                manufacturer,
+                lotNumber,
+                expiryDate,
+                unit,
+                quantity,
+                importPrice
             );
         }
 
@@ -420,8 +572,12 @@ public class ImportDialogController implements Initializable {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         DialogUtils.configure(alert, owner);
         alert.setTitle("Nhập kho thành công");
-        alert.setHeaderText("Đã lập phiếu nhập kho thành công cho " + items.size() + " mặt hàng thuốc"
-                + (newCount > 0 ? "\nTrong đó " + newCount + " thuốc mới đã được cấp mã" : ""));
+        alert.setHeaderText(
+            "Đã lập phiếu nhập kho thành công cho " +
+                items.size() +
+                " mặt hàng thuốc" +
+                (newCount > 0 ? "\nTrong đó " + newCount + " thuốc mới đã được cấp mã" : "")
+        );
 
         TableView<BatchImportItemDTO> table = new TableView<>(FXCollections.observableArrayList(items));
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
@@ -432,29 +588,33 @@ public class ImportDialogController implements Initializable {
         codeCol.setMinWidth(130);
         codeCol.setPrefWidth(130);
         codeCol.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue()));
-        codeCol.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(BatchImportItemDTO item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
+        codeCol.setCellFactory(col ->
+            new TableCell<>() {
+                @Override
+                protected void updateItem(BatchImportItemDTO item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setGraphic(null);
+                        setText(null);
+                        return;
+                    }
+                    Label code = new Label(item.getMedicineCode());
+                    code.setStyle("-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0066FF;");
+                    HBox box = new HBox(6, code);
+                    box.setAlignment(Pos.CENTER_LEFT);
+                    if (item.isNewMedicine()) {
+                        Label badge = new Label("Mới");
+                        badge.setMinWidth(Label.USE_PREF_SIZE);
+                        badge.setStyle(
+                            "-fx-font-size: 10.5px; -fx-background-color: #DCFCE7; -fx-text-fill: #15803D; -fx-background-radius: 4px; -fx-padding: 1 5;"
+                        );
+                        box.getChildren().add(badge);
+                    }
+                    setGraphic(box);
                     setText(null);
-                    return;
                 }
-                Label code = new Label(item.getMedicineCode());
-                code.setStyle("-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0066FF;");
-                HBox box = new HBox(6, code);
-                box.setAlignment(Pos.CENTER_LEFT);
-                if (item.isNewMedicine()) {
-                    Label badge = new Label("Mới");
-                    badge.setMinWidth(Label.USE_PREF_SIZE);
-                    badge.setStyle("-fx-font-size: 10.5px; -fx-background-color: #DCFCE7; -fx-text-fill: #15803D; -fx-background-radius: 4px; -fx-padding: 1 5;");
-                    box.getChildren().add(badge);
-                }
-                setGraphic(box);
-                setText(null);
             }
-        });
+        );
 
         TableColumn<BatchImportItemDTO, String> nameCol = new TableColumn<>("Tên thuốc");
         nameCol.setSortable(false);
@@ -469,8 +629,11 @@ public class ImportDialogController implements Initializable {
         TableColumn<BatchImportItemDTO, String> qtyCol = new TableColumn<>("Số lượng");
         qtyCol.setSortable(false);
         qtyCol.setPrefWidth(100);
-        qtyCol.setCellValueFactory(c -> new SimpleStringProperty(
-                c.getValue().getQuantityIn() + " " + (c.getValue().getUnit() != null ? c.getValue().getUnit() : "")));
+        qtyCol.setCellValueFactory(c ->
+            new SimpleStringProperty(
+                c.getValue().getQuantityIn() + " " + (c.getValue().getUnit() != null ? c.getValue().getUnit() : "")
+            )
+        );
 
         for (TableColumn<BatchImportItemDTO, String> col : List.of(nameCol, lotCol, qtyCol)) {
             col.setStyle("-fx-alignment: CENTER-LEFT;");
@@ -574,8 +737,10 @@ public class ImportDialogController implements Initializable {
 
             boolean success = Boolean.TRUE.equals(importTask.getValue());
             if (success) {
-                showImportResult(btnCancel != null && btnCancel.getScene() != null ? btnCancel.getScene().getWindow() : null,
-                        List.copyOf(itemList));
+                showImportResult(
+                    btnCancel != null && btnCancel.getScene() != null ? btnCancel.getScene().getWindow() : null,
+                    List.copyOf(itemList)
+                );
 
                 if (onSuccessCallback != null) {
                     onSuccessCallback.run();

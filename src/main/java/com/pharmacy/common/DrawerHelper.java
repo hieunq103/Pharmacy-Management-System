@@ -10,6 +10,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 public class DrawerHelper {
+
     private StackPane appRootPane;
     private Region overlayRegion;
     private Parent activeDrawerRoot;
@@ -58,7 +59,8 @@ public class DrawerHelper {
         overlayRegion.setVisible(true);
         drawerRoot.setVisible(true);
 
-        double width = (drawerRoot instanceof Region r && r.getPrefWidth() > 0) ? r.getPrefWidth() : AppConstants.DRAWER_WIDTH;
+        double width =
+            drawerRoot instanceof Region r && r.getPrefWidth() > 0 ? r.getPrefWidth() : AppConstants.DRAWER_WIDTH;
         TranslateTransition slideIn = new TranslateTransition(AppConstants.DRAWER_ANIMATION_DURATION, drawerRoot);
         slideIn.setFromX(width);
         slideIn.setToX(0.0);
@@ -74,7 +76,8 @@ public class DrawerHelper {
         if (activeDrawerRoot == null || overlayRegion == null) return;
 
         final Parent drawer = activeDrawerRoot;
-        double width = (drawer instanceof Region r && r.getPrefWidth() > 0) ? r.getPrefWidth() : AppConstants.DRAWER_WIDTH;
+        double width =
+            drawer instanceof Region r && r.getPrefWidth() > 0 ? r.getPrefWidth() : AppConstants.DRAWER_WIDTH;
 
         TranslateTransition slideOut = new TranslateTransition(AppConstants.DRAWER_CLOSE_DURATION, drawer);
         slideOut.setFromX(0.0);

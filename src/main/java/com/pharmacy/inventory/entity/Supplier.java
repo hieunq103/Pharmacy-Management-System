@@ -6,6 +6,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "suppliers")
 public class Supplier implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -28,11 +29,9 @@ public class Supplier implements Serializable {
     @Column(name = "phone", length = 15)
     private String phone;
 
-    public Supplier() {
-    }
+    public Supplier() {}
 
     public Supplier(String name) {
         this.name = name;
     }
 }
-

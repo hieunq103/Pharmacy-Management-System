@@ -8,6 +8,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "inventory_lots")
 public class InventoryLot implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -38,8 +39,7 @@ public class InventoryLot implements Serializable {
     @Column(name = "quantity_remaining", nullable = false)
     private int quantityRemaining;
 
-    public InventoryLot() {
-    }
+    public InventoryLot() {}
 
     public Long getId() {
         return id;
@@ -81,4 +81,3 @@ public class InventoryLot implements Serializable {
         this.quantityRemaining = quantityRemaining;
     }
 }
-

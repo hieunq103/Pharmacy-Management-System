@@ -3,18 +3,18 @@
    ========================================================================== */
 
 .dashboard-root {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
 }
 
 .dashboard-scroll-pane {
     -fx-background-color: transparent;
-    -fx-background: #F8FAFC;
+    -fx-background: #f8fafc;
     -fx-border-color: transparent;
     -fx-padding: 0;
 }
 
 .dashboard-scroll-pane > .viewport {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
 }
 
 /* ==========================================================================
@@ -22,9 +22,9 @@
    ========================================================================== */
 
 .dashboard-stat-card {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 12px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 12px;
     -fx-border-width: 1px;
     -fx-padding: 16px 20px;
@@ -32,7 +32,7 @@
 }
 
 .dashboard-stat-card:hover {
-    -fx-border-color: #CBD5E1;
+    -fx-border-color: #cbd5e1;
     -fx-effect: dropshadow(gaussian, rgba(0, 102, 255, 0.08), 12, 0, 0, 4);
 }
 
@@ -42,25 +42,25 @@
 }
 
 .dashboard-stat-card-link:hover {
-    -fx-border-color: #93C5FD;
+    -fx-border-color: #93c5fd;
 }
 
 .stat-title {
     -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
     -fx-font-size: 13px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
 }
 
 .stat-value {
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
     -fx-font-size: 22px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .stat-subtext-danger {
     -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
     -fx-font-size: 12px;
-    -fx-text-fill: #DC2626;
+    -fx-text-fill: #dc2626;
 }
 
 /* Icon Pills */
@@ -74,35 +74,35 @@
 }
 
 .stat-icon-pill-green {
-    -fx-background-color: #ECFDF5;
+    -fx-background-color: #ecfdf5;
 }
 
 .stat-icon-pill-green .stat-svg {
-    -fx-fill: #10B981;
+    -fx-fill: #10b981;
 }
 
 .stat-icon-pill-blue {
-    -fx-background-color: #EFF6FF;
+    -fx-background-color: #eff6ff;
 }
 
 .stat-icon-pill-blue .stat-svg {
-    -fx-fill: #0066FF;
+    -fx-fill: #0066ff;
 }
 
 .stat-icon-pill-amber {
-    -fx-background-color: #FEF3C7;
+    -fx-background-color: #fef3c7;
 }
 
 .stat-icon-pill-amber .stat-svg {
-    -fx-fill: #F59E0B;
+    -fx-fill: #f59e0b;
 }
 
 .stat-icon-pill-rose {
-    -fx-background-color: #FEE2E2;
+    -fx-background-color: #fee2e2;
 }
 
 .stat-icon-pill-rose .stat-svg {
-    -fx-fill: #EF4444;
+    -fx-fill: #ef4444;
 }
 
 /* ==========================================================================
@@ -110,9 +110,9 @@
    ========================================================================== */
 
 .dashboard-card {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 12px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 12px;
     -fx-border-width: 1px;
     -fx-padding: 18px 20px;
@@ -122,16 +122,16 @@
 .card-header-title {
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
     -fx-font-size: 16px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .badge-week-filter {
-    -fx-background-color: #EFF6FF;
-    -fx-text-fill: #0066FF;
+    -fx-background-color: #eff6ff;
+    -fx-text-fill: #0066ff;
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
     -fx-font-size: 12px;
     -fx-background-radius: 6px;
-    -fx-border-color: #BFDBFE;
+    -fx-border-color: #bfdbfe;
     -fx-border-radius: 6px;
     -fx-border-width: 1px;
     -fx-padding: 3px 10px;
@@ -139,7 +139,7 @@
 
 .link-action {
     -fx-background-color: transparent;
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
     -fx-font-size: 13px;
     -fx-cursor: hand;
@@ -148,7 +148,7 @@
 }
 
 .link-action:hover {
-    -fx-text-fill: #0052CC;
+    -fx-text-fill: #0052cc;
     -fx-underline: true;
 }
 
@@ -170,14 +170,14 @@
 }
 
 .dashboard-bar-chart .chart-horizontal-grid-lines {
-    -fx-stroke: #F1F5F9;
+    -fx-stroke: #f1f5f9;
     -fx-stroke-dash-array: 3 3;
 }
 
 .dashboard-bar-chart .axis {
     -fx-tick-label-font-family: "Inter 18pt", "Inter", sans-serif;
     -fx-tick-label-font-size: 12px;
-    -fx-tick-label-fill: #64748B;
+    -fx-tick-label-fill: #64748b;
 }
 
 .dashboard-bar-chart .axis:left {
@@ -185,23 +185,23 @@
 }
 
 .dashboard-bar-chart .axis:bottom {
-    -fx-border-color: #E2E8F0 transparent transparent transparent;
+    -fx-border-color: #e2e8f0 transparent transparent transparent;
     -fx-border-width: 1px;
 }
 
 /* Thanh bar màu xanh y tế đẹp mắt */
 .dashboard-bar-chart .chart-bar,
 .dashboard-bar-chart .default-color0.chart-bar {
-    -fx-bar-fill: #0066FF;
-    -fx-background-color: #0066FF;
+    -fx-bar-fill: #0066ff;
+    -fx-background-color: #0066ff;
     -fx-background-radius: 6px 6px 0 0;
     -fx-background-insets: 0;
 }
 
 .dashboard-bar-chart .chart-bar:hover,
 .dashboard-bar-chart .default-color0.chart-bar:hover {
-    -fx-bar-fill: #2563EB;
-    -fx-background-color: #2563EB;
+    -fx-bar-fill: #2563eb;
+    -fx-background-color: #2563eb;
     -fx-effect: dropshadow(gaussian, rgba(0, 102, 255, 0.35), 8, 0, 0, 0);
     -fx-cursor: hand;
 }
@@ -212,8 +212,8 @@
 
 /* Mini Tabs cho Card Cảnh báo kho */
 .pill-tab-btn {
-    -fx-background-color: #F1F5F9;
-    -fx-text-fill: #64748B;
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #64748b;
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
     -fx-font-size: 11.5px;
     -fx-background-radius: 12px;
@@ -223,19 +223,19 @@
 }
 
 .pill-tab-btn:hover {
-    -fx-background-color: #E2E8F0;
-    -fx-text-fill: #1E293B;
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #1e293b;
 }
 
 .pill-tab-active,
 .pill-tab-btn.pill-tab-active {
-    -fx-background-color: #0066FF;
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #0066ff;
+    -fx-text-fill: #ffffff;
 }
 
 .pill-tab-active:hover {
-    -fx-background-color: #2563EB;
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #2563eb;
+    -fx-text-fill: #ffffff;
 }
 
 /* ScrollPane trong suốt cho Cảnh báo kho */
@@ -256,12 +256,12 @@
 }
 
 .alert-scroll-pane .scroll-bar:vertical .thumb {
-    -fx-background-color: #CBD5E1;
+    -fx-background-color: #cbd5e1;
     -fx-background-radius: 3px;
 }
 
 .alert-scroll-pane .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: #94A3B8;
+    -fx-background-color: #94a3b8;
 }
 
 .alert-scroll-pane .scroll-bar:vertical .track,
@@ -277,9 +277,9 @@
 }
 
 .alert-item-row {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 8px;
-    -fx-border-color: #F1F5F9;
+    -fx-border-color: #f1f5f9;
     -fx-border-radius: 8px;
     -fx-border-width: 0 0 1px 0;
     -fx-padding: 10px 8px;
@@ -287,7 +287,7 @@
 }
 
 .alert-item-row:hover {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
 }
 
 .alert-circle-icon {
@@ -300,38 +300,38 @@
 }
 
 .alert-circle-danger {
-    -fx-background-color: #FEE2E2;
+    -fx-background-color: #fee2e2;
 }
 
 .alert-circle-danger .alert-svg {
-    -fx-fill: #DC2626;
+    -fx-fill: #dc2626;
 }
 
 .alert-circle-warning {
-    -fx-background-color: #FEF3C7;
+    -fx-background-color: #fef3c7;
 }
 
 .alert-circle-warning .alert-svg {
-    -fx-fill: #D97706;
+    -fx-fill: #d97706;
 }
 
 .alert-title {
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
     -fx-font-size: 13.5px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
     -fx-wrap-text: true;
 }
 
 .alert-subtitle {
     -fx-font-family: "Inter 18pt", "Inter", sans-serif;
     -fx-font-size: 12px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
     -fx-wrap-text: true;
 }
 
 .alert-badge-danger {
-    -fx-background-color: #FEE2E2;
-    -fx-text-fill: #DC2626;
+    -fx-background-color: #fee2e2;
+    -fx-text-fill: #dc2626;
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
     -fx-font-size: 12px;
     -fx-background-radius: 12px;
@@ -340,8 +340,8 @@
 }
 
 .alert-badge-warning {
-    -fx-background-color: #FEF3C7;
-    -fx-text-fill: #B45309;
+    -fx-background-color: #fef3c7;
+    -fx-text-fill: #b45309;
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
     -fx-font-size: 12px;
     -fx-background-radius: 12px;
@@ -354,7 +354,7 @@
    ========================================================================== */
 
 .recent-table-header {
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-width: 0 0 1px 0;
     -fx-padding: 8px 12px;
 }
@@ -362,25 +362,25 @@
 .recent-th-label {
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
     -fx-font-size: 12px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
 }
 
 .recent-tx-row {
-    -fx-border-color: #F1F5F9;
+    -fx-border-color: #f1f5f9;
     -fx-border-width: 0 0 1px 0;
     -fx-padding: 10px 12px;
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-alignment: CENTER_LEFT;
 }
 
 .recent-tx-row:hover {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
 }
 
 .tx-code {
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
     -fx-font-size: 13px;
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .tx-customer {
@@ -390,20 +390,20 @@
 }
 
 .tx-customer-guest {
-    -fx-text-fill: #94A3B8;
+    -fx-text-fill: #94a3b8;
     -fx-font-style: italic;
 }
 
 .tx-time {
     -fx-font-family: "Inter 18pt", "Inter", sans-serif;
     -fx-font-size: 13px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
 }
 
 .tx-amount {
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
     -fx-font-size: 14px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
     -fx-alignment: CENTER_LEFT;
 }
 
@@ -414,8 +414,8 @@
     -fx-max-width: 26px;
     -fx-max-height: 26px;
     -fx-background-radius: 13px;
-    -fx-background-color: #E0F2FE;
-    -fx-text-fill: #0284C7;
+    -fx-background-color: #e0f2fe;
+    -fx-text-fill: #0284c7;
     -fx-font-family: "Inter 18pt SemiBold", "Inter", sans-serif;
     -fx-font-size: 11px;
     -fx-alignment: CENTER;
@@ -424,7 +424,7 @@
 .employee-name {
     -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
     -fx-font-size: 13px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 /* Badges Phương thức thanh toán (gọn gàng, tinh tế) */
@@ -437,25 +437,25 @@
 }
 
 .badge-cash {
-    -fx-background-color: #ECFDF5;
+    -fx-background-color: #ecfdf5;
     -fx-text-fill: #047857;
-    -fx-border-color: #A7F3D0;
+    -fx-border-color: #a7f3d0;
     -fx-border-radius: 10px;
     -fx-border-width: 1px;
 }
 
 .badge-transfer {
-    -fx-background-color: #EFF6FF;
-    -fx-text-fill: #1D4ED8;
-    -fx-border-color: #BFDBFE;
+    -fx-background-color: #eff6ff;
+    -fx-text-fill: #1d4ed8;
+    -fx-border-color: #bfdbfe;
     -fx-border-radius: 10px;
     -fx-border-width: 1px;
 }
 
 .badge-card {
-    -fx-background-color: #F5F3FF;
-    -fx-text-fill: #6D28D9;
-    -fx-border-color: #DDD6FE;
+    -fx-background-color: #f5f3ff;
+    -fx-text-fill: #6d28d9;
+    -fx-border-color: #ddd6fe;
     -fx-border-radius: 10px;
     -fx-border-width: 1px;
 }

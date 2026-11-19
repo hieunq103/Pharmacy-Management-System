@@ -9,12 +9,14 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "employees")
 public class Employee implements Serializable {
+
     public static final String GENDER_MALE = "Nam";
     public static final String GENDER_FEMALE = "Nữ";
     public static final String GENDER_OTHER = "Khác";
 
     public enum Status {
-        ACTIVE, INACTIVE
+        ACTIVE,
+        INACTIVE,
     }
 
     @Id
@@ -59,8 +61,7 @@ public class Employee implements Serializable {
     @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
 
-    public Employee() {
-    }
+    public Employee() {}
 
     public Integer getId() {
         return id;

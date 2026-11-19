@@ -8,12 +8,12 @@ import com.pharmacy.sales.dto.CartItem;
 import com.pharmacy.sales.dto.SalesOrderDTO;
 import com.pharmacy.sales.dto.SalesOrderDetailDTO;
 import com.pharmacy.sales.dto.SalesOrderRequest;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
 public class SalesService {
+
     private static final Set<String> PAYMENT_METHODS = Set.of("CASH", "TRANSFER", "CARD");
 
     private final SalesRepository salesRepository;
@@ -34,7 +34,13 @@ public class SalesService {
         return getMedicinesPage(page, size, keyword, categoryName, null);
     }
 
-    public PageResult<MedicineInventoryDTO> getMedicinesPage(int page, int size, String keyword, String categoryName, Long cachedTotal) {
+    public PageResult<MedicineInventoryDTO> getMedicinesPage(
+        int page,
+        int size,
+        String keyword,
+        String categoryName,
+        Long cachedTotal
+    ) {
         return salesRepository.getMedicinesPage(page, size, keyword, categoryName, cachedTotal);
     }
 
@@ -59,7 +65,9 @@ public class SalesService {
                 throw new IllegalArgumentException("Giỏ hàng chứa sản phẩm không hợp lệ.");
             }
             if (item.getQuantity() <= 0) {
-                throw new IllegalArgumentException("Số lượng của thuốc '" + item.getMedicineName() + "' phải lớn hơn 0.");
+                throw new IllegalArgumentException(
+                    "Số lượng của thuốc '" + item.getMedicineName() + "' phải lớn hơn 0."
+                );
             }
         }
         if (!PAYMENT_METHODS.contains(request.getPaymentMethod())) {
@@ -74,8 +82,22 @@ public class SalesService {
         }
     }
 
-    public PageResult<SalesOrderDTO> getSalesHistory(LocalDate fromDate, LocalDate toDate, Integer employeeId, String keyword, int page, int size) {
-        return salesRepository.getSalesOrders(fromDate, toDate, UserSession.scopeEmployeeId(employeeId), keyword, page, size);
+    public PageResult<SalesOrderDTO> getSalesHistory(
+        LocalDate fromDate,
+        LocalDate toDate,
+        Integer employeeId,
+        String keyword,
+        int page,
+        int size
+    ) {
+        return salesRepository.getSalesOrders(
+            fromDate,
+            toDate,
+            UserSession.scopeEmployeeId(employeeId),
+            keyword,
+            page,
+            size
+        );
     }
 
     public List<SalesOrderDetailDTO> getSalesOrderDetails(long orderId) {

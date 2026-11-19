@@ -6,7 +6,9 @@ import com.pharmacy.common.PaginationHelper;
 import com.pharmacy.inventory.InventoryService;
 import com.pharmacy.inventory.dto.InventoryTransactionDTO;
 import com.pharmacy.inventory.dto.InventoryTransactionDetailDTO;
-
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
@@ -23,45 +25,93 @@ import javafx.scene.layout.HBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
-
 public class TransactionDetailDialogController implements Initializable {
+
     private static final Logger log = LoggerFactory.getLogger(TransactionDetailDialogController.class);
 
-    @FXML private Button btnClose;
-    @FXML private Label lblDialogTitle;
-    @FXML private Label lblTransactionTime;
+    @FXML
+    private Button btnClose;
 
-    @FXML private Label lblEmployee;
-    @FXML private Label lblPartnerLabel;
-    @FXML private Label lblPartnerValue;
-    @FXML private Label lblNote;
-    @FXML private Label lblItemCount;
-    @FXML private Label lblTotalQuantity;
-    @FXML private HBox boxTotalAmount;
-    @FXML private Label lblTotalAmount;
+    @FXML
+    private Label lblDialogTitle;
 
-    @FXML private TextField txtSearchDetail;
-    @FXML private Label lblRowCount;
+    @FXML
+    private Label lblTransactionTime;
 
-    @FXML private TableView<InventoryTransactionDetailDTO> tableDetails;
-    @FXML private TableColumn<InventoryTransactionDetailDTO, Integer> colIndex;
-    @FXML private TableColumn<InventoryTransactionDetailDTO, String> colMedCode;
-    @FXML private TableColumn<InventoryTransactionDetailDTO, String> colMedName;
-    @FXML private TableColumn<InventoryTransactionDetailDTO, String> colCategory;
-    @FXML private TableColumn<InventoryTransactionDetailDTO, String> colManufacturer;
-    @FXML private TableColumn<InventoryTransactionDetailDTO, String> colLotNumber;
-    @FXML private TableColumn<InventoryTransactionDetailDTO, String> colExpiryDate;
-    @FXML private TableColumn<InventoryTransactionDetailDTO, String> colUnit;
-    @FXML private TableColumn<InventoryTransactionDetailDTO, Integer> colQuantity;
-    @FXML private TableColumn<InventoryTransactionDetailDTO, String> colUnitPrice;
-    @FXML private TableColumn<InventoryTransactionDetailDTO, String> colTotalPrice;
-    @FXML private TableColumn<InventoryTransactionDetailDTO, String> colReason;
+    @FXML
+    private Label lblEmployee;
 
-    @FXML private HBox detailPaginationBox;
-    @FXML private Label lblDetailRecordRange;
+    @FXML
+    private Label lblPartnerLabel;
+
+    @FXML
+    private Label lblPartnerValue;
+
+    @FXML
+    private Label lblNote;
+
+    @FXML
+    private Label lblItemCount;
+
+    @FXML
+    private Label lblTotalQuantity;
+
+    @FXML
+    private HBox boxTotalAmount;
+
+    @FXML
+    private Label lblTotalAmount;
+
+    @FXML
+    private TextField txtSearchDetail;
+
+    @FXML
+    private Label lblRowCount;
+
+    @FXML
+    private TableView<InventoryTransactionDetailDTO> tableDetails;
+
+    @FXML
+    private TableColumn<InventoryTransactionDetailDTO, Integer> colIndex;
+
+    @FXML
+    private TableColumn<InventoryTransactionDetailDTO, String> colMedCode;
+
+    @FXML
+    private TableColumn<InventoryTransactionDetailDTO, String> colMedName;
+
+    @FXML
+    private TableColumn<InventoryTransactionDetailDTO, String> colCategory;
+
+    @FXML
+    private TableColumn<InventoryTransactionDetailDTO, String> colManufacturer;
+
+    @FXML
+    private TableColumn<InventoryTransactionDetailDTO, String> colLotNumber;
+
+    @FXML
+    private TableColumn<InventoryTransactionDetailDTO, String> colExpiryDate;
+
+    @FXML
+    private TableColumn<InventoryTransactionDetailDTO, String> colUnit;
+
+    @FXML
+    private TableColumn<InventoryTransactionDetailDTO, Integer> colQuantity;
+
+    @FXML
+    private TableColumn<InventoryTransactionDetailDTO, String> colUnitPrice;
+
+    @FXML
+    private TableColumn<InventoryTransactionDetailDTO, String> colTotalPrice;
+
+    @FXML
+    private TableColumn<InventoryTransactionDetailDTO, String> colReason;
+
+    @FXML
+    private HBox detailPaginationBox;
+
+    @FXML
+    private Label lblDetailRecordRange;
 
     private final ObservableList<InventoryTransactionDetailDTO> masterData = FXCollections.observableArrayList();
     private FilteredList<InventoryTransactionDetailDTO> filteredData;
@@ -73,8 +123,11 @@ public class TransactionDetailDialogController implements Initializable {
 
     @FXML
     private void handleClose() {
-        if (btnClose != null && btnClose.getScene() != null
-                && btnClose.getScene().getWindow() instanceof javafx.stage.Stage stage) {
+        if (
+            btnClose != null &&
+            btnClose.getScene() != null &&
+            btnClose.getScene().getWindow() instanceof javafx.stage.Stage stage
+        ) {
             stage.close();
         }
     }
@@ -86,13 +139,24 @@ public class TransactionDetailDialogController implements Initializable {
         filteredData = new FilteredList<>(masterData, p -> true);
         tableDetails.setItems(pageData);
 
-        com.pharmacy.common.TableSyncHelper.enableAutoRowHeight(tableDetails, null, com.pharmacy.common.AppConstants.DEFAULT_PAGE_SIZE);
-        com.pharmacy.common.TableSyncHelper.setupTableScrollProtection(tableDetails, com.pharmacy.common.AppConstants.DEFAULT_PAGE_SIZE);
+        com.pharmacy.common.TableSyncHelper.enableAutoRowHeight(
+            tableDetails,
+            null,
+            com.pharmacy.common.AppConstants.DEFAULT_PAGE_SIZE
+        );
+        com.pharmacy.common.TableSyncHelper.setupTableScrollProtection(
+            tableDetails,
+            com.pharmacy.common.AppConstants.DEFAULT_PAGE_SIZE
+        );
 
         if (txtSearchDetail != null) {
-            com.pharmacy.common.DebounceUtil.debounce(txtSearchDetail, com.pharmacy.common.AppConstants.SEARCH_DEBOUNCE, text -> {
-                applyFilter(text);
-            });
+            com.pharmacy.common.DebounceUtil.debounce(
+                txtSearchDetail,
+                com.pharmacy.common.AppConstants.SEARCH_DEBOUNCE,
+                text -> {
+                    applyFilter(text);
+                }
+            );
         }
     }
 
@@ -105,23 +169,25 @@ public class TransactionDetailDialogController implements Initializable {
         setupLeftAlignedCell(colIndex);
 
         colMedCode.setCellValueFactory(new PropertyValueFactory<>("medicineCode"));
-        colMedCode.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    Label lbl = new Label(item);
-                    lbl.getStyleClass().add("code-pill");
-                    lbl.setAlignment(Pos.CENTER_LEFT);
-                    setAlignment(Pos.CENTER_LEFT);
-                    setGraphic(lbl);
-                    setText(null);
+        colMedCode.setCellFactory(col ->
+            new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        Label lbl = new Label(item);
+                        lbl.getStyleClass().add("code-pill");
+                        lbl.setAlignment(Pos.CENTER_LEFT);
+                        setAlignment(Pos.CENTER_LEFT);
+                        setGraphic(lbl);
+                        setText(null);
+                    }
                 }
             }
-        });
+        );
 
         colMedName.setCellValueFactory(new PropertyValueFactory<>("medicineName"));
         setupLeftAlignedCell(colMedName);
@@ -136,7 +202,8 @@ public class TransactionDetailDialogController implements Initializable {
         setupLeftAlignedCell(colLotNumber);
 
         colExpiryDate.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getFormattedExpiryDate()));
+            new SimpleStringProperty(cellData.getValue().getFormattedExpiryDate())
+        );
         setupLeftAlignedCell(colExpiryDate);
 
         colUnit.setCellValueFactory(new PropertyValueFactory<>("unit"));
@@ -146,11 +213,13 @@ public class TransactionDetailDialogController implements Initializable {
         setupLeftAlignedCell(colQuantity);
 
         colUnitPrice.setCellValueFactory(cellData ->
-                new SimpleStringProperty(FormatUtils.formatCurrency(cellData.getValue().getUnitPrice())));
+            new SimpleStringProperty(FormatUtils.formatCurrency(cellData.getValue().getUnitPrice()))
+        );
         setupLeftAlignedCell(colUnitPrice);
 
         colTotalPrice.setCellValueFactory(cellData ->
-                new SimpleStringProperty(FormatUtils.formatCurrency(cellData.getValue().getTotalPrice())));
+            new SimpleStringProperty(FormatUtils.formatCurrency(cellData.getValue().getTotalPrice()))
+        );
         setupLeftAlignedCell(colTotalPrice);
 
         colReason.setCellValueFactory(new PropertyValueFactory<>("reason"));
@@ -158,19 +227,21 @@ public class TransactionDetailDialogController implements Initializable {
     }
 
     private <T> void setupLeftAlignedCell(TableColumn<InventoryTransactionDetailDTO, T> column) {
-        column.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(T item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    setText(String.valueOf(item));
-                    setAlignment(Pos.CENTER_LEFT);
+        column.setCellFactory(col ->
+            new TableCell<>() {
+                @Override
+                protected void updateItem(T item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        setText(String.valueOf(item));
+                        setAlignment(Pos.CENTER_LEFT);
+                    }
                 }
             }
-        });
+        );
     }
 
     public void setTransactionData(InventoryTransactionDTO tx, InventoryService inventoryService) {
@@ -258,18 +329,18 @@ public class TransactionDetailDialogController implements Initializable {
         Platform.runLater(() -> com.pharmacy.common.TableSyncHelper.resetScrollToTop(tableDetails, null));
 
         PaginationHelper.render(
-                detailPaginationBox,
-                lblDetailRecordRange,
-                currentPage,
-                totalPages,
-                totalRecords,
-                pageSize,
-                page -> {
-                    currentPage = page;
-                    com.pharmacy.common.TableSyncHelper.resetScrollToTop(tableDetails, null);
-                    Platform.runLater(() -> com.pharmacy.common.TableSyncHelper.resetScrollToTop(tableDetails, null));
-                    renderPagination();
-                }
+            detailPaginationBox,
+            lblDetailRecordRange,
+            currentPage,
+            totalPages,
+            totalRecords,
+            pageSize,
+            page -> {
+                currentPage = page;
+                com.pharmacy.common.TableSyncHelper.resetScrollToTop(tableDetails, null);
+                Platform.runLater(() -> com.pharmacy.common.TableSyncHelper.resetScrollToTop(tableDetails, null));
+                renderPagination();
+            }
         );
     }
 

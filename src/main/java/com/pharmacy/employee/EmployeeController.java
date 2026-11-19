@@ -1,9 +1,19 @@
 package com.pharmacy.employee;
 
-import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.account.Account;
+import com.pharmacy.common.AppConstants;
+import com.pharmacy.common.BackgroundTasks;
+import com.pharmacy.common.DialogUtils;
+import com.pharmacy.common.DrawerHelper;
 import com.pharmacy.common.PageResult;
+import com.pharmacy.common.TableFilterHelper;
+import com.pharmacy.common.TableSyncHelper;
+import com.pharmacy.common.UserSession;
 import com.pharmacy.employee.dto.EmployeeSummary;
+import com.pharmacy.layout.MainLayoutController;
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -25,43 +35,61 @@ import javafx.scene.shape.Circle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
-
-import com.pharmacy.common.UserSession;
-import com.pharmacy.layout.MainLayoutController;
-import com.pharmacy.common.AppConstants;
-import com.pharmacy.common.DialogUtils;
-import com.pharmacy.common.DrawerHelper;
-import com.pharmacy.common.TableFilterHelper;
-import com.pharmacy.common.TableSyncHelper;
-
 public class EmployeeController implements Initializable {
+
     private static final Logger log = LoggerFactory.getLogger(EmployeeController.class);
 
-    @FXML private Label lblTotalEmployees;
-    @FXML private Label lblActiveEmployees;
-    @FXML private TextField txtSearch;
+    @FXML
+    private Label lblTotalEmployees;
 
-    @FXML private TableView<Employee> tableEmployee;
-    @FXML private TableColumn<Employee, String> colCode;
-    @FXML private TableColumn<Employee, String> colName;
-    @FXML private TableColumn<Employee, String> colGender;
-    @FXML private TableColumn<Employee, String> colPhone;
-    @FXML private TableColumn<Employee, String> colRole;
-    @FXML private TableColumn<Employee, String> colStatus;
-    @FXML private TableColumn<Employee, String> colAccountStatus;
-    @FXML private TableColumn<Employee, Void> colAction;
-    @FXML private TableColumn<Employee, String> colCccd;
-    @FXML private TableView<Employee> tableActionSticky;
+    @FXML
+    private Label lblActiveEmployees;
+
+    @FXML
+    private TextField txtSearch;
+
+    @FXML
+    private TableView<Employee> tableEmployee;
+
+    @FXML
+    private TableColumn<Employee, String> colCode;
+
+    @FXML
+    private TableColumn<Employee, String> colName;
+
+    @FXML
+    private TableColumn<Employee, String> colGender;
+
+    @FXML
+    private TableColumn<Employee, String> colPhone;
+
+    @FXML
+    private TableColumn<Employee, String> colRole;
+
+    @FXML
+    private TableColumn<Employee, String> colStatus;
+
+    @FXML
+    private TableColumn<Employee, String> colAccountStatus;
+
+    @FXML
+    private TableColumn<Employee, Void> colAction;
+
+    @FXML
+    private TableColumn<Employee, String> colCccd;
+
+    @FXML
+    private TableView<Employee> tableActionSticky;
 
     private final DrawerHelper drawerHelper = new DrawerHelper();
     private Parent drawerRoot;
     private AddEmployeeController addController;
 
-    @FXML private HBox paginationBox;
-    @FXML private Label lblRecordRange;
+    @FXML
+    private HBox paginationBox;
+
+    @FXML
+    private Label lblRecordRange;
 
     private final ObservableList<Employee> pageData = FXCollections.observableArrayList();
 
@@ -70,9 +98,9 @@ public class EmployeeController implements Initializable {
     private int totalPages = 1;
     private long totalRecords = 0;
     private Task<PageResult<Employee>> currentLoadTask;
-    private final java.util.Map<Integer, PageResult<Employee>> pageCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private final java.util.Map<Integer, PageResult<Employee>> pageCache =
+        new java.util.concurrent.ConcurrentHashMap<>();
     private String lastSearchState = "";
-
 
     private final EmployeeService employeeService = new EmployeeService();
     private final Map<String, String> activeFilters = new HashMap<>();
@@ -88,9 +116,11 @@ public class EmployeeController implements Initializable {
         Platform.runLater(() -> {
             Node nestedHeader = tableEmployee.lookup(".nested-column-header");
             if (nestedHeader != null) {
-                tableEmployee.getItems().addListener((javafx.collections.ListChangeListener<Employee>) c -> {
-                    nestedHeader.setTranslateX(0.0);
-                });
+                tableEmployee.getItems().addListener(
+                    (javafx.collections.ListChangeListener<Employee>) c -> {
+                        nestedHeader.setTranslateX(0.0);
+                    }
+                );
             }
         });
 
@@ -101,22 +131,50 @@ public class EmployeeController implements Initializable {
             });
         }
 
-        TableFilterHelper.setupMultiSelectColumnFilter(colGender, "Giới tính", new String[]{"Nam", "Nữ", "Khác"}, "gender", activeFilters, () -> {
-            currentPage = 1;
-            loadEmployeeData();
-        });
-        TableFilterHelper.setupMultiSelectColumnFilter(colRole, "Vai trò", new String[]{"Nhân viên", "Quản lý"}, "role", activeFilters, () -> {
-            currentPage = 1;
-            loadEmployeeData();
-        });
-        TableFilterHelper.setupColumnFilter(colStatus, "Nhân sự", new String[]{"Tất cả", "Đang làm", "Đã nghỉ"}, "status", activeFilters, () -> {
-            currentPage = 1;
-            loadEmployeeData();
-        });
-        TableFilterHelper.setupMultiSelectColumnFilter(colAccountStatus, "Tài khoản", new String[]{"Hoạt động", "Ngưng hoạt động"}, "statusAcount", activeFilters, () -> {
-            currentPage = 1;
-            loadEmployeeData();
-        });
+        TableFilterHelper.setupMultiSelectColumnFilter(
+            colGender,
+            "Giới tính",
+            new String[] { "Nam", "Nữ", "Khác" },
+            "gender",
+            activeFilters,
+            () -> {
+                currentPage = 1;
+                loadEmployeeData();
+            }
+        );
+        TableFilterHelper.setupMultiSelectColumnFilter(
+            colRole,
+            "Vai trò",
+            new String[] { "Nhân viên", "Quản lý" },
+            "role",
+            activeFilters,
+            () -> {
+                currentPage = 1;
+                loadEmployeeData();
+            }
+        );
+        TableFilterHelper.setupColumnFilter(
+            colStatus,
+            "Nhân sự",
+            new String[] { "Tất cả", "Đang làm", "Đã nghỉ" },
+            "status",
+            activeFilters,
+            () -> {
+                currentPage = 1;
+                loadEmployeeData();
+            }
+        );
+        TableFilterHelper.setupMultiSelectColumnFilter(
+            colAccountStatus,
+            "Tài khoản",
+            new String[] { "Hoạt động", "Ngưng hoạt động" },
+            "statusAcount",
+            activeFilters,
+            () -> {
+                currentPage = 1;
+                loadEmployeeData();
+            }
+        );
 
         tableEmployee.setItems(pageData);
 
@@ -147,9 +205,7 @@ public class EmployeeController implements Initializable {
     }
 
     public void loadEmployeeData() {
-        String keyword = (txtSearch != null && txtSearch.getText() != null)
-                ? txtSearch.getText().trim()
-                : "";
+        String keyword = txtSearch != null && txtSearch.getText() != null ? txtSearch.getText().trim() : "";
         String gender = activeFilters.get("gender");
         String role = activeFilters.get("role");
         String status = activeFilters.get("status");
@@ -180,7 +236,16 @@ public class EmployeeController implements Initializable {
         Task<PageResult<Employee>> task = new Task<>() {
             @Override
             protected PageResult<Employee> call() {
-                return employeeService.getEmployeesPage(currentPage, pageSize, keyword, gender, role, status, accountStatus, cachedTotal);
+                return employeeService.getEmployeesPage(
+                    currentPage,
+                    pageSize,
+                    keyword,
+                    gender,
+                    role,
+                    status,
+                    accountStatus,
+                    cachedTotal
+                );
             }
         };
         currentLoadTask = task;
@@ -231,11 +296,27 @@ public class EmployeeController implements Initializable {
         renderPagination();
     }
 
-    private void prefetchNextPage(int nextPage, String keyword, String gender, String role, String status, String accountStatus) {
+    private void prefetchNextPage(
+        int nextPage,
+        String keyword,
+        String gender,
+        String role,
+        String status,
+        String accountStatus
+    ) {
         if (nextPage > totalPages || pageCache.containsKey(nextPage)) return;
         BackgroundTasks.run(() -> {
             try {
-                PageResult<Employee> prefetched = employeeService.getEmployeesPage(nextPage, pageSize, keyword, gender, role, status, accountStatus, totalRecords);
+                PageResult<Employee> prefetched = employeeService.getEmployeesPage(
+                    nextPage,
+                    pageSize,
+                    keyword,
+                    gender,
+                    role,
+                    status,
+                    accountStatus,
+                    totalRecords
+                );
                 if (prefetched != null) {
                     pageCache.put(nextPage, prefetched);
                 }
@@ -247,174 +328,192 @@ public class EmployeeController implements Initializable {
 
     private void renderPagination() {
         com.pharmacy.common.PaginationHelper.render(
-                paginationBox,
-                null,
-                currentPage,
-                totalPages,
-                totalRecords,
-                pageSize,
-                page -> {
-                    currentPage = page;
-                    TableSyncHelper.resetScrollToTop(tableEmployee, tableActionSticky);
-                    loadEmployeeData();
-                }
+            paginationBox,
+            null,
+            currentPage,
+            totalPages,
+            totalRecords,
+            pageSize,
+            page -> {
+                currentPage = page;
+                TableSyncHelper.resetScrollToTop(tableEmployee, tableActionSticky);
+                loadEmployeeData();
+            }
         );
     }
 
     private void setupTableColumns() {
         if (colCode != null) {
-            colCode.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCode() != null ? c.getValue().getCode() : ""));
-            colCode.setStyle("-fx-alignment: CENTER-LEFT; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #1E293B;");
+            colCode.setCellValueFactory(c ->
+                new SimpleStringProperty(c.getValue().getCode() != null ? c.getValue().getCode() : "")
+            );
+            colCode.setStyle(
+                "-fx-alignment: CENTER-LEFT; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #1E293B;"
+            );
         }
-        colName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getFullName() != null ? c.getValue().getFullName() : ""));
-        colGender.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getGender() != null ? c.getValue().getGender() : ""));
-        colPhone.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getPhone() != null ? c.getValue().getPhone() : ""));
+        colName.setCellValueFactory(c ->
+            new SimpleStringProperty(c.getValue().getFullName() != null ? c.getValue().getFullName() : "")
+        );
+        colGender.setCellValueFactory(c ->
+            new SimpleStringProperty(c.getValue().getGender() != null ? c.getValue().getGender() : "")
+        );
+        colPhone.setCellValueFactory(c ->
+            new SimpleStringProperty(c.getValue().getPhone() != null ? c.getValue().getPhone() : "")
+        );
         colCccd.setCellValueFactory(c ->
-                new SimpleStringProperty(c.getValue().getNationalId() != null ? c.getValue().getNationalId() : "")
+            new SimpleStringProperty(c.getValue().getNationalId() != null ? c.getValue().getNationalId() : "")
         );
 
-        colRole.setCellFactory(col -> new TableCell<Employee, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
+        colRole.setCellFactory(col ->
+            new TableCell<Employee, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
 
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                    setText(null);
-                    setGraphic(null);
-                    return;
-                }
-
-                Employee emp = getTableRow().getItem();
-                Account acc = emp.getAccount();
-                boolean isManager = (acc != null && acc.isManager());
-
-                HBox badge = new HBox(8);
-                badge.setAlignment(Pos.CENTER_LEFT);
-                badge.getStyleClass().add("pill-badge");
-                badge.setMouseTransparent(true);
-
-                StackPane haloDot;
-                Label lbl = new Label(isManager ? "Quản lý" : "Nhân viên");
-                lbl.getStyleClass().add("pill-text");
-                lbl.setStyle("-fx-text-fill: #1E293B;");
-
-                if (isManager) {
-                    haloDot = createStatusDot(Color.web("#EF4444"), Color.web("#FEE2E2"));
-                    badge.getStyleClass().add("pill-role-manager");
-                } else {
-                    haloDot = createStatusDot(Color.web("#6366F1"), Color.web("#E0E7FF"));
-                    badge.getStyleClass().add("pill-role-staff");
-                }
-
-                badge.getChildren().addAll(haloDot, lbl);
-                setText(null);
-                setGraphic(badge);
-            }
-        });
-
-        colStatus.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                    setText(null);
-                    setGraphic(null);
-                    return;
-                }
-
-                Employee emp = getTableRow().getItem();
-                boolean isActive = emp.getStatus() == Employee.Status.ACTIVE;
-
-                if (isActive) {
-                    setText("Đang làm");
-                } else {
-                    setText("Đã nghỉ");
-                }
-
-                setGraphic(null);
-            }
-        });
-
-        colAccountStatus.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                    setText(null);
-                    setGraphic(null);
-                    return;
-                }
-
-                Employee emp = getTableRow().getItem();
-                Account acc = emp.getAccount();
-
-                if (acc == null || acc.getStatus() == null) {
-                    Label lblNoAccount = new Label("Chưa có TK");
-                    lblNoAccount.getStyleClass().add("status-badge-none");
-                    lblNoAccount.setMouseTransparent(true);
-                    setText(null);
-                    setGraphic(lblNoAccount);
-                    return;
-                }
-
-                boolean isActive = acc.getStatus() == Account.Status.ACTIVE;
-
-                HBox badge = new HBox(6);
-                badge.setAlignment(Pos.CENTER_LEFT);
-                badge.getStyleClass().add("status-badge");
-                badge.setMouseTransparent(true);
-
-                Circle dot = new Circle(4);
-                Label lbl = new Label(isActive ? "Hoạt động" : "Ngưng hoạt động");
-                lbl.getStyleClass().add("pill-text");
-
-                if (isActive) {
-                    badge.getStyleClass().add("status-badge-active");
-                    dot.setFill(Color.web("#16A34A"));
-                } else {
-                    badge.getStyleClass().add("status-badge-inactive");
-                    dot.setFill(Color.web("#D9483B"));
-                }
-
-                badge.getChildren().addAll(dot, lbl);
-                setText(null);
-                setGraphic(badge);
-            }
-        });
-
-        colAction.setCellFactory(col -> new TableCell<>() {
-            private final Button btnMore = new Button("⋮");
-
-            {
-                btnMore.getStyleClass().add("btn-action-more");
-                btnMore.setOnAction(e -> {
-                    Employee emp = getTableRow() != null ? getTableRow().getItem() : null;
-                    if (emp != null) {
-                        handleActionClick(emp, btnMore);
+                    if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                        setText(null);
+                        setGraphic(null);
+                        return;
                     }
-                });
-            }
 
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                    setGraphic(null);
-                    return;
-                }
-                Employee emp = getTableRow().getItem();
-                Integer currentLoggedInId = null;
-                if (UserSession.isLoggedIn()) {
-                    currentLoggedInId = UserSession.getInstance().getEmployeeId();
-                }
-                if (currentLoggedInId != null && currentLoggedInId.equals(emp.getId())) {
-                    setGraphic(null);
-                } else {
-                    setAlignment(Pos.CENTER);
-                    setGraphic(btnMore);
+                    Employee emp = getTableRow().getItem();
+                    Account acc = emp.getAccount();
+                    boolean isManager = acc != null && acc.isManager();
+
+                    HBox badge = new HBox(8);
+                    badge.setAlignment(Pos.CENTER_LEFT);
+                    badge.getStyleClass().add("pill-badge");
+                    badge.setMouseTransparent(true);
+
+                    StackPane haloDot;
+                    Label lbl = new Label(isManager ? "Quản lý" : "Nhân viên");
+                    lbl.getStyleClass().add("pill-text");
+                    lbl.setStyle("-fx-text-fill: #1E293B;");
+
+                    if (isManager) {
+                        haloDot = createStatusDot(Color.web("#EF4444"), Color.web("#FEE2E2"));
+                        badge.getStyleClass().add("pill-role-manager");
+                    } else {
+                        haloDot = createStatusDot(Color.web("#6366F1"), Color.web("#E0E7FF"));
+                        badge.getStyleClass().add("pill-role-staff");
+                    }
+
+                    badge.getChildren().addAll(haloDot, lbl);
+                    setText(null);
+                    setGraphic(badge);
                 }
             }
-        });
+        );
+
+        colStatus.setCellFactory(col ->
+            new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                        setText(null);
+                        setGraphic(null);
+                        return;
+                    }
+
+                    Employee emp = getTableRow().getItem();
+                    boolean isActive = emp.getStatus() == Employee.Status.ACTIVE;
+
+                    if (isActive) {
+                        setText("Đang làm");
+                    } else {
+                        setText("Đã nghỉ");
+                    }
+
+                    setGraphic(null);
+                }
+            }
+        );
+
+        colAccountStatus.setCellFactory(col ->
+            new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                        setText(null);
+                        setGraphic(null);
+                        return;
+                    }
+
+                    Employee emp = getTableRow().getItem();
+                    Account acc = emp.getAccount();
+
+                    if (acc == null || acc.getStatus() == null) {
+                        Label lblNoAccount = new Label("Chưa có TK");
+                        lblNoAccount.getStyleClass().add("status-badge-none");
+                        lblNoAccount.setMouseTransparent(true);
+                        setText(null);
+                        setGraphic(lblNoAccount);
+                        return;
+                    }
+
+                    boolean isActive = acc.getStatus() == Account.Status.ACTIVE;
+
+                    HBox badge = new HBox(6);
+                    badge.setAlignment(Pos.CENTER_LEFT);
+                    badge.getStyleClass().add("status-badge");
+                    badge.setMouseTransparent(true);
+
+                    Circle dot = new Circle(4);
+                    Label lbl = new Label(isActive ? "Hoạt động" : "Ngưng hoạt động");
+                    lbl.getStyleClass().add("pill-text");
+
+                    if (isActive) {
+                        badge.getStyleClass().add("status-badge-active");
+                        dot.setFill(Color.web("#16A34A"));
+                    } else {
+                        badge.getStyleClass().add("status-badge-inactive");
+                        dot.setFill(Color.web("#D9483B"));
+                    }
+
+                    badge.getChildren().addAll(dot, lbl);
+                    setText(null);
+                    setGraphic(badge);
+                }
+            }
+        );
+
+        colAction.setCellFactory(col ->
+            new TableCell<>() {
+                private final Button btnMore = new Button("⋮");
+
+                {
+                    btnMore.getStyleClass().add("btn-action-more");
+                    btnMore.setOnAction(e -> {
+                        Employee emp = getTableRow() != null ? getTableRow().getItem() : null;
+                        if (emp != null) {
+                            handleActionClick(emp, btnMore);
+                        }
+                    });
+                }
+
+                @Override
+                protected void updateItem(Void item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                        setGraphic(null);
+                        return;
+                    }
+                    Employee emp = getTableRow().getItem();
+                    Integer currentLoggedInId = null;
+                    if (UserSession.isLoggedIn()) {
+                        currentLoggedInId = UserSession.getInstance().getEmployeeId();
+                    }
+                    if (currentLoggedInId != null && currentLoggedInId.equals(emp.getId())) {
+                        setGraphic(null);
+                    } else {
+                        setAlignment(Pos.CENTER);
+                        setGraphic(btnMore);
+                    }
+                }
+            }
+        );
     }
 
     public void updateSummaryCounts() {
@@ -469,8 +568,8 @@ public class EmployeeController implements Initializable {
         contextMenu.getStyleClass().add("filter-context-menu");
 
         Account acc = emp.getAccount();
-        boolean isAccountDisabled = (acc != null && acc.getStatus() == Account.Status.DISABLED);
-        boolean isEmpInactive = (emp.getStatus() == Employee.Status.INACTIVE);
+        boolean isAccountDisabled = acc != null && acc.getStatus() == Account.Status.DISABLED;
+        boolean isEmpInactive = emp.getStatus() == Employee.Status.INACTIVE;
 
         String toggleLabel = isAccountDisabled ? "Mở khóa tài khoản" : "Khóa tài khoản";
         MenuItem itemToggleAcc = new MenuItem(toggleLabel);
@@ -484,12 +583,17 @@ public class EmployeeController implements Initializable {
             }
 
             Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-            DialogUtils.configure(confirmAlert, tableEmployee != null && tableEmployee.getScene() != null ? tableEmployee.getScene().getWindow() : null);
+            DialogUtils.configure(
+                confirmAlert,
+                tableEmployee != null && tableEmployee.getScene() != null ? tableEmployee.getScene().getWindow() : null
+            );
             confirmAlert.setTitle("Xác nhận");
             confirmAlert.setHeaderText("Bạn có chắc chắn muốn " + toggleLabel.toLowerCase() + "?");
-            confirmAlert.setContentText(isAccountDisabled
+            confirmAlert.setContentText(
+                isAccountDisabled
                     ? "Tài khoản sẽ được kích hoạt lại và có thể đăng nhập bình thường."
-                    : "Tài khoản sẽ bị vô hiệu hóa và không thể đăng nhập vào hệ thống.");
+                    : "Tài khoản sẽ bị vô hiệu hóa và không thể đăng nhập vào hệ thống."
+            );
 
             ButtonType btnOk = new ButtonType("Đồng ý", ButtonBar.ButtonData.OK_DONE);
             ButtonType btnCancel = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -529,7 +633,10 @@ public class EmployeeController implements Initializable {
 
                     task.setOnFailed(ev -> {
                         Throwable ex = task.getException();
-                        DialogUtils.showError("Lỗi hệ thống", ex.getMessage() != null ? ex.getMessage() : "Có lỗi xảy ra.");
+                        DialogUtils.showError(
+                            "Lỗi hệ thống",
+                            ex.getMessage() != null ? ex.getMessage() : "Có lỗi xảy ra."
+                        );
                     });
 
                     BackgroundTasks.run(task);
@@ -541,12 +648,17 @@ public class EmployeeController implements Initializable {
         itemMarkInactive.setDisable(isEmpInactive);
         itemMarkInactive.setOnAction(e -> {
             Alert confirm = new Alert(
-                    Alert.AlertType.CONFIRMATION,
-                    "Nhân viên " + emp.getFullName() + " sẽ chuyển sang trạng thái ĐÃ NGHỈ và tài khoản sẽ bị KHÓA ngay lập tức.",
-                    ButtonType.YES,
-                    ButtonType.NO
+                Alert.AlertType.CONFIRMATION,
+                "Nhân viên " +
+                    emp.getFullName() +
+                    " sẽ chuyển sang trạng thái ĐÃ NGHỈ và tài khoản sẽ bị KHÓA ngay lập tức.",
+                ButtonType.YES,
+                ButtonType.NO
             );
-            DialogUtils.configure(confirm, tableEmployee != null && tableEmployee.getScene() != null ? tableEmployee.getScene().getWindow() : null);
+            DialogUtils.configure(
+                confirm,
+                tableEmployee != null && tableEmployee.getScene() != null ? tableEmployee.getScene().getWindow() : null
+            );
             confirm.setTitle("Xác nhận đánh dấu nghỉ");
             confirm.setHeaderText(null);
             confirm.showAndWait().ifPresent(res -> {
@@ -572,12 +684,7 @@ public class EmployeeController implements Initializable {
         MenuItem itemEditDetail = new MenuItem("Thông tin chi tiết");
         itemEditDetail.setOnAction(e -> showEmployeeDetail(emp));
 
-        contextMenu.getItems().addAll(
-                itemToggleAcc,
-                itemMarkInactive,
-                new SeparatorMenuItem(),
-                itemEditDetail
-        );
+        contextMenu.getItems().addAll(itemToggleAcc, itemMarkInactive, new SeparatorMenuItem(), itemEditDetail);
 
         contextMenu.show(btnTarget, Side.BOTTOM, 0, 0);
     }

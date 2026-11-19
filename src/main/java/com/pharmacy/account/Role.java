@@ -7,6 +7,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "roles")
 public class Role implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -18,8 +19,7 @@ public class Role implements Serializable {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    public Role() {
-    }
+    public Role() {}
 
     public Integer getId() {
         return id;
@@ -44,10 +44,8 @@ public class Role implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Role role = (Role) o;
         return Objects.equals(id, role.id) || Objects.equals(code, role.code);
     }

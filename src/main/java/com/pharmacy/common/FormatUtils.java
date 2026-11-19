@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public final class FormatUtils {
+
     private FormatUtils() {}
 
     public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -57,21 +58,23 @@ public final class FormatUtils {
 
     public static void setupDatePicker(javafx.scene.control.DatePicker datePicker) {
         if (datePicker == null) return;
-        datePicker.setConverter(new javafx.util.StringConverter<>() {
-            @Override
-            public String toString(LocalDate date) {
-                return formatDate(date);
-            }
+        datePicker.setConverter(
+            new javafx.util.StringConverter<>() {
+                @Override
+                public String toString(LocalDate date) {
+                    return formatDate(date);
+                }
 
-            @Override
-            public LocalDate fromString(String string) {
-                if (string == null || string.trim().isEmpty()) return null;
-                try {
-                    return LocalDate.parse(string.trim(), DATE_FORMATTER);
-                } catch (Exception e) {
-                    return null;
+                @Override
+                public LocalDate fromString(String string) {
+                    if (string == null || string.trim().isEmpty()) return null;
+                    try {
+                        return LocalDate.parse(string.trim(), DATE_FORMATTER);
+                    } catch (Exception e) {
+                        return null;
+                    }
                 }
             }
-        });
+        );
     }
 }

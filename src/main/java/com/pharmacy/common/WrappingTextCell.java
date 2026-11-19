@@ -9,6 +9,7 @@ import javafx.scene.control.Tooltip;
 import javafx.util.Callback;
 
 public class WrappingTextCell<S> extends TableCell<S, String> {
+
     private final Label label = new Label();
 
     public WrappingTextCell(TableColumn<S, String> column) {

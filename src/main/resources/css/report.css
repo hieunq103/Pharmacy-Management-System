@@ -3,7 +3,7 @@
    =================================================================== */
 
 .report-scroll-pane {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
     -fx-border-color: transparent;
     -fx-fit-to-width: true;
 }
@@ -16,12 +16,12 @@
 }
 
 .report-scroll-pane .scroll-bar:vertical .thumb {
-    -fx-background-color: #CBD5E1;
+    -fx-background-color: #cbd5e1;
     -fx-background-radius: 3px;
 }
 
 .report-scroll-pane .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: #94A3B8;
+    -fx-background-color: #94a3b8;
 }
 
 .report-scroll-pane .scroll-bar:vertical .track,
@@ -34,16 +34,16 @@
 }
 
 .report-root {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 14px;
 }
 
 /* ==================== STAT CARDS (THẺ THỐNG KÊ) ==================== */
 .report-stat-card {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 10px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 10px;
     -fx-border-width: 1px;
     -fx-padding: 8 12;
@@ -52,25 +52,25 @@
 .stat-title {
     -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
 }
 
 .stat-value {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 19px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .stat-value-highlight {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 19px;
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .stat-value-emerald {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 19px;
-    -fx-text-fill: #16A34A;
+    -fx-text-fill: #16a34a;
 }
 
 .stat-icon-pill {
@@ -82,17 +82,47 @@
     -fx-alignment: center;
 }
 
-.stat-icon-pill-blue { -fx-background-color: #EFF6FF; }
-.stat-icon-pill-emerald { -fx-background-color: #ECFDF5; }
-.stat-icon-pill-green { -fx-background-color: #F0FDF4; }
-.stat-icon-pill-amber { -fx-background-color: #FFFBEB; }
-.stat-icon-pill-purple { -fx-background-color: #FAF5FF; }
+.stat-icon-pill-blue {
+    -fx-background-color: #eff6ff;
+}
+.stat-icon-pill-emerald {
+    -fx-background-color: #ecfdf5;
+}
+.stat-icon-pill-green {
+    -fx-background-color: #f0fdf4;
+}
+.stat-icon-pill-amber {
+    -fx-background-color: #fffbeb;
+}
+.stat-icon-pill-purple {
+    -fx-background-color: #faf5ff;
+}
 
-.stat-icon-pill-blue .stat-svg { -fx-fill: #0066FF; -fx-scale-x: 0.85; -fx-scale-y: 0.85; }
-.stat-icon-pill-emerald .stat-svg { -fx-fill: #059669; -fx-scale-x: 0.85; -fx-scale-y: 0.85; }
-.stat-icon-pill-green .stat-svg { -fx-fill: #16A34A; -fx-scale-x: 0.85; -fx-scale-y: 0.85; }
-.stat-icon-pill-amber .stat-svg { -fx-fill: #D97706; -fx-scale-x: 0.85; -fx-scale-y: 0.85; }
-.stat-icon-pill-purple .stat-svg { -fx-fill: #9333EA; -fx-scale-x: 0.85; -fx-scale-y: 0.85; }
+.stat-icon-pill-blue .stat-svg {
+    -fx-fill: #0066ff;
+    -fx-scale-x: 0.85;
+    -fx-scale-y: 0.85;
+}
+.stat-icon-pill-emerald .stat-svg {
+    -fx-fill: #059669;
+    -fx-scale-x: 0.85;
+    -fx-scale-y: 0.85;
+}
+.stat-icon-pill-green .stat-svg {
+    -fx-fill: #16a34a;
+    -fx-scale-x: 0.85;
+    -fx-scale-y: 0.85;
+}
+.stat-icon-pill-amber .stat-svg {
+    -fx-fill: #d97706;
+    -fx-scale-x: 0.85;
+    -fx-scale-y: 0.85;
+}
+.stat-icon-pill-purple .stat-svg {
+    -fx-fill: #9333ea;
+    -fx-scale-x: 0.85;
+    -fx-scale-y: 0.85;
+}
 
 /* ==================== TAB PANE (MODERN PILL SEGMENT STYLE) ==================== */
 .report-tab-pane {
@@ -109,7 +139,7 @@
 }
 
 .report-tab-pane .headers-region {
-    -fx-background-color: #E2E8F0;
+    -fx-background-color: #e2e8f0;
     -fx-background-radius: 7px;
     -fx-padding: 2px;
 }
@@ -124,7 +154,7 @@
 }
 
 .report-tab-pane .tab:selected {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 5px;
     -fx-border-color: transparent;
     -fx-border-width: 0;
@@ -135,11 +165,11 @@
     -fx-alignment: CENTER;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13.5px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
 }
 
 .report-tab-pane .tab:selected .tab-label {
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 /* XÓA HOÀN TOÀN VIỀN VUÔNG FOCUS-INDICATOR MẶC ĐỊNH CỦA JAVAFX */
@@ -154,9 +184,9 @@
 
 /* ==================== CARD BÊN TRONG TAB ==================== */
 .content-card {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 12px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 12px;
     -fx-border-width: 1px;
     -fx-padding: 16;
@@ -165,35 +195,35 @@
 .section-title {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 16px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .search-input {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-width: 1px;
     -fx-border-radius: 6px;
     -fx-background-radius: 6px;
     -fx-padding: 8 14;
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 13.5px;
-    -fx-text-fill: #1E293B;
-    -fx-prompt-text-fill: #94A3B8;
+    -fx-text-fill: #1e293b;
+    -fx-prompt-text-fill: #94a3b8;
     -fx-pref-height: 38px;
 }
 
 .search-input:hover {
-    -fx-border-color: #94A3B8;
+    -fx-border-color: #94a3b8;
 }
 
 .search-input:focused {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #0066FF;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #0066ff;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 102, 255, 0.15), 4, 0, 0, 0);
 }
 
 .custom-inventory-table .column-header-background {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
 }
 
 .custom-inventory-table .column-header {
@@ -210,19 +240,19 @@
 
 .custom-inventory-table .table-row-cell {
     -fx-background-color: transparent;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-width: 0 0 1px 0;
     -fx-cell-size: 50px;
 }
 
 .custom-inventory-table .table-row-cell:hover {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
 }
 
 .custom-inventory-table .table-cell {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 14.5px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0 16px;
     -fx-border-width: 0;
@@ -231,9 +261,9 @@
 
 /* ==================== BIỂU ĐỒ DOANH SỐ ==================== */
 .chart-card {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 10px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 10px;
     -fx-border-width: 1px;
     -fx-padding: 8 12;
@@ -252,17 +282,17 @@
 .axis {
     -fx-tick-label-font-family: "Inter 18pt";
     -fx-tick-label-font-size: 12px;
-    -fx-tick-label-fill: #64748B;
+    -fx-tick-label-fill: #64748b;
 }
 
 .axis-label {
     -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 12.5px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
 }
 
 .axis:bottom {
-    -fx-border-color: #E2E8F0 transparent transparent transparent;
+    -fx-border-color: #e2e8f0 transparent transparent transparent;
     -fx-border-width: 1px 0 0 0;
 }
 
@@ -278,8 +308,8 @@
 /* CỘT BIỂU ĐỒ GỌN GÀNG, BO ĐỈNH, GIỚI HẠN ĐỘ RỘNG NHƯ THEO THÁNG */
 .report-bar-chart .chart-bar,
 .chart-bar {
-    -fx-bar-fill: #10B981;
-    -fx-background-color: #10B981;
+    -fx-bar-fill: #10b981;
+    -fx-background-color: #10b981;
     -fx-background-radius: 6px 6px 0 0;
     -fx-background-insets: 0;
     -fx-max-width: 32px;
@@ -294,8 +324,8 @@
 
 /* BIỂU ĐỒ SỐ LƯỢNG THUỐC ĐÃ BÁN (XANH LÁ / EMERALD) */
 .report-bar-chart-green .chart-bar {
-    -fx-bar-fill: #10B981;
-    -fx-background-color: #10B981;
+    -fx-bar-fill: #10b981;
+    -fx-background-color: #10b981;
     -fx-background-radius: 6px 6px 0 0;
     -fx-background-insets: 0;
     -fx-max-width: 32px;
@@ -309,23 +339,23 @@
 
 /* ==================== MÀU SẮC RIÊNG CHO CỘT ĐƯỢC CHỌN (MÀU CAM) & CỘT CÒN LẠI ==================== */
 .chart-bar-orange {
-    -fx-bar-fill: #F97316 !important;
-    -fx-background-color: #F97316 !important;
+    -fx-bar-fill: #f97316 !important;
+    -fx-background-color: #f97316 !important;
     -fx-background-radius: 6px 6px 0 0 !important;
     -fx-background-insets: 0 !important;
     -fx-max-width: 32px !important;
 }
 
 .chart-bar-orange:hover {
-    -fx-bar-fill: #EA580C !important;
-    -fx-background-color: #EA580C !important;
+    -fx-bar-fill: #ea580c !important;
+    -fx-background-color: #ea580c !important;
     -fx-cursor: hand !important;
 }
 
 .chart-bar-blue,
 .chart-bar-green {
-    -fx-bar-fill: #10B981 !important;
-    -fx-background-color: #10B981 !important;
+    -fx-bar-fill: #10b981 !important;
+    -fx-background-color: #10b981 !important;
     -fx-background-radius: 6px 6px 0 0 !important;
     -fx-background-insets: 0 !important;
     -fx-max-width: 32px !important;
@@ -352,7 +382,7 @@
 }
 
 .report-loading-spinner {
-    -fx-progress-color: #0066FF;
+    -fx-progress-color: #0066ff;
 }
 
 .report-loading-text {

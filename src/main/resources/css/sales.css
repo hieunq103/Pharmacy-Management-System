@@ -4,21 +4,21 @@
 
 /* Ô TÌM KIẾM NHANH */
 .search-box-container {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 8px;
-    -fx-border-color: #CBD5E1;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 8px;
     -fx-border-width: 1.5px;
     -fx-padding: 6 12;
 }
 
 .search-box-container:focused-within {
-    -fx-border-color: #0066FF;
+    -fx-border-color: #0066ff;
     -fx-effect: dropshadow(gaussian, rgba(0, 102, 255, 0.15), 6, 0, 0, 0);
 }
 
 .search-icon {
-    -fx-fill: #64748B;
+    -fx-fill: #64748b;
     -fx-scale-x: 0.85;
     -fx-scale-y: 0.85;
 }
@@ -27,15 +27,15 @@
     -fx-background-color: transparent;
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 14px;
-    -fx-text-fill: #0F172A;
-    -fx-prompt-text-fill: #94A3B8;
+    -fx-text-fill: #0f172a;
+    -fx-prompt-text-fill: #94a3b8;
 }
 
 /* HÀNG PILL DANH MỤC */
 /* COMBOBOX CHỌN NHÓM THUỐC */
 .sales-category-combo {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-border-width: 1.5px;
@@ -47,22 +47,22 @@
 }
 
 .sales-category-combo:focused {
-    -fx-border-color: #0066FF;
+    -fx-border-color: #0066ff;
     -fx-effect: dropshadow(gaussian, rgba(0, 102, 255, 0.15), 6, 0, 0, 0);
 }
 
 .sales-category-combo .list-cell {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 13px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
     -fx-padding: 4 8;
 }
 
 /* THẺ THUỐC (MEDICINE CARD - TỰ ĐỘNG GIÃN TRONG GRID 2 CỘT) */
 .medicine-card {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 12px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 12px;
     -fx-border-width: 1.5px;
     -fx-padding: 10 14;
@@ -72,93 +72,93 @@
 }
 
 .medicine-card:hover {
-    -fx-border-color: #93C5FD;
+    -fx-border-color: #93c5fd;
     -fx-effect: dropshadow(gaussian, rgba(0, 102, 255, 0.12), 10, 0, 0, 4);
     -fx-translate-y: -2px;
 }
 
 .medicine-card.in-cart {
-    -fx-border-color: #0066FF;
-    -fx-background-color: #F8FAFF;
+    -fx-border-color: #0066ff;
+    -fx-background-color: #f8faff;
 }
 
 .medicine-card.out-of-stock {
     -fx-opacity: 0.65;
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
 }
 
 .card-title {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13.5px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .card-badge-prescription {
-    -fx-background-color: #FEECEB;
+    -fx-background-color: #feeceb;
     -fx-background-radius: 12px;
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 11px;
-    -fx-text-fill: #D9483B;
+    -fx-text-fill: #d9483b;
     -fx-padding: 2 8;
 }
 
 .card-badge-prescription .text {
-    -fx-fill: #D9483B;
+    -fx-fill: #d9483b;
 }
 
 /* BADGE MÃ THUỐC (VD: MED001) */
 .badge-medicine-code {
-    -fx-background-color: #EFF6FF;
-    -fx-border-color: #BFDBFE;
+    -fx-background-color: #eff6ff;
+    -fx-border-color: #bfdbfe;
     -fx-border-width: 1px;
     -fx-border-radius: 10px;
     -fx-background-radius: 10px;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 11px;
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
     -fx-padding: 2 7;
     -fx-alignment: CENTER;
 }
 
 .badge-medicine-code .text {
-    -fx-fill: #0066FF;
+    -fx-fill: #0066ff;
 }
 
 .card-unit {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 12px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
 }
 
 .card-warning-tag {
     -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 11px;
-    -fx-text-fill: #D97706;
+    -fx-text-fill: #d97706;
 }
 
 .card-low-stock-tag {
     -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 11px;
-    -fx-text-fill: #DC2626;
+    -fx-text-fill: #dc2626;
 }
 
 .card-price {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 15px;
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .card-stock {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 12px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
 }
 
 /* ==================== CỘT PHẢI: GIỎ HÀNG (POS TERMINAL PANEL) ==================== */
 .pos-cart-panel {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 16px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 16px;
     -fx-border-width: 1.5px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.04), 12, 0, 0, 4);
@@ -166,25 +166,25 @@
 
 .btn-clear-cart {
     -fx-background-color: transparent;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 12px;
     -fx-cursor: hand;
 }
 
 .btn-clear-cart:hover {
-    -fx-text-fill: #DC2626;
+    -fx-text-fill: #dc2626;
     -fx-underline: true;
 }
 
 /* EMPTY STATE GIỎ HÀNG */
 .cart-empty-circle {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: #f1f5f9;
     -fx-background-radius: 32px;
 }
 
 .cart-empty-icon {
-    -fx-fill: #94A3B8;
+    -fx-fill: #94a3b8;
     -fx-scale-x: 1.1;
     -fx-scale-y: 1.1;
 }
@@ -198,7 +198,7 @@
 .cart-empty-desc {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 12px;
-    -fx-text-fill: #94A3B8;
+    -fx-text-fill: #94a3b8;
     -fx-max-width: 240px;
 }
 
@@ -214,41 +214,41 @@
 }
 
 .cart-item-row {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
     -fx-background-radius: 8px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 8px;
     -fx-border-width: 1px;
     -fx-padding: 10 12;
 }
 
 .cart-item-row:hover {
-    -fx-border-color: #CBD5E1;
+    -fx-border-color: #cbd5e1;
 }
 
 .cart-item-name {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .cart-item-unit-price {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 12px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
 }
 
 .cart-item-total {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 /* NÚT TĂNG GIẢM SỐ LƯỢNG TRONG GIỎ */
 .btn-qty-control {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 4px;
-    -fx-border-color: #CBD5E1;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 4px;
     -fx-border-width: 1px;
     -fx-font-size: 12px;
@@ -264,40 +264,40 @@
 }
 
 .btn-qty-control:hover {
-    -fx-background-color: #F1F5F9;
-    -fx-border-color: #94A3B8;
+    -fx-background-color: #f1f5f9;
+    -fx-border-color: #94a3b8;
 }
 
 .txt-qty-input {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 4px;
-    -fx-border-color: #CBD5E1;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 4px;
     -fx-border-width: 1px;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 12.5px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
     -fx-alignment: CENTER;
     -fx-padding: 2 4;
 }
 
 .txt-qty-input:focused {
-    -fx-border-color: #0066FF;
-    -fx-background-color: #FFFFFF;
+    -fx-border-color: #0066ff;
+    -fx-background-color: #ffffff;
 }
 
 /* DANH SÁCH THUỐC TRONG DIALOG THANH TOÁN */
 .dialog-cart-scrollpane {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
     -fx-background-radius: 8px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 8px;
     -fx-border-width: 1px;
     -fx-padding: 2px;
 }
 
 .dialog-cart-scrollpane .viewport {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
 }
 
 .dialog-cart-list {
@@ -306,54 +306,54 @@
 }
 
 .dialog-cart-row {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 6px;
-    -fx-border-color: #F1F5F9;
+    -fx-border-color: #f1f5f9;
     -fx-border-radius: 6px;
     -fx-border-width: 1px;
     -fx-padding: 4 8;
 }
 
 .dialog-cart-row:hover {
-    -fx-border-color: #CBD5E1;
-    -fx-background-color: #FAFAFA;
+    -fx-border-color: #cbd5e1;
+    -fx-background-color: #fafafa;
 }
 
 .dialog-cart-name {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 12.5px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 .dialog-cart-unit {
     -fx-font-family: "Inter 18pt Regular";
     -fx-font-size: 11px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
 }
 
 .dialog-cart-total {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 13px;
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .btn-remove-item {
     -fx-background-color: transparent;
-    -fx-text-fill: #94A3B8;
+    -fx-text-fill: #94a3b8;
     -fx-font-size: 12px;
     -fx-cursor: hand;
     -fx-padding: 4;
 }
 
 .btn-remove-item:hover {
-    -fx-text-fill: #DC2626;
+    -fx-text-fill: #dc2626;
 }
 
 /* BANNER CẢNH BÁO THUỐC KÊ TOA */
 .cart-prescription-banner {
-    -fx-background-color: #FEF3C7;
+    -fx-background-color: #fef3c7;
     -fx-background-radius: 8px;
-    -fx-border-color: #FDE68A;
+    -fx-border-color: #fde68a;
     -fx-border-radius: 8px;
     -fx-border-width: 1px;
     -fx-padding: 8 12;
@@ -361,13 +361,13 @@
 
 .banner-warning-icon {
     -fx-font-size: 14px;
-    -fx-text-fill: #B45309;
+    -fx-text-fill: #b45309;
 }
 
 .banner-warning-text {
     -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 12px;
-    -fx-text-fill: #B45309;
+    -fx-text-fill: #b45309;
 }
 
 /* PHẦN GIẢM GIÁ & SĐT KHÁCH */
@@ -378,41 +378,41 @@
 .expand-icon {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13px;
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .expand-label {
     -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13px;
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .extra-field-name {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 12px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
     -fx-min-width: 85px;
 }
 
 .extra-input {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
     -fx-background-radius: 6px;
-    -fx-border-color: #CBD5E1;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 6px;
     -fx-border-width: 1px;
     -fx-padding: 5 8;
     -fx-font-size: 12px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .extra-input:focused {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #0066FF;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #0066ff;
 }
 
 /* TỔNG TIỀN VÀ BIỂU THỨC TÍNH TIỀN TRONG GIỎ HÀNG */
 .cart-calc-box {
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-width: 1px 0 0 0;
     -fx-padding: 8 0 0 0;
 }
@@ -424,21 +424,21 @@
 .cart-summary-title {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 13px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
 }
 
 .cart-summary-val {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 .cart-summary-val.text-danger {
-    -fx-text-fill: #DC2626;
+    -fx-text-fill: #dc2626;
 }
 
 .cart-summary-sep {
-    -fx-background-color: #E2E8F0;
+    -fx-background-color: #e2e8f0;
     -fx-pref-height: 1px;
     -fx-max-height: 1px;
     -fx-min-height: 1px;
@@ -451,19 +451,19 @@
 .cart-total-label {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 15px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 .cart-total-value {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 24px;
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .btn-sales-checkout {
-    -fx-background-color: #0066FF;
+    -fx-background-color: #0066ff;
     -fx-background-radius: 8px;
-    -fx-text-fill: #FFFFFF;
+    -fx-text-fill: #ffffff;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 16px;
     -fx-cursor: hand;
@@ -471,23 +471,23 @@
 }
 
 .btn-sales-checkout:hover {
-    -fx-background-color: #0052CC;
+    -fx-background-color: #0052cc;
 }
 
 .btn-sales-checkout:pressed {
-    -fx-background-color: #003D99;
+    -fx-background-color: #003d99;
 }
 
 .btn-sales-checkout:disabled {
-    -fx-background-color: #CBD5E1;
-    -fx-text-fill: #94A3B8;
+    -fx-background-color: #cbd5e1;
+    -fx-text-fill: #94a3b8;
     -fx-cursor: default;
     -fx-opacity: 0.8;
 }
 
 /* ==================== PAYMENT DIALOG MODAL CSS ==================== */
 .payment-dialog-root {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 16px;
     -fx-min-width: 720px;
     -fx-pref-width: 720px;
@@ -495,9 +495,9 @@
 }
 
 .payment-breakdown-card {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
     -fx-background-radius: 8px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 8px;
     -fx-border-width: 1px;
     -fx-padding: 4 10;
@@ -506,23 +506,23 @@
 .payment-summary-label {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 12px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
 }
 
 .payment-summary-value {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .payment-summary-discount {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13px;
-    -fx-text-fill: #DC2626;
+    -fx-text-fill: #dc2626;
 }
 
 .payment-summary-divider {
-    -fx-background-color: #E2E8F0;
+    -fx-background-color: #e2e8f0;
     -fx-pref-height: 1px;
     -fx-max-height: 1px;
     -fx-min-height: 1px;
@@ -531,19 +531,19 @@
 .payment-header-sub {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13.5px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 .payment-total-amount {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 20px;
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .prescription-warning-box-compact {
-    -fx-background-color: #FFFBEB;
+    -fx-background-color: #fffbeb;
     -fx-background-radius: 6px;
-    -fx-border-color: #FDE68A;
+    -fx-border-color: #fde68a;
     -fx-border-radius: 6px;
     -fx-border-width: 1px;
     -fx-padding: 4 10;
@@ -552,19 +552,19 @@
 
 .prescription-warning-icon-compact {
     -fx-font-size: 13px;
-    -fx-text-fill: #D97706;
+    -fx-text-fill: #d97706;
 }
 
 .prescription-warning-title-compact {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 11.5px;
-    -fx-text-fill: #92400E;
+    -fx-text-fill: #92400e;
 }
 
 .prescription-checkbox-compact {
     -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 11.5px;
-    -fx-text-fill: #78350F;
+    -fx-text-fill: #78350f;
     -fx-cursor: hand;
 }
 
@@ -576,14 +576,14 @@
 
 /* NÚT CHỌN TIỀN MẶT / CHUYỂN KHOẢN (KÍCH THƯỚC CỐ ĐỊNH TUYỆT ĐỐI) */
 .payment-method-btn {
-    -fx-background-color: #E2E8F0;
+    -fx-background-color: #e2e8f0;
     -fx-background-radius: 8px;
-    -fx-border-color: #CBD5E1;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 8px;
     -fx-border-width: 1.5px;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
     -fx-cursor: hand;
     -fx-min-height: 44px;
     -fx-pref-height: 44px;
@@ -593,16 +593,16 @@
 }
 
 .payment-method-btn:hover {
-    -fx-background-color: #CBD5E1;
-    -fx-border-color: #CBD5E1;
-    -fx-text-fill: #1E293B;
+    -fx-background-color: #cbd5e1;
+    -fx-border-color: #cbd5e1;
+    -fx-text-fill: #1e293b;
 }
 
 .payment-method-btn.active {
-    -fx-background-color: #0066FF;
-    -fx-border-color: #0066FF;
+    -fx-background-color: #0066ff;
+    -fx-border-color: #0066ff;
     -fx-border-width: 1.5px;
-    -fx-text-fill: #FFFFFF;
+    -fx-text-fill: #ffffff;
     -fx-min-height: 44px;
     -fx-pref-height: 44px;
     -fx-max-height: 44px;
@@ -611,16 +611,16 @@
 }
 
 .payment-method-btn.active:hover {
-    -fx-background-color: #0052CC;
-    -fx-border-color: #0052CC;
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #0052cc;
+    -fx-border-color: #0052cc;
+    -fx-text-fill: #ffffff;
 }
 
 /* BỘ NÚT CHUYỂN ĐỔI GIẢM GIÁ (đ / %) */
 .discount-toggle-group {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: #f1f5f9;
     -fx-background-radius: 6px;
-    -fx-border-color: #CBD5E1;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 6px;
     -fx-border-width: 1px;
     -fx-padding: 2;
@@ -632,7 +632,7 @@
     -fx-border-width: 0;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
     -fx-min-width: 28px;
     -fx-pref-width: 30px;
     -fx-pref-height: 28px;
@@ -641,20 +641,20 @@
 }
 
 .btn-discount-mode:hover {
-    -fx-background-color: #E2E8F0;
-    -fx-text-fill: #0F172A;
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #0f172a;
 }
 
 .btn-discount-mode.active {
-    -fx-background-color: #0066FF;
-    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #0066ff;
+    -fx-text-fill: #ffffff;
 }
 
 /* KHUNG CHI TIẾT THANH TOÁN */
 .payment-detail-box {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
     -fx-background-radius: 10px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 10px;
     -fx-border-width: 1px;
     -fx-padding: 6 12;
@@ -662,9 +662,9 @@
 
 /* KHUNG GỘP TIỀN KHÁCH ĐƯA & TIỀN THỪA TRONG 1 Ô COMPACT */
 .cash-combined-card {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 8px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 8px;
     -fx-border-width: 1px;
     -fx-padding: 8 12;
@@ -673,30 +673,30 @@
 .cash-entry-label {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 13px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 .cash-input-compact {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #f8fafc;
     -fx-background-radius: 6px;
-    -fx-border-color: #CBD5E1;
+    -fx-border-color: #cbd5e1;
     -fx-border-radius: 6px;
     -fx-border-width: 1.5px;
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 15px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
     -fx-padding: 3 8;
     -fx-pref-height: 32px;
     -fx-min-height: 32px;
 }
 
 .cash-input-compact:focused {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #0066FF;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #0066ff;
 }
 
 .cash-divider-line {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: #f1f5f9;
     -fx-pref-height: 1px;
     -fx-max-height: 1px;
     -fx-min-height: 1px;
@@ -705,25 +705,25 @@
 .change-card-title-compact {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 12.5px;
-    -fx-text-fill: #854D0E;
+    -fx-text-fill: #854d0e;
 }
 
 .change-card-value-compact {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 18px;
-    -fx-text-fill: #D97706;
+    -fx-text-fill: #d97706;
 }
 
 /* THÔNG TIN CHUYỂN KHOẢN */
 .transfer-info-title {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 .qr-wrapper-card {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #E2E8F0;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
     -fx-border-width: 1px;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
@@ -734,7 +734,7 @@
 .qr-scan-hint {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 10px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
     -fx-font-style: italic;
     -fx-padding: 2 0 0 0;
 }
@@ -742,7 +742,7 @@
 .qr-success-overlay {
     -fx-background-color: rgba(255, 255, 255, 0.96);
     -fx-background-radius: 10px;
-    -fx-border-color: #16A34A;
+    -fx-border-color: #16a34a;
     -fx-border-width: 2.5px;
     -fx-border-radius: 10px;
 }
@@ -750,19 +750,19 @@
 .qr-success-icon {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 46px;
-    -fx-text-fill: #16A34A;
+    -fx-text-fill: #16a34a;
 }
 
 .qr-success-text {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 15px;
-    -fx-text-fill: #16A34A;
+    -fx-text-fill: #16a34a;
 }
 
 .transfer-card {
-    -fx-background-color: #FFFFFF;
+    -fx-background-color: #ffffff;
     -fx-background-radius: 8px;
-    -fx-border-color: #E2E8F0;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 8px;
     -fx-border-width: 1px;
     -fx-padding: 8 14;
@@ -771,7 +771,7 @@
 .transfer-field-name {
     -fx-font-family: "Inter 18pt";
     -fx-font-size: 13.5px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
     -fx-min-width: 105px;
     -fx-pref-width: 105px;
 }
@@ -779,27 +779,27 @@
 .transfer-field-val {
     -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 13.5px;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #1e293b;
 }
 
 .transfer-field-val.bold {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 15px;
-    -fx-text-fill: #0F172A;
+    -fx-text-fill: #0f172a;
 }
 
 .transfer-field-val.text-primary {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 19px;
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .transfer-content-badge {
     -fx-font-family: "Inter 18pt Bold";
     -fx-font-size: 14.5px;
-    -fx-text-fill: #1D4ED8;
-    -fx-background-color: #EFF6FF;
-    -fx-border-color: #BFDBFE;
+    -fx-text-fill: #1d4ed8;
+    -fx-background-color: #eff6ff;
+    -fx-border-color: #bfdbfe;
     -fx-border-width: 1px;
     -fx-border-radius: 6px;
     -fx-background-radius: 6px;
@@ -808,12 +808,12 @@
 
 /* FOOTER BUTTONS */
 .btn-modal-confirm {
-    -fx-background-color: #0066FF;
+    -fx-background-color: #0066ff;
     -fx-background-radius: 8px;
     -fx-border-width: 0;
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
-    -fx-text-fill: #FFFFFF;
+    -fx-text-fill: #ffffff;
     -fx-cursor: hand;
     -fx-min-width: 175px;
     -fx-pref-width: 175px;
@@ -826,15 +826,15 @@
 }
 
 .btn-modal-confirm:hover {
-    -fx-background-color: #0052CC;
+    -fx-background-color: #0052cc;
 }
 
 .btn-modal-confirm:pressed {
-    -fx-background-color: #003D99;
+    -fx-background-color: #003d99;
 }
 
 .btn-modal-confirm:disabled {
-    -fx-background-color: #94A3B8;
+    -fx-background-color: #94a3b8;
     -fx-opacity: 0.45;
     -fx-cursor: default;
     -fx-min-width: 175px;
@@ -852,8 +852,8 @@
    ========================================================================== */
 
 .page-btn {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #E2E8F0;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-min-width: 36px;
@@ -872,28 +872,28 @@
 }
 
 .page-btn:hover {
-    -fx-background-color: #F8FAFC;
-    -fx-border-color: #CBD5E1;
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #cbd5e1;
 }
 
 .page-btn-active {
-    -fx-background-color: #E0F2FE;
-    -fx-border-color: #0066FF;
+    -fx-background-color: #e0f2fe;
+    -fx-border-color: #0066ff;
     -fx-border-width: 1.5px;
-    -fx-text-fill: #0066FF;
+    -fx-text-fill: #0066ff;
 }
 
 .page-dots {
     -fx-font-family: "Inter 18pt SemiBold";
     -fx-font-size: 14px;
-    -fx-text-fill: #64748B;
+    -fx-text-fill: #64748b;
     -fx-min-width: 24px;
     -fx-alignment: CENTER;
 }
 
 .pagination-record-badge {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #E2E8F0;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-padding: 0 14;

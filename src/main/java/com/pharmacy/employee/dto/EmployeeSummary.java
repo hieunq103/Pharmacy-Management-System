@@ -1,5 +1,3 @@
 package com.pharmacy.employee.dto;
 
-public record EmployeeSummary(long total, long active) {
-}
-
+public record EmployeeSummary(long total, long active) {}

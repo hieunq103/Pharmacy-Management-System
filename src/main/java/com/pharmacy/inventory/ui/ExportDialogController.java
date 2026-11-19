@@ -5,10 +5,14 @@ import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.UserSession;
 import com.pharmacy.inventory.InventoryService;
+import com.pharmacy.inventory.dto.BatchExportItemDTO;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.inventory.dto.MedicineLotDTO;
-import com.pharmacy.inventory.dto.BatchExportItemDTO;
-
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
@@ -31,57 +35,102 @@ import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
-
 public class ExportDialogController implements Initializable {
+
     private static final Logger log = LoggerFactory.getLogger(ExportDialogController.class);
 
     private static final List<String> EXPORT_REASONS = List.of(
-            "Thuốc hết hạn sử dụng (Tiêu hủy)",
-            "Thuốc hư hỏng, vỡ bao bì, biến chất",
-            "Thu hồi theo quyết định của Cục Quản lý Dược",
-            "Chuyển trả Nhà cung cấp",
-            "Xuất mẫu kiểm nghiệm / kiểm định chất lượng",
-            "Điều chuyển nội bộ / Lý do khác"
+        "Thuốc hết hạn sử dụng (Tiêu hủy)",
+        "Thuốc hư hỏng, vỡ bao bì, biến chất",
+        "Thu hồi theo quyết định của Cục Quản lý Dược",
+        "Chuyển trả Nhà cung cấp",
+        "Xuất mẫu kiểm nghiệm / kiểm định chất lượng",
+        "Điều chuyển nội bộ / Lý do khác"
     );
 
-    @FXML private TextField txtNote;
-    @FXML private Label lblEmployeeName;
+    @FXML
+    private TextField txtNote;
 
-    @FXML private StackPane medicinePickerContainer;
-    @FXML private Label lblErrorMedicine;
-    @FXML private HBox boxMedicineInfo;
-    @FXML private Label lblMedCode;
-    @FXML private Label lblMedName;
-    @FXML private Label lblMedCategory;
-    @FXML private Label lblMedTotalStock;
+    @FXML
+    private Label lblEmployeeName;
 
-    @FXML private VBox lotRowsContainer;
-    @FXML private Button btnSelectAnotherLot;
+    @FXML
+    private StackPane medicinePickerContainer;
 
-    @FXML private Label lblItemError;
+    @FXML
+    private Label lblErrorMedicine;
 
-    @FXML private Label lblItemCountBadge;
-    @FXML private Button btnClearAllItems;
-    @FXML private TableView<BatchExportItemDTO> tableItems;
-    @FXML private TableColumn<BatchExportItemDTO, Integer> colIndex;
-    @FXML private TableColumn<BatchExportItemDTO, String> colCode;
-    @FXML private TableColumn<BatchExportItemDTO, String> colName;
-    @FXML private TableColumn<BatchExportItemDTO, String> colCategory;
-    @FXML private TableColumn<BatchExportItemDTO, String> colLot;
-    @FXML private TableColumn<BatchExportItemDTO, String> colExpiry;
-    @FXML private TableColumn<BatchExportItemDTO, String> colUnit;
-    @FXML private TableColumn<BatchExportItemDTO, Integer> colStock;
-    @FXML private TableColumn<BatchExportItemDTO, Integer> colQuantity;
-    @FXML private TableColumn<BatchExportItemDTO, String> colReason;
-    @FXML private TableColumn<BatchExportItemDTO, BatchExportItemDTO> colAction;
+    @FXML
+    private HBox boxMedicineInfo;
 
-    @FXML private Label lblGeneralError;
-    @FXML private Button btnConfirmExport;
+    @FXML
+    private Label lblMedCode;
+
+    @FXML
+    private Label lblMedName;
+
+    @FXML
+    private Label lblMedCategory;
+
+    @FXML
+    private Label lblMedTotalStock;
+
+    @FXML
+    private VBox lotRowsContainer;
+
+    @FXML
+    private Button btnSelectAnotherLot;
+
+    @FXML
+    private Label lblItemError;
+
+    @FXML
+    private Label lblItemCountBadge;
+
+    @FXML
+    private Button btnClearAllItems;
+
+    @FXML
+    private TableView<BatchExportItemDTO> tableItems;
+
+    @FXML
+    private TableColumn<BatchExportItemDTO, Integer> colIndex;
+
+    @FXML
+    private TableColumn<BatchExportItemDTO, String> colCode;
+
+    @FXML
+    private TableColumn<BatchExportItemDTO, String> colName;
+
+    @FXML
+    private TableColumn<BatchExportItemDTO, String> colCategory;
+
+    @FXML
+    private TableColumn<BatchExportItemDTO, String> colLot;
+
+    @FXML
+    private TableColumn<BatchExportItemDTO, String> colExpiry;
+
+    @FXML
+    private TableColumn<BatchExportItemDTO, String> colUnit;
+
+    @FXML
+    private TableColumn<BatchExportItemDTO, Integer> colStock;
+
+    @FXML
+    private TableColumn<BatchExportItemDTO, Integer> colQuantity;
+
+    @FXML
+    private TableColumn<BatchExportItemDTO, String> colReason;
+
+    @FXML
+    private TableColumn<BatchExportItemDTO, BatchExportItemDTO> colAction;
+
+    @FXML
+    private Label lblGeneralError;
+
+    @FXML
+    private Button btnConfirmExport;
 
     private SearchableMedicinePicker medicinePicker;
     private InventoryService inventoryService;
@@ -105,13 +154,23 @@ public class ExportDialogController implements Initializable {
         });
 
         if (btnSelectAnotherLot != null) {
-            btnSelectAnotherLot.setOnMouseEntered(ev -> btnSelectAnotherLot.setStyle("-fx-background-color: #DBEAFE; -fx-text-fill: #1E40AF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 12px; -fx-padding: 7 14; -fx-border-color: #93C5FD; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-cursor: hand;"));
-            btnSelectAnotherLot.setOnMouseExited(ev -> btnSelectAnotherLot.setStyle("-fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 12px; -fx-padding: 7 14; -fx-border-color: #BFDBFE; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-cursor: hand;"));
+            btnSelectAnotherLot.setOnMouseEntered(ev ->
+                btnSelectAnotherLot.setStyle(
+                    "-fx-background-color: #DBEAFE; -fx-text-fill: #1E40AF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 12px; -fx-padding: 7 14; -fx-border-color: #93C5FD; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-cursor: hand;"
+                )
+            );
+            btnSelectAnotherLot.setOnMouseExited(ev ->
+                btnSelectAnotherLot.setStyle(
+                    "-fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 12px; -fx-padding: 7 14; -fx-border-color: #BFDBFE; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-cursor: hand;"
+                )
+            );
         }
 
         setupTableColumns();
         tableItems.setItems(itemList);
-        tableItems.setPlaceholder(new Label("Chưa có mặt hàng nào trong phiếu xuất. Vui lòng thêm thuốc từ phần trên."));
+        tableItems.setPlaceholder(
+            new Label("Chưa có mặt hàng nào trong phiếu xuất. Vui lòng thêm thuốc từ phần trên.")
+        );
 
         if (UserSession.isLoggedIn()) {
             lblEmployeeName.setText(UserSession.getInstance().getEmployeeName());
@@ -123,6 +182,7 @@ public class ExportDialogController implements Initializable {
     }
 
     public class LotRowItem {
+
         private final GridPane rowNode;
         private final ComboBox<MedicineLotDTO> cbLot;
         private final Label lblLotStockInfo;
@@ -180,14 +240,18 @@ public class ExportDialogController implements Initializable {
             txtReason = new TextField();
             txtReason.setPromptText("-- Nhập hoặc chọn gợi ý lý do --");
             txtReason.getStyleClass().add("form-input");
-            txtReason.setStyle("-fx-padding: 7 26 7 10; -fx-font-size: 13px; -fx-font-family: 'Inter 18pt'; -fx-text-fill: #0F172A;");
+            txtReason.setStyle(
+                "-fx-padding: 7 26 7 10; -fx-font-size: 13px; -fx-font-family: 'Inter 18pt'; -fx-text-fill: #0F172A;"
+            );
             txtReason.setMaxWidth(Double.MAX_VALUE);
 
             popupReason = new ContextMenu();
             popupReason.setAutoHide(true);
 
             Button btnDropdownReason = new Button("▾");
-            btnDropdownReason.setStyle("-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-cursor: hand; -fx-padding: 4 6; -fx-font-size: 11px;");
+            btnDropdownReason.setStyle(
+                "-fx-background-color: transparent; -fx-text-fill: #94A3B8; -fx-cursor: hand; -fx-padding: 4 6; -fx-font-size: 11px;"
+            );
             btnDropdownReason.setFocusTraversable(false);
             btnDropdownReason.setOnAction(e -> {
                 txtReason.requestFocus();
@@ -216,13 +280,21 @@ public class ExportDialogController implements Initializable {
 
             txtReason.setOnMouseClicked(e -> {
                 if (!popupReason.isShowing()) {
-                    showReasonSuggestions(txtReason, popupReason, txtReason.getText() != null ? txtReason.getText() : "");
+                    showReasonSuggestions(
+                        txtReason,
+                        popupReason,
+                        txtReason.getText() != null ? txtReason.getText() : ""
+                    );
                 }
             });
 
             txtReason.focusedProperty().addListener((obs, oldV, isFocused) -> {
                 if (isFocused) {
-                    showReasonSuggestions(txtReason, popupReason, txtReason.getText() != null ? txtReason.getText() : "");
+                    showReasonSuggestions(
+                        txtReason,
+                        popupReason,
+                        txtReason.getText() != null ? txtReason.getText() : ""
+                    );
                 } else {
                     popupReason.hide();
                 }
@@ -231,7 +303,11 @@ public class ExportDialogController implements Initializable {
             txtReason.setOnKeyPressed(e -> {
                 if (e.getCode() == KeyCode.DOWN) {
                     if (!popupReason.isShowing()) {
-                        showReasonSuggestions(txtReason, popupReason, txtReason.getText() != null ? txtReason.getText() : "");
+                        showReasonSuggestions(
+                            txtReason,
+                            popupReason,
+                            txtReason.getText() != null ? txtReason.getText() : ""
+                        );
                     }
                 } else if (e.getCode() == KeyCode.ESCAPE || e.getCode() == KeyCode.ENTER) {
                     popupReason.hide();
@@ -239,7 +315,9 @@ public class ExportDialogController implements Initializable {
             });
 
             btnRemoveRow = new Button("✕");
-            btnRemoveRow.setStyle("-fx-background-color: #FEE2E2; -fx-text-fill: #DC2626; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px; -fx-padding: 6 10; -fx-background-radius: 6px; -fx-cursor: hand;");
+            btnRemoveRow.setStyle(
+                "-fx-background-color: #FEE2E2; -fx-text-fill: #DC2626; -fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 13px; -fx-padding: 6 10; -fx-background-radius: 6px; -fx-cursor: hand;"
+            );
             btnRemoveRow.setTooltip(new Tooltip("Xóa dòng lô này"));
             btnRemoveRow.setOnAction(e -> removeLotRow(this));
 
@@ -286,8 +364,8 @@ public class ExportDialogController implements Initializable {
     private void showReasonSuggestions(TextField field, ContextMenu menu, String keyword) {
         String kw = removeAccents(keyword).trim();
         List<String> matched = EXPORT_REASONS.stream()
-                .filter(r -> kw.isEmpty() || removeAccents(r).contains(kw))
-                .toList();
+            .filter(r -> kw.isEmpty() || removeAccents(r).contains(kw))
+            .toList();
 
         menu.getItems().clear();
         if (matched.isEmpty()) {
@@ -306,7 +384,9 @@ public class ExportDialogController implements Initializable {
             menu.getItems().add(item);
         }
 
-        if (field.getScene() != null && field.getScene().getWindow() != null && field.getScene().getWindow().isShowing()) {
+        if (
+            field.getScene() != null && field.getScene().getWindow() != null && field.getScene().getWindow().isShowing()
+        ) {
             menu.show(field, Side.BOTTOM, 0, 2);
         }
     }
@@ -316,55 +396,92 @@ public class ExportDialogController implements Initializable {
     }
 
     private void setupLotComboBox(ComboBox<MedicineLotDTO> combo, LotRowItem row) {
-        combo.setCellFactory(lv -> new ListCell<MedicineLotDTO>() {
-            @Override
-            protected void updateItem(MedicineLotDTO item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    int total = item.getQuantityRemaining() != null ? item.getQuantityRemaining() : 0;
-                    int avail = getRemainingAvailableForLot(item.getId(), total, row);
-                    String unit = getSelectedMedicineUnit();
-                    if (avail <= 0) {
-                        setText("Lô " + item.getLotNumber() + " (Đã chọn hết, HSD: " + item.getFormattedExpiryDate() + ")");
-                        setStyle("-fx-text-fill: #94A3B8;");
+        combo.setCellFactory(lv ->
+            new ListCell<MedicineLotDTO>() {
+                @Override
+                protected void updateItem(MedicineLotDTO item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setStyle("");
                     } else {
-                        setText("Lô " + item.getLotNumber() + " (Còn lại: " + avail + " " + unit + ", HSD: " + item.getFormattedExpiryDate() + ")");
-                        setStyle("-fx-text-fill: #0F172A;");
+                        int total = item.getQuantityRemaining() != null ? item.getQuantityRemaining() : 0;
+                        int avail = getRemainingAvailableForLot(item.getId(), total, row);
+                        String unit = getSelectedMedicineUnit();
+                        if (avail <= 0) {
+                            setText(
+                                "Lô " +
+                                    item.getLotNumber() +
+                                    " (Đã chọn hết, HSD: " +
+                                    item.getFormattedExpiryDate() +
+                                    ")"
+                            );
+                            setStyle("-fx-text-fill: #94A3B8;");
+                        } else {
+                            setText(
+                                "Lô " +
+                                    item.getLotNumber() +
+                                    " (Còn lại: " +
+                                    avail +
+                                    " " +
+                                    unit +
+                                    ", HSD: " +
+                                    item.getFormattedExpiryDate() +
+                                    ")"
+                            );
+                            setStyle("-fx-text-fill: #0F172A;");
+                        }
                     }
                 }
             }
-        });
+        );
 
-        combo.setButtonCell(new ListCell<MedicineLotDTO>() {
-            @Override
-            protected void updateItem(MedicineLotDTO item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    int total = item.getQuantityRemaining() != null ? item.getQuantityRemaining() : 0;
-                    int avail = getRemainingAvailableForLot(item.getId(), total, row);
-                    String unit = getSelectedMedicineUnit();
-                    if (avail <= 0) {
-                        setText("Lô " + item.getLotNumber() + " (Đã chọn hết, HSD: " + item.getFormattedExpiryDate() + ")");
+        combo.setButtonCell(
+            new ListCell<MedicineLotDTO>() {
+                @Override
+                protected void updateItem(MedicineLotDTO item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
                     } else {
-                        setText("Lô " + item.getLotNumber() + " (Còn lại: " + avail + " " + unit + ", HSD: " + item.getFormattedExpiryDate() + ")");
+                        int total = item.getQuantityRemaining() != null ? item.getQuantityRemaining() : 0;
+                        int avail = getRemainingAvailableForLot(item.getId(), total, row);
+                        String unit = getSelectedMedicineUnit();
+                        if (avail <= 0) {
+                            setText(
+                                "Lô " +
+                                    item.getLotNumber() +
+                                    " (Đã chọn hết, HSD: " +
+                                    item.getFormattedExpiryDate() +
+                                    ")"
+                            );
+                        } else {
+                            setText(
+                                "Lô " +
+                                    item.getLotNumber() +
+                                    " (Còn lại: " +
+                                    avail +
+                                    " " +
+                                    unit +
+                                    ", HSD: " +
+                                    item.getFormattedExpiryDate() +
+                                    ")"
+                            );
+                        }
                     }
                 }
             }
-        });
+        );
     }
 
     private int getRemainingAvailableForLot(Long lotId, int totalRemainingInLot, LotRowItem currentRow) {
         if (lotId == null) return totalRemainingInLot;
 
-        int inTableItems = itemList.stream()
-                .filter(it -> it.getLotId() == lotId)
-                .mapToInt(BatchExportItemDTO::getExportQuantity)
-                .sum();
+        int inTableItems = itemList
+            .stream()
+            .filter(it -> it.getLotId() == lotId)
+            .mapToInt(BatchExportItemDTO::getExportQuantity)
+            .sum();
 
         int inOtherRows = 0;
         for (LotRowItem r : activeLotRows) {
@@ -397,7 +514,7 @@ public class ExportDialogController implements Initializable {
             r.lblLotStockInfo.setText("HSD: " + lot.getFormattedExpiryDate() + " | Còn lại: " + avail + " " + unit);
         } else {
             r.lblMaxAvailable.setText("(Tối đa: 0)");
-            MedicineInventoryDTO med = (medicinePicker != null) ? medicinePicker.getSelectedMedicine() : null;
+            MedicineInventoryDTO med = medicinePicker != null ? medicinePicker.getSelectedMedicine() : null;
             if (med == null) {
                 r.lblLotStockInfo.setText("Chọn thuốc để xem các lô hàng có sẵn");
             } else {
@@ -408,7 +525,7 @@ public class ExportDialogController implements Initializable {
 
     private String getSelectedMedicineUnit() {
         MedicineInventoryDTO med = medicinePicker != null ? medicinePicker.getSelectedMedicine() : null;
-        return (med != null && med.getUnit() != null) ? med.getUnit() : "đơn vị";
+        return med != null && med.getUnit() != null ? med.getUnit() : "đơn vị";
     }
 
     private void resetToSingleEmptyRow() {
@@ -447,8 +564,9 @@ public class ExportDialogController implements Initializable {
         for (MedicineLotDTO lot : currentMedicineLots) {
             int total = lot.getQuantityRemaining() != null ? lot.getQuantityRemaining() : 0;
             int avail = getRemainingAvailableForLot(lot.getId(), total, null);
-            boolean alreadySelected = activeLotRows.stream()
-                    .anyMatch(r -> r.cbLot.getValue() != null && lot.getId().equals(r.cbLot.getValue().getId()));
+            boolean alreadySelected = activeLotRows
+                .stream()
+                .anyMatch(r -> r.cbLot.getValue() != null && lot.getId().equals(r.cbLot.getValue().getId()));
             if (avail > 0 && !alreadySelected) {
                 return lot;
             }
@@ -503,116 +621,154 @@ public class ExportDialogController implements Initializable {
 
     private void setupTableColumns() {
         colIndex.setCellValueFactory(cellData ->
-                new ReadOnlyObjectWrapper<>(tableItems.getItems().indexOf(cellData.getValue()) + 1));
-        colIndex.setCellFactory(col -> new TableCell<BatchExportItemDTO, Integer>() {
-            @Override
-            protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || getTableView() == null || getIndex() < 0 || getIndex() >= getTableView().getItems().size()) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    setText(String.valueOf(getIndex() + 1));
-                    setGraphic(null);
-                    setAlignment(Pos.CENTER_LEFT);
+            new ReadOnlyObjectWrapper<>(tableItems.getItems().indexOf(cellData.getValue()) + 1)
+        );
+        colIndex.setCellFactory(col ->
+            new TableCell<BatchExportItemDTO, Integer>() {
+                @Override
+                protected void updateItem(Integer item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (
+                        empty ||
+                        getTableView() == null ||
+                        getIndex() < 0 ||
+                        getIndex() >= getTableView().getItems().size()
+                    ) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        setText(String.valueOf(getIndex() + 1));
+                        setGraphic(null);
+                        setAlignment(Pos.CENTER_LEFT);
+                    }
                 }
             }
-        });
+        );
 
         colCode.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMedicineCode()));
-        colCode.setCellFactory(col -> new TableCell<BatchExportItemDTO, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    Label lbl = new Label(item);
-                    lbl.setStyle("-fx-font-size: 11px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-background-radius: 4px; -fx-padding: 2 6;");
-                    setGraphic(lbl);
-                    setText(null);
-                    setAlignment(Pos.CENTER_LEFT);
+        colCode.setCellFactory(col ->
+            new TableCell<BatchExportItemDTO, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        Label lbl = new Label(item);
+                        lbl.setStyle(
+                            "-fx-font-size: 11px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-background-radius: 4px; -fx-padding: 2 6;"
+                        );
+                        setGraphic(lbl);
+                        setText(null);
+                        setAlignment(Pos.CENTER_LEFT);
+                    }
                 }
             }
-        });
+        );
 
         colName.setCellValueFactory(new PropertyValueFactory<>("medicineName"));
 
         colCategory.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
 
         colLot.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getLotNumber()));
-        colLot.setCellFactory(col -> new TableCell<BatchExportItemDTO, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setStyle("-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #1E293B;");
-                    setAlignment(Pos.CENTER_LEFT);
+        colLot.setCellFactory(col ->
+            new TableCell<BatchExportItemDTO, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(item);
+                        setStyle("-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #1E293B;");
+                        setAlignment(Pos.CENTER_LEFT);
+                    }
                 }
             }
-        });
+        );
 
-        colExpiry.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getFormattedExpiryDate()));
+        colExpiry.setCellValueFactory(cellData ->
+            new SimpleStringProperty(cellData.getValue().getFormattedExpiryDate())
+        );
 
         colUnit.setCellValueFactory(new PropertyValueFactory<>("unit"));
 
         colStock.setCellValueFactory(new PropertyValueFactory<>("stockRemaining"));
 
         colQuantity.setCellValueFactory(new PropertyValueFactory<>("exportQuantity"));
-        colQuantity.setCellFactory(col -> new TableCell<BatchExportItemDTO, Integer>() {
-            @Override
-            protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(String.valueOf(item));
-                    setStyle("-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #DC2626; -fx-alignment: CENTER_LEFT;");
-                    setAlignment(Pos.CENTER_LEFT);
+        colQuantity.setCellFactory(col ->
+            new TableCell<BatchExportItemDTO, Integer>() {
+                @Override
+                protected void updateItem(Integer item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(String.valueOf(item));
+                        setStyle(
+                            "-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #DC2626; -fx-alignment: CENTER_LEFT;"
+                        );
+                        setAlignment(Pos.CENTER_LEFT);
+                    }
                 }
             }
-        });
+        );
 
         colReason.setCellValueFactory(new PropertyValueFactory<>("reason"));
         colReason.setCellFactory(com.pharmacy.common.WrappingTextCell.forColumn());
 
         colAction.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-        colAction.setCellFactory(col -> new TableCell<BatchExportItemDTO, BatchExportItemDTO>() {
-            private final Button btnDelete = new Button("✕ Xóa");
-            {
-                btnDelete.setStyle("-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;");
-                btnDelete.setOnMouseEntered(ev -> btnDelete.setStyle("-fx-background-color: #FCA5A5; -fx-text-fill: #991B1B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #F87171; -fx-border-radius: 4px; -fx-background-radius: 4px;"));
-                btnDelete.setOnMouseExited(ev -> btnDelete.setStyle("-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;"));
-                btnDelete.setTooltip(new Tooltip("Xóa mặt hàng này khỏi phiếu xuất"));
-                btnDelete.setOnAction(e -> {
-                    BatchExportItemDTO item = getItem();
-                    if (item != null) {
-                        itemList.remove(item);
-                        updateSummary();
-                        tableItems.refresh();
-                        updateAllRowsAvailableDisplay();
-                    }
-                });
-            }
+        colAction.setCellFactory(col ->
+            new TableCell<BatchExportItemDTO, BatchExportItemDTO>() {
+                private final Button btnDelete = new Button("✕ Xóa");
 
-            @Override
-            protected void updateItem(BatchExportItemDTO item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(btnDelete);
-                    setAlignment(Pos.CENTER);
+                {
+                    btnDelete.setStyle(
+                        "-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;"
+                    );
+                    btnDelete.setOnMouseEntered(ev ->
+                        btnDelete.setStyle(
+                            "-fx-background-color: #FCA5A5; -fx-text-fill: #991B1B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #F87171; -fx-border-radius: 4px; -fx-background-radius: 4px;"
+                        )
+                    );
+                    btnDelete.setOnMouseExited(ev ->
+                        btnDelete.setStyle(
+                            "-fx-background-color: #FEECEB; -fx-text-fill: #D9483B; -fx-font-family: 'Inter 18pt SemiBold'; -fx-cursor: hand; -fx-font-size: 11.5px; -fx-padding: 3 10; -fx-border-color: #FECACA; -fx-border-radius: 4px; -fx-background-radius: 4px;"
+                        )
+                    );
+                    btnDelete.setTooltip(new Tooltip("Xóa mặt hàng này khỏi phiếu xuất"));
+                    btnDelete.setOnAction(e -> {
+                        BatchExportItemDTO item = getItem();
+                        if (item != null) {
+                            itemList.remove(item);
+                            updateSummary();
+                            tableItems.refresh();
+                            updateAllRowsAvailableDisplay();
+                        }
+                    });
+                }
+
+                @Override
+                protected void updateItem(BatchExportItemDTO item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setGraphic(null);
+                    } else {
+                        setGraphic(btnDelete);
+                        setAlignment(Pos.CENTER);
+                    }
                 }
             }
-        });
+        );
     }
 
-    public void initData(List<MedicineInventoryDTO> medicines, InventoryService service, MedicineInventoryDTO preselectedMedicine, Runnable onSuccess) {
+    public void initData(
+        List<MedicineInventoryDTO> medicines,
+        InventoryService service,
+        MedicineInventoryDTO preselectedMedicine,
+        Runnable onSuccess
+    ) {
         this.inventoryService = service != null ? service : new InventoryService();
         this.onSuccessCallback = onSuccess;
         medicinePicker.setMedicines(medicines);
@@ -659,9 +815,13 @@ public class ExportDialogController implements Initializable {
 
         task.setOnSucceeded(e -> {
             List<MedicineLotDTO> allLots = task.getValue();
-            List<MedicineLotDTO> availableLots = allLots != null ? allLots.stream()
-                    .filter(lot -> lot.getQuantityRemaining() != null && lot.getQuantityRemaining() > 0)
-                    .toList() : List.of();
+            List<MedicineLotDTO> availableLots =
+                allLots != null
+                    ? allLots
+                          .stream()
+                          .filter(lot -> lot.getQuantityRemaining() != null && lot.getQuantityRemaining() > 0)
+                          .toList()
+                    : List.of();
 
             currentMedicineLots.setAll(availableLots);
             if (activeLotRows.isEmpty()) {
@@ -775,16 +935,16 @@ public class ExportDialogController implements Initializable {
                 sameLotAndReason.setExportQuantity(sameLotAndReason.getExportQuantity() + qty);
             } else {
                 BatchExportItemDTO newItem = BatchExportItemDTO.of(
-                        selectedMed.getMedicineCode(),
-                        selectedMed.getMedicineName(),
-                        selectedMed.getCategoryName(),
-                        lot.getId(),
-                        lot.getLotNumber(),
-                        lot.getExpiryDate(),
-                        selectedMed.getUnit(),
-                        total,
-                        qty,
-                        reason
+                    selectedMed.getMedicineCode(),
+                    selectedMed.getMedicineName(),
+                    selectedMed.getCategoryName(),
+                    lot.getId(),
+                    lot.getLotNumber(),
+                    lot.getExpiryDate(),
+                    selectedMed.getUnit(),
+                    total,
+                    qty,
+                    reason
                 );
                 itemList.add(newItem);
             }
@@ -814,7 +974,9 @@ public class ExportDialogController implements Initializable {
         DialogUtils.configure(confirm, btnClearAllItems.getScene().getWindow());
         confirm.setTitle("Xác nhận xóa");
         confirm.setHeaderText("Xóa toàn bộ mặt hàng trong phiếu xuất?");
-        confirm.setContentText("Bạn có chắc chắn muốn xóa tất cả " + itemList.size() + " mặt hàng đang có trong phiếu?");
+        confirm.setContentText(
+            "Bạn có chắc chắn muốn xóa tất cả " + itemList.size() + " mặt hàng đang có trong phiếu?"
+        );
         confirm.showAndWait().ifPresent(res -> {
             if (res == ButtonType.OK) {
                 itemList.clear();
@@ -862,12 +1024,7 @@ public class ExportDialogController implements Initializable {
         Task<Boolean> exportTask = new Task<Boolean>() {
             @Override
             protected Boolean call() {
-                return inventoryService.exportBatchStock(
-                        generalReason,
-                        employeeId,
-                        note,
-                        List.copyOf(itemList)
-                );
+                return inventoryService.exportBatchStock(generalReason, employeeId, note, List.copyOf(itemList));
             }
         };
 
@@ -895,7 +1052,8 @@ public class ExportDialogController implements Initializable {
             btnConfirmExport.setText("Xác nhận Xuất Kho");
             Throwable ex = exportTask.getException();
             log.error("Lỗi xuất kho hàng loạt: ", ex);
-            String msg = ex != null && ex.getMessage() != null ? ex.getMessage() : "Có lỗi xảy ra khi xuất kho hàng loạt!";
+            String msg =
+                ex != null && ex.getMessage() != null ? ex.getMessage() : "Có lỗi xảy ra khi xuất kho hàng loạt!";
             showGeneralError(msg);
         });
 

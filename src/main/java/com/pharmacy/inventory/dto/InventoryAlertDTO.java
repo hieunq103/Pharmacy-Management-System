@@ -1,9 +1,10 @@
 package com.pharmacy.inventory.dto;
 
 public class InventoryAlertDTO {
+
     public enum AlertType {
         EXPIRY,
-        LOW_STOCK
+        LOW_STOCK,
     }
 
     private final String title;
@@ -12,8 +13,7 @@ public class InventoryAlertDTO {
     private final String unit;
     private final AlertType alertType;
 
-    public InventoryAlertDTO(String title, String subtitle,
-                             int remainingQuantity, String unit, AlertType alertType) {
+    public InventoryAlertDTO(String title, String subtitle, int remainingQuantity, String unit, AlertType alertType) {
         this.title = title;
         this.subtitle = subtitle;
         this.remainingQuantity = remainingQuantity;

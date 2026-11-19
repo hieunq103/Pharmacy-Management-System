@@ -10,13 +10,13 @@ import com.pharmacy.employee.dto.EmployeeUpdateRequest;
 import com.pharmacy.employee.dto.NewEmployeeAccount;
 import com.pharmacy.infra.security.PasswordEncoder;
 import com.pharmacy.infra.security.TemporaryPassword;
+import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Optional;
-
 public class EmployeeService {
+
     private static final Logger log = LoggerFactory.getLogger(EmployeeService.class);
     private final EmployeeRepository employeeRepository;
     private final AccountRepository accountRepository = new AccountRepository();
@@ -29,13 +29,39 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-    public PageResult<Employee> getEmployeesPage(int page, int size, String keyword, String gender, String role, String status, String accountStatus) {
+    public PageResult<Employee> getEmployeesPage(
+        int page,
+        int size,
+        String keyword,
+        String gender,
+        String role,
+        String status,
+        String accountStatus
+    ) {
         return getEmployeesPage(page, size, keyword, gender, role, status, accountStatus, null);
     }
 
-    public PageResult<Employee> getEmployeesPage(int page, int size, String keyword, String gender, String role, String status, String accountStatus, Long cachedTotal) {
+    public PageResult<Employee> getEmployeesPage(
+        int page,
+        int size,
+        String keyword,
+        String gender,
+        String role,
+        String status,
+        String accountStatus,
+        Long cachedTotal
+    ) {
         requireManager();
-        return employeeRepository.getEmployeesPage(page, size, keyword, gender, role, status, accountStatus, cachedTotal);
+        return employeeRepository.getEmployeesPage(
+            page,
+            size,
+            keyword,
+            gender,
+            role,
+            status,
+            accountStatus,
+            cachedTotal
+        );
     }
 
     public EmployeeSummary getEmployeeSummary() {
@@ -58,8 +84,11 @@ public class EmployeeService {
             return Optional.empty();
         }
         validateEmployee(employee.getFullName(), employee.getPhone(), employee.getNationalId(), employee.getDob());
-        if (employee.getCode() != null && !employee.getCode().isBlank()
-                && employeeRepository.existsByCode(employee.getCode())) {
+        if (
+            employee.getCode() != null &&
+            !employee.getCode().isBlank() &&
+            employeeRepository.existsByCode(employee.getCode())
+        ) {
             throw new IllegalArgumentException("Mã nhân viên này đã tồn tại trong hệ thống.");
         }
         employeeRepository.findByNationalId(employee.getNationalId(), null).ifPresent(c -> {
@@ -70,7 +99,9 @@ public class EmployeeService {
         });
 
         String temporaryPassword = TemporaryPassword.generate();
-        if (!employeeRepository.addEmployeeWithAccount(employee, role.trim(), PasswordEncoder.hash(temporaryPassword))) {
+        if (
+            !employeeRepository.addEmployeeWithAccount(employee, role.trim(), PasswordEncoder.hash(temporaryPassword))
+        ) {
             return Optional.empty();
         }
         return Optional.of(new NewEmployeeAccount(employee.getCode(), temporaryPassword));
@@ -82,10 +113,13 @@ public class EmployeeService {
             throw new IllegalArgumentException("Không xác định được nhân viên cần cấp lại mật khẩu.");
         }
         if (employeeId.equals(UserSession.currentEmployeeId())) {
-            throw new IllegalArgumentException("Không thể tự cấp lại mật khẩu cho chính mình. Hãy dùng chức năng Đổi mật khẩu.");
+            throw new IllegalArgumentException(
+                "Không thể tự cấp lại mật khẩu cho chính mình. Hãy dùng chức năng Đổi mật khẩu."
+            );
         }
-        Employee employee = employeeRepository.findByIdWithDetails(employeeId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhân viên."));
+        Employee employee = employeeRepository
+            .findByIdWithDetails(employeeId)
+            .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhân viên."));
         if (employee.getStatus() == Employee.Status.INACTIVE) {
             throw new IllegalArgumentException("Nhân viên đã nghỉ việc, không thể cấp lại mật khẩu.");
         }
@@ -155,7 +189,9 @@ public class EmployeeService {
                 if (currentAcc != null && currentAcc.getRole() != null) {
                     String currentRoleCode = currentAcc.getRole().getCode();
                     if (currentRoleCode != null && !currentRoleCode.equalsIgnoreCase(normalizedRole)) {
-                        throw new IllegalArgumentException("Quản lý không thể tự thay đổi vai trò hệ thống của chính mình.");
+                        throw new IllegalArgumentException(
+                            "Quản lý không thể tự thay đổi vai trò hệ thống của chính mình."
+                        );
                     }
                 }
 
@@ -168,31 +204,37 @@ public class EmployeeService {
                 }
 
                 Employee self = UserSession.getInstance().getEmployee();
-                if (self != null && (changed(self.getNationalId(), req.nationalId() != null ? req.nationalId().trim() : null)
-                        || changed(self.getDob(), req.dob())
-                        || changed(self.getGender(), req.gender()))) {
+                if (
+                    self != null &&
+                    (changed(self.getNationalId(), req.nationalId() != null ? req.nationalId().trim() : null) ||
+                        changed(self.getDob(), req.dob()) ||
+                        changed(self.getGender(), req.gender()))
+                ) {
                     throw new IllegalArgumentException(
-                            "Với hồ sơ của chính mình, chỉ có thể thay đổi Họ và tên, Số điện thoại và Địa chỉ.");
+                        "Với hồ sơ của chính mình, chỉ có thể thay đổi Họ và tên, Số điện thoại và Địa chỉ."
+                    );
                 }
             }
         }
 
         EmployeeUpdateRequest sanitizedRequest = new EmployeeUpdateRequest(
-                req.employeeId(),
-                req.fullName() != null ? req.fullName().trim() : "",
-                req.nationalId() != null ? req.nationalId().trim() : "",
-                req.phone() != null ? req.phone().trim() : "",
-                req.address() != null ? req.address().trim() : "",
-                req.dob(),
-                req.gender(),
-                normalizedEmpStatus,
-                normalizedAccStatus,
-                normalizedRole
+            req.employeeId(),
+            req.fullName() != null ? req.fullName().trim() : "",
+            req.nationalId() != null ? req.nationalId().trim() : "",
+            req.phone() != null ? req.phone().trim() : "",
+            req.address() != null ? req.address().trim() : "",
+            req.dob(),
+            req.gender(),
+            normalizedEmpStatus,
+            normalizedAccStatus,
+            normalizedRole
         );
 
-        employeeRepository.findByNationalId(sanitizedRequest.nationalId(), sanitizedRequest.employeeId()).ifPresent(c -> {
-            throw new IllegalArgumentException(c.message("Căn cước công dân"));
-        });
+        employeeRepository
+            .findByNationalId(sanitizedRequest.nationalId(), sanitizedRequest.employeeId())
+            .ifPresent(c -> {
+                throw new IllegalArgumentException(c.message("Căn cước công dân"));
+            });
         employeeRepository.findByPhone(sanitizedRequest.phone(), sanitizedRequest.employeeId()).ifPresent(c -> {
             throw new IllegalArgumentException(c.message("Số điện thoại"));
         });
@@ -209,8 +251,10 @@ public class EmployeeService {
             UserSession.requireManager();
         } catch (SecurityException e) {
             Account current = UserSession.isLoggedIn() ? UserSession.getInstance().getAccount() : null;
-            log.warn("Từ chối truy cập module nhân sự: tài khoản ID [{}] không có quyền Quản lý.",
-                    current != null ? current.getId() : "null");
+            log.warn(
+                "Từ chối truy cập module nhân sự: tài khoản ID [{}] không có quyền Quản lý.",
+                current != null ? current.getId() : "null"
+            );
             throw e;
         }
     }

@@ -17,21 +17,27 @@ import javafx.util.Duration;
 // Hiện tên đăng nhập + mật khẩu tạm của nhân viên vừa tạo để quản lý sao chép gửi cho nhân viên.
 // Mật khẩu tạm không lưu ở đâu khác nên chỉ xem được một lần tại đây
 public final class NewAccountDialog {
-    private static final String FIELD_STYLE = "-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 15px; -fx-text-fill: #0F172A; "
-            + "-fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 6 10;";
-    private static final String COPY_STYLE = "-fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt SemiBold'; "
-            + "-fx-border-color: #BFDBFE; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 6 14; -fx-cursor: hand;";
 
-    private NewAccountDialog() {
-    }
+    private static final String FIELD_STYLE =
+        "-fx-font-family: 'Inter 18pt SemiBold'; -fx-font-size: 15px; -fx-text-fill: #0F172A; " +
+        "-fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 6 10;";
+    private static final String COPY_STYLE =
+        "-fx-background-color: #EFF6FF; -fx-text-fill: #0066FF; -fx-font-family: 'Inter 18pt SemiBold'; " +
+        "-fx-border-color: #BFDBFE; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-padding: 6 14; -fx-cursor: hand;";
+
+    private NewAccountDialog() {}
 
     public static void showCreated(Window owner, String fullName, NewEmployeeAccount account) {
         show(owner, "Tạo tài khoản thành công", "Đã tạo tài khoản cho nhân viên " + fullName, account);
     }
 
     public static void showReset(Window owner, String fullName, NewEmployeeAccount account) {
-        show(owner, "Cấp lại mật khẩu thành công", "Đã cấp mật khẩu mới cho nhân viên " + fullName
-                + "\nMật khẩu cũ không còn dùng được", account);
+        show(
+            owner,
+            "Cấp lại mật khẩu thành công",
+            "Đã cấp mật khẩu mới cho nhân viên " + fullName + "\nMật khẩu cũ không còn dùng được",
+            account
+        );
     }
 
     private static void show(Window owner, String title, String header, NewEmployeeAccount account) {
@@ -46,8 +52,10 @@ public final class NewAccountDialog {
         addRow(grid, 0, "Mã nhân viên\n(tên đăng nhập)", account.username());
         addRow(grid, 1, "Mật khẩu", account.temporaryPassword());
 
-        Label note = new Label("Mật khẩu chỉ hiển thị một lần. Hãy sao chép và gửi cho nhân viên; "
-                + "nhân viên phải đổi mật khẩu ở lần đăng nhập đầu tiên.");
+        Label note = new Label(
+            "Mật khẩu chỉ hiển thị một lần. Hãy sao chép và gửi cho nhân viên; " +
+                "nhân viên phải đổi mật khẩu ở lần đăng nhập đầu tiên."
+        );
         note.setWrapText(true);
         note.setStyle("-fx-text-fill: #B45309; -fx-font-size: 12.5px;");
 

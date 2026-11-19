@@ -11,8 +11,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 
 final class CartQuantityControl {
-    private CartQuantityControl() {
-    }
+
+    private CartQuantityControl() {}
 
     static HBox create(CartItem item, CartOrder order, double inputWidth, Runnable onChanged) {
         Button btnMinus = new Button("-");
@@ -51,7 +51,10 @@ final class CartQuantityControl {
                 int newQty = Integer.parseInt(text);
                 if (newQty <= 0) newQty = 1;
                 if (newQty > item.getMaxStock()) {
-                    DialogUtils.showWarning("Vượt quá tồn kho", "Số lượng trong kho chỉ còn " + item.getMaxStock() + ".");
+                    DialogUtils.showWarning(
+                        "Vượt quá tồn kho",
+                        "Số lượng trong kho chỉ còn " + item.getMaxStock() + "."
+                    );
                     newQty = item.getMaxStock();
                 }
                 if (newQty != item.getQuantity()) {

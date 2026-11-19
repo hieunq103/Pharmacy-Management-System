@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class DailySalesDTO {
+
     private final LocalDate date;
     private final String dayOfWeekLabel;
     private final BigDecimal amount;
@@ -32,4 +33,3 @@ public class DailySalesDTO {
         return totalQuantity;
     }
 }
-

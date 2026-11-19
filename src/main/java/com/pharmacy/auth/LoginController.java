@@ -1,8 +1,8 @@
 package com.pharmacy.auth;
 
+import com.pharmacy.account.Account;
 import com.pharmacy.auth.dto.LoginRequest;
 import com.pharmacy.common.BackgroundTasks;
-import com.pharmacy.account.Account;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormValidator;
 import com.pharmacy.common.TogglePasswordField;
@@ -11,6 +11,8 @@ import com.pharmacy.infra.exception.AppException;
 import com.pharmacy.infra.exception.ErrorCode;
 import com.pharmacy.profile.ChangePasswordDialog;
 import com.pharmacy.profile.ProfileService;
+import java.io.IOException;
+import java.net.URL;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -29,24 +31,25 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URL;
-
 public class LoginController {
-    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
 
+    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
 
     @FXML
     private StackPane heroPane;
+
     @FXML
     private ImageView heroImageView;
 
     @FXML
     private TextField txtUsername;
+
     @FXML
     private TogglePasswordField txtPassword;
+
     @FXML
     private Label lblError;
+
     @FXML
     private Button btnLogin;
 
@@ -112,13 +115,13 @@ public class LoginController {
         FormValidator.ValidationResult validationResult = FormValidator.validateLoginForm(username, password);
         if (!validationResult.isValid()) {
             showError(validationResult.errorCode());
-            if (validationResult.targetField() == FormValidator.TargetField.IDENTIFIER
-                    || validationResult.targetField() == FormValidator.TargetField.BOTH) {
-                if (txtUsername != null)
-                    txtUsername.requestFocus();
+            if (
+                validationResult.targetField() == FormValidator.TargetField.IDENTIFIER ||
+                validationResult.targetField() == FormValidator.TargetField.BOTH
+            ) {
+                if (txtUsername != null) txtUsername.requestFocus();
             } else if (validationResult.targetField() == FormValidator.TargetField.PASSWORD) {
-                if (txtPassword != null)
-                    txtPassword.requestFocus();
+                if (txtPassword != null) txtPassword.requestFocus();
             }
             return;
         }
@@ -153,9 +156,10 @@ public class LoginController {
             } catch (IOException ioEx) {
                 log.error("Không thể tải màn hình chính: ", ioEx);
                 DialogUtils.showError(
-                        btnLogin != null && btnLogin.getScene() != null ? btnLogin.getScene().getWindow() : null,
-                        "Lỗi giao diện",
-                        "Không thể nạp màn hình chính: " + ioEx.getMessage());
+                    btnLogin != null && btnLogin.getScene() != null ? btnLogin.getScene().getWindow() : null,
+                    "Lỗi giao diện",
+                    "Không thể nạp màn hình chính: " + ioEx.getMessage()
+                );
             }
         });
 
@@ -194,10 +198,11 @@ public class LoginController {
     private boolean promptForcedPasswordChange(Account account) {
         boolean[] changed = { false };
         ChangePasswordDialog dialog = new ChangePasswordDialog(
-                btnLogin != null && btnLogin.getScene() != null ? btnLogin.getScene().getWindow() : null,
-                new ProfileService(),
-                account.getUsername(),
-                msg -> changed[0] = true);
+            btnLogin != null && btnLogin.getScene() != null ? btnLogin.getScene().getWindow() : null,
+            new ProfileService(),
+            account.getUsername(),
+            msg -> changed[0] = true
+        );
         dialog.setTitle("Đổi mật khẩu lần đầu");
         dialog.setHeaderText("Bạn đang dùng mật khẩu tạm do quản lý cấp. Vui lòng đổi mật khẩu để tiếp tục.");
         dialog.showAndWait();
@@ -214,8 +219,8 @@ public class LoginController {
         Stage stage = (Stage) btnLogin.getScene().getWindow();
 
         Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
-        double currentW = (stage.getWidth() > 0) ? stage.getWidth() : 1280;
-        double currentH = (stage.getHeight() > 0) ? stage.getHeight() : 760;
+        double currentW = stage.getWidth() > 0 ? stage.getWidth() : 1280;
+        double currentH = stage.getHeight() > 0 ? stage.getHeight() : 760;
         double targetWidth = Math.min(currentW, visualBounds.getWidth());
         double targetHeight = Math.min(currentH, visualBounds.getHeight() - 15);
 
@@ -274,12 +279,13 @@ public class LoginController {
     public void onLoginHover(javafx.scene.input.MouseEvent event) {
         if (btnLogin != null && !btnLogin.isDisabled()) {
             btnLogin.setStyle(
-                    "-fx-font-family: 'Inter 18pt SemiBold';" +
-                            "-fx-background-color: #0052B4;" +
-                            "-fx-text-fill: white;" +
-                            "-fx-font-size: 16px;" +
-                            "-fx-background-radius: 8;" +
-                            "-fx-cursor: hand;");
+                "-fx-font-family: 'Inter 18pt SemiBold';" +
+                    "-fx-background-color: #0052B4;" +
+                    "-fx-text-fill: white;" +
+                    "-fx-font-size: 16px;" +
+                    "-fx-background-radius: 8;" +
+                    "-fx-cursor: hand;"
+            );
         }
     }
 
@@ -287,12 +293,13 @@ public class LoginController {
     public void onLoginHoverExit(javafx.scene.input.MouseEvent event) {
         if (btnLogin != null && !btnLogin.isDisabled()) {
             btnLogin.setStyle(
-                    "-fx-font-family: 'Inter 18pt SemiBold';" +
-                            "-fx-background-color: #1D70E2;" +
-                            "-fx-text-fill: white;" +
-                            "-fx-font-size: 16px;" +
-                            "-fx-background-radius: 8;" +
-                            "-fx-cursor: hand;");
+                "-fx-font-family: 'Inter 18pt SemiBold';" +
+                    "-fx-background-color: #1D70E2;" +
+                    "-fx-text-fill: white;" +
+                    "-fx-font-size: 16px;" +
+                    "-fx-background-radius: 8;" +
+                    "-fx-cursor: hand;"
+            );
         }
     }
 }

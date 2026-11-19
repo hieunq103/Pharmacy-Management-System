@@ -4,10 +4,15 @@ import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.UserSession;
+import com.pharmacy.report.dto.MedicineTimelineDTO;
 import com.pharmacy.report.dto.ReportSummaryDTO;
 import com.pharmacy.report.dto.RevenueTimelineDTO;
-import com.pharmacy.report.dto.MedicineTimelineDTO;
 import com.pharmacy.report.dto.SoldMedicineDTO;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,64 +33,125 @@ import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
-import java.util.List;
-
 public class ReportController {
+
     private static final Logger log = LoggerFactory.getLogger(ReportController.class);
     private final ReportService reportService;
-
 
     private Task<?> currentChartTask;
     private Task<?> currentMedTask;
 
-    @FXML private Button btnFilterDay;
-    @FXML private DatePicker dpSelectedDate;
-    @FXML private Button btnFilterMonth;
-    @FXML private TextField txtFilterYear;
-    @FXML private ComboBox<String> cbFilterMonth;
+    @FXML
+    private Button btnFilterDay;
 
-    @FXML private Label lblTotalRevenue;
-    @FXML private Label lblCashRevenue;
-    @FXML private Label lblTransferRevenue;
-    @FXML private Label lblTotalMedicinesSold;
-    @FXML private Label lblTotalOrders;
+    @FXML
+    private DatePicker dpSelectedDate;
 
-    @FXML private TabPane tabPaneReport;
-    @FXML private Tab tabRevenue;
-    @FXML private Tab tabMedicines;
+    @FXML
+    private Button btnFilterMonth;
 
-    @FXML private Label lblChartTitle;
-    @FXML private BarChart<String, Number> barChartRevenue;
-    @FXML private CategoryAxis chartXAxis;
-    @FXML private NumberAxis chartYAxis;
+    @FXML
+    private TextField txtFilterYear;
 
-    @FXML private Label lblMedChartTitle;
-    @FXML private BarChart<String, Number> barChartMedicines;
-    @FXML private CategoryAxis chartMedXAxis;
-    @FXML private NumberAxis chartMedYAxis;
-    @FXML private VBox boxMedicinesTab;
-    @FXML private TableView<SoldMedicineDTO> tblSoldMedicines;
-    @FXML private TableColumn<SoldMedicineDTO, String> colMedIndex;
-    @FXML private TableColumn<SoldMedicineDTO, String> colMedCode;
-    @FXML private TableColumn<SoldMedicineDTO, String> colMedName;
-    @FXML private TableColumn<SoldMedicineDTO, String> colMedCategory;
-    @FXML private TableColumn<SoldMedicineDTO, String> colMedUnit;
-    @FXML private TableColumn<SoldMedicineDTO, String> colMedQtySold;
-    @FXML private TableColumn<SoldMedicineDTO, String> colMedRevenue;
-    @FXML private Label lblMedTableTitle;
-    @FXML private Button btnViewFull;
-    @FXML private javafx.scene.control.ScrollPane reportScrollPane;
-    @FXML private javafx.scene.layout.VBox loadingOverlay;
+    @FXML
+    private ComboBox<String> cbFilterMonth;
+
+    @FXML
+    private Label lblTotalRevenue;
+
+    @FXML
+    private Label lblCashRevenue;
+
+    @FXML
+    private Label lblTransferRevenue;
+
+    @FXML
+    private Label lblTotalMedicinesSold;
+
+    @FXML
+    private Label lblTotalOrders;
+
+    @FXML
+    private TabPane tabPaneReport;
+
+    @FXML
+    private Tab tabRevenue;
+
+    @FXML
+    private Tab tabMedicines;
+
+    @FXML
+    private Label lblChartTitle;
+
+    @FXML
+    private BarChart<String, Number> barChartRevenue;
+
+    @FXML
+    private CategoryAxis chartXAxis;
+
+    @FXML
+    private NumberAxis chartYAxis;
+
+    @FXML
+    private Label lblMedChartTitle;
+
+    @FXML
+    private BarChart<String, Number> barChartMedicines;
+
+    @FXML
+    private CategoryAxis chartMedXAxis;
+
+    @FXML
+    private NumberAxis chartMedYAxis;
+
+    @FXML
+    private VBox boxMedicinesTab;
+
+    @FXML
+    private TableView<SoldMedicineDTO> tblSoldMedicines;
+
+    @FXML
+    private TableColumn<SoldMedicineDTO, String> colMedIndex;
+
+    @FXML
+    private TableColumn<SoldMedicineDTO, String> colMedCode;
+
+    @FXML
+    private TableColumn<SoldMedicineDTO, String> colMedName;
+
+    @FXML
+    private TableColumn<SoldMedicineDTO, String> colMedCategory;
+
+    @FXML
+    private TableColumn<SoldMedicineDTO, String> colMedUnit;
+
+    @FXML
+    private TableColumn<SoldMedicineDTO, String> colMedQtySold;
+
+    @FXML
+    private TableColumn<SoldMedicineDTO, String> colMedRevenue;
+
+    @FXML
+    private Label lblMedTableTitle;
+
+    @FXML
+    private Button btnViewFull;
+
+    @FXML
+    private javafx.scene.control.ScrollPane reportScrollPane;
+
+    @FXML
+    private javafx.scene.layout.VBox loadingOverlay;
 
     private static final javafx.util.Duration LOADING_DELAY = javafx.util.Duration.millis(150);
     private int pendingLoads = 0;
     private final javafx.animation.PauseTransition loadingDelay = new javafx.animation.PauseTransition(LOADING_DELAY);
 
-    private enum PeriodMode { DAY, MONTH }
+    private enum PeriodMode {
+        DAY,
+        MONTH,
+    }
+
     private PeriodMode currentMode = PeriodMode.DAY;
     private LocalDate selectedDate = LocalDate.now();
     private int selectedYear = LocalDate.now().getYear();
@@ -121,20 +187,22 @@ public class ReportController {
 
     private void setupChartAxes() {
         if (chartYAxis != null) {
-            chartYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartYAxis) {
-                @Override
-                public String toString(Number object) {
-                    double val = object.doubleValue();
-                    if (val >= 1_000_000_000) {
-                        return String.format("%.1fB", val / 1_000_000_000);
-                    } else if (val >= 1_000_000) {
-                        return String.format("%.0fM", val / 1_000_000);
-                    } else if (val >= 1_000) {
-                        return String.format("%.0fK", val / 1_000);
+            chartYAxis.setTickLabelFormatter(
+                new NumberAxis.DefaultFormatter(chartYAxis) {
+                    @Override
+                    public String toString(Number object) {
+                        double val = object.doubleValue();
+                        if (val >= 1_000_000_000) {
+                            return String.format("%.1fB", val / 1_000_000_000);
+                        } else if (val >= 1_000_000) {
+                            return String.format("%.0fM", val / 1_000_000);
+                        } else if (val >= 1_000) {
+                            return String.format("%.0fK", val / 1_000);
+                        }
+                        return String.format("%.0f", val);
                     }
-                    return String.format("%.0f", val);
                 }
-            });
+            );
         }
         if (barChartRevenue != null) {
             barChartRevenue.widthProperty().addListener((obs, oldVal, newVal) -> {
@@ -145,18 +213,20 @@ public class ReportController {
         }
 
         if (chartMedYAxis != null) {
-            chartMedYAxis.setTickLabelFormatter(new NumberAxis.DefaultFormatter(chartMedYAxis) {
-                @Override
-                public String toString(Number object) {
-                    double val = object.doubleValue();
-                    if (val >= 1_000_000) {
-                        return String.format("%.1fM", val / 1_000_000);
-                    } else if (val >= 1_000) {
-                        return String.format("%.1fK", val / 1_000);
+            chartMedYAxis.setTickLabelFormatter(
+                new NumberAxis.DefaultFormatter(chartMedYAxis) {
+                    @Override
+                    public String toString(Number object) {
+                        double val = object.doubleValue();
+                        if (val >= 1_000_000) {
+                            return String.format("%.1fM", val / 1_000_000);
+                        } else if (val >= 1_000) {
+                            return String.format("%.1fK", val / 1_000);
+                        }
+                        return String.format("%.0f", val);
                     }
-                    return String.format("%.0f", val);
                 }
-            });
+            );
         }
         if (barChartMedicines != null) {
             barChartMedicines.widthProperty().addListener((obs, oldVal, newVal) -> {
@@ -182,7 +252,7 @@ public class ReportController {
 
         double plotWidth = Math.max(300.0, chartWidth - 80.0);
         double slotWidth = plotWidth / currentTimelineCount;
-        double calculatedGap = (slotWidth > targetBarWidth) ? (slotWidth - targetBarWidth) : 4.0;
+        double calculatedGap = slotWidth > targetBarWidth ? slotWidth - targetBarWidth : 4.0;
 
         if (Math.abs(chart.getCategoryGap() - calculatedGap) > 1.0) {
             chart.setCategoryGap(calculatedGap);
@@ -190,18 +260,20 @@ public class ReportController {
     }
 
     private void initTableColumns() {
-        colMedIndex.setCellFactory(col -> new TableCell<SoldMedicineDTO, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                    setText(null);
-                } else {
-                    int index = getIndex() + 1;
-                    setText(String.valueOf(index));
+        colMedIndex.setCellFactory(col ->
+            new TableCell<SoldMedicineDTO, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                        setText(null);
+                    } else {
+                        int index = getIndex() + 1;
+                        setText(String.valueOf(index));
+                    }
                 }
             }
-        });
+        );
 
         colMedCode.setCellValueFactory(new PropertyValueFactory<>("medicineCode"));
         colMedName.setCellValueFactory(new PropertyValueFactory<>("medicineName"));
@@ -210,21 +282,23 @@ public class ReportController {
         colMedQtySold.setCellValueFactory(new PropertyValueFactory<>("formattedQuantity"));
 
         colMedRevenue.setCellValueFactory(new PropertyValueFactory<>("formattedRevenue"));
-        colMedRevenue.setCellFactory(col -> new TableCell<SoldMedicineDTO, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                    setStyle("");
-                } else {
-                    setText(item);
-                    setAlignment(Pos.CENTER);
-                    setStyle("-fx-alignment: CENTER;");
+        colMedRevenue.setCellFactory(col ->
+            new TableCell<SoldMedicineDTO, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                        setStyle("");
+                    } else {
+                        setText(item);
+                        setAlignment(Pos.CENTER);
+                        setStyle("-fx-alignment: CENTER;");
+                    }
                 }
             }
-        });
+        );
         colMedRevenue.setSortable(false);
 
         Label emptyPlaceholder = new Label("Không có dữ liệu thuốc đã bán trong kỳ này");
@@ -251,7 +325,10 @@ public class ReportController {
             }
 
             if (Math.abs(dy) > 0 && reportScrollPane != null) {
-                double contentHeight = reportScrollPane.getContent() != null ? reportScrollPane.getContent().getBoundsInLocal().getHeight() : 0.0;
+                double contentHeight =
+                    reportScrollPane.getContent() != null
+                        ? reportScrollPane.getContent().getBoundsInLocal().getHeight()
+                        : 0.0;
                 double spHeight = reportScrollPane.getHeight();
                 double scrollable = Math.max(100.0, contentHeight - spHeight);
                 double currentV = reportScrollPane.getVvalue();
@@ -263,10 +340,12 @@ public class ReportController {
             event.consume();
         });
 
-        topSoldMedicines.addListener((javafx.collections.ListChangeListener<SoldMedicineDTO>) c -> {
-            updateSoldMedicinesTableHeight();
-            com.pharmacy.common.TableSyncHelper.resetSingleTable(tblSoldMedicines);
-        });
+        topSoldMedicines.addListener(
+            (javafx.collections.ListChangeListener<SoldMedicineDTO>) c -> {
+                updateSoldMedicinesTableHeight();
+                com.pharmacy.common.TableSyncHelper.resetSingleTable(tblSoldMedicines);
+            }
+        );
 
         tblSoldMedicines.skinProperty().addListener((obs, o, n) -> {
             if (n != null) {
@@ -295,7 +374,7 @@ public class ReportController {
             height = 160.0;
         } else {
             // Header (52px) + mỗi hàng (50px) + thanh cuộn ngang & padding (34px)
-            height = 52.0 + (count * 50.0) + 34.0;
+            height = 52.0 + count * 50.0 + 34.0;
         }
 
         tblSoldMedicines.setPrefHeight(height);
@@ -338,21 +417,24 @@ public class ReportController {
     private void initTabSelectionListener() {
         if (tabPaneReport != null) {
             applyScrollForTab(tabPaneReport.getSelectionModel().getSelectedItem());
-            tabPaneReport.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
-                applyScrollForTab(newTab);
-                if (newTab == tabMedicines) {
-                    Platform.runLater(() -> {
-                        adjustSingleChartGap(barChartMedicines);
-                        updateSoldMedicinesTableHeight();
-                        com.pharmacy.common.TableSyncHelper.resetSingleTable(tblSoldMedicines);
-                    });
-                    if (!medicinesLoadedForCurrentPeriod) {
-                        loadMedicinesData();
+            tabPaneReport
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener((obs, oldTab, newTab) -> {
+                    applyScrollForTab(newTab);
+                    if (newTab == tabMedicines) {
+                        Platform.runLater(() -> {
+                            adjustSingleChartGap(barChartMedicines);
+                            updateSoldMedicinesTableHeight();
+                            com.pharmacy.common.TableSyncHelper.resetSingleTable(tblSoldMedicines);
+                        });
+                        if (!medicinesLoadedForCurrentPeriod) {
+                            loadMedicinesData();
+                        }
+                    } else if (newTab == tabRevenue) {
+                        Platform.runLater(() -> adjustSingleChartGap(barChartRevenue));
                     }
-                } else if (newTab == tabRevenue) {
-                    Platform.runLater(() -> adjustSingleChartGap(barChartRevenue));
-                }
-            });
+                });
         }
     }
 
@@ -393,15 +475,18 @@ public class ReportController {
         if (txtFilterYear != null && txtFilterYear.getText() != null) {
             String text = txtFilterYear.getText().trim();
             if (text.isEmpty()) {
-                DialogUtils.showWarning("Năm không hợp lệ", "Vui lòng nhập số năm (ví dụ: " + LocalDate.now().getYear() + ").");
+                DialogUtils.showWarning(
+                    "Năm không hợp lệ",
+                    "Vui lòng nhập số năm (ví dụ: " + LocalDate.now().getYear() + ")."
+                );
                 txtFilterYear.setText(String.valueOf(selectedYear));
                 return;
             }
             try {
                 int y = Integer.parseInt(text);
                 if (y >= 2000 && y <= 2100) {
-                    boolean yearChanged = (selectedYear != y);
-                    boolean modeChanged = (currentMode != PeriodMode.MONTH);
+                    boolean yearChanged = selectedYear != y;
+                    boolean modeChanged = currentMode != PeriodMode.MONTH;
                     selectedYear = y;
                     if (modeChanged) {
                         currentMode = PeriodMode.MONTH;
@@ -415,7 +500,10 @@ public class ReportController {
                     txtFilterYear.setText(String.valueOf(selectedYear));
                 }
             } catch (NumberFormatException e) {
-                DialogUtils.showWarning("Năm không hợp lệ", "Vui lòng nhập định dạng năm hợp lệ (ví dụ: " + LocalDate.now().getYear() + ").");
+                DialogUtils.showWarning(
+                    "Năm không hợp lệ",
+                    "Vui lòng nhập định dạng năm hợp lệ (ví dụ: " + LocalDate.now().getYear() + ")."
+                );
                 txtFilterYear.setText(String.valueOf(selectedYear));
             }
         }
@@ -446,7 +534,10 @@ public class ReportController {
                     txtFilterYear.setText(String.valueOf(selectedYear));
                 }
             } catch (NumberFormatException e) {
-                DialogUtils.showWarning("Năm không hợp lệ", "Vui lòng nhập định dạng năm hợp lệ (ví dụ: " + LocalDate.now().getYear() + ").");
+                DialogUtils.showWarning(
+                    "Năm không hợp lệ",
+                    "Vui lòng nhập định dạng năm hợp lệ (ví dụ: " + LocalDate.now().getYear() + ")."
+                );
                 txtFilterYear.setText(String.valueOf(selectedYear));
             }
         }
@@ -481,9 +572,11 @@ public class ReportController {
             loadingDelay.playFromStart();
         }
         task.stateProperty().addListener((obs, oldState, state) -> {
-            if (state == javafx.concurrent.Worker.State.SUCCEEDED
-                    || state == javafx.concurrent.Worker.State.FAILED
-                    || state == javafx.concurrent.Worker.State.CANCELLED) {
+            if (
+                state == javafx.concurrent.Worker.State.SUCCEEDED ||
+                state == javafx.concurrent.Worker.State.FAILED ||
+                state == javafx.concurrent.Worker.State.CANCELLED
+            ) {
                 pendingLoads = Math.max(0, pendingLoads - 1);
                 if (pendingLoads == 0) {
                     loadingDelay.stop();
@@ -536,8 +629,12 @@ public class ReportController {
                     revTimeline = reportService.get7DaysRevenueTimelineUpTo(targetDate, empId);
                     medTimeline = reportService.get7DaysMedicineTimelineUpTo(targetDate, empId);
 
-                    revChartTitle = "Biểu đồ doanh số 7 ngày (tính đến " + targetDate.format(FormatUtils.DATE_FORMATTER) + ")";
-                    medChartTitle = "Biểu đồ sản lượng thuốc đã bán 7 ngày (tính đến " + targetDate.format(FormatUtils.DATE_FORMATTER) + ")";
+                    revChartTitle =
+                        "Biểu đồ doanh số 7 ngày (tính đến " + targetDate.format(FormatUtils.DATE_FORMATTER) + ")";
+                    medChartTitle =
+                        "Biểu đồ sản lượng thuốc đã bán 7 ngày (tính đến " +
+                        targetDate.format(FormatUtils.DATE_FORMATTER) +
+                        ")";
                 } else {
                     LocalDate firstDay = LocalDate.of(targetYear, targetMonth, 1);
                     LocalDate lastDay = firstDay.with(TemporalAdjusters.lastDayOfMonth());
@@ -547,7 +644,8 @@ public class ReportController {
                     medTimeline = reportService.get12MonthsMedicineTimeline(targetYear, empId);
 
                     revChartTitle = "Biểu đồ doanh số 12 tháng năm " + targetYear + " (Tháng " + targetMonth + " )";
-                    medChartTitle = "Biểu đồ sản lượng thuốc đã bán 12 tháng năm " + targetYear + " (Tháng " + targetMonth + " )";
+                    medChartTitle =
+                        "Biểu đồ sản lượng thuốc đã bán 12 tháng năm " + targetYear + " (Tháng " + targetMonth + " )";
                 }
                 return null;
             }
@@ -556,7 +654,11 @@ public class ReportController {
             protected void succeeded() {
                 updateStatCards(summary);
 
-                boolean hasYearRevenue = revTimeline != null && revTimeline.stream().anyMatch(p -> p.revenue() != null && p.revenue().compareTo(BigDecimal.ZERO) > 0);
+                boolean hasYearRevenue =
+                    revTimeline != null &&
+                    revTimeline
+                        .stream()
+                        .anyMatch(p -> p.revenue() != null && p.revenue().compareTo(BigDecimal.ZERO) > 0);
                 boolean hasMedQty = medTimeline != null && medTimeline.stream().anyMatch(p -> p.quantitySold() > 0);
                 boolean hasYearData = hasYearRevenue || hasMedQty;
 
@@ -566,7 +668,7 @@ public class ReportController {
                         medChartTitle += " (Chưa có dữ liệu)";
                     }
                 } else {
-                    boolean hasDayData = (summary != null && summary.totalOrders() > 0);
+                    boolean hasDayData = summary != null && summary.totalOrders() > 0;
                     if (!hasDayData && !hasYearRevenue) {
                         revChartTitle += " (Chưa có dữ liệu)";
                         medChartTitle += " (Chưa có dữ liệu)";
@@ -624,11 +726,14 @@ public class ReportController {
                 applyMedicineTablePeriod(mode, targetDate, targetYear, targetMonth);
 
                 if (masterSoldMedicines.isEmpty()) {
-                    String periodText = (mode == PeriodMode.DAY)
-                            ? ("ngày " + targetDate.format(FormatUtils.DATE_FORMATTER))
-                            : ("Tháng " + targetMonth + "/" + targetYear);
+                    String periodText =
+                        mode == PeriodMode.DAY
+                            ? "ngày " + targetDate.format(FormatUtils.DATE_FORMATTER)
+                            : "Tháng " + targetMonth + "/" + targetYear;
                     Label emptyPlaceholder = new Label("Không có dữ liệu thuốc đã bán trong " + periodText);
-                    emptyPlaceholder.setStyle("-fx-font-family: 'Inter 18pt'; -fx-font-size: 14px; -fx-text-fill: #64748B;");
+                    emptyPlaceholder.setStyle(
+                        "-fx-font-family: 'Inter 18pt'; -fx-font-size: 14px; -fx-text-fill: #64748B;"
+                    );
                     tblSoldMedicines.setPlaceholder(emptyPlaceholder);
                 }
             }
@@ -673,9 +778,10 @@ public class ReportController {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Doanh số (VNĐ)");
 
-        final String selectedLabel = (currentMode == PeriodMode.DAY)
+        final String selectedLabel =
+            currentMode == PeriodMode.DAY
                 ? selectedDate.format(DateTimeFormatter.ofPattern("dd/MM"))
-                : ("Thg " + selectedMonth);
+                : "Thg " + selectedMonth;
 
         if (timeline != null && !timeline.isEmpty()) {
             currentTimelineCount = timeline.size();
@@ -711,9 +817,10 @@ public class ReportController {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Số thuốc (Sản phẩm)");
 
-        final String selectedLabel = (currentMode == PeriodMode.DAY)
+        final String selectedLabel =
+            currentMode == PeriodMode.DAY
                 ? selectedDate.format(DateTimeFormatter.ofPattern("dd/MM"))
-                : ("Thg " + selectedMonth);
+                : "Thg " + selectedMonth;
 
         if (timeline != null && !timeline.isEmpty()) {
             for (MedicineTimelineDTO point : timeline) {
@@ -739,7 +846,7 @@ public class ReportController {
     }
 
     private void applyBarStyling(XYChart.Data<String, Number> data, boolean isSelected, boolean isGreenChart) {
-        String styleClass = isSelected ? "chart-bar-orange" : (isGreenChart ? "chart-bar-green" : "chart-bar-blue");
+        String styleClass = isSelected ? "chart-bar-orange" : isGreenChart ? "chart-bar-green" : "chart-bar-blue";
         Runnable applyStyle = () -> {
             Node node = data.getNode();
             if (node != null) {
@@ -764,11 +871,25 @@ public class ReportController {
             return point.tooltipText();
         }
         if (currentMode == PeriodMode.MONTH) {
-            return "Tháng " + point.timeLabel().replace("Thg ", "").trim() + "/" + selectedYear
-                    + ": " + String.format("%,d", point.quantitySold()) + " sản phẩm";
+            return (
+                "Tháng " +
+                point.timeLabel().replace("Thg ", "").trim() +
+                "/" +
+                selectedYear +
+                ": " +
+                String.format("%,d", point.quantitySold()) +
+                " sản phẩm"
+            );
         } else {
-            return "Ngày " + point.timeLabel() + "/" + selectedDate.getYear()
-                    + ": " + String.format("%,d", point.quantitySold()) + " sản phẩm";
+            return (
+                "Ngày " +
+                point.timeLabel() +
+                "/" +
+                selectedDate.getYear() +
+                ": " +
+                String.format("%,d", point.quantitySold()) +
+                " sản phẩm"
+            );
         }
     }
 
@@ -789,15 +910,17 @@ public class ReportController {
 
     private void installBarTooltip(javafx.scene.Node node, String text) {
         Tooltip tooltip = new Tooltip(text);
-        tooltip.setStyle("""
-            -fx-font-size: 13px;
-            -fx-font-family: 'Inter 18pt SemiBold', 'Inter', sans-serif;
-            -fx-background-color: #0F172A;
-            -fx-text-fill: #FFFFFF;
-            -fx-background-radius: 6px;
-            -fx-padding: 6px 12px;
-            -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 8, 0, 0, 2);
-        """);
+        tooltip.setStyle(
+            """
+                -fx-font-size: 13px;
+                -fx-font-family: 'Inter 18pt SemiBold', 'Inter', sans-serif;
+                -fx-background-color: #0F172A;
+                -fx-text-fill: #FFFFFF;
+                -fx-background-radius: 6px;
+                -fx-padding: 6px 12px;
+                -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 8, 0, 0, 2);
+            """
+        );
         tooltip.setShowDelay(javafx.util.Duration.millis(50));
         tooltip.setHideDelay(javafx.util.Duration.millis(150));
         Tooltip.install(node, tooltip);
@@ -809,11 +932,25 @@ public class ReportController {
             return point.tooltipText();
         }
         if (currentMode == PeriodMode.MONTH) {
-            return "Tháng " + point.timeLabel().replace("Thg ", "").trim() + "/" + selectedYear
-                    + ": " + FormatUtils.formatCurrency(point.revenue()) + " VNĐ";
+            return (
+                "Tháng " +
+                point.timeLabel().replace("Thg ", "").trim() +
+                "/" +
+                selectedYear +
+                ": " +
+                FormatUtils.formatCurrency(point.revenue()) +
+                " VNĐ"
+            );
         } else {
-            return "Ngày " + point.timeLabel() + "/" + selectedDate.getYear()
-                    + ": " + FormatUtils.formatCurrency(point.revenue()) + " VNĐ";
+            return (
+                "Ngày " +
+                point.timeLabel() +
+                "/" +
+                selectedDate.getYear() +
+                ": " +
+                FormatUtils.formatCurrency(point.revenue()) +
+                " VNĐ"
+            );
         }
     }
 
@@ -823,9 +960,11 @@ public class ReportController {
         medPeriodYear = year;
         medPeriodMonth = month;
         if (lblMedTableTitle != null) {
-            lblMedTableTitle.setText(mode == PeriodMode.DAY
+            lblMedTableTitle.setText(
+                mode == PeriodMode.DAY
                     ? "Top " + TOP_LIMIT + " thuốc bán chạy nhất ngày " + date.format(FormatUtils.DATE_FORMATTER)
-                    : "Top " + TOP_LIMIT + " thuốc bán chạy nhất tháng " + month + "/" + year);
+                    : "Top " + TOP_LIMIT + " thuốc bán chạy nhất tháng " + month + "/" + year
+            );
         }
         topSoldMedicines.setAll(masterSoldMedicines.subList(0, Math.min(TOP_LIMIT, masterSoldMedicines.size())));
         updateSoldMedicinesTableHeight();

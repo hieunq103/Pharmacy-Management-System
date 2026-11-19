@@ -3,10 +3,10 @@ package com.pharmacy.infra.security;
 import org.mindrot.jbcrypt.BCrypt;
 
 public final class PasswordEncoder {
+
     private static final int BCRYPT_WORK_FACTOR = 12;
 
-    private PasswordEncoder() {
-    }
+    private PasswordEncoder() {}
 
     public static String hash(String plainPassword) {
         if (plainPassword == null || plainPassword.isEmpty()) {

@@ -1,5 +1,6 @@
 package com.pharmacy.common;
 
+import java.util.Map;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.control.ContextMenu;
@@ -9,21 +10,19 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.layout.HBox;
 
-import java.util.Map;
-
 public final class TableFilterHelper {
-    private TableFilterHelper() {
-    }
+
+    private TableFilterHelper() {}
 
     public static <T> void setupColumnFilter(
-            TableColumn<T, ?> column,
-            String title,
-            String[] options,
-            String filterKey,
-            Map<String, String> activeFilters,
-            Runnable onFilterChanged) {
-        if (column == null || options == null)
-            return;
+        TableColumn<T, ?> column,
+        String title,
+        String[] options,
+        String filterKey,
+        Map<String, String> activeFilters,
+        Runnable onFilterChanged
+    ) {
+        if (column == null || options == null) return;
 
         Label lblTitle = new Label(title);
         lblTitle.getStyleClass().add("label");
@@ -35,7 +34,7 @@ public final class TableFilterHelper {
         menu.getStyleClass().add("filter-context-menu");
 
         java.util.function.Consumer<String> filterSetter = targetOpt -> {
-            String selected = (targetOpt != null && !targetOpt.isBlank()) ? targetOpt : "Tất cả";
+            String selected = targetOpt != null && !targetOpt.isBlank() ? targetOpt : "Tất cả";
             if ("Tất cả".equals(selected)) {
                 activeFilters.remove(filterKey);
             } else {
@@ -100,14 +99,14 @@ public final class TableFilterHelper {
     }
 
     public static <T> void setupMultiSelectColumnFilter(
-            TableColumn<T, ?> column,
-            String title,
-            String[] options,
-            String filterKey,
-            Map<String, String> activeFilters,
-            Runnable onFilterChanged) {
-        if (column == null || options == null)
-            return;
+        TableColumn<T, ?> column,
+        String title,
+        String[] options,
+        String filterKey,
+        Map<String, String> activeFilters,
+        Runnable onFilterChanged
+    ) {
+        if (column == null || options == null) return;
 
         Label lblTitle = new Label(title);
         lblTitle.getStyleClass().add("label");
@@ -124,8 +123,11 @@ public final class TableFilterHelper {
         chkAll.setSelected(true);
 
         java.util.function.Consumer<java.util.Collection<String>> multiSetter = selectedValues -> {
-            boolean isAll = selectedValues == null || selectedValues.isEmpty() || selectedValues.contains("Tất cả")
-                    || selectedValues.size() == options.length;
+            boolean isAll =
+                selectedValues == null ||
+                selectedValues.isEmpty() ||
+                selectedValues.contains("Tất cả") ||
+                selectedValues.size() == options.length;
 
             if (isAll) {
                 activeFilters.remove(filterKey);
@@ -221,12 +223,13 @@ public final class TableFilterHelper {
     }
 
     public static void setMultiFilter(TableColumn<?, ?> column, String... values) {
-        if (column == null)
-            return;
+        if (column == null) return;
         Object setter = column.getProperties().get("tableFilterHelper_multiSetter");
         if (setter instanceof java.util.function.Consumer<?> consumer) {
             @SuppressWarnings("unchecked")
-            java.util.function.Consumer<java.util.Collection<String>> collConsumer = (java.util.function.Consumer<java.util.Collection<String>>) consumer;
+            java.util.function.Consumer<java.util.Collection<String>> collConsumer = (java.util.function.Consumer<
+                java.util.Collection<String>
+            >) consumer;
             collConsumer.accept(values != null ? java.util.Arrays.asList(values) : java.util.Collections.emptyList());
         }
     }

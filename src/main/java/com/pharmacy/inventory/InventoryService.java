@@ -10,7 +10,6 @@ import com.pharmacy.inventory.dto.InventoryTransactionDTO;
 import com.pharmacy.inventory.dto.InventoryTransactionDetailDTO;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
 import com.pharmacy.inventory.dto.MedicineLotDTO;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -18,18 +17,39 @@ import java.util.List;
 import java.util.Set;
 
 public class InventoryService {
+
     private final InventoryRepository inventoryRepository;
 
     public InventoryService() {
         this.inventoryRepository = new InventoryRepository();
     }
 
-    public PageResult<MedicineInventoryDTO> getInventoryPage(int page, int pageSize, String keyword, String stockFilter, String expiryFilter) {
+    public PageResult<MedicineInventoryDTO> getInventoryPage(
+        int page,
+        int pageSize,
+        String keyword,
+        String stockFilter,
+        String expiryFilter
+    ) {
         return getInventoryPage(page, pageSize, keyword, stockFilter, expiryFilter, null);
     }
 
-    public PageResult<MedicineInventoryDTO> getInventoryPage(int page, int pageSize, String keyword, String stockFilter, String expiryFilter, Long cachedTotal) {
-        return inventoryRepository.getInventoryPageResult(page, pageSize, keyword, stockFilter, expiryFilter, cachedTotal);
+    public PageResult<MedicineInventoryDTO> getInventoryPage(
+        int page,
+        int pageSize,
+        String keyword,
+        String stockFilter,
+        String expiryFilter,
+        Long cachedTotal
+    ) {
+        return inventoryRepository.getInventoryPageResult(
+            page,
+            pageSize,
+            keyword,
+            stockFilter,
+            expiryFilter,
+            cachedTotal
+        );
     }
 
     public InventorySummaryDTO getInventorySummary() {
@@ -44,7 +64,13 @@ public class InventoryService {
         return inventoryRepository.getMedicinesForPicker();
     }
 
-    public boolean updateMedicine(int medicineId, String name, String activeIngredient, String manufacturer, BigDecimal sellPrice) {
+    public boolean updateMedicine(
+        int medicineId,
+        String name,
+        String activeIngredient,
+        String manufacturer,
+        BigDecimal sellPrice
+    ) {
         UserSession.requireManager();
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Tên thuốc không được để trống.");
@@ -71,13 +97,23 @@ public class InventoryService {
         return inventoryRepository.getAllCategoryNames();
     }
 
-    public PageResult<InventoryTransactionDTO> getImportTransactions(String keyword, LocalDate fromDate, LocalDate toDate,
-                                                                     int page, int size) {
+    public PageResult<InventoryTransactionDTO> getImportTransactions(
+        String keyword,
+        LocalDate fromDate,
+        LocalDate toDate,
+        int page,
+        int size
+    ) {
         return inventoryRepository.getImportTransactions(keyword, fromDate, toDate, page, size);
     }
 
-    public PageResult<InventoryTransactionDTO> getExportTransactions(String keyword, LocalDate fromDate, LocalDate toDate,
-                                                                     int page, int size) {
+    public PageResult<InventoryTransactionDTO> getExportTransactions(
+        String keyword,
+        LocalDate fromDate,
+        LocalDate toDate,
+        int page,
+        int size
+    ) {
         return inventoryRepository.getExportTransactions(keyword, fromDate, toDate, page, size);
     }
 
@@ -85,12 +121,19 @@ public class InventoryService {
         return inventoryRepository.getTransactionDetails(transactionId, type);
     }
 
-    public boolean importBatchStock(String supplierName, Integer employeeId, String note, List<BatchImportItemDTO> items) {
+    public boolean importBatchStock(
+        String supplierName,
+        Integer employeeId,
+        String note,
+        List<BatchImportItemDTO> items
+    ) {
         UserSession.requireManager();
         validateImportItems(items);
         for (BatchImportItemDTO item : items) {
             if (isNewMedicine(item) && inventoryRepository.existsMedicineByName(item.getMedicineName())) {
-                throw new IllegalArgumentException("Tên thuốc \"" + item.getMedicineName().trim() + "\" đã tồn tại trong danh mục thuốc.");
+                throw new IllegalArgumentException(
+                    "Tên thuốc \"" + item.getMedicineName().trim() + "\" đã tồn tại trong danh mục thuốc."
+                );
             }
         }
         return inventoryRepository.importBatchStock(supplierName, resolveEmployeeId(employeeId), note, items);

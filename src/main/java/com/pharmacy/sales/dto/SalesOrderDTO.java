@@ -1,11 +1,11 @@
 package com.pharmacy.sales.dto;
 
 import com.pharmacy.common.FormatUtils;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class SalesOrderDTO {
+
     private Long id;
     private String code;
     private LocalDateTime createdAt;
@@ -19,10 +19,20 @@ public class SalesOrderDTO {
     private BigDecimal totalAmount;
     private String paymentMethod;
 
-    public SalesOrderDTO(Long id, String code, LocalDateTime createdAt,
-                         String employeeName, String employeeCode, String customerPhone,
-                         int itemCount, int totalQuantity, BigDecimal subtotal,
-                         BigDecimal discount, BigDecimal totalAmount, String paymentMethod) {
+    public SalesOrderDTO(
+        Long id,
+        String code,
+        LocalDateTime createdAt,
+        String employeeName,
+        String employeeCode,
+        String customerPhone,
+        int itemCount,
+        int totalQuantity,
+        BigDecimal subtotal,
+        BigDecimal discount,
+        BigDecimal totalAmount,
+        String paymentMethod
+    ) {
         this.id = id;
         this.code = code;
         this.createdAt = createdAt;
@@ -37,17 +47,29 @@ public class SalesOrderDTO {
         this.paymentMethod = paymentMethod != null ? paymentMethod : "CASH";
     }
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getCode() { return code; }
+    public String getCode() {
+        return code;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
-    public String getEmployeeName() { return employeeName; }
+    public String getEmployeeName() {
+        return employeeName;
+    }
 
-    public String getEmployeeCode() { return employeeCode; }
+    public String getEmployeeCode() {
+        return employeeCode;
+    }
 
-    public String getCustomerPhone() { return customerPhone; }
+    public String getCustomerPhone() {
+        return customerPhone;
+    }
 
     public String getFormattedTime() {
         return FormatUtils.formatDateTime(createdAt);
