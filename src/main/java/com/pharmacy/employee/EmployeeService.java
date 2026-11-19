@@ -92,10 +92,10 @@ public class EmployeeService {
             throw new IllegalArgumentException("Mã nhân viên này đã tồn tại trong hệ thống.");
         }
         employeeRepository.findByNationalId(employee.getNationalId(), null).ifPresent(c -> {
-            throw new IllegalArgumentException(c.message("Căn cước công dân"));
+            throw new IllegalArgumentException(c.message("CCCD"));
         });
         employeeRepository.findByPhone(employee.getPhone(), null).ifPresent(c -> {
-            throw new IllegalArgumentException(c.message("Số điện thoại"));
+            throw new IllegalArgumentException(c.message("SĐT"));
         });
 
         String temporaryPassword = TemporaryPassword.generate();
@@ -233,10 +233,10 @@ public class EmployeeService {
         employeeRepository
             .findByNationalId(sanitizedRequest.nationalId(), sanitizedRequest.employeeId())
             .ifPresent(c -> {
-                throw new IllegalArgumentException(c.message("Căn cước công dân"));
+                throw new IllegalArgumentException(c.message("CCCD"));
             });
         employeeRepository.findByPhone(sanitizedRequest.phone(), sanitizedRequest.employeeId()).ifPresent(c -> {
-            throw new IllegalArgumentException(c.message("Số điện thoại"));
+            throw new IllegalArgumentException(c.message("SĐT"));
         });
 
         return employeeRepository.updateEmployeeByManager(sanitizedRequest);

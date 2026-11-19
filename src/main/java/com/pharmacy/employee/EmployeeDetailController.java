@@ -545,7 +545,10 @@ public class EmployeeDetailController {
             log.error("Lỗi cập nhật hồ sơ nhân viên: ", ex);
 
             String msg = ex != null ? ex.getMessage() : "";
-            if (msg != null && (msg.contains("Số điện thoại") || msg.toLowerCase().contains("phone"))) {
+            if (
+                msg != null &&
+                (msg.contains("SĐT") || msg.contains("Số điện thoại") || msg.toLowerCase().contains("phone"))
+            ) {
                 showFieldError(txtPhone, lblErrPhone, "Số điện thoại này đã thuộc về nhân viên khác.");
             } else if (
                 msg != null &&

@@ -16,7 +16,7 @@ public record EmployeeConflict(String code, String fullName, Employee.Status sta
                 code +
                 " và đổi trạng thái về \"Đang làm việc\"; " +
                 "nếu không, hãy cập nhật " +
-                fieldLabel.toLowerCase() +
+                (fieldLabel.equals(fieldLabel.toUpperCase()) ? fieldLabel : fieldLabel.toLowerCase()) +
                 " trong hồ sơ " +
                 code +
                 " trước."

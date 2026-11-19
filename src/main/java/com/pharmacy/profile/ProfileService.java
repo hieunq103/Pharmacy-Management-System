@@ -65,7 +65,7 @@ public class ProfileService {
                 request.phone(),
                 c.code()
             );
-            throw new IllegalArgumentException(c.message("Số điện thoại"));
+            throw new IllegalArgumentException(c.message("SĐT"));
         });
 
         boolean success = employeeRepository.updateOwnProfile(

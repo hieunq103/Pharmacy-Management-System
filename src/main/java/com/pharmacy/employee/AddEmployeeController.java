@@ -173,7 +173,7 @@ public class AddEmployeeController implements Initializable {
         } catch (IllegalArgumentException ex) {
             String message = ex.getMessage();
 
-            if (message.contains("Số điện thoại")) {
+            if (message.contains("SĐT") || message.contains("Số điện thoại")) {
                 showError(txtPhone, lblErrorPhone, message);
             } else if (message.contains("Căn cước") || message.contains("CCCD")) {
                 showError(txtCitizenId, lblErrorCitizenId, message);
