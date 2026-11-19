@@ -4,6 +4,7 @@ import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.DebounceUtil;
 import com.pharmacy.common.FormatUtils;
+import com.pharmacy.common.LoadingOverlay;
 import com.pharmacy.common.PageResult;
 import com.pharmacy.common.PaginationHelper;
 import com.pharmacy.common.TableSyncHelper;
@@ -45,6 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SalesHistoryController implements Initializable {
+
+    private LoadingOverlay tableLoading;
 
     private static final Logger log = LoggerFactory.getLogger(SalesHistoryController.class);
 
@@ -131,6 +134,7 @@ public class SalesHistoryController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        tableLoading = LoadingOverlay.over(tableSalesOrders);
         setupRoleAccess();
         setupFilterControls();
         setupTableColumns();
@@ -461,6 +465,7 @@ public class SalesHistoryController implements Initializable {
             log.error("Lỗi khi tải lịch sử bán hàng: ", task.getException());
         });
 
+        tableLoading.track(task);
         BackgroundTasks.run(task);
     }
 

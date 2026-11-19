@@ -5,6 +5,7 @@ import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.DebounceUtil;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.FormatUtils;
+import com.pharmacy.common.LoadingOverlay;
 import com.pharmacy.common.PageResult;
 import com.pharmacy.common.PaginationHelper;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
@@ -31,6 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SalesController implements Initializable {
+
+    private LoadingOverlay gridLoading;
 
     private static final Logger log = LoggerFactory.getLogger(SalesController.class);
 
@@ -130,6 +133,7 @@ public class SalesController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        gridLoading = LoadingOverlay.over(gridMedicineCards);
         if (btnDiscountPercent != null) {
             btnDiscountPercent.setText("%");
         }
@@ -342,6 +346,7 @@ public class SalesController implements Initializable {
             if (gridMedicineCards != null) gridMedicineCards.setOpacity(1.0);
         });
 
+        gridLoading.track(task);
         BackgroundTasks.run(task);
     }
 

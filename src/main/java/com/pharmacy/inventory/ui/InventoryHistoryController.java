@@ -3,6 +3,7 @@ package com.pharmacy.inventory.ui;
 import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.FormatUtils;
+import com.pharmacy.common.LoadingOverlay;
 import com.pharmacy.common.PageResult;
 import com.pharmacy.common.PaginationHelper;
 import com.pharmacy.common.TableSyncHelper;
@@ -33,6 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class InventoryHistoryController implements Initializable {
+
+    private LoadingOverlay importLoading;
+    private LoadingOverlay exportLoading;
 
     private static final Logger log = LoggerFactory.getLogger(InventoryHistoryController.class);
 
@@ -141,6 +145,8 @@ public class InventoryHistoryController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        importLoading = LoadingOverlay.over(tableImport);
+        exportLoading = LoadingOverlay.over(tableExport);
         setupImportTableColumns();
         setupExportTableColumns();
 
@@ -458,6 +464,7 @@ public class InventoryHistoryController implements Initializable {
 
         task.setOnFailed(e -> log.error("Lỗi khi tải lịch sử Nhập kho: ", task.getException()));
 
+        importLoading.track(task);
         BackgroundTasks.run(task);
     }
 
@@ -500,6 +507,7 @@ public class InventoryHistoryController implements Initializable {
 
         task.setOnFailed(e -> log.error("Lỗi khi tải lịch sử Xuất kho: ", task.getException()));
 
+        exportLoading.track(task);
         BackgroundTasks.run(task);
     }
 

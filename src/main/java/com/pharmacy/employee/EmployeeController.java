@@ -5,6 +5,7 @@ import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.DrawerHelper;
+import com.pharmacy.common.LoadingOverlay;
 import com.pharmacy.common.PageResult;
 import com.pharmacy.common.TableFilterHelper;
 import com.pharmacy.common.TableSyncHelper;
@@ -36,6 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EmployeeController implements Initializable {
+
+    private LoadingOverlay tableLoading;
 
     private static final Logger log = LoggerFactory.getLogger(EmployeeController.class);
 
@@ -107,6 +110,7 @@ public class EmployeeController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        tableLoading = LoadingOverlay.over(tableEmployee);
         setupTableColumns();
 
         TableSyncHelper.enableAutoRowHeight(tableEmployee, tableActionSticky, AppConstants.DEFAULT_PAGE_SIZE);
@@ -274,6 +278,7 @@ public class EmployeeController implements Initializable {
             if (tableActionSticky != null) tableActionSticky.setOpacity(1.0);
         });
 
+        tableLoading.track(task);
         BackgroundTasks.run(task);
     }
 

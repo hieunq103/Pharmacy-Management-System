@@ -4,6 +4,7 @@ import com.pharmacy.common.AppConstants;
 import com.pharmacy.common.BackgroundTasks;
 import com.pharmacy.common.DialogUtils;
 import com.pharmacy.common.DrawerHelper;
+import com.pharmacy.common.LoadingOverlay;
 import com.pharmacy.common.PageResult;
 import com.pharmacy.common.TableFilterHelper;
 import com.pharmacy.common.TableSyncHelper;
@@ -45,6 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class InventoryController implements Initializable {
+
+    private LoadingOverlay tableLoading;
 
     private static final Logger log = LoggerFactory.getLogger(InventoryController.class);
 
@@ -189,6 +192,7 @@ public class InventoryController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        tableLoading = LoadingOverlay.over(inventoryTable);
         setupTableColumns();
         setupStickyTable();
 
@@ -965,6 +969,7 @@ public class InventoryController implements Initializable {
             if (tableActionSticky != null) tableActionSticky.setOpacity(1.0);
         });
 
+        tableLoading.track(task);
         BackgroundTasks.run(task);
     }
 

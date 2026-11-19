@@ -41,6 +41,7 @@ public class ReportController {
     private boolean filterControlsReady;
     private static final double TABLE_ROW_HEIGHT = 50.0;
     private static final double TABLE_HEADER_HEIGHT = 44.0;
+    private static final double SCROLLBAR_HEIGHT = 14.0;
     private Task<?> currentChartTask;
     private Task<?> currentMedTask;
 
@@ -368,6 +369,15 @@ public class ReportController {
         });
     }
 
+    private boolean needsHorizontalScroll() {
+        double total = tblSoldMedicines
+            .getColumns()
+            .stream()
+            .mapToDouble(c -> c.getWidth())
+            .sum();
+        return total > tblSoldMedicines.getWidth() - 2.0;
+    }
+
     private void updateSoldMedicinesTableHeight() {
         if (tblSoldMedicines == null) return;
         int count = topSoldMedicines.size();
@@ -376,7 +386,11 @@ public class ReportController {
         if (count == 0) {
             height = TABLE_HEADER_HEIGHT + 2 * TABLE_ROW_HEIGHT;
         } else {
-            height = TABLE_HEADER_HEIGHT + count * TABLE_ROW_HEIGHT + 2.0;
+            height =
+                TABLE_HEADER_HEIGHT +
+                count * TABLE_ROW_HEIGHT +
+                2.0 +
+                (needsHorizontalScroll() ? SCROLLBAR_HEIGHT : 0.0);
         }
 
         tblSoldMedicines.setPrefHeight(height);
