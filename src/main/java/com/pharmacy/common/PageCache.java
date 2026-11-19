@@ -13,17 +13,17 @@ public final class PageCache<V> {
     private static final int MAX_PAGES = 10;
     private static final long TTL_MINUTES = 5;
 
-    private record Entry<V>(V value, long storedAtNanos) {}
+    private record CachedPage<V>(V value, long storedAtNanos) {}
 
-    private final Map<Integer, Entry<V>> map = new LinkedHashMap<>(16, 0.75f, true) {
+    private final Map<Integer, CachedPage<V>> map = new LinkedHashMap<>(16, 0.75f, true) {
         @Override
-        protected boolean removeEldestEntry(Map.Entry<Integer, Entry<V>> eldest) {
+        protected boolean removeEldestEntry(Map.Entry<Integer, CachedPage<V>> eldest) {
             return size() > MAX_PAGES;
         }
     };
 
     public synchronized V get(int page) {
-        Entry<V> e = map.get(page);
+        CachedPage<V> e = map.get(page);
         if (e == null) return null;
         if (System.nanoTime() - e.storedAtNanos() > TTL_MINUTES * 60_000_000_000L) {
             map.remove(page);
@@ -37,7 +37,7 @@ public final class PageCache<V> {
     }
 
     public synchronized void put(int page, V value) {
-        map.put(page, new Entry<>(value, System.nanoTime()));
+        map.put(page, new CachedPage<>(value, System.nanoTime()));
     }
 
     public synchronized void clear() {
