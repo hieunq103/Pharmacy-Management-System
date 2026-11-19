@@ -79,6 +79,12 @@ public class MainLayoutController {
     @FXML
     private Label lblHeaderSubtitle;
 
+    @FXML
+    private Label lblHeaderClock;
+
+    private LocalDate headerDate;
+    private javafx.animation.Timeline headerClock;
+
     private static final String REPORT_FXML = "/fxml/report/report.fxml";
     private final java.util.Map<String, Parent> viewCache = new java.util.concurrent.ConcurrentHashMap<>();
     private final java.util.Map<String, Object> controllerCache = new java.util.concurrent.ConcurrentHashMap<>();
@@ -125,12 +131,27 @@ public class MainLayoutController {
         applyNodeVisibility(btnEmployee, isManager);
     }
 
+    // Ngày ở dưới tiêu đề, giờ chạy từng giây ở bên phải thanh tiêu đề
     private void initHeaderDate() {
-        LocalDate today = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, d 'tháng' M, yyyy", Locale.of("vi", "VN"));
-        String dateStr = today.format(formatter);
-        dateStr = Character.toUpperCase(dateStr.charAt(0)) + dateStr.substring(1);
-        lblHeaderSubtitle.setText(dateStr);
+        updateHeaderClock();
+        headerClock = new javafx.animation.Timeline(
+            new javafx.animation.KeyFrame(javafx.util.Duration.seconds(1), e -> updateHeaderClock())
+        );
+        headerClock.setCycleCount(javafx.animation.Animation.INDEFINITE);
+        headerClock.play();
+    }
+
+    private void updateHeaderClock() {
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        if (lblHeaderClock != null) {
+            lblHeaderClock.setText(now.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+        }
+        if (!now.toLocalDate().equals(headerDate)) {
+            headerDate = now.toLocalDate();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, d 'tháng' M, yyyy", Locale.of("vi", "VN"));
+            String dateStr = headerDate.format(formatter);
+            lblHeaderSubtitle.setText(Character.toUpperCase(dateStr.charAt(0)) + dateStr.substring(1));
+        }
     }
 
     private void applyNodeVisibility(javafx.scene.Node node, boolean visible) {
@@ -408,6 +429,7 @@ public class MainLayoutController {
 
     @FXML
     private void handleLogout(ActionEvent event) {
+        if (headerClock != null) headerClock.stop();
         if (!UserSession.isLoggedIn()) {
             log.warn("Thao tác đăng xuất bị từ chối: Không tìm thấy phiên hợp lệ.");
             forceRedirectToLogin();

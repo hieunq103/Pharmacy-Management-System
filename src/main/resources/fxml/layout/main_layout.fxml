@@ -143,6 +143,7 @@
                 </VBox>
 
                 <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="lblHeaderClock" style="-fx-font-size: 16px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0F172A;" />
             </HBox>
 
             <StackPane fx:id="contentArea" style="-fx-background-color: #F8FAFC;" VBox.vgrow="ALWAYS">
