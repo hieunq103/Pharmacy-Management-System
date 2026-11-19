@@ -7,6 +7,7 @@ import com.pharmacy.employee.Employee;
 import com.pharmacy.infra.db.HibernateUtil;
 import com.pharmacy.infra.db.TransactionGuards;
 import com.pharmacy.inventory.dto.MedicineInventoryDTO;
+import com.pharmacy.inventory.LotStats;
 import com.pharmacy.inventory.entity.InventoryLot;
 import com.pharmacy.inventory.entity.InventoryTransaction;
 import com.pharmacy.inventory.entity.Medicine;
@@ -42,39 +43,8 @@ import static com.pharmacy.common.SqlRows.*;
 public class SalesRepository {
     private static final Logger log = LoggerFactory.getLogger(SalesRepository.class);
 
-    private record LotStats(int sellableQty, int expiredCount, int nearExpiredCount) {
-        static final LotStats EMPTY = new LotStats(0, 0, 0);
-    }
-
     private static final String KEYWORD_FILTER =
             " AND (m.code LIKE :keyword OR m.name LIKE :keyword OR m.activeIngredient LIKE :keyword) ";
-
-    // Nạp nhanh thống kê lô chỉ cho đúng danh sách ID thuốc của trang hiện tại (tránh quét toàn bảng)
-    private static Map<Integer, LotStats> loadLotStatsByMedicineIds(Session session, Collection<Integer> medicineIds) {
-        if (medicineIds == null || medicineIds.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        LocalDate today = LocalDate.now();
-        String hql = """
-                SELECT il.medicine.id,
-                       COALESCE(SUM(CASE WHEN il.expiryDate > :today THEN il.quantityRemaining ELSE 0 END), 0),
-                       COALESCE(SUM(CASE WHEN il.expiryDate <= :today THEN 1 ELSE 0 END), 0),
-                       COALESCE(SUM(CASE WHEN il.expiryDate > :today AND il.expiryDate <= :nearExpiryDate THEN 1 ELSE 0 END), 0)
-                FROM InventoryLot il
-                WHERE il.medicine.id IN (:ids) AND il.quantityRemaining > 0
-                GROUP BY il.medicine.id
-                """;
-        List<Object[]> rows = session.createSelectionQuery(hql, Object[].class)
-                .setParameter("ids", medicineIds)
-                .setParameter("today", today)
-                .setParameter("nearExpiryDate", today.plusDays(AppConstants.NEAR_EXPIRY_DAYS))
-                .list();
-        Map<Integer, LotStats> map = new HashMap<>(rows.size() * 2);
-        for (Object[] r : rows) {
-            map.put(toInteger(r[0]), new LotStats(toInt(r[1]), toInt(r[2]), toInt(r[3])));
-        }
-        return map;
-    }
 
     // Lấy danh sách tên tất cả danh mục thuốc cho màn hình bán hàng
     public List<String> getAllCategories() {
@@ -118,22 +88,46 @@ public class SalesRepository {
                 return PageResult.empty(validPage, validSize);
             }
 
-            // Bước 1: Lấy đúng ID các thuốc của trang hiện tại (ưu tiên thuốc còn hàng còn hạn lên trước)
+            // Bước 1: Lấy đúng ID các thuốc của trang hiện tại (thuốc còn hàng còn hạn lên trước).
+            // Không dùng ORDER BY CASE WHEN EXISTS(...) (subquery tương quan chạy cho mọi dòng + filesort toàn bảng mỗi lần
+            // chuyển trang). Thay bằng 2 nhóm: nhóm có hàng (semi-join theo index lô) rồi tới nhóm còn lại, ghép theo offset.
             LocalDate today = LocalDate.now();
-            String pageIdsHql = """
-                    SELECT m.id FROM Medicine m %s
-                    ORDER BY CASE WHEN EXISTS (
-                        SELECT 1 FROM InventoryLot il
-                        WHERE il.medicine.id = m.id AND il.quantityRemaining > 0 AND il.expiryDate > :today
-                    ) THEN 0 ELSE 1 END, m.name ASC, m.id ASC
-                    """.formatted(where);
-            SelectionQuery<Integer> idsQuery = session.createSelectionQuery(pageIdsHql, Integer.class)
+            String sellable = " AND m.id IN (SELECT il.medicine.id FROM InventoryLot il "
+                    + "WHERE il.quantityRemaining > 0 AND il.expiryDate > :today) ";
+            String idsOrder = " ORDER BY m.name ASC, m.id ASC";
+            int offset = (validPage - 1) * validSize;
+
+            SelectionQuery<Long> sellableCount = session.createSelectionQuery(
+                            "SELECT COUNT(m.id) FROM Medicine m " + where + sellable, Long.class)
                     .setParameter("active", Medicine.Status.ACTIVE)
-                    .setParameter("today", today)
-                    .setFirstResult((validPage - 1) * validSize)
-                    .setMaxResults(validSize);
-            bindMedicineFilter(idsQuery, hasKeyword ? keyword : null, hasCategory ? categoryName : null);
-            List<Integer> pageIds = idsQuery.list();
+                    .setParameter("today", today);
+            bindMedicineFilter(sellableCount, hasKeyword ? keyword : null, hasCategory ? categoryName : null);
+            long sellableTotal = toLong(sellableCount.uniqueResult());
+
+            List<Integer> pageIds = new ArrayList<>(validSize);
+            if (offset < sellableTotal) {
+                SelectionQuery<Integer> q = session.createSelectionQuery(
+                                "SELECT m.id FROM Medicine m " + where + sellable + idsOrder, Integer.class)
+                        .setParameter("active", Medicine.Status.ACTIVE)
+                        .setParameter("today", today)
+                        .setFirstResult(offset)
+                        .setMaxResults(validSize);
+                bindMedicineFilter(q, hasKeyword ? keyword : null, hasCategory ? categoryName : null);
+                pageIds.addAll(q.list());
+            }
+            int remaining = validSize - pageIds.size();
+            if (remaining > 0) {
+                SelectionQuery<Integer> q = session.createSelectionQuery(
+                                "SELECT m.id FROM Medicine m " + where
+                                        + " AND NOT EXISTS (SELECT 1 FROM InventoryLot il WHERE il.medicine.id = m.id "
+                                        + "AND il.quantityRemaining > 0 AND il.expiryDate > :today) " + idsOrder, Integer.class)
+                        .setParameter("active", Medicine.Status.ACTIVE)
+                        .setParameter("today", today)
+                        .setFirstResult((int) Math.max(0, offset - sellableTotal))
+                        .setMaxResults(remaining);
+                bindMedicineFilter(q, hasKeyword ? keyword : null, hasCategory ? categoryName : null);
+                pageIds.addAll(q.list());
+            }
             if (pageIds.isEmpty()) {
                 return PageResult.empty(validPage, validSize);
             }
@@ -153,7 +147,7 @@ public class SalesRepository {
             for (Object[] r : rows) {
                 rowById.put(toInteger(r[0]), r);
             }
-            Map<Integer, LotStats> statsById = loadLotStatsByMedicineIds(session, pageIds);
+            Map<Integer, LotStats> statsById = LotStats.load(session, pageIds);
 
             List<MedicineInventoryDTO> list = new ArrayList<>(pageIds.size());
             for (Integer id : pageIds) {

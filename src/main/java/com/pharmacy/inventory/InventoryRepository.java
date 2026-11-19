@@ -39,45 +39,15 @@ import java.util.List;
 import java.util.Map;
 
 import static com.pharmacy.common.SqlRows.*;
+
 public class InventoryRepository {
     private static final Logger log = LoggerFactory.getLogger(InventoryRepository.class);
-
-    private record LotStats(int totalQty, int expiredCount, int nearExpiredCount) {
-        static final LotStats EMPTY = new LotStats(0, 0, 0);
-    }
 
     private static final String LOW_STOCK_THRESHOLD =
             "CASE WHEN m.minStockThreshold > 0 THEN m.minStockThreshold ELSE " + AppConstants.DEFAULT_LOW_STOCK_THRESHOLD + " END";
 
     private static final String KEYWORD_FILTER =
             " AND (m.code LIKE :keyword OR m.name LIKE :keyword OR m.activeIngredient LIKE :keyword) ";
-
-    // Nạp nhanh thống kê lô chỉ cho đúng danh sách ID thuốc của trang hiện tại (tránh quét toàn bảng)
-    private static Map<Integer, LotStats> loadLotStatsByMedicineIds(Session session, Collection<Integer> medicineIds) {
-        if (medicineIds == null || medicineIds.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        LocalDate today = LocalDate.now();
-        String hql = """
-                SELECT il.medicine.id,
-                       COALESCE(SUM(il.quantityRemaining), 0),
-                       COALESCE(SUM(CASE WHEN il.expiryDate <= :today THEN 1 ELSE 0 END), 0),
-                       COALESCE(SUM(CASE WHEN il.expiryDate > :today AND il.expiryDate <= :nearExpiryDate THEN 1 ELSE 0 END), 0)
-                FROM InventoryLot il
-                WHERE il.medicine.id IN (:ids) AND il.quantityRemaining > 0
-                GROUP BY il.medicine.id
-                """;
-        List<Object[]> rows = session.createSelectionQuery(hql, Object[].class)
-                .setParameter("ids", medicineIds)
-                .setParameter("today", today)
-                .setParameter("nearExpiryDate", today.plusDays(AppConstants.NEAR_EXPIRY_DAYS))
-                .list();
-        Map<Integer, LotStats> map = new HashMap<>(rows.size() * 2);
-        for (Object[] r : rows) {
-            map.put(toInteger(r[0]), new LotStats(toInt(r[1]), toInt(r[2]), toInt(r[3])));
-        }
-        return map;
-    }
 
     // Lấy thống kê tổng quan tồn kho cho Dashboard
     public InventorySummaryDTO getInventorySummary() {
@@ -205,7 +175,7 @@ public class InventoryRepository {
             for (Object[] row : rows) {
                 ids.add(toInteger(row[0]));
             }
-            Map<Integer, LotStats> statsMap = loadLotStatsByMedicineIds(session, ids);
+            Map<Integer, LotStats> statsMap = LotStats.load(session, ids);
             List<MedicineInventoryDTO> list = new ArrayList<>(rows.size());
             for (Object[] row : rows) {
                 Integer medId = toInteger(row[0]);
@@ -259,17 +229,23 @@ public class InventoryRepository {
                 if (havingClause.contains(":today")) query.setParameter("today", today);
                 if (havingClause.contains(":nearExpiryDate")) query.setParameter("nearExpiryDate", today.plusDays(AppConstants.NEAR_EXPIRY_DAYS));
 
-                List<Integer> allMatchedIds = query.list();
-                total = allMatchedIds.size();
-                if (total == 0) {
-                    return PageResult.empty(validPage, validSize);
-                }
                 int fromIndex = (validPage - 1) * validSize;
-                if (fromIndex >= total) {
-                    return PageResult.empty(validPage, validSize);
+                if (cachedTotal != null && cachedTotal > 0) {
+                    // Đã biết tổng số dòng (từ lần tải trước): để DB cắt trang, không kéo toàn bộ ID về JVM
+                    total = cachedTotal;
+                    if (fromIndex >= total) {
+                        return PageResult.empty(validPage, validSize);
+                    }
+                    pageIds = query.setFirstResult(fromIndex).setMaxResults(validSize).list();
+                } else {
+                    List<Integer> allMatchedIds = query.list();
+                    total = allMatchedIds.size();
+                    if (total == 0 || fromIndex >= total) {
+                        return PageResult.empty(validPage, validSize);
+                    }
+                    int toIndex = (int) Math.min(fromIndex + validSize, total);
+                    pageIds = allMatchedIds.subList(fromIndex, toIndex);
                 }
-                int toIndex = (int) Math.min(fromIndex + validSize, total);
-                pageIds = allMatchedIds.subList(fromIndex, toIndex);
 
                 String dataHql = """
                     SELECT m.id, m.code, m.name, mc.name, m.requiresPrescription, m.unit, m.sellPrice,
@@ -319,7 +295,7 @@ public class InventoryRepository {
             if (pageIds.isEmpty()) {
                 return PageResult.empty(validPage, validSize);
             }
-            Map<Integer, LotStats> statsById = loadLotStatsByMedicineIds(session, pageIds);
+            Map<Integer, LotStats> statsById = LotStats.load(session, pageIds);
 
             List<MedicineInventoryDTO> items = new ArrayList<>(rows.size());
             for (Object[] row : rows) {

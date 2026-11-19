@@ -8,7 +8,6 @@ import com.pharmacy.layout.MainLayoutController;
 import com.pharmacy.report.dto.DailySalesDTO;
 import com.pharmacy.sales.dto.SalesOrderDTO;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
