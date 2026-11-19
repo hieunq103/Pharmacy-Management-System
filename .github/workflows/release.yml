@@ -91,7 +91,7 @@ jobs:
             --dest target/installer \
             --java-options "-Dfile.encoding=UTF-8" \
             --java-options "-Xmx512m" \
-            --add-modules java.base,java.desktop,java.logging,java.naming,java.sql,java.management,java.xml,java.net.http,java.prefs,java.security.jgss,java.security.sasl,java.instrument,java.compiler,java.transaction.xa,java.rmi,java.scripting,jdk.unsupported,jdk.crypto.ec,jdk.xml.dom,jdk.management \
+            --add-modules java.base,java.desktop,java.logging,java.naming,java.sql,java.management,java.xml,java.net.http,java.prefs,java.security.jgss,java.security.sasl,java.instrument,java.compiler,java.transaction.xa,java.rmi,java.scripting,jdk.unsupported,jdk.crypto.ec,jdk.xml.dom,jdk.management,jdk.charsets,jdk.localedata,java.sql.rowset \
             $EXTRA
 
       - name: Doi ten file theo he dieu hanh
