@@ -209,16 +209,11 @@ public class SalesRepository {
         return dto;
     }
 
-    // Sinh mã hóa đơn tiếp theo theo định dạng HDB-CH01-yyMMdd-HHmmss-xx
+    // Sinh mã hóa đơn tiếp theo theo định dạng HDB-yyMMdd-HHmmss-xx
     public String generateNextOrderCode() {
-        String store = com.pharmacy.sales.payment.PaymentConfig.getStoreCode();
-        String storeClean = hasText(store) ? store.trim().toUpperCase().replaceAll("[^A-Z0-9]", "") : "CH01";
-        if (storeClean.length() > 6) {
-            storeClean = storeClean.substring(0, 6);
-        }
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd-HHmmss"));
         int randomSuffix = ThreadLocalRandom.current().nextInt(10, 100);
-        return String.format("HDB-%s-%s-%02d", storeClean, timestamp, randomSuffix);
+        return String.format("HDB-%s-%02d", timestamp, randomSuffix);
     }
 
     // Tạo mới đơn bán hàng, khóa lô bằng HQL PESSIMISTIC_WRITE, phân bổ FEFO và cập nhật tồn kho

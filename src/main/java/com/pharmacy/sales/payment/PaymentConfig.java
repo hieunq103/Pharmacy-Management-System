@@ -18,7 +18,6 @@ public class PaymentConfig {
     private static String accountName = "";
     private static String sepayApiToken = "";
     private static String sepayBaseUrl = "https://my.sepay.vn/userapi";
-    private static String storeCode = "CH01";
     private static long pollIntervalMs = 2000;
 
     static {
@@ -43,7 +42,6 @@ public class PaymentConfig {
                 accountName = props.getProperty("payment.account_name", "").trim();
                 sepayApiToken = props.getProperty("sepay.api_token", "").trim();
                 sepayBaseUrl = props.getProperty("sepay.base_url", "https://my.sepay.vn/userapi").trim();
-                storeCode = props.getProperty("payment.store_code", "CH01").trim();
                 String pollStr = props.getProperty("sepay.poll_interval_ms", "2000").trim();
                 try {
                     pollIntervalMs = Long.parseLong(pollStr);
@@ -53,12 +51,10 @@ public class PaymentConfig {
                 accountNo = envOr("PAYMENT_ACCOUNT_NO", accountNo);
                 accountName = envOr("PAYMENT_ACCOUNT_NAME", accountName);
                 sepayApiToken = envOr("SEPAY_API_TOKEN", sepayApiToken);
-                storeCode = envOr("PAYMENT_STORE_CODE", storeCode);
 
                 // Không ghi số tài khoản/tên chủ tài khoản vào log (thông tin cá nhân)
                 log.info(
-                    "Loaded payment configuration: StoreCode={}, Bank={}, AccountConfigured={}, SePAY Token present={}",
-                    storeCode,
+                    "Loaded payment configuration: Bank={}, AccountConfigured={}, SePAY Token present={}",
                     bankId,
                     !accountNo.isBlank(),
                     isSepayConfigured()
@@ -107,10 +103,6 @@ public class PaymentConfig {
 
     public static long getPollIntervalMs() {
         return pollIntervalMs;
-    }
-
-    public static String getStoreCode() {
-        return storeCode;
     }
 
     public static boolean isSepayConfigured() {
