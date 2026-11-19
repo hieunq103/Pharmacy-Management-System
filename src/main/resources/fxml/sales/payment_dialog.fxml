@@ -149,11 +149,7 @@
             <Insets top="2.0" />
         </padding>
         <Region HBox.hgrow="ALWAYS" />
-        <Button onAction="#handleCancel" minHeight="34.0" prefHeight="34.0" styleClass="btn-back" text="Quay lại">
-            <graphic>
-                <SVGPath content="M 0 7 L 14 7 M 8 1 L 14 7 L 8 13" styleClass="btn-back-glyph" />
-            </graphic>
-        </Button>
+        <Button onAction="#handleCancel" minWidth="90.0" minHeight="34.0" prefHeight="34.0" styleClass="btn-back" text="Hủy" />
         <Button fx:id="btnConfirmPayment" onAction="#handleConfirmPayment" minWidth="170.0" prefWidth="170.0" minHeight="34.0" prefHeight="34.0" styleClass="btn-modal-confirm" text="Xác nhận thanh toán" />
     </HBox>
 
