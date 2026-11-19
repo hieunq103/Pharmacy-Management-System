@@ -57,19 +57,19 @@
 }
 
 .stat-value {
-    -fx-font-family: "Inter 18pt Bold";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 22px;
     -fx-text-fill: #0f172a;
 }
 
 .stat-value-highlight {
-    -fx-font-family: "Inter 18pt Bold";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 22px;
     -fx-text-fill: #0066ff;
 }
 
 .stat-value-emerald {
-    -fx-font-family: "Inter 18pt Bold";
+    -fx-font-family: "Inter 18pt Medium";
     -fx-font-size: 22px;
     -fx-text-fill: #16a34a;
 }

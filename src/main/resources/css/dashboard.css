@@ -52,7 +52,7 @@
 }
 
 .stat-value {
-    -fx-font-family: "Inter 18pt Bold", "Inter", sans-serif;
+    -fx-font-family: "Inter 18pt Medium", "Inter", sans-serif;
     -fx-font-size: 22px;
     -fx-text-fill: #0f172a;
 }
