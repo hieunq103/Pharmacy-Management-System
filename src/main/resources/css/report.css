@@ -394,7 +394,7 @@
 /* Danh sách xổ xuống của các ô chọn (nhân viên, tháng): chữ 13px, rê chuột tới dòng nào thì dòng đó nền xanh chữ trắng */
 .combo-box-popup .list-view .list-cell {
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 13px;
+    -fx-font-size: 14px;
     -fx-text-fill: #1e293b;
     -fx-background-color: transparent;
     -fx-padding: 8 12;
