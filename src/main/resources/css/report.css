@@ -42,43 +42,44 @@
 /* ==================== STAT CARDS (THẺ THỐNG KÊ) ==================== */
 .report-stat-card {
     -fx-background-color: #ffffff;
-    -fx-background-radius: 10px;
+    -fx-background-radius: 14px;
     -fx-border-color: #e2e8f0;
-    -fx-border-radius: 10px;
+    -fx-border-radius: 14px;
     -fx-border-width: 1px;
-    -fx-padding: 8 12;
+    -fx-padding: 18 22;
+    -fx-effect: dropshadow(three-pass-box, rgba(15, 23, 42, 0.05), 8, 0, 0, 2);
 }
 
 .stat-title {
     -fx-font-family: "Inter 18pt Medium";
-    -fx-font-size: 13px;
+    -fx-font-size: 15px;
     -fx-text-fill: #64748b;
 }
 
 .stat-value {
     -fx-font-family: "Inter 18pt Bold";
-    -fx-font-size: 19px;
+    -fx-font-size: 26px;
     -fx-text-fill: #0f172a;
 }
 
 .stat-value-highlight {
     -fx-font-family: "Inter 18pt Bold";
-    -fx-font-size: 19px;
+    -fx-font-size: 26px;
     -fx-text-fill: #0066ff;
 }
 
 .stat-value-emerald {
     -fx-font-family: "Inter 18pt Bold";
-    -fx-font-size: 19px;
+    -fx-font-size: 26px;
     -fx-text-fill: #16a34a;
 }
 
 .stat-icon-pill {
-    -fx-background-radius: 6px;
-    -fx-min-width: 28px;
-    -fx-min-height: 28px;
-    -fx-pref-width: 28px;
-    -fx-pref-height: 28px;
+    -fx-background-radius: 10px;
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-pref-width: 40px;
+    -fx-pref-height: 40px;
     -fx-alignment: center;
 }
 
@@ -100,82 +101,85 @@
 
 .stat-icon-pill-blue .stat-svg {
     -fx-fill: #0066ff;
-    -fx-scale-x: 0.85;
-    -fx-scale-y: 0.85;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
 }
 .stat-icon-pill-emerald .stat-svg {
     -fx-fill: #059669;
-    -fx-scale-x: 0.85;
-    -fx-scale-y: 0.85;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
 }
 .stat-icon-pill-green .stat-svg {
     -fx-fill: #16a34a;
-    -fx-scale-x: 0.85;
-    -fx-scale-y: 0.85;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
 }
 .stat-icon-pill-amber .stat-svg {
     -fx-fill: #d97706;
-    -fx-scale-x: 0.85;
-    -fx-scale-y: 0.85;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
 }
 .stat-icon-pill-purple .stat-svg {
     -fx-fill: #9333ea;
-    -fx-scale-x: 0.85;
-    -fx-scale-y: 0.85;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
 }
 
-/* ==================== TAB PANE (MODERN PILL SEGMENT STYLE) ==================== */
+/* ==================== TAB PANE (TAB "TAI THỎ" GẮN LIỀN KHUNG BIỂU ĐỒ) ==================== */
 .report-tab-pane {
-    -fx-tab-min-height: 34px;
-    -fx-tab-max-height: 34px;
+    -fx-tab-min-height: 46px;
+    -fx-tab-max-height: 46px;
 }
 
-.report-tab-pane .tab-header-area {
-    -fx-padding: 0 0 6 0;
+.report-tab-pane > .tab-header-area {
+    -fx-padding: 0;
 }
 
-.report-tab-pane .tab-header-background {
+.report-tab-pane > .tab-header-area > .tab-header-background {
     -fx-background-color: transparent;
 }
 
-.report-tab-pane .headers-region {
-    -fx-background-color: #e2e8f0;
-    -fx-background-radius: 7px;
-    -fx-padding: 2px;
+.report-tab-pane > .tab-header-area > .headers-region {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
 }
 
-.report-tab-pane .tab {
-    -fx-background-color: transparent;
-    -fx-background-radius: 5px;
-    -fx-border-color: transparent;
+.report-tab-pane > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: #e8eef7;
+    -fx-background-radius: 12px 12px 0 0;
+    -fx-background-insets: 0 4 0 0;
     -fx-border-width: 0;
-    -fx-padding: 5 16;
+    -fx-padding: 0 8;
     -fx-cursor: hand;
 }
 
-.report-tab-pane .tab:selected {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 5px;
-    -fx-border-color: transparent;
-    -fx-border-width: 0;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.08), 3, 0, 0, 1);
+.report-tab-pane > .tab-header-area > .headers-region > .tab:hover {
+    -fx-background-color: #d7e3f5;
+}
+
+.report-tab-pane > .tab-header-area > .headers-region > .tab:selected {
+    -fx-background-color: #0066ff;
+    -fx-effect: null;
 }
 
 .report-tab-pane .tab .tab-label {
     -fx-alignment: CENTER;
     -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 13.5px;
-    -fx-text-fill: #64748b;
+    -fx-font-size: 16px;
+    -fx-text-fill: #475569;
 }
 
 .report-tab-pane .tab:selected .tab-label {
-    -fx-text-fill: #0066ff;
+    -fx-text-fill: #ffffff;
 }
 
-/* XÓA HOÀN TOÀN VIỀN VUÔNG FOCUS-INDICATOR MẶC ĐỊNH CỦA JAVAFX */
+.report-tab-pane > .tab-content-area {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
 .report-tab-pane .tab .focus-indicator,
-.report-tab-pane .tab:focused .focus-indicator,
-.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
+.report-tab-pane .tab:focused .focus-indicator {
     -fx-border-color: transparent !important;
     -fx-border-width: 0 !important;
     -fx-focus-color: transparent !important;
@@ -185,16 +189,16 @@
 /* ==================== CARD BÊN TRONG TAB ==================== */
 .content-card {
     -fx-background-color: #ffffff;
-    -fx-background-radius: 12px;
+    -fx-background-radius: 14px;
     -fx-border-color: #e2e8f0;
-    -fx-border-radius: 12px;
+    -fx-border-radius: 14px;
     -fx-border-width: 1px;
-    -fx-padding: 16;
+    -fx-padding: 20;
 }
 
 .section-title {
     -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 16px;
+    -fx-font-size: 18px;
     -fx-text-fill: #0f172a;
 }
 
@@ -238,11 +242,19 @@
 /* ==================== BIỂU ĐỒ DOANH SỐ ==================== */
 .chart-card {
     -fx-background-color: #ffffff;
-    -fx-background-radius: 12px;
+    -fx-background-radius: 0 14px 14px 14px;
     -fx-border-color: #e2e8f0;
-    -fx-border-radius: 12px;
+    -fx-border-radius: 0 14px 14px 14px;
     -fx-border-width: 1px;
-    -fx-padding: 16 20 12 16;
+    -fx-padding: 24 28 20 20;
+}
+
+.chart-title {
+    -fx-font-family: "Inter 18pt SemiBold";
+    -fx-font-size: 17px;
+    -fx-text-fill: #0f172a;
+    -fx-alignment: CENTER;
+    -fx-padding: 4 0 0 0;
 }
 
 /* Chỉ giữ đường kẻ ngang mờ, bỏ đường dọc */
@@ -261,13 +273,13 @@
 
 .axis {
     -fx-tick-label-font-family: "Inter 18pt";
-    -fx-tick-label-font-size: 12px;
+    -fx-tick-label-font-size: 14px;
     -fx-tick-label-fill: #64748b;
 }
 
 .axis-label {
     -fx-font-family: "Inter 18pt Medium";
-    -fx-font-size: 12.5px;
+    -fx-font-size: 14px;
     -fx-text-fill: #64748b;
 }
 
@@ -296,7 +308,7 @@
     -fx-background-color: #10b981;
     -fx-background-radius: 6px 6px 0 0;
     -fx-background-insets: 0;
-    -fx-max-width: 36px;
+    -fx-max-width: 40px;
 }
 
 .report-bar-chart .chart-bar:hover,
@@ -312,7 +324,7 @@
     -fx-background-color: #10b981;
     -fx-background-radius: 6px 6px 0 0;
     -fx-background-insets: 0;
-    -fx-max-width: 36px;
+    -fx-max-width: 40px;
 }
 
 .report-bar-chart-green .chart-bar:hover {

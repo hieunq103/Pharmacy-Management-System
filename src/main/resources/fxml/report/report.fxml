@@ -31,12 +31,12 @@
             styleClass="report-scroll-pane">
 
     <content>
-        <VBox spacing="10.0" styleClass="report-root">
+        <VBox spacing="24.0" styleClass="report-root">
             <padding>
-                <Insets bottom="80.0" left="18.0" right="18.0" top="8.0" />
+                <Insets bottom="80.0" left="24.0" right="24.0" top="16.0" />
             </padding>
 
-            <HBox alignment="CENTER_LEFT" minHeight="-Infinity" spacing="12.0" styleClass="filter-card">
+            <HBox alignment="CENTER_LEFT" minHeight="-Infinity" spacing="16.0" styleClass="filter-card">
                 <HBox alignment="CENTER_LEFT" spacing="8.0">
                     <Button fx:id="btnFilterDay" onAction="#handleSelectDayMode" styleClass="period-pill-btn, active" text="Theo ngày" />
                     <DatePicker fx:id="dpSelectedDate" prefWidth="135.0" promptText="dd/MM/yyyy" styleClass="date-filter-picker" onAction="#handleDatePicked" />
@@ -51,7 +51,7 @@
                 </HBox>
             </HBox>
 
-            <GridPane hgap="12.0" minHeight="-Infinity" vgap="12.0">
+            <GridPane hgap="20.0" minHeight="-Infinity" vgap="20.0">
                 <columnConstraints>
                     <ColumnConstraints percentWidth="20.0" hgrow="ALWAYS" />
                     <ColumnConstraints percentWidth="20.0" hgrow="ALWAYS" />
@@ -60,10 +60,10 @@
                     <ColumnConstraints percentWidth="20.0" hgrow="ALWAYS" />
                 </columnConstraints>
                 <rowConstraints>
-                    <RowConstraints minHeight="66.0" prefHeight="66.0" valignment="CENTER" vgrow="ALWAYS" />
+                    <RowConstraints minHeight="104.0" prefHeight="104.0" valignment="CENTER" vgrow="ALWAYS" />
                 </rowConstraints>
 
-                <VBox spacing="4.0" styleClass="report-stat-card" GridPane.columnIndex="0">
+                <VBox spacing="10.0" styleClass="report-stat-card" GridPane.columnIndex="0">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Tổng doanh số" />
                         <Region HBox.hgrow="ALWAYS" />
@@ -74,7 +74,7 @@
                     <Label fx:id="lblTotalRevenue" styleClass="stat-value-highlight" text="0đ" />
                 </VBox>
 
-                <VBox spacing="4.0" styleClass="report-stat-card" GridPane.columnIndex="1">
+                <VBox spacing="10.0" styleClass="report-stat-card" GridPane.columnIndex="1">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Tiền mặt" />
                         <Region HBox.hgrow="ALWAYS" />
@@ -85,7 +85,7 @@
                     <Label fx:id="lblCashRevenue" styleClass="stat-value" text="0đ" />
                 </VBox>
 
-                <VBox spacing="4.0" styleClass="report-stat-card" GridPane.columnIndex="2">
+                <VBox spacing="10.0" styleClass="report-stat-card" GridPane.columnIndex="2">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Chuyển khoản" />
                         <Region HBox.hgrow="ALWAYS" />
@@ -96,7 +96,7 @@
                     <Label fx:id="lblTransferRevenue" styleClass="stat-value" text="0đ" />
                 </VBox>
 
-                <VBox spacing="4.0" styleClass="report-stat-card" GridPane.columnIndex="3">
+                <VBox spacing="10.0" styleClass="report-stat-card" GridPane.columnIndex="3">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Số thuốc đã bán" />
                         <Region HBox.hgrow="ALWAYS" />
@@ -107,7 +107,7 @@
                     <Label fx:id="lblTotalMedicinesSold" styleClass="stat-value-emerald" text="0 sản phẩm" />
                 </VBox>
 
-                <VBox spacing="4.0" styleClass="report-stat-card" GridPane.columnIndex="4">
+                <VBox spacing="10.0" styleClass="report-stat-card" GridPane.columnIndex="4">
                     <HBox alignment="CENTER_LEFT">
                         <Label styleClass="stat-title" text="Tổng hóa đơn" />
                         <Region HBox.hgrow="ALWAYS" />
@@ -119,20 +119,16 @@
                 </VBox>
             </GridPane>
 
-            <TabPane fx:id="tabPaneReport" styleClass="report-tab-pane" tabClosingPolicy="UNAVAILABLE" tabMinWidth="220.0" tabMaxWidth="220.0">
+            <TabPane fx:id="tabPaneReport" styleClass="report-tab-pane" tabClosingPolicy="UNAVAILABLE" tabMinWidth="240.0" tabMaxWidth="240.0">
                 <tabs>
                     <Tab fx:id="tabRevenue" text="Báo cáo doanh số">
                         <content>
                             <VBox spacing="10.0">
-                                <padding>
-                                    <Insets top="8.0" />
-                                </padding>
 
-                                <VBox spacing="12.0" styleClass="chart-card">
-                                    <Label fx:id="lblChartTitle" styleClass="section-title" text="Doanh số 7 ngày gần nhất" />
+                                <VBox spacing="8.0" styleClass="chart-card">
                                     <BarChart fx:id="barChartRevenue" legendVisible="false"
                                               styleClass="report-bar-chart"
-                                              minHeight="300.0" prefHeight="300.0" maxHeight="300.0"
+                                              minHeight="340.0" prefHeight="340.0" maxHeight="340.0"
                                               animated="false"
                                               categoryGap="24.0" barGap="4.0"
                                               horizontalGridLinesVisible="true" verticalGridLinesVisible="false">
@@ -143,6 +139,7 @@
                                             <NumberAxis fx:id="chartYAxis" animated="false" />
                                         </yAxis>
                                     </BarChart>
+                                    <Label fx:id="lblChartTitle" alignment="CENTER" maxWidth="Infinity" styleClass="chart-title" text="Doanh số 7 ngày gần nhất" />
                                 </VBox>
                             </VBox>
                         </content>
@@ -150,16 +147,12 @@
 
                     <Tab fx:id="tabMedicines" text="Báo cáo số thuốc đã bán">
                         <content>
-                            <VBox fx:id="boxMedicinesTab" spacing="10.0">
-                                <padding>
-                                    <Insets top="8.0" />
-                                </padding>
+                            <VBox fx:id="boxMedicinesTab" spacing="24.0">
 
-                                <VBox spacing="12.0" styleClass="chart-card">
-                                    <Label fx:id="lblMedChartTitle" styleClass="section-title" text="Sản lượng thuốc bán 7 ngày gần nhất" />
+                                <VBox spacing="8.0" styleClass="chart-card">
                                     <BarChart fx:id="barChartMedicines" legendVisible="false"
                                               styleClass="report-bar-chart, report-bar-chart-green"
-                                              minHeight="260.0" prefHeight="260.0" maxHeight="260.0"
+                                              minHeight="300.0" prefHeight="300.0" maxHeight="300.0"
                                               animated="false"
                                               categoryGap="24.0" barGap="4.0"
                                               horizontalGridLinesVisible="true" verticalGridLinesVisible="false">
@@ -170,11 +163,12 @@
                                             <NumberAxis fx:id="chartMedYAxis" animated="false" />
                                         </yAxis>
                                     </BarChart>
+                                    <Label fx:id="lblMedChartTitle" alignment="CENTER" maxWidth="Infinity" styleClass="chart-title" text="Sản lượng thuốc bán 7 ngày gần nhất" />
                                 </VBox>
 
-                                <VBox spacing="12.0" styleClass="content-card">
+                                <VBox spacing="16.0" styleClass="content-card">
                                     <padding>
-                                        <Insets bottom="16.0" left="16.0" right="16.0" top="14.0" />
+                                        <Insets bottom="20.0" left="20.0" right="20.0" top="18.0" />
                                     </padding>
 
                                     <HBox alignment="CENTER_LEFT" spacing="12.0">

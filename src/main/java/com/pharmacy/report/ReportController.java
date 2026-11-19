@@ -247,7 +247,7 @@ public class ReportController {
     private void adjustSingleChartGap(BarChart<String, Number> chart) {
         if (chart == null || currentTimelineCount <= 0 || !chart.isVisible()) return;
 
-        final double targetBarWidth = 28.0;
+        final double targetBarWidth = 36.0;
 
         double chartWidth = chart.getWidth();
         if (chartWidth <= 0) return;
