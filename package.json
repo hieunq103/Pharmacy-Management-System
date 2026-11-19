@@ -1,0 +1,12 @@
+{
+  "name": "pharmacy-management-system",
+  "private": true,
+  "scripts": {
+    "format": "prettier --write \"src/**/*.{java,css}\"",
+    "format:check": "prettier --check \"src/**/*.{java,css}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "prettier-plugin-java": "^2.6.4"
+  }
+}

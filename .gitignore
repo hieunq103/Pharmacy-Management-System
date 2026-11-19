@@ -42,5 +42,3 @@ node_modules/
 # 6. Editor / công cụ không thuộc build Maven
 # ============================================================
 .vscode/
-package.json
-package-lock.json
