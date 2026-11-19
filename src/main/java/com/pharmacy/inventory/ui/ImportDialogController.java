@@ -566,18 +566,29 @@ public class ImportDialogController implements Initializable {
         resetItemInputForm();
     }
 
-    // Kết quả nhập kho: bảng mã thuốc + tên thuốc của cả phiếu (cuộn được khi nhiều dòng), thuốc mới có nhãn "Mới"
-    private static void showImportResult(javafx.stage.Window owner, List<BatchImportItemDTO> items) {
+    // Hỏi lại trước khi nhập kho: bảng mã thuốc + tên thuốc + số lô + số lượng của cả phiếu (cuộn được khi nhiều dòng)
+    private static boolean confirmImport(
+        javafx.stage.Window owner,
+        List<BatchImportItemDTO> items,
+        String supplier,
+        BigDecimal grandTotal
+    ) {
         long newCount = items.stream().filter(BatchImportItemDTO::isNewMedicine).count();
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         DialogUtils.configure(alert, owner);
-        alert.setTitle("Nhập kho thành công");
+        alert.setTitle("Xác nhận nhập kho");
         alert.setHeaderText(
-            "Đã lập phiếu nhập kho thành công cho " +
+            "Bạn có chắc chắn muốn nhập kho " +
                 items.size() +
-                " mặt hàng thuốc" +
-                (newCount > 0 ? "\nTrong đó " + newCount + " thuốc mới đã được cấp mã" : "")
+                " mặt hàng thuốc?\nNhà cung cấp: " +
+                supplier +
+                "\nTổng tiền thanh toán: " +
+                FormatUtils.formatCurrency(grandTotal) +
+                " đ" +
+                (newCount > 0 ? "\n" + newCount + " thuốc mới sẽ được cấp mã sau khi nhập kho" : "")
         );
+        ((Button) alert.getDialogPane().lookupButton(ButtonType.OK)).setText("Nhập kho");
+        ((Button) alert.getDialogPane().lookupButton(ButtonType.CANCEL)).setText("Kiểm tra lại");
 
         TableView<BatchImportItemDTO> table = new TableView<>(FXCollections.observableArrayList(items));
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
@@ -598,8 +609,13 @@ public class ImportDialogController implements Initializable {
                         setText(null);
                         return;
                     }
-                    Label code = new Label(item.getMedicineCode());
-                    code.setStyle("-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0066FF;");
+                    boolean noCodeYet = item.getMedicineCode() == null || item.getMedicineCode().isBlank();
+                    Label code = new Label(noCodeYet ? "Cấp mã sau" : item.getMedicineCode());
+                    code.setStyle(
+                        noCodeYet
+                            ? "-fx-text-fill: #64748B;"
+                            : "-fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0066FF;"
+                    );
                     HBox box = new HBox(6, code);
                     box.setAlignment(Pos.CENTER_LEFT);
                     if (item.isNewMedicine()) {
@@ -647,7 +663,10 @@ public class ImportDialogController implements Initializable {
         alert.getDialogPane().setContent(table);
         alert.getDialogPane().setPrefWidth(660);
         alert.setResizable(true);
-        alert.showAndWait();
+        return alert
+            .showAndWait()
+            .filter(bt -> bt == ButtonType.OK)
+            .isPresent();
     }
 
     private void resetItemInputForm() {
@@ -720,6 +739,16 @@ public class ImportDialogController implements Initializable {
 
         String note = txtNote.getText() != null ? txtNote.getText().trim() : "";
 
+        BigDecimal grandTotal = itemList
+            .stream()
+            .map(BatchImportItemDTO::getLineTotal)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        javafx.stage.Window owner =
+            btnCancel != null && btnCancel.getScene() != null ? btnCancel.getScene().getWindow() : null;
+        if (!confirmImport(owner, List.copyOf(itemList), supplier, grandTotal)) {
+            return;
+        }
+
         btnConfirmImport.setDisable(true);
         btnConfirmImport.setText("Đang ghi vào kho...");
 
@@ -737,11 +766,6 @@ public class ImportDialogController implements Initializable {
 
             boolean success = Boolean.TRUE.equals(importTask.getValue());
             if (success) {
-                showImportResult(
-                    btnCancel != null && btnCancel.getScene() != null ? btnCancel.getScene().getWindow() : null,
-                    List.copyOf(itemList)
-                );
-
                 if (onSuccessCallback != null) {
                     onSuccessCallback.run();
                 }
