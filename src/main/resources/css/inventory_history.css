@@ -193,3 +193,12 @@
 .history-detail-table .table-cell {
     -fx-alignment: CENTER_LEFT !important;
 }
+
+/* Bảng chi tiết đơn bán: đệm ngang gọn hơn để nhiều cột vẫn đủ chữ trên màn hình nhỏ */
+.sales-detail-table .column-header {
+    -fx-padding: 10 12;
+}
+
+.sales-detail-table .table-cell {
+    -fx-padding: 0 12px;
+}

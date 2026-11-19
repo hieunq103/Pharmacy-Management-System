@@ -81,22 +81,20 @@
         <TextField fx:id="txtSearchDetail" prefWidth="320.0"
                    promptText="Tìm kiếm thuốc trong đơn (mã, tên, số lô)..."
                    styleClass="search-input" />
-        <Region HBox.hgrow="ALWAYS" />
-        <Label fx:id="lblRowCount" styleClass="hint-select-label" text="Danh sách các mặt hàng đã bán:" />
     </HBox>
 
     <HBox minHeight="280.0" spacing="0.0" styleClass="table-float-container" VBox.vgrow="ALWAYS">
-        <TableView fx:id="tableDetails" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, history-detail-table, table-scrollable-data">
+        <TableView fx:id="tableDetails" HBox.hgrow="ALWAYS" styleClass="custom-inventory-table, history-detail-table, sales-detail-table, table-scrollable-data">
             <columns>
-                <TableColumn fx:id="colIndex" minWidth="56.0" prefWidth="60.0" text="STT" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colMedCode" minWidth="90.0" prefWidth="100.0" text="Mã thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colIndex" minWidth="50.0" prefWidth="54.0" text="STT" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colMedCode" minWidth="105.0" prefWidth="110.0" text="Mã thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
                 <TableColumn fx:id="colMedName" minWidth="150.0" prefWidth="210.0" text="Tên thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colCategory" minWidth="300.0" prefWidth="340.0" text="Nhóm thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colLotNumber" minWidth="170.0" prefWidth="190.0" text="Số lô xuất" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colExpiryDate" minWidth="112.0" prefWidth="118.0" text="Hạn dùng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colUnit" minWidth="80.0" prefWidth="85.0" text="Đơn vị" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colCategory" minWidth="230.0" prefWidth="290.0" text="Nhóm thuốc" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colLotNumber" minWidth="150.0" prefWidth="160.0" text="Số lô xuất" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colExpiryDate" minWidth="125.0" prefWidth="130.0" text="Hạn dùng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colUnit" minWidth="70.0" prefWidth="80.0" text="Đơn vị" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
                 <TableColumn fx:id="colQuantity" minWidth="100.0" prefWidth="105.0" text="Số lượng" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
-                <TableColumn fx:id="colUnitPrice" minWidth="110.0" prefWidth="115.0" text="Đơn giá" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
+                <TableColumn fx:id="colUnitPrice" minWidth="105.0" prefWidth="110.0" text="Đơn giá" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
                 <TableColumn fx:id="colTotalPrice" minWidth="120.0" prefWidth="125.0" text="Thành tiền" style="-fx-alignment: CENTER_LEFT;" sortable="false" />
             </columns>
             <columnResizePolicy>

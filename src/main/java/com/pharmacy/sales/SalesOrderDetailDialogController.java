@@ -45,9 +45,6 @@ public class SalesOrderDetailDialogController {
     private Label lblTotalAmount;
 
     @FXML
-    private Label lblRowCount;
-
-    @FXML
     private TextField txtSearchDetail;
 
     @FXML
@@ -177,10 +174,6 @@ public class SalesOrderDetailDialogController {
                     filteredItems.add(item);
                 }
             }
-        }
-
-        if (lblRowCount != null) {
-            lblRowCount.setText("Danh sách mặt hàng (" + filteredItems.size() + "/" + masterItems.size() + "):");
         }
     }
 
