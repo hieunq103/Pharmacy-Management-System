@@ -145,7 +145,7 @@ public class MainLayoutController {
         if (!dateText.equals(headerDateText)) {
             headerDateText = Character.toUpperCase(dateText.charAt(0)) + dateText.substring(1);
         }
-        lblHeaderSubtitle.setText(headerDateText + "  |  " + now.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+        lblHeaderSubtitle.setText(now.format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "  |  " + headerDateText);
     }
 
     private void applyNodeVisibility(javafx.scene.Node node, boolean visible) {

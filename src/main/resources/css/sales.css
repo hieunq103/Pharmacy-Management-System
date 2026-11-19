@@ -97,7 +97,7 @@
     -fx-background-color: #feeceb;
     -fx-background-radius: 12px;
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 11px;
+    -fx-font-size: 12px;
     -fx-text-fill: #d9483b;
     -fx-padding: 2 8;
 }
@@ -114,7 +114,7 @@
     -fx-border-radius: 10px;
     -fx-background-radius: 10px;
     -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 11px;
+    -fx-font-size: 12px;
     -fx-text-fill: #0066ff;
     -fx-padding: 2 7;
     -fx-alignment: CENTER;
@@ -126,19 +126,19 @@
 
 .card-unit {
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-text-fill: #64748b;
 }
 
 .card-warning-tag {
     -fx-font-family: "Inter 18pt Medium";
-    -fx-font-size: 11px;
+    -fx-font-size: 12px;
     -fx-text-fill: #d97706;
 }
 
 .card-low-stock-tag {
     -fx-font-family: "Inter 18pt Medium";
-    -fx-font-size: 11px;
+    -fx-font-size: 12px;
     -fx-text-fill: #dc2626;
 }
 
@@ -150,7 +150,7 @@
 
 .card-stock {
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 12px;
+    -fx-font-size: 13px;
     -fx-text-fill: #64748b;
 }
 
@@ -423,13 +423,13 @@
 
 .cart-summary-title {
     -fx-font-family: "Inter 18pt";
-    -fx-font-size: 13px;
+    -fx-font-size: 15px;
     -fx-text-fill: #64748b;
 }
 
 .cart-summary-val {
     -fx-font-family: "Inter 18pt SemiBold";
-    -fx-font-size: 14px;
+    -fx-font-size: 15px;
     -fx-text-fill: #1e293b;
 }
 
