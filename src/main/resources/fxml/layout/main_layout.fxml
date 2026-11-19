@@ -139,11 +139,10 @@
 
                 <VBox alignment="CENTER_LEFT">
                     <Label fx:id="lblHeaderTitle" style="-fx-font-size: 19px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0F172A;" text="Tổng quan" />
-                    <Label fx:id="lblHeaderSubtitle" style="-fx-font-size: 12.5px; -fx-text-fill: #64748B;" />
                 </VBox>
 
                 <Region HBox.hgrow="ALWAYS" />
-                <Label fx:id="lblHeaderClock" style="-fx-font-size: 16px; -fx-font-family: 'Inter 18pt SemiBold'; -fx-text-fill: #0F172A;" />
+                <Label fx:id="lblHeaderSubtitle" style="-fx-font-size: 14px; -fx-font-family: 'Inter 18pt Medium'; -fx-text-fill: #475569;" />
             </HBox>
 
             <StackPane fx:id="contentArea" style="-fx-background-color: #F8FAFC;" VBox.vgrow="ALWAYS">

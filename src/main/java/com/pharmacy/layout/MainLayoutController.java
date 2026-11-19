@@ -8,7 +8,6 @@ import com.pharmacy.common.FormatUtils;
 import com.pharmacy.common.UiScaleManager;
 import com.pharmacy.common.UserSession;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Optional;
@@ -79,10 +78,7 @@ public class MainLayoutController {
     @FXML
     private Label lblHeaderSubtitle;
 
-    @FXML
-    private Label lblHeaderClock;
-
-    private LocalDate headerDate;
+    private String headerDateText;
     private javafx.animation.Timeline headerClock;
 
     private static final String REPORT_FXML = "/fxml/report/report.fxml";
@@ -131,7 +127,7 @@ public class MainLayoutController {
         applyNodeVisibility(btnEmployee, isManager);
     }
 
-    // Ngày ở dưới tiêu đề, giờ chạy từng giây ở bên phải thanh tiêu đề
+    // Thứ, ngày tháng năm và giờ (chạy từng giây) nằm ở bên phải thanh tiêu đề
     private void initHeaderDate() {
         updateHeaderClock();
         headerClock = new javafx.animation.Timeline(
@@ -143,15 +139,13 @@ public class MainLayoutController {
 
     private void updateHeaderClock() {
         java.time.LocalDateTime now = java.time.LocalDateTime.now();
-        if (lblHeaderClock != null) {
-            lblHeaderClock.setText(now.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+        String dateText = now
+            .toLocalDate()
+            .format(DateTimeFormatter.ofPattern("EEEE, d 'tháng' M, yyyy", Locale.of("vi", "VN")));
+        if (!dateText.equals(headerDateText)) {
+            headerDateText = Character.toUpperCase(dateText.charAt(0)) + dateText.substring(1);
         }
-        if (!now.toLocalDate().equals(headerDate)) {
-            headerDate = now.toLocalDate();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, d 'tháng' M, yyyy", Locale.of("vi", "VN"));
-            String dateStr = headerDate.format(formatter);
-            lblHeaderSubtitle.setText(Character.toUpperCase(dateStr.charAt(0)) + dateStr.substring(1));
-        }
+        lblHeaderSubtitle.setText(headerDateText + "  |  " + now.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
     }
 
     private void applyNodeVisibility(javafx.scene.Node node, boolean visible) {
