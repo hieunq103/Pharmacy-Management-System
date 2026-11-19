@@ -370,3 +370,17 @@
     -fx-border-color: transparent;
     -fx-padding: 0;
 }
+
+/* Ẩn thanh cuộn ngang của bảng giao dịch (vẫn vuốt/cuộn ngang được bằng trackpad hoặc Shift + lăn chuột) */
+.tx-scroll-pane .scroll-bar:horizontal,
+.tx-scroll-pane .scroll-bar:horizontal .track,
+.tx-scroll-pane .scroll-bar:horizontal .thumb,
+.tx-scroll-pane .scroll-bar:horizontal .increment-button,
+.tx-scroll-pane .scroll-bar:horizontal .decrement-button {
+    -fx-background-color: transparent;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+    -fx-min-height: 0;
+    -fx-padding: 0;
+    -fx-opacity: 0;
+}
