@@ -2,9 +2,12 @@ package com.pharmacy.report;
 
 import com.pharmacy.employee.dto.EmployeeOption;
 import java.text.Normalizer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,7 +26,11 @@ final class EmployeeFilterCombo {
     private final ObservableList<EmployeeOption> master = FXCollections.observableArrayList(EmployeeOption.ALL);
     private final FilteredList<EmployeeOption> filtered = new FilteredList<>(master, o -> true);
     private final Consumer<Integer> onChanged;
+
+    // Chặn vòng lặp: mọi thay đổi do chương trình (đổi giá trị, đổi bộ lọc danh sách) không được kích hoạt lại sự kiện
     private boolean updating;
+    // Nhân viên đang được áp dụng cho báo cáo (null = tất cả)
+    private Integer committedId;
 
     EmployeeFilterCombo(ComboBox<EmployeeOption> combo, Consumer<Integer> onChanged) {
         this.combo = combo;
@@ -52,7 +59,13 @@ final class EmployeeFilterCombo {
         );
         setSelected(EmployeeOption.ALL);
 
-        // Gõ → lọc danh sách và mở popup (bỏ qua khi chương trình tự điền chữ vào ô)
+        // Người dùng chọn một dòng trong danh sách
+        combo.valueProperty().addListener((obs, old, chosen) -> {
+            if (updating || chosen == null) return;
+            commit(chosen);
+        });
+
+        // Gõ → lọc danh sách và mở popup
         combo
             .getEditor()
             .textProperty()
@@ -64,15 +77,9 @@ final class EmployeeFilterCombo {
                 if (!combo.isShowing() && combo.getEditor().isFocused()) combo.show();
             });
 
-        combo.setOnAction(e -> {
-            if (updating) return;
-            EmployeeOption chosen = combo.getValue();
-            if (chosen != null) commit(chosen);
-        });
-
         combo.getEditor().setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
-                // Enter: chọn dòng đầu tiên đang hiển thị (hoặc đúng nhân viên vừa gõ)
+                // Enter: đúng nhân viên vừa gõ, hoặc dòng đầu tiên đang hiển thị
                 EmployeeOption pick = combo.getConverter().fromString(combo.getEditor().getText());
                 if (pick == null && !filtered.isEmpty()) pick = filtered.get(0);
                 if (pick != null) {
@@ -86,7 +93,7 @@ final class EmployeeFilterCombo {
             }
         });
 
-        // Rời ô mà không chọn: trả lại chữ của người đang được chọn; xóa trống = Tất cả nhân viên
+        // Rời ô mà không chọn: trả lại chữ của người đang áp dụng; xóa trống = Tất cả nhân viên
         combo.focusedProperty().addListener((obs, was, focused) -> {
             if (focused) {
                 Platform.runLater(() -> combo.getEditor().selectAll());
@@ -95,66 +102,89 @@ final class EmployeeFilterCombo {
             String text = combo.getEditor().getText();
             if (text == null || text.isBlank()) {
                 commit(EmployeeOption.ALL);
-            } else {
+            } else if (!combo.isShowing()) {
                 restoreSelectedText();
             }
         });
     }
 
     void setEmployees(List<EmployeeOption> employees) {
-        EmployeeOption selected = combo.getValue();
-        master.setAll(EmployeeOption.ALL);
-        master.addAll(employees);
-        filtered.setPredicate(o -> true);
-        setSelected(selected != null ? selected : EmployeeOption.ALL);
+        updating = true;
+        try {
+            master.setAll(EmployeeOption.ALL);
+            master.addAll(employees);
+        } finally {
+            updating = false;
+        }
+        resetFilter();
+        EmployeeOption applied = master
+            .stream()
+            .filter(o -> Objects.equals(o.id(), committedId))
+            .findFirst()
+            .orElse(EmployeeOption.ALL);
+        setSelected(applied);
     }
 
     private void commit(EmployeeOption option) {
-        boolean changed = !sameId(combo.getValue(), option);
+        boolean changed = !Objects.equals(committedId, option.id());
+        committedId = option.id();
+        resetFilter();
         setSelected(option);
-        filtered.setPredicate(o -> true);
         if (changed) onChanged.accept(option.id());
     }
 
     private void setSelected(EmployeeOption option) {
+        boolean was = updating;
         updating = true;
         try {
             combo.setValue(option);
             combo.getEditor().setText(option.label());
         } finally {
-            updating = false;
+            updating = was;
         }
     }
 
     private void restoreSelectedText() {
-        EmployeeOption current = combo.getValue() != null ? combo.getValue() : EmployeeOption.ALL;
-        updating = true;
-        try {
-            combo.getEditor().setText(current.label());
-        } finally {
-            updating = false;
-        }
-        filtered.setPredicate(o -> true);
+        EmployeeOption applied = master
+            .stream()
+            .filter(o -> Objects.equals(o.id(), committedId))
+            .findFirst()
+            .orElse(EmployeeOption.ALL);
+        resetFilter();
+        setSelected(applied);
+    }
+
+    private void resetFilter() {
+        setPredicate(o -> true, null);
     }
 
     private void applyFilter(String text) {
         List<String> tokens = tokens(text);
-        filtered.setPredicate(o -> {
+        setPredicate(o -> {
             if (tokens.isEmpty()) return true;
             String haystack = normalize(o.id() == null ? o.fullName() : o.code() + " " + o.fullName());
             return tokens.stream().allMatch(haystack::contains);
-        });
+        }, text);
     }
 
-    private static boolean sameId(EmployeeOption a, EmployeeOption b) {
-        Integer x = a != null ? a.id() : null;
-        Integer y = b != null ? b.id() : null;
-        return java.util.Objects.equals(x, y);
+    // Đổi danh sách lọc làm ComboBox xóa lựa chọn và chữ trong ô → giữ lại chữ người dùng đang gõ
+    private void setPredicate(Predicate<EmployeeOption> predicate, String keepText) {
+        boolean was = updating;
+        updating = true;
+        try {
+            filtered.setPredicate(predicate);
+            if (keepText != null && !keepText.equals(combo.getEditor().getText())) {
+                combo.getEditor().setText(keepText);
+                combo.getEditor().positionCaret(keepText.length());
+            }
+        } finally {
+            updating = was;
+        }
     }
 
     private static List<String> tokens(String text) {
         if (text == null || text.isBlank()) return List.of();
-        return java.util.Arrays.stream(normalize(text).split("\\s+"))
+        return Arrays.stream(normalize(text).split("\\s+"))
             .filter(t -> !t.isEmpty())
             .toList();
     }
