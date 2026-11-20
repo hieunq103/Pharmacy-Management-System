@@ -52,10 +52,6 @@ public class SalesRepository {
         }
     }
 
-    public PageResult<MedicineInventoryDTO> getMedicinesPage(int page, int size, String keyword, String categoryName) {
-        return getMedicinesPage(page, size, keyword, categoryName, null);
-    }
-
     public PageResult<MedicineInventoryDTO> getMedicinesPage(
         int page,
         int size,
@@ -91,8 +87,6 @@ public class SalesRepository {
                 return PageResult.empty(validPage, validSize);
             }
 
-            // Không dùng ORDER BY CASE WHEN EXISTS(...) (subquery tương quan chạy cho mọi dòng + filesort toàn bảng mỗi lần
-            // chuyển trang). Thay bằng 2 nhóm: nhóm có hàng (semi-join theo index lô) rồi tới nhóm còn lại, ghép theo offset.
             LocalDate today = LocalDate.now();
             String sellable =
                 " AND m.id IN (SELECT il.medicine.id FROM InventoryLot il " +

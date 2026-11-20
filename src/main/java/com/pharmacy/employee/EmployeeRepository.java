@@ -42,7 +42,6 @@ public class EmployeeRepository {
         }
     }
 
-    // Cấp mã thật trong giao dịch đang mở (khóa bi quan PESSIMISTIC_WRITE tương đương SELECT ... FOR UPDATE)
     private static String allocateEmployeeCode(Session session, String prefix) {
         CodeSequence seq = session.find(CodeSequence.class, sequenceName(prefix), LockModeType.PESSIMISTIC_WRITE);
         if (seq == null) {
