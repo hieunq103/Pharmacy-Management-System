@@ -709,70 +709,65 @@ public class InventoryRepository {
         return created;
     }
 
-    public boolean exportBatchStock(String reason, Integer employeeId, String note, List<BatchExportItemDTO> items) {
-        if (items == null || items.isEmpty()) {
-            throw new IllegalArgumentException("Danh sách mặt hàng xuất kho không được rỗng!");
+    public void exportBatchStock(
+        Session session,
+        String reason,
+        Integer employeeId,
+        String note,
+        List<BatchExportItemDTO> items
+    ) {
+        TransactionGuards.requireActiveEmployee(session, employeeId);
+
+        Map<Long, Integer> requested = new HashMap<>();
+        for (BatchExportItemDTO item : items) {
+            requested.merge(item.getLotId(), item.getExportQuantity(), Integer::sum);
         }
-        try {
-            HibernateUtil.execute(session -> {
-                TransactionGuards.requireActiveEmployee(session, employeeId);
+        Map<Long, InventoryLot> lockedLots = lockLots(session, requested.keySet());
+        for (BatchExportItemDTO item : items) {
+            InventoryLot lot = lockedLots.get(item.getLotId());
+            if (lot == null) {
+                throw new IllegalArgumentException(
+                    "Không tìm thấy thông tin lô hàng " + item.getLotNumber() + " trong kho."
+                );
+            }
+            int need = requested.get(item.getLotId());
+            if (lot.getQuantityRemaining() < need) {
+                throw new IllegalArgumentException(
+                    "Thuốc " +
+                        item.getMedicineName() +
+                        " (Lô: " +
+                        item.getLotNumber() +
+                        ") yêu cầu xuất " +
+                        need +
+                        " nhưng chỉ còn tồn " +
+                        lot.getQuantityRemaining() +
+                        "!"
+                );
+            }
+        }
 
-                Map<Long, Integer> requested = new HashMap<>();
-                for (BatchExportItemDTO item : items) {
-                    requested.merge(item.getLotId(), item.getExportQuantity(), Integer::sum);
-                }
-                Map<Long, InventoryLot> lockedLots = lockLots(session, requested.keySet());
-                for (BatchExportItemDTO item : items) {
-                    InventoryLot lot = lockedLots.get(item.getLotId());
-                    if (lot == null) {
-                        throw new IllegalArgumentException(
-                            "Không tìm thấy thông tin lô hàng " + item.getLotNumber() + " trong kho."
-                        );
-                    }
-                    int need = requested.get(item.getLotId());
-                    if (lot.getQuantityRemaining() < need) {
-                        throw new IllegalArgumentException(
-                            "Thuốc " +
-                                item.getMedicineName() +
-                                " (Lô: " +
-                                item.getLotNumber() +
-                                ") yêu cầu xuất " +
-                                need +
-                                " nhưng chỉ còn tồn " +
-                                lot.getQuantityRemaining() +
-                                "!"
-                        );
-                    }
-                }
+        String fullNote = (reason != null ? reason : "") + (hasText(note) ? " - " + note.trim() : "");
+        InventoryTransaction tx = new InventoryTransaction();
+        tx.setType(InventoryTransaction.Type.EXPORT_DISPOSAL);
+        tx.setEmployee(session.getReference(Employee.class, employeeId));
+        tx.setNote(fullNote);
+        session.persist(tx);
 
-                String fullNote = (reason != null ? reason : "") + (hasText(note) ? " - " + note.trim() : "");
-                InventoryTransaction tx = new InventoryTransaction();
-                tx.setType(InventoryTransaction.Type.EXPORT_DISPOSAL);
-                tx.setEmployee(session.getReference(Employee.class, employeeId));
-                tx.setNote(fullNote);
-                session.persist(tx);
+        for (BatchExportItemDTO item : items) {
+            InventoryLot lot = lockedLots.get(item.getLotId());
+            lot.setQuantityRemaining(lot.getQuantityRemaining() - item.getExportQuantity());
 
-                for (BatchExportItemDTO item : items) {
-                    InventoryLot lot = lockedLots.get(item.getLotId());
-                    lot.setQuantityRemaining(lot.getQuantityRemaining() - item.getExportQuantity());
-
-                    String itemReason = hasText(item.getReason())
-                        ? item.getReason()
-                        : hasText(reason)
-                          ? reason
-                          : "Xuất hủy";
-                    InventoryDisposalItem disposalItem = new InventoryDisposalItem();
-                    disposalItem.setTransaction(tx);
-                    disposalItem.setInventoryLot(lot);
-                    disposalItem.setQuantity(item.getExportQuantity());
-                    disposalItem.setReason(itemReason);
-                    session.persist(disposalItem);
-                }
-            });
-            return true;
-        } catch (Exception e) {
-            log.error("Lỗi khi thực hiện giao dịch Xuất kho hàng loạt: ", e);
-            throw new RuntimeException("Lỗi xuất kho: " + com.pharmacy.common.UserMessages.safeMessage(e, null), e);
+            String itemReason = hasText(item.getReason())
+                ? item.getReason()
+                : hasText(reason)
+                  ? reason
+                  : "Xuất hủy";
+            InventoryDisposalItem disposalItem = new InventoryDisposalItem();
+            disposalItem.setTransaction(tx);
+            disposalItem.setInventoryLot(lot);
+            disposalItem.setQuantity(item.getExportQuantity());
+            disposalItem.setReason(itemReason);
+            session.persist(disposalItem);
         }
     }
 

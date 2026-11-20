@@ -1,7 +1,9 @@
 package com.pharmacy.inventory;
 
 import com.pharmacy.common.PageResult;
+import com.pharmacy.common.UserMessages;
 import com.pharmacy.common.UserSession;
+import com.pharmacy.infra.db.HibernateUtil;
 import com.pharmacy.inventory.dto.BatchExportItemDTO;
 import com.pharmacy.inventory.dto.BatchImportItemDTO;
 import com.pharmacy.inventory.dto.InventoryAlertDTO;
@@ -15,8 +17,12 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InventoryService {
+
+    private static final Logger log = LoggerFactory.getLogger(InventoryService.class);
 
     private final InventoryRepository inventoryRepository;
 
@@ -149,7 +155,18 @@ public class InventoryService {
                 throw new IllegalArgumentException("Số lượng xuất của lô " + item.getLotNumber() + " phải lớn hơn 0.");
             }
         }
-        return inventoryRepository.exportBatchStock(reason, resolveEmployeeId(employeeId), note, items);
+        // Service giữ ranh giới transaction: mở, commit hoặc rollback toàn bộ nghiệp vụ xuất hủy
+        try {
+            HibernateUtil.execute(session ->
+                inventoryRepository.exportBatchStock(session, reason, resolveEmployeeId(employeeId), note, items)
+            );
+            return true;
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Lỗi khi thực hiện giao dịch Xuất kho hàng loạt: ", e);
+            throw new RuntimeException("Lỗi xuất kho: " + UserMessages.safeMessage(e, null), e);
+        }
     }
 
     private static Integer resolveEmployeeId(Integer requested) {
