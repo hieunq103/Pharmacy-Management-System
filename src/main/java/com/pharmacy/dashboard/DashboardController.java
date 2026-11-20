@@ -75,7 +75,6 @@ public class DashboardController implements Initializable {
     }
 
     public void loadAllDashboardData() {
-        // View được cache: khi quay lại từ màn hình khác phải đưa thanh cuộn về đầu trang
         if (dashboardScrollPane != null) {
             dashboardScrollPane.setVvalue(0);
             Platform.runLater(() -> dashboardScrollPane.setVvalue(0));

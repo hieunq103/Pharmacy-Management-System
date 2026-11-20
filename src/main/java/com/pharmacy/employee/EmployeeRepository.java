@@ -38,7 +38,6 @@ public class EmployeeRepository {
                 }
             });
         } catch (Exception ignored) {
-            // Đã có luồng khác tạo dòng bộ đếm cùng thời điểm
         }
     }
 
@@ -187,7 +186,6 @@ public class EmployeeRepository {
             StringBuilder whereClause = new StringBuilder(" WHERE 1=1 ");
             Map<String, Object> params = new HashMap<>();
 
-            // Từ khóa chỉ gồm chữ số/dấu + → tìm theo SĐT/CCCD/mã (bỏ tên); còn lại thêm cả họ tên. Mã nhân viên khớp theo tiền tố.
             boolean digitsOnly = keyword != null && keyword.trim().matches("^[0-9+\\s]+$");
             SearchFilter search = SearchFilter.of(keyword, "kw").prefix("e.code").contains("e.phone", "e.nationalId");
             if (!digitsOnly) search.contains("e.fullName");
